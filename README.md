@@ -79,6 +79,6 @@ A big thank you to all the developers who have helped shape Code Racer into what
 
 ## Contact
 
-If you have any questions, suggestions, or feedback regarding Code Racer, please feel free to reach out to us at in the WebDevCody discord server
+If you have any questions, suggestions, or feedback regarding Code Racer, please feel free to reach out to us at in the WebDevCody [discord](https://discord.gg/4kGbBaa) server
 
 Happy coding and enjoy the race!
