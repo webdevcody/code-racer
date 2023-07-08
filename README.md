@@ -38,6 +38,11 @@ Install dependencies:
 npm install
 ```
 
+Updates schema to database
+```bash
+npx prisma db push
+```
+
 Start the development server:
 
 ```bash
