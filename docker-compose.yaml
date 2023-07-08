@@ -2,7 +2,7 @@ version: '3.8'
 services:
   db:
     container_name: code-racer-postgres
-    image: postgres:15-bullseye
+    image: postgres:15.3-bookworm
     restart: always
     environment:
       - POSTGRES_USER=${DATABASE_USERNAME}
