@@ -14,7 +14,6 @@ services:
       - ${DATABASE_PORT}:${DATABASE_PORT}
     volumes:
       - db:/var/lib/postgresql/data
-      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
 volumes:
   db:
     driver: local
