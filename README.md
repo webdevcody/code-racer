@@ -16,3 +16,7 @@ check to [CONTRIBUTING.md](./CONTRIBUTING.md)
 
 ## Acknowledgments
 We would like to express our gratitude to the open source community for their invaluable contributions and support.
+
+## Community
+
+Join [WebDevCody](https://discord.com/invite/4kGbBaa) discord server 
