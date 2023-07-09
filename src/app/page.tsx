@@ -1,3 +1,4 @@
+import Header from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { LoginButton, LogoutButton } from "@/components/ui/buttons";
 import { getSession } from "@/lib/getSession";
@@ -9,6 +10,8 @@ export default async function Home() {
   const session = await getSession();
 
   return (
+    <>
+    <Header />
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <Button>Button</Button>
       {session ? (
@@ -27,5 +30,7 @@ export default async function Home() {
         <LoginButton />
       )}
     </main>
+    </>
+
   );
 }
