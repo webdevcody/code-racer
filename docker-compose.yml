@@ -1,6 +1,6 @@
 version: "3.9"
 services:
-  bg-db:
+  code-racer-db:
     image: postgres
     restart: always
     container_name: code-racer-postgres
