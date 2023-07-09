@@ -5,6 +5,8 @@ import Link from "next/link";
 import React, { useState } from "react";
 
 import { Button } from "./ui/button";
+import { SessionProvider, useSession } from "next-auth/react";
+import { LoginButton, LogoutButton } from "./ui/buttons";
 
 const Header = () => {
   const [state, setState] = useState(false);
@@ -15,19 +17,22 @@ const Header = () => {
     { title: "About", path: "/" },
   ];
 
+  const session = useSession();
+
   return (
     <div>
       <nav className="w-full border-b md:border-0 md:static">
         <div className="items-center px-4 max-w-screen-xl mx-auto md:flex md:px-8">
           <div className="flex items-center justify-between py-3 md:py-5 md:block">
-            <Link href="/">
+            <Link href="/" className="flex gap-2 items-center">
               <Image
                 unoptimized
                 src="/static/logo.png"
-                width={50}
-                height={50}
+                width={30}
+                height={30}
                 alt="Code Racer Logo"
               />
+              CodeRacer
             </Link>
             <div className="md:hidden">
               <Button onClick={() => setState(!state)}>
@@ -81,8 +86,24 @@ const Header = () => {
               })}
             </ul>
           </div>
-          <div className="hidden md:inline-block">
-            <Button>Login</Button>
+          <div className="hidden md:flex gap-4 items-center">
+            {session.status !== "authenticated" ? (
+              <LoginButton />
+            ) : (
+              <>
+                <Image
+                  className="rounded-full"
+                  src={session?.data.user.image ?? ""}
+                  alt="user avatar"
+                  height={40}
+                  width={40}
+                />
+                <p className="text-gray-700 font-bold">
+                  {session?.data.user?.name}
+                </p>
+                <LogoutButton />
+              </>
+            )}
           </div>
         </div>
       </nav>
@@ -90,4 +111,10 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default function WrappedHeader() {
+  return (
+    <SessionProvider>
+      <Header />
+    </SessionProvider>
+  );
+}

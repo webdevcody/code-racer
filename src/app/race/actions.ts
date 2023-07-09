@@ -7,7 +7,10 @@ export async function saveUserResult(input: {
   userId: User["id"];
   timeTaken: string | number;
 }) {
-  if (typeof input.timeTaken !== "string" && typeof input.timeTaken !== "number") {
+  if (
+    typeof input.timeTaken !== "string" &&
+    typeof input.timeTaken !== "number"
+  ) {
     throw new Error("Invalid input.");
   }
 
