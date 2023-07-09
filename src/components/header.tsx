@@ -5,6 +5,8 @@ import Link from "next/link";
 import React, { useState } from "react";
 
 import { Button } from "./ui/button";
+import { SessionProvider, useSession } from "next-auth/react";
+import { LoginButton, LogoutButton } from "./ui/buttons";
 
 const Header = () => {
   const [state, setState] = useState(false);
@@ -14,6 +16,8 @@ const Header = () => {
     { title: "Leaderboard", path: "/" },
     { title: "About", path: "/" },
   ];
+
+  const session = useSession();
 
   return (
     <div>
@@ -82,8 +86,24 @@ const Header = () => {
               })}
             </ul>
           </div>
-          <div className="hidden md:inline-block">
-            <Button>Login</Button>
+          <div className="hidden md:flex gap-4 items-center">
+            {session.status !== "authenticated" ? (
+              <LoginButton />
+            ) : (
+              <>
+                <Image
+                  className="rounded-full"
+                  src={session?.data.user.image ?? ""}
+                  alt="user avatar"
+                  height={40}
+                  width={40}
+                />
+                <p className="text-gray-700 font-bold">
+                  {session?.data.user?.name}
+                </p>
+                <LogoutButton />
+              </>
+            )}
           </div>
         </div>
       </nav>
@@ -91,4 +111,10 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default function WrappedHeader() {
+  return (
+    <SessionProvider>
+      <Header />
+    </SessionProvider>
+  );
+}
