@@ -5,6 +5,8 @@ import { useState, useEffect } from "react";
 import DisplayedCode from "./displayedCode";
 import type { User } from "next-auth";
 import { saveUserResult } from "@/app/_actions/result";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 const code = `printf("hello world")`;
 
@@ -62,15 +64,15 @@ export default function TypingCode({ user }: TypingCodeProps) {
   };
 
   return (
-    <div className="w-3/4 p-8 bg-gray-100 rounded-md">
+    <div className="w-3/4 p-8 bg-accent rounded-md">
       <h1 className="text-2xl font-bold mb-4">Type this code:</h1>
       <DisplayedCode code={code} errors={errors} />
-      <input
+      <Input
         type="text"
         value={input}
         onChange={handleInputChange}
         disabled={endTime !== null}
-        className="w-full p-2 border border-gray-300 rounded mb-4"
+        className="w-full p-2 border border-border rounded mb-4"
       />
       {endTime && (
         <div>
@@ -81,12 +83,7 @@ export default function TypingCode({ user }: TypingCodeProps) {
           <p className="mb-4">Errors: {errors.length}</p>
         </div>
       )}
-      <button
-        onClick={handleRestart}
-        className="bg-black text-white py-2 px-4 rounded"
-      >
-        Restart
-      </button>
+      <Button onClick={handleRestart}>Restart</Button>
     </div>
   );
 }
