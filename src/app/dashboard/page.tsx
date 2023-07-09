@@ -1,5 +1,14 @@
 "use client";
 
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import React from "react";
 import {
   LineChart,
@@ -38,7 +47,7 @@ export default function DashboardPage() {
       wpm: 80,
     },
     {
-      gameId: "cljvlqsj8000408l4ahr36soj",
+      gameId: "cljvlqsj8000448ewhr36soj",
       date: "08/02/2023",
       accuracy: 78,
       errors: 2,
@@ -68,11 +77,13 @@ export default function DashboardPage() {
   // All achievements and the progress of finishing it. NOTE: This should be sorted on progress.
   const achievements = [
     {
+      id: "cljvlqsj8000408l4ahr36soj",
       title: "First race",
       description: "Started a race",
       progress: 100,
     },
     {
+      id: "cljvlqsj8000408l4ahr36sok",
       title: "Play 10 races",
       description: "Play a total of 10 races online",
       progress: 33,
@@ -81,14 +92,18 @@ export default function DashboardPage() {
 
   return (
     <>
-      <h1 className="text-4xl m-6 font-bold text-center max-[600px]:mb-10">Dashboard</h1>
+      <h1 className="text-4xl m-6 font-bold text-center max-[600px]:mb-10">
+        Dashboard
+      </h1>
       <div className="flex max-[600px]:flex-col justify-center items-center w-screen h-[50vh] gap-6 m-2">
-        <div className="w-[47.5%] max-[600px]:w-[100%]  max-[600px]:mr-4 h-full max-[600px]:h-[50%] rounded-lg border-gray-400 border-2 border-opacity-50 max-[600px]:ml-4">
-          <h2 className="text-2xl font-bold text-center m-2">Accuracy</h2>
+        <Card className="w-[47.5%] max-[600px]:w-[100%] max-[600px]:mr-4 h-full max-[600px]:h-[50%]">
+          <CardHeader>
+            <CardTitle className="text-center m-2">Accuracy</CardTitle>
+          </CardHeader>
           <ResponsiveContainer height="100%">
             <LineChart
               data={accuracyData}
-              margin={{ right: 25, left: 25, bottom: 50 }}
+              margin={{ right: 25, left: 25, bottom: 100 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="gameNumber" />
@@ -103,15 +118,15 @@ export default function DashboardPage() {
               />
             </LineChart>
           </ResponsiveContainer>
-        </div>
-        <div className="w-[47.5%] max-[600px]:w-[100%] h-full max-[600px]:h-[50%] rounded-lg border-gray-400 border-2 border-opacity-50 max-[600px]:mr-4 max-[600px]:ml-4 max-[600px]:mb-6">
-          <h2 className="text-2xl font-bold text-center m-2">
-            Words per minute
-          </h2>
+        </Card>
+        <Card className="w-[47.5%] max-[600px]:w-[100%] h-full max-[600px]:h-[50%] max-[600px]:mr-4 max-[600px]:ml-4 max-[600px]:mb-6">
+          <CardHeader>
+            <CardTitle className="text-center m-2">Words per minute</CardTitle>
+          </CardHeader>
           <ResponsiveContainer height="100%">
             <ComposedChart
               data={wpmData}
-              margin={{ right: 25, left: 25, bottom: 50 }}
+              margin={{ right: 25, left: 25, bottom: 100 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="gameNumber" />
@@ -126,43 +141,54 @@ export default function DashboardPage() {
               />
             </ComposedChart>
           </ResponsiveContainer>
-        </div>
+        </Card>
       </div>
       <div className="flex max-[850px]:flex-col justify-center items-center w-screen min-[850px]:h-[50vh] gap-4 m-4">
-        <div className="w-[55vw] max-[850px]:w-[100vw] min-[850px]:h-[50vh] rounded-lg border-gray-400 border-2 border-opacity-50 mr-4 p-4">
-          <h2 className="text-2xl font-bold text-center m-2">Recent Races</h2>
-          <table className="w-full text-center max-[600px]:text-sm">
-            <tr>
-              <th className="max-[900px]:hidden">Game ID</th>
-              <th>Errors</th>
-              <th>Accuracy</th>
-              <th>Wpm</th>
-              <th>Date</th>
-            </tr>
-            {recentGames.map((game) => {
-              return (
-                <tr className="m-10">
-                  <td className="max-[900px]:hidden">{game.gameId}</td>
-                  <td className="text-red-600 hover:text-red-500">
-                    {game.wpm} Errors
-                  </td>
-                  <td>{game.accuracy}%</td>
-                  <td>{game.wpm} Wpm</td>
-                  <td>{game.date}</td>
-                </tr>
-              );
-            })}
-          </table>
-        </div>
-        <div className="w-[40vw] max-[850px]:w-screen min-[850px]:h-[50vh] rounded-lg border-gray-400 border-2 border-opacity-50 mr-4">
+        <Card className="w-[55vw] max-[850px]:w-[100vw] min-[850px]:h-[50vh] mr-4 p-4">
+          <CardHeader>
+            <CardTitle className="text-center m-2">Recent Races</CardTitle>
+          </CardHeader>
+          <Table className="w-full max-[600px]:text-sm">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="max-[900px]:hidden">Game ID</TableHead>
+                <TableHead>Errors</TableHead>
+                <TableHead>Accuracy</TableHead>
+                <TableHead>Wpm</TableHead>
+                <TableHead>Date</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {recentGames.map((game) => {
+                return (
+                  <TableRow key={game.gameId}>
+                    <TableCell className="max-[900px]:hidden">
+                      {game.gameId}
+                    </TableCell>
+                    <TableCell className="text-red-600 hover:text-red-500">
+                      {game.wpm} Errors
+                    </TableCell>
+                    <TableCell>{game.accuracy}%</TableCell>
+                    <TableCell>{game.wpm} Wpm</TableCell>
+                    <TableCell>{game.date}</TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </Card>
+        <Card className="w-[40vw] max-[850px]:w-screen min-[850px]:h-[50vh] mr-4">
           <h2 className="text-2xl font-bold text-center m-2">Achievements</h2>
           {achievements.map((achievement) => {
             return (
-              <div className="border-gray-500 border-2 border-opacity-50 rounded-lg m-4 p-4 flex justify-between">
-                <div>
-                <p className="font-bold min-[850px]:text-xl text-md">{achievement.title}</p>
-                <p className="font-normal min-[850px]:text-xs text-sm">{achievement.description}</p>
-                </div>
+              <Card
+                className="m-4 p-4 flex justify-between"
+                key={achievement.id}
+              >
+                <CardHeader>
+                  <CardTitle>{achievement.title}</CardTitle>
+                  <CardDescription>{achievement.description}</CardDescription>
+                </CardHeader>
                 {achievement.progress > 50 ? (
                   <p className="font-normal text-green-500 mt-auto mb-auto">
                     {achievement.progress}%
@@ -172,10 +198,10 @@ export default function DashboardPage() {
                     {achievement.progress}%
                   </p>
                 )}
-              </div>
+              </Card>
             );
           })}
-        </div>
+        </Card>
       </div>
     </>
   );
