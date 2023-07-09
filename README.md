@@ -18,42 +18,52 @@ Code Racer is a multiplayer coding game where developers can compete against eac
 
 ## Getting Started
 
-To get started with Code Racer locally, follow these steps:
+### Prerequisites
 
-    Clone the repository:
+You will need to [install docker](https://example.com) on your local machine.
 
-```bash
-git clone https://github.com/webdevcody/code-racer.git
-```
+### Installation
 
-Navigate to the project directory:
+To get started with Code Racer locally, follow these steps
 
-```bash
-cd code-racer
-```
+1. Clone the repo
+   ```sh
+    git clone https://github.com/webdevcody/code-racer.git
+   ```
+2. Navigate to the project directory
 
-Install dependencies:
+   ```sh
+   cd code-racer
+   ```
 
-```bash
-npm install
-```
+3. Install NPM packages
+   ```sh
+   npm install
+   ```
+4. Generate a version of Prisma Client that is tailored to the models.
+   ```js
+   npx prisma generate
+   ```
+5. Create .env file
 
-Updates schema to database
-```bash
-npx prisma db push
-```
+6. Copy and paste variables from `.env.example` into `.env`
 
-Start the development server:
+7. Update each variable in `.env` (optional).
 
-```bash
+8. Start a docker container for the database.
+   ```sh
+   docker compose up
+   ```
+9. Once your database is ready, push your prisma schema to the database.
+   ```sh
+   npx prisma db push
+   ```
+10. Finally start your dev server.
+    ```sh
     npm run dev
-```
+    ```
 
 Open your browser and visit http://localhost:3000 to see the application running.
-
-## Configuration
-
-Code Racer requires some configuration variables to run properly. Create a .env.local file in the root directory of the project and add the following variables:
 
 ## Contribution
 
