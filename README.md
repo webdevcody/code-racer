@@ -29,7 +29,6 @@ We welcome contributions from the community! If you'd like to contribute to Code
 
 Please ensure that your code adheres to the project's coding standards and conventions.
 
-
 ## Getting Started
 
 ### Prerequisites
@@ -52,7 +51,7 @@ To get started with Code Racer locally, follow these steps
 
 3. Install NPM packages
    ```sh
-   npm install
+   npm i
    ```
 4. Generate a version of Prisma Client that is tailored to the models.
    ```js
@@ -78,7 +77,6 @@ To get started with Code Racer locally, follow these steps
     ```
 
 Open your browser and visit http://localhost:3000 to see the application running.
-
 
 ## License
 
