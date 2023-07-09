@@ -3,12 +3,18 @@
 import { useState, useEffect } from "react";
 
 import DisplayedCode from "./displayedCode";
+import type { User } from "next-auth";
+import { saveUserResult } from "@/app/_actions/result";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 const code = `printf("hello world")`;
 
-export default function TypingCode() {
+interface TypingCodeProps {
+  user?: User;
+}
+
+export default function TypingCode({ user }: TypingCodeProps) {
   const [input, setInput] = useState("");
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [endTime, setEndTime] = useState<Date | null>(null);
@@ -19,6 +25,8 @@ export default function TypingCode() {
     if (startTime && endTime) {
       const timeTaken: number =
         (endTime.getTime() - startTime.getTime()) / 1000;
+
+      if (user) saveUserResult({ userId: user.id, timeTaken });
 
       console.log("Time taken:", timeTaken);
     }

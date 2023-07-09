@@ -1,7 +1,7 @@
 import Header from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { LoginButton, LogoutButton } from "@/components/ui/buttons";
-import { getSession } from "@/lib/getSession";
+import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import Image from "next/image";
 
