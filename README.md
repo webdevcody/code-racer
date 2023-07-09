@@ -37,7 +37,7 @@ Install dependencies:
 ```bash
 npm install
 ```
-Created a .env file inside the project's root directory.
+Create a .env file inside the project's root directory.
 
 Copy and paste the content of .env.example into your .env file
 
