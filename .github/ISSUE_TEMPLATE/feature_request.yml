@@ -1,21 +1,35 @@
 name: Feature Request
 description: Request a new feature for this project
-title: "[FEATURE]: "
+title: '[FEATURE]: '
 labels:
-  - "feature"
+  - 'feature'
 body:
   - type: markdown
     attributes:
       value: |
         Thanks for taking the time to submit this feature request!
+
+  - type: textarea
+    id: prerequisites
+    attributes:
+      label: Prerequisites
+      description: Please answer the following questions for yourself before submitting an issue. **YOU MAY DELETE THE PREREQUISITES SECTION.**
+      placeholder: |
+        - [ ] I am running the latest version 
+        - [ ] I checked the documentation and found no answer 
+        - [ ] I checked to make sure that this issue has not already been filed
+    validations:
+      required: true
+
   - type: textarea
     id: summary
     attributes:
       label: Feature Summary
       description: A clear and concise description of the feature.
-      placeholder: "Example: As a [user role], I want to [complete action] so that I can [achieve outcome]"
+      placeholder: 'Example: As a [user role], I want to [complete action] so that I can [achieve outcome]'
     validations:
       required: true
+
   - type: textarea
     id: acceptance
     attributes:
@@ -28,18 +42,21 @@ body:
         ...
     validations:
       required: true
+
   - type: textarea
     id: scenario
     attributes:
       label: Scenario
       description: Describe a scenario where this feature would be useful.
       placeholder: Under what circumstances would this feature be useful
+
   - type: textarea
     id: context
     attributes:
       label: Any Additional Context
       description: Any other context or additional information.
       placeholder: Any other context or additional information you wish to share about the proposed feature...
+
   - type: checkboxes
     id: terms
     attributes:
