@@ -39,9 +39,9 @@ You will need to [install docker](https://example.com) on your local machine.
 
 To get started with Code Racer locally, follow these steps
 
-1. Clone the repo
+1. Fork my repo and clone your fork
    ```sh
-    git clone https://github.com/webdevcody/code-racer.git
+    git clone https://github.com/YOUR_USERNAME/code-racer.git
    ```
 2. Navigate to the project directory
 
@@ -77,6 +77,27 @@ To get started with Code Racer locally, follow these steps
     ```
 
 Open your browser and visit http://localhost:3000 to see the application running.
+
+## How to Contribute
+
+### Working on New Features
+
+If you want to work on a new feature, follow these steps.
+
+1. fork the repo
+2. clone your fork
+3. checkout a new branch
+4. do you work,
+5. commit
+6. push your branch to your fork
+7. go into github UI and create a PR from your fork & branch, and merge it into upstream MAIN
+
+### Pulling in changes from upstream
+
+You should pull in the changes that we add in daily, preferably before you checkout a new branch to do new work.
+
+1. git checkout main
+2. git pull upstream main
 
 ## License
 
