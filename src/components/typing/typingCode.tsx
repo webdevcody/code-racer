@@ -1,8 +1,10 @@
 "use client";
+
 import { useState, useEffect } from "react";
+
 import DisplayedCode from "./displayedCode";
 
-const code = 'printf("hello world")';
+const code = `printf("hello world")`;
 
 export default function TypingCode() {
   const [input, setInput] = useState("");

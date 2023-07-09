@@ -10,7 +10,7 @@ const Header = () => {
   const [state, setState] = useState(false);
 
   const navigation = [
-    { title: "Race", path: "/" },
+    { title: "Race", path: "/race" },
     { title: "Leaderboard", path: "/" },
     { title: "About", path: "/" },
   ];
