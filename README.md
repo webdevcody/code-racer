@@ -33,7 +33,11 @@ Please ensure that your code adheres to the project's coding standards and conve
 
 ### Prerequisites
 
-You will need to [install docker](https://example.com) on your local machine.
+You will need to [install docker](https://www.docker.com/get-started/) on your local machine.
+
+If you do not have docker, go here to download and install: https://www.docker.com/get-started/
+
+If you are getting WSL error when you launch your desktop docker application, go here and follow these steps for windows: https://learn.microsoft.com/en-us/windows/wsl/install-manual#step-4---download-the-linux-kernel-update-package.
 
 ### Installation
 
@@ -41,14 +45,12 @@ To get started with Code Racer locally, follow these steps
 
 1. Fork my repo and clone your fork
    ```sh
-    git clone https://github.com/YOUR_USERNAME/code-racer.git
+    git clone https://github.com/webdevcody/code-racer.git
    ```
 2. Navigate to the project directory
-
    ```sh
    cd code-racer
    ```
-
 3. Install NPM packages
    ```sh
    npm i
@@ -57,21 +59,19 @@ To get started with Code Racer locally, follow these steps
    ```js
    npx prisma generate
    ```
-5. Create .env file
+5. Create a .env file inside the project's root directory.
 
 6. Copy and paste variables from `.env.example` into `.env`
 
-7. Update each variable in `.env` (optional).
-
-8. Start a docker container for the database.
+7. Open Docker Desktop Application and go back to your VSCode terminal and run this command:
    ```sh
-   docker compose up
+   docker compose up -d
    ```
-9. Once your database is ready, push your prisma schema to the database.
+8. Once your database is ready, push your prisma schema to the database.
    ```sh
    npx prisma db push
    ```
-10. Finally start your dev server.
+9. Finally start your dev server.
     ```sh
     npm run dev
     ```
@@ -84,13 +84,13 @@ Open your browser and visit http://localhost:3000 to see the application running
 
 If you want to work on a new feature, follow these steps.
 
-1. fork the repo
-2. clone your fork
-3. checkout a new branch
-4. do you work,
-5. commit
-6. push your branch to your fork
-7. go into github UI and create a PR from your fork & branch, and merge it into upstream MAIN
+1. Fork the repo
+2. Clone your fork
+3. Checkout a new branch
+4. Do your work
+5. Commit
+6. Push your branch to your fork
+7. Go into github UI and create a PR from your fork & branch, and merge it into upstream MAIN
 
 ### Pulling in changes from upstream
 
