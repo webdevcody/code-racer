@@ -9,6 +9,9 @@ datasource db {
 
 model User {
   id          Int      @id @default(autoincrement())
-  createdAt   DateTime @default(now())
-  displayName String?
+  createdAt   DateTime @map("created_at") @default(now())
+  displayName String?  @map("display_name")
+  photoURL    String?  @map("photo_url")
+
+  @@map("users")
 }
