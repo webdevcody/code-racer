@@ -178,11 +178,13 @@ export default function DashboardPage() {
           </Table>
         </Card>
         <Card className="w-[40vw] max-[850px]:w-screen min-[850px]:h-[50vh] mr-4">
-          <h2 className="text-2xl font-bold text-center m-2">Achievements</h2>
+          <CardHeader>
+            <CardTitle className="text-center m-2">Achievements</CardTitle>
+          </CardHeader>
           {achievements.map((achievement) => {
             return (
               <Card
-                className="m-4 p-4 flex justify-between"
+                className="m-4 p-2 flex justify-between"
                 key={achievement.id}
               >
                 <CardHeader>
@@ -190,11 +192,11 @@ export default function DashboardPage() {
                   <CardDescription>{achievement.description}</CardDescription>
                 </CardHeader>
                 {achievement.progress > 50 ? (
-                  <p className="font-normal text-green-500 mt-auto mb-auto">
+                  <p className="font-normal text-green-500 mt-auto mb-auto mr-2">
                     {achievement.progress}%
                   </p>
                 ) : (
-                  <p className="font-normal text-yellow-400 mt-auto mb-auto">
+                  <p className="font-normal text-yellow-400 mt-auto mb-auto mr-2">
                     {achievement.progress}%
                   </p>
                 )}
