@@ -18,7 +18,7 @@ Code Racer is a multiplayer coding game where developers can compete against eac
 
 ## Contribution
 
-We welcome contributions from the community! If you'd like to contribute to Code Racer, please follow refer to [CONTRIBUTION.md](CONTRIBUTION.md), but we have these base guidelines:
+We welcome contributions from the community! If you'd like to contribute to Code Racer, please follow refer to [CONTRIBUTING.md](./CONTRIBUTING.md), but we have these base guidelines:
 
 - Fork the repository.
 - Create a new branch for your feature or bug fix.
