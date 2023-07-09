@@ -1,21 +1,29 @@
 name: Task
 description: Request a new task for this project
-title: "[TASK]: "
+title: '[TASK]: '
 labels:
-  - "task"
+  - 'task'
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to submit this task request form!
+        Thanks for taking the time to submit this feature request!
+
+        Please answer the following questions before submitting an issue.
+
+        - [ ] I am running the latest version
+        - [ ] I checked the documentation and found no answer
+        - [ ] I checked to make sure that this issue has not already been filed
+
   - type: textarea
     id: summary
     attributes:
       label: Task Summary
       description: A brief description of what the task will accomplish.
-      placeholder: "Example: Make [x] do [y]"
+      placeholder: 'Example: Make [x] do [y]'
     validations:
       required: true
+
   - type: textarea
     id: acceptance
     attributes:
@@ -26,6 +34,7 @@ body:
         ...
     validations:
       required: true
+
   - type: textarea
     id: context
     attributes:
