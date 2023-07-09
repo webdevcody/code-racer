@@ -20,14 +20,15 @@ const Header = () => {
       <nav className="w-full border-b md:border-0 md:static">
         <div className="items-center px-4 max-w-screen-xl mx-auto md:flex md:px-8">
           <div className="flex items-center justify-between py-3 md:py-5 md:block">
-            <Link href="/">
+            <Link href="/" className="flex gap-2 items-center">
               <Image
                 unoptimized
                 src="/static/logo.png"
-                width={50}
-                height={50}
+                width={30}
+                height={30}
                 alt="Code Racer Logo"
               />
+              CodeRacer
             </Link>
             <div className="md:hidden">
               <Button onClick={() => setState(!state)}>
