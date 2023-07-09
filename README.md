@@ -16,6 +16,20 @@ Code Racer is a multiplayer coding game where developers can compete against eac
 - Tailwind CSS: A utility-first CSS framework for rapid UI development.
 - TypeScript: A typed superset of JavaScript that provides enhanced tooling and developer productivity.
 
+## Contribution
+
+We welcome contributions from the community! If you'd like to contribute to Code Racer, please follow refer to [CONTRIBUTION.md](CONTRIBUTION.md), but we have these base guidelines:
+
+- Fork the repository.
+- Create a new branch for your feature or bug fix.
+- Make your changes and test thoroughly.
+- Commit your changes with clear commit messages.
+- Push your branch to your forked repository.
+  Submit a pull request detailing your changes.
+
+Please ensure that your code adheres to the project's coding standards and conventions.
+
+
 ## Getting Started
 
 ### Prerequisites
@@ -65,18 +79,6 @@ To get started with Code Racer locally, follow these steps
 
 Open your browser and visit http://localhost:3000 to see the application running.
 
-## Contribution
-
-We welcome contributions from the community! If you'd like to contribute to Code Racer, please follow refer to [CONTRIBUTION.md](CONTRIBUTION.md), but we have these base guidelines:
-
-- Fork the repository.
-- Create a new branch for your feature or bug fix.
-- Make your changes and test thoroughly.
-- Commit your changes with clear commit messages.
-- Push your branch to your forked repository.
-  Submit a pull request detailing your changes.
-
-Please ensure that your code adheres to the project's coding standards and conventions.
 
 ## License
 
@@ -89,6 +91,6 @@ A big thank you to all the developers who have helped shape Code Racer into what
 
 ## Contact
 
-If you have any questions, suggestions, or feedback regarding Code Racer, please feel free to reach out to us at in the WebDevCody discord server
+If you have any questions, suggestions, or feedback regarding Code Racer, please feel free to reach out to us at in the WebDevCody [discord](https://discord.gg/4kGbBaa) server
 
 Happy coding and enjoy the race!
