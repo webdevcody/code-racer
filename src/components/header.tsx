@@ -1,18 +1,17 @@
-'use client'
+"use client";
 
-import Image from 'next/image';
-import Link from 'next/link';
-import React, { useState } from 'react';
-import { Button } from './ui/button';
+import Image from "next/image";
+import Link from "next/link";
+import React, { useState } from "react";
+import { Button } from "./ui/button";
 
 const Header = () => {
   const [state, setState] = useState(false);
 
-  // Replace javascript:void(0) path with your path
   const navigation = [
-    { title: 'Race', path: '/' },
-    { title: 'Leaderboard', path: '/' },
-    { title: 'About', path: '/' },
+    { title: "Race", path: "/" },
+    { title: "Leaderboard", path: "/" },
+    { title: "About", path: "/" },
   ];
 
   return (
@@ -22,9 +21,10 @@ const Header = () => {
           <div className="flex items-center justify-between py-3 md:py-5 md:block">
             <Link href="javascript:void(0)">
               <Image
-                src="https://res.cloudinary.com/dfrtxrh9c/image/upload/v1688858445/Web-Dev-Cody/Logo_lvkfmp.png"
-                width={96}
-                height={96}
+                unoptimized
+                src="/static/logo.png"
+                width={50}
+                height={50}
                 alt="Code Racer Logo"
               />
             </Link>
@@ -67,13 +67,16 @@ const Header = () => {
           </div>
           <div
             className={`flex-1 justify-self-center pb-3 mt-8 md:block md:pb-0 md:mt-0 ${
-              state ? 'block' : 'hidden'
+              state ? "block" : "hidden"
             }`}
           >
             <ul className="justify-center items-center space-y-8 md:flex md:space-x-6 md:space-y-0">
               {navigation.map((item, idx) => {
                 return (
-                  <li key={idx} className="text-gray-600 p-2 rounded-lg hover:bg-gray-50">
+                  <li
+                    key={idx}
+                    className="text-gray-600 p-2 rounded-lg hover:bg-gray-50"
+                  >
                     <Link href={item.path}>{item.title}</Link>
                   </li>
                 );
@@ -81,7 +84,7 @@ const Header = () => {
             </ul>
           </div>
           <div className="hidden md:inline-block">
-          <Button>Login</Button>
+            <Button>Login</Button>
           </div>
         </div>
       </nav>
