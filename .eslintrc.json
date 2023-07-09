@@ -19,29 +19,6 @@
 
     "import/extensions": 0,
     "import/no-extraneous-dependencies": 0,
-    "import/prefer-default-export": 0,
-    "import/order": [
-      2,
-      {
-        "groups": [
-          "builtin",
-          "external",
-          "internal",
-          "parent",
-          "sibling",
-          "index"
-        ],
-        "newlines-between": "always",
-        "pathGroups": [
-          {
-            "pattern": "@/**",
-            "group": "internal"
-          }
-        ],
-        "alphabetize": {
-          "order": "asc"
-        }
-      }
-    ]
+    "import/prefer-default-export": 0
   }
 }

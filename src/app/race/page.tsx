@@ -1,5 +1,6 @@
-import TypingCode from "@/components/typing/typingCode";
 import { getCurrentUser } from "@/lib/session";
+
+import TypingCode from "./typingCode";
 
 export default async function Race() {
   const user = await getCurrentUser();
@@ -9,7 +10,7 @@ export default async function Race() {
   return (
     <>
       <main className="flex min-h-screen flex-col items-center justify-between p-24">
-        <TypingCode user={user}/>
+        <TypingCode user={user} />
       </main>
     </>
   );
