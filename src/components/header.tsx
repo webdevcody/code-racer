@@ -17,7 +17,7 @@ const Header = () => {
 
   return (
     <div>
-      <nav className="bg-white w-full border-b md:border-0 md:static">
+      <nav className="bg-background w-full border-b md:border-0 md:static">
         <div className="items-center px-4 max-w-screen-xl mx-auto md:flex md:px-8">
           <div className="flex items-center justify-between py-3 md:py-5 md:block">
             <Link href="/">
@@ -30,8 +30,7 @@ const Header = () => {
               />
             </Link>
             <div className="md:hidden">
-              <button
-                className="text-gray-700 outline-none p-2 rounded-md focus:border-gray-400 focus:border"
+              <Button
                 onClick={() => setState(!state)}
               >
                 {state ? (
@@ -63,7 +62,7 @@ const Header = () => {
                     />
                   </svg>
                 )}
-              </button>
+              </Button>
             </div>
           </div>
           <div

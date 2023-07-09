@@ -7,12 +7,12 @@ interface displayCodeProps {
 
 export default function DisplayedCode({ code, errors }: displayCodeProps) {
   return (
-    <p className="text-gray-600 mb-4">
+    <p className="text-accent-foreground mb-4">
       {code.split("").map((char, index) => (
         <span
           key={index}
           className={`${
-            errors.includes(index) ? "text-red-500" : "opacity-100"
+            errors.includes(index) ? "text-destructive" : "opacity-100"
           }`}
         >
           {char}
