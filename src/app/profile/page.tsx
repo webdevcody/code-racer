@@ -1,13 +1,11 @@
 import Image from "next/image";
-import {
-  ProfileImageButton,
-  ToggleChangeName
-} from "./_components";
-import { getSession } from "@/lib/getSession";
-import { prisma } from "@/lib/prisma";
+
+import { getSession } from "@/lib/session";
+
+import { ProfileImageButton, ToggleChangeName } from "./_components";
 
 export const metadata = {
-  title: "Profile Page"
+  title: "Profile Page",
 };
 
 export default async function ProfilePage() {
@@ -15,15 +13,15 @@ export default async function ProfilePage() {
   const displayName = session?.user?.name;
   const photoURL = session?.user?.image;
 
-  {/** Static data unrelated to auth for now */ }
+  {
+    /** Static data unrelated to auth for now */
+  }
   const totalPoints = 0;
   return (
     <section className="flex flex-col gap-8">
       <article className="flex flex-col sm:flex-row gap-4">
         <div className="overflow-hidden rounded-full w-40 h-40">
-          <ProfileImageButton
-            photoURL={photoURL}
-          >
+          <ProfileImageButton photoURL={photoURL}>
             <Image
               src={photoURL ?? "/placeholder.png"}
               alt="Profile picture"
@@ -60,4 +58,4 @@ export default async function ProfilePage() {
       </article>
     </section>
   );
-};
+}

@@ -1,12 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
 import DisplayedCode from "./displayedCode";
 import type { User } from "next-auth";
-import { saveUserResult } from "@/app/_actions/result";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { saveUserResult } from "./actions";
 
 const code = `printf("hello world")`;
 
