@@ -16,48 +16,9 @@ Code Racer is a multiplayer coding game where developers can compete against eac
 - Tailwind CSS: A utility-first CSS framework for rapid UI development.
 - TypeScript: A typed superset of JavaScript that provides enhanced tooling and developer productivity.
 
-## Getting Started
-
-To get started with Code Racer locally, follow these steps:
-
-    Clone the repository:
-
-```bash
-git clone https://github.com/webdevcody/code-racer.git
-```
-
-Navigate to the project directory:
-
-```bash
-cd code-racer
-```
-
-Install dependencies:
-
-```bash
-npm install
-```
-
-Updates schema to database
-```bash
-npx prisma db push
-```
-
-Start the development server:
-
-```bash
-npm run dev
-```
-
-Open your browser and visit http://localhost:3000 to see the application running.
-
-## Configuration
-
-Code Racer requires some configuration variables to run properly. Create a .env.local file in the root directory of the project and add the following variables:
-
 ## Contribution
 
-We welcome contributions from the community! If you'd like to contribute to Code Racer, please follow refer to [CONTRIBUTION.md](CONTRIBUTION.md), but we have these base guidelines:
+We welcome contributions from the community! If you'd like to contribute to Code Racer, please follow refer to [CONTRIBUTING.md](./CONTRIBUTING.md), but we have these base guidelines:
 
 - Fork the repository.
 - Create a new branch for your feature or bug fix.
@@ -79,6 +40,6 @@ A big thank you to all the developers who have helped shape Code Racer into what
 
 ## Contact
 
-If you have any questions, suggestions, or feedback regarding Code Racer, please feel free to reach out to us at in the WebDevCody discord server
+If you have any questions, suggestions, or feedback regarding Code Racer, please feel free to reach out to us at in the WebDevCody [discord](https://discord.gg/4kGbBaa) server
 
 Happy coding and enjoy the race!
