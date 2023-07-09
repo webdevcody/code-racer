@@ -1,18 +1,22 @@
 import Image from "next/image";
 import {
-  DisplayNameComponent,
-  ProfileImageButton
+  ProfileImageButton,
+  ToggleChangeName
 } from "./_components";
+import { getSession } from "@/lib/getSession";
+import { prisma } from "@/lib/prisma";
 
 export const metadata = {
   title: "Profile Page"
 };
 
 export default async function ProfilePage() {
-  {/** Dynamic data fetching will be done soon. Placeholder image from <a href="https://www.freepik.com/free-vector/businessman-character-avatar-isolated_6769264.htm#query=profile%20placeholder&position=1&from_view=keyword&track=ais">Image by studiogstock</a> on Freepik */ }
-  const user: any = null;
-  const photoURL = user?.photoURL ?? "/placeholder-image.jpg";
-  const totalPoints = user?.gameData.totalPoints ?? 0;
+  const session = await getSession();
+  const displayName = session?.user?.name;
+  const photoURL = session?.user?.image;
+
+  {/** Static data unrelated to auth for now */ }
+  const totalPoints = 0;
   return (
     <section className="flex flex-col gap-8">
       <article className="flex flex-col sm:flex-row gap-4">
@@ -21,7 +25,7 @@ export default async function ProfilePage() {
             photoURL={photoURL}
           >
             <Image
-              src={photoURL}
+              src={photoURL ?? "/placeholder.png"}
               alt="Profile picture"
               width={127}
               height={127}
@@ -34,7 +38,8 @@ export default async function ProfilePage() {
         </div>
         <div className="mt-2">
           <div className="flex items-start gap-4 mb-2">
-            <DisplayNameComponent displayName={user?.displayName} />
+            <h1 className="font-bold text-2xl 2xl:text-3xl">{displayName}</h1>
+            <ToggleChangeName />
           </div>
           <div>Total Points: {totalPoints}</div>
         </div>
@@ -53,6 +58,6 @@ export default async function ProfilePage() {
           </article>
         </section>
       </article>
-      </section>
+    </section>
   );
 };

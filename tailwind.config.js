@@ -24,7 +24,8 @@ module.exports = {
         foreground: "hsl(var(--foreground))",
         monochrome: {
           DEFAULT: "hsl(var(--monochrome-color))",
-          "low-opacity": "hsla(var(--monochrome-color) / 0.25)"
+          "low-opacity": "hsla(var(--monochrome-color) / 0.25)",
+          "medium-opacity": "hsla(var(--monochrome-color) / 0.5)"
         },
         primary: {
           DEFAULT: "hsl(var(--primary))",
