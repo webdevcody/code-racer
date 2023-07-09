@@ -37,6 +37,27 @@ Install dependencies:
 ```bash
 npm install
 ```
+Created a .env file inside the project's root directory.
+
+Copy and paste the content of .env.example into your .env file
+
+Update DATABASE_URL inside your .env from "postgresql://USERNAME:PASSWORD@HOST:PORT/NAME?schema=public" to "postgresql://myuser:mypassword@localhost:5432/mydatabase?schema=public" for example or with whichever username, password, host, port, and name you chose.
+
+If you do not have docker, go here to download and install: https://www.docker.com/get-started/
+
+If you are getting WSL error when you launch your desktop docker application, go here and follow these steps: https://learn.microsoft.com/en-us/windows/wsl/install-manual#step-4---download-the-linux-kernel-update-package.
+
+Open Docker Desktop Application and go back to your VSCode terminal and run this command:
+
+```bash
+docker compose up -d
+```
+
+Generate prisma DB:
+
+```bash
+npx prisma generate
+```
 
 Updates schema to database
 ```bash
