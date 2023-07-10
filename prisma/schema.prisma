@@ -55,8 +55,12 @@ model VerificationToken {
 }
 
 model Result {
-  id        String @id @default(cuid())
-  takenTime String
-  userId    String
-  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id         String   @id @default(cuid())
+  takenTime  String
+  finishedAt DateTime @default(now())
+  accuracy   Decimal
+  errors     Int?
+  wpm        Int
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
