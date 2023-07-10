@@ -40,14 +40,12 @@ import {
 export default function DashboardPage() {
   const [currentPage, setCurrentPage] = React.useState(1);
   const limit = 5;
-  // Page 1 should show item 0 - 1
-  // Const begin = page - 1
-  // Const end = begin + limit
 
   // List of recent games.
   const recentGames = [
     {
       gameId: "cljvlqkcz000008l424hi4l4c",
+      gameNumber: 1,
       date: "03/02/2023",
       accuracy: 92,
       errors: 2,
@@ -55,6 +53,7 @@ export default function DashboardPage() {
     },
     {
       gameId: "cljvlqpag000208l47as7d9h4",
+      gameNumber: 2,
       date: "06/02/2023",
       accuracy: 89,
       errors: 2,
@@ -62,6 +61,7 @@ export default function DashboardPage() {
     },
     {
       gameId: "cljvlqsj8000408l4ahr36soj",
+      gameNumber: 3,
       date: "08/02/2023",
       accuracy: 78,
       errors: 2,
@@ -69,57 +69,11 @@ export default function DashboardPage() {
     },
     {
       gameId: "cljvlqsj8000448ewhr36s32",
+      gameNumber: 4,
       date: "08/02/2023",
       accuracy: 92,
       errors: 2,
       wpm: 92,
-    },
-  ];
-  // Accuracy data of the player in the matches
-  const accuracyData = [
-    { gameNumber: 1, score: 95.1 },
-    { gameNumber: 2, score: 89.1 },
-    { gameNumber: 3, score: 95.1 },
-    { gameNumber: 4, score: 91.1 },
-    { gameNumber: 5, score: 99.1 },
-    { gameNumber: 6, score: 95.1 },
-    { gameNumber: 7, score: 93.1 },
-    { gameNumber: 8, score: 95.1 },
-    { gameNumber: 9, score: 95.1 },
-    { gameNumber: 10, score: 95.1 },
-  ];
-  // Words per minute data.
-  const wpmData = [
-    { gameNumber: 1, wpm: 20 },
-    { gameNumber: 2, wpm: 50 },
-    { gameNumber: 3, wpm: 30 },
-    { gameNumber: 4, wpm: 70 },
-  ];
-  // All achievements and the progress of finishing it. NOTE: This should be sorted on progress.
-  const achievements = [
-    {
-      id: "cljvlqsj8000408l4ahr36soj",
-      title: "First race",
-      description: "Started a race",
-      progress: 100,
-    },
-    {
-      id: "cljvlqsj8000408l4ahr36sok",
-      title: "Play 10 races",
-      description: "Play a total of 10 races online",
-      progress: 33,
-    },
-    {
-      id: "cljvlqsj8000408l4ahr36sda",
-      title: "Play 10 races",
-      description: "Play a total of 10 races online",
-      progress: 33,
-    },
-    {
-      id: "cljvlqsj8000408l4ahr36s23",
-      title: "Play 10 races",
-      description: "Play a total of 10 races online",
-      progress: 33,
     },
   ];
 
@@ -133,20 +87,18 @@ export default function DashboardPage() {
     setCurrentPage(newPage);
   }
 
-  let maxWpm = wpmData.reduce((max, value) => {
+  const maxWpm = recentGames.reduce((max, value) => {
     return (max = max > value.wpm ? max : value.wpm);
   }, 0);
-  let maxAccuracy = accuracyData.reduce((max, value) => {
-    return (max = max > value.score ? max : value.score);
-  }, 0);
-  let minErrors = recentGames.reduce((min, value) => {
-    return (min = min > value.errors ? min : value.errors);
+  const maxAccuracy = recentGames.reduce((max, value) => {
+    return (max = max > value.accuracy ? max : value.accuracy);
   }, 0);
   const wpm =
-    wpmData.reduce((total, current) => total + current.wpm, 0) / wpmData.length;
+    recentGames.reduce((total, current) => total + current.wpm, 0) /
+    recentGames.length;
   const accuracy =
-    accuracyData.reduce((total, current) => total + current.score, 0) /
-    accuracyData.length;
+    recentGames.reduce((total, current) => total + current.accuracy, 0) /
+    recentGames.length;
 
   return (
     <>
@@ -160,17 +112,17 @@ export default function DashboardPage() {
           </CardHeader>
           <ResponsiveContainer height="100%">
             <LineChart
-              data={accuracyData}
+              data={recentGames}
               margin={{ right: 25, left: 25, bottom: 100 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="gameNumber" />
-              <YAxis dataKey="score" />
+              <YAxis dataKey="accuracy" />
               <Tooltip />
               <Legend />
               <Line
                 type="monotone"
-                dataKey="score"
+                dataKey="accuracy"
                 stroke="#82ca9d"
                 activeDot={{ r: 6 }}
               />
@@ -183,7 +135,7 @@ export default function DashboardPage() {
           </CardHeader>
           <ResponsiveContainer height="100%">
             <ComposedChart
-              data={wpmData}
+              data={recentGames}
               margin={{ right: 25, left: 25, bottom: 100 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
