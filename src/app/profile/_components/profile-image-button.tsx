@@ -2,12 +2,11 @@ import Link from "next/link";
 
 export default function ProfileImageButton({
   children,
-  photoURL
+  photoURL,
 }: {
-  children: React.ReactNode,
+  children: React.ReactNode;
   photoURL?: string | null;
 }) {
-
   return (
     <Link
       title="View Profile Picture"
@@ -18,4 +17,4 @@ export default function ProfileImageButton({
       {children}
     </Link>
   );
-};
+}
