@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
+import { revalidatePath } from "next/cache";
 
 export async function updateUserAction({ newName }: { newName: string }) {
   const user = await getCurrentUser();
@@ -22,6 +23,8 @@ export async function updateUserAction({ newName }: { newName: string }) {
       name: newName,
     },
   });
+
+  revalidatePath("/profile");
 }
 
 export async function deleteUserAction({ userId }: { userId: string; }) {
