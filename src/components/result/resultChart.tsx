@@ -1,6 +1,5 @@
 "use client"
 
-import React, { RefObject, useEffect, useRef } from "react";
 import {
   Chart,
   LineController,
@@ -10,7 +9,11 @@ import {
   LineElement,
   Tooltip,
 } from "chart.js";
+
+import React, { RefObject, useEffect, useRef } from "react";
+
 import { Button } from "../ui/button";
+
 import CardResult from "./card";
 
 Chart.register(
@@ -60,11 +63,11 @@ const renderChart = (
 };
 
 const card = [
-  {title: 'WPM', value: '81 %'},
-  {title: 'Accuracy', value: '90 %'},
-  {title: 'Rank', value: '20'},
-  {title: 'Miss', value: '21'},
-  {title: 'Times', value: '30s'},
+  { title: "WPM", value: "81 %" },
+  { title: "Accuracy", value: "90 %" },
+  { title: "Rank", value: "20" },
+  { title: "Miss", value: "21" },
+  { title: "Times", value: "30s" },
 ]
 
 export default function ResultsChart() {
@@ -79,9 +82,9 @@ export default function ResultsChart() {
   return (
     <div className="w-3/4">
       <div className="flex gap-5 h-32 text-center my-3" >
-        { card.map((item, idx) => {
+        {card.map((item, idx) => {
           return (
-            <CardResult item={item} key={idx}  />
+            <CardResult item={item} key={idx} />
           )
         })}
       </div>
@@ -95,17 +98,17 @@ export default function ResultsChart() {
           <canvas ref={chartRef} />
         </div>
       </div>
-        <div className="flex justify-center gap-4 p-2" >
-          <Button>
-            Next
-          </Button>
-          <Button>
-            Repeat
-          </Button>
-          <Button>
-            Screenshoot
-          </Button>
-        </div>
+      <div className="flex justify-center gap-4 p-2" >
+        <Button>
+          Next
+        </Button>
+        <Button>
+          Repeat
+        </Button>
+        <Button>
+          Screenshoot
+        </Button>
+      </div>
     </div>
 
   );
