@@ -1,7 +1,12 @@
 "use client";
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Trash } from "lucide-react";
 import dynamic from "next/dynamic";
 import { Suspense, useState } from "react";
@@ -10,7 +15,7 @@ const DeleteConfirmation = dynamic(() => import("./confirmation"));
 
 export default function ProfileNav({
   displayName,
-  uid
+  uid,
 }: {
   displayName: string;
   uid: string;
@@ -38,17 +43,15 @@ export default function ProfileNav({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      {
-        willDelete ? (
-          <Suspense>
-            <DeleteConfirmation
-              setWillDelete={setWillDelete}
-              displayName={displayName}
-              uid={uid}
-            />
-          </Suspense>
-        ) : null
-      }
+      {willDelete ? (
+        <Suspense>
+          <DeleteConfirmation
+            setWillDelete={setWillDelete}
+            displayName={displayName}
+            uid={uid}
+          />
+        </Suspense>
+      ) : null}
     </>
   );
-};
+}

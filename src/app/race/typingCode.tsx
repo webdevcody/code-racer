@@ -44,7 +44,7 @@ export default function TypingCode({ user }: TypingCodeProps) {
 
       console.log("Time taken:", timeTaken);
     }
-  }, [endTime, startTime, user]);
+  }, [endTime, startTime, user, errors.length]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
@@ -88,10 +88,10 @@ export default function TypingCode({ user }: TypingCodeProps) {
         disabled={endTime !== null}
         className="w-full p-2 border border-border rounded mb-4"
       />
-      {endTime && (
+      {endTime && startTime && (
         <div>
           <p className="mb-2">
-            Time taken: {(endTime.getTime() - startTime!.getTime()) / 1000}{" "}
+            Time taken: {(endTime.getTime() - startTime.getTime()) / 1000}{" "}
             seconds
           </p>
           <p className="mb-4">Errors: {errors.length}</p>

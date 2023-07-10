@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 export default function DeleteConfirmation({
   setWillDelete,
   displayName,
-  uid
+  uid,
 }: {
   setWillDelete: React.Dispatch<React.SetStateAction<boolean>>;
   displayName: string;
@@ -21,13 +21,14 @@ export default function DeleteConfirmation({
   const [inputValue, setInputValue] = useState("");
   const divRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+
   useEffect(() => {
     const onClick = () => setWillDelete(false);
     const el = divRef.current;
     if (!el) return;
     el.addEventListener("click", onClick);
-    return () => el.addEventListener("click", onClick);
-  }, [divRef]);
+    return () => el.removeEventListener("click", onClick);
+  }, [divRef, setWillDelete]);
 
   return (
     <div className="fixed inset-0 w-full h-full grid place-items-center bg-monochrome-with-bg-opacity bg-opacity-5 z-10">
@@ -52,7 +53,7 @@ export default function DeleteConfirmation({
           </span>
 
           <form className="mt-4 select-none flex flex-col gap-2">
-            <p>Please type "{displayName}" to confirm:</p>
+            <p>Please type &quot;{displayName}&quot; to confirm:</p>
             <Input
               type="text"
               onChange={(e) => setInputValue(e.target.value)}
@@ -65,7 +66,11 @@ export default function DeleteConfirmation({
               type="submit"
               className="mt-2"
               tabIndex={inputValue === displayName ? 0 : -1}
-              title={inputValue === displayName ? "Delete your account" : "Please type in your username"}
+              title={
+                inputValue === displayName
+                  ? "Delete your account"
+                  : "Please type in your username"
+              }
               disabled={inputValue === displayName ? undefined : true}
               onClick={async () => {
                 const response = await deleteUserAction({ userId: uid });
@@ -83,4 +88,4 @@ export default function DeleteConfirmation({
       </div>
     </div>
   );
-};
+}

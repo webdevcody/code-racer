@@ -1,24 +1,27 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useRef } from "react";
-
 import { updateUserAction } from "../actions";
 import { throwError } from "@/lib/utils";
 import { EditableInput } from "@/components/ui/editable-input";
 
 async function handleSubmit({
   newName,
-  currentName
+  currentName,
 }: {
   newName: string;
   currentName: string;
 }) {
-  if (newName === currentName) { throwError(new Error("The current username and the new one is still the same!")); };
+  if (newName === currentName) {
+    throwError(
+      new Error("The current username and the new one is still the same!")
+    );
+  }
   await updateUserAction({ newName });
 }
 
 export default function ChangeNameForm({
-  displayName
+  displayName,
 }: {
   displayName: string | null | undefined;
 }) {
@@ -32,7 +35,7 @@ export default function ChangeNameForm({
           if (inputRef) {
             await handleSubmit({
               newName: inputRef.current?.value as string,
-              currentName: displayName as string
+              currentName: displayName as string,
             });
             router.refresh();
           }
