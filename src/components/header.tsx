@@ -12,7 +12,7 @@ const Header = () => {
   const navigation = [
     { title: "Race", path: "/race" },
     { title: "Leaderboard", path: "/leaderboard" },
-    { title: "About", path: "/" },
+    // { title: "About", path: "/" },
   ];
 
   return (
