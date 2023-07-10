@@ -52,3 +52,8 @@ A big thank you to all the developers who have helped shape Code Racer into what
 If you have any questions, suggestions, or feedback regarding Code Racer, please feel free to reach out to us at in the WebDevCody [discord](https://discord.gg/4kGbBaa) server
 
 Happy coding and enjoy the race!
+
+## Related Youtube Videos & Progress
+
+1. [Community Project Announcement Video](https://www.youtube.com/watch?v=-n6tV3RPjGc)
+2. [First Q&A Livestream and Community Project Live Coding Session](https://www.youtube.com/watch?v=BQXXBsHXfak)
