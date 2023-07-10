@@ -7,11 +7,11 @@
 <br>
 
 <div align="center">
-Welcome to Code Racer, a community project built with <a href="https://nextjs.org/" >Next.js</a> , <a href="https://tailwindcss.com" >Tailwind CSS</a>, and TypeScript.
+Welcome to Code Racer, a community project built with [Next.js](https://nextjs.org/) , [Tailwind CSS](https://tailwindcss.com), and TypeScript.
 Code Racer is a multiplayer coding game where developers can compete against each other to solve programming challenges in real-time. Sharpen your coding skills, challenge your peers, and have fun while racing against the clock!
 </div>
-<br>
-<br>
+
+
 
 ## Features
 
@@ -23,7 +23,7 @@ Code Racer is a multiplayer coding game where developers can compete against eac
 - [NextAuth](https://next-auth.js.org/) : For user authentication.
 - [Prisma](https://www.prisma.io/) : next-generation ORM, it provide a clean and type-safe API for submitting database queries
 - [Tailwind CSS](https://tailwindcss.com) : A utility-first CSS framework for rapid UI development.
-- TypeScript: A typed superset of JavaScript that provides enhanced tooling and developer productivity.
+- [TypeScript](https://www.typescriptlang.org/): A typed superset of JavaScript that provides enhanced tooling and developer productivity.
 
 ## Contribution
 
