@@ -16,6 +16,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  results       Result[]
 }
 
 // Necessary for Next auth
@@ -51,4 +52,11 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Result {
+  id        String @id @default(cuid())
+  takenTime String
+  userId    String
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
