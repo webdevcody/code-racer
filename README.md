@@ -1,8 +1,15 @@
-# Code Racer
-
+<div  align="center" >
+  <img src="./public/static/logo.png" width="60">
+  <p></p>
+  <h1>Code Racer</h1>
+</div>
+<br>
+<div align="center">
 Welcome to Code Racer, a community project built with Next.js, Tailwind CSS, and TypeScript.
-
 Code Racer is a multiplayer coding game where developers can compete against each other to solve programming challenges in real-time. Sharpen your coding skills, challenge your peers, and have fun while racing against the clock!
+</div>
+<br>
+<br>
 
 ## Features
 
