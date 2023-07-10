@@ -80,13 +80,14 @@ export default function TypingCode({ user }: TypingCodeProps) {
   return (
     <div className="w-3/4 p-8 bg-accent rounded-md">
       <h1 className="text-2xl font-bold mb-4">Type this code:</h1>
-      <DisplayedCode code={code} errors={errors} />
+      <DisplayedCode code={code} errors={errors} userInput={input} />
       <Input
+        autoFocus
         type="text"
         value={input}
         onChange={handleInputChange}
         disabled={endTime !== null}
-        className="w-full p-2 border border-border rounded mb-4"
+        className="appearance-none focus:appearance-none absolute opacity-0 -z-40"
       />
       {endTime && startTime && (
         <div>
