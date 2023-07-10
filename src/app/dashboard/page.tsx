@@ -1,6 +1,15 @@
 "use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import React from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -9,7 +18,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import React from "react";
 import {
   LineChart,
   ComposedChart,
@@ -22,7 +30,20 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+import {
+  DoubleArrowLeftIcon,
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  DoubleArrowRightIcon,
+} from "@radix-ui/react-icons";
+
 export default function DashboardPage() {
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const limit = 5;
+  // Page 1 should show item 0 - 1
+  // Const begin = page - 1
+  // Const end = begin + limit
+
   // List of recent games.
   const recentGames = [
     {
@@ -49,9 +70,9 @@ export default function DashboardPage() {
     {
       gameId: "cljvlqsj8000448ewhr36soj",
       date: "08/02/2023",
-      accuracy: 78,
+      accuracy: 92,
       errors: 2,
-      wpm: 80,
+      wpm: 92,
     },
   ];
   // Accuracy data of the player in the matches
@@ -88,7 +109,29 @@ export default function DashboardPage() {
       description: "Play a total of 10 races online",
       progress: 33,
     },
+    {
+      id: "cljvlqsj8000408l4ahr36sok",
+      title: "Play 10 races",
+      description: "Play a total of 10 races online",
+      progress: 33,
+    },
+    {
+      id: "cljvlqsj8000408l4ahr36sok",
+      title: "Play 10 races",
+      description: "Play a total of 10 races online",
+      progress: 33,
+    },
   ];
+
+  function handleChangePage(newPage: number) {
+    if (newPage <= 1) {
+      newPage = 1;
+    }
+    if (newPage >= Math.ceil(recentGames.length / limit)) {
+      newPage = Math.ceil(recentGames.length / limit);
+    }
+    setCurrentPage(newPage);
+  }
 
   return (
     <>
@@ -159,14 +202,14 @@ export default function DashboardPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {recentGames.map((game) => {
+              {recentGames.slice(currentPage - 1, (currentPage - 1 ) + limit).map((game) => {
                 return (
                   <TableRow key={game.gameId}>
                     <TableCell className="max-[900px]:hidden">
                       {game.gameId}
                     </TableCell>
                     <TableCell className="text-red-600 hover:text-red-500">
-                      {game.wpm} Errors
+                      {game.errors} Errors
                     </TableCell>
                     <TableCell>{game.accuracy}%</TableCell>
                     <TableCell>{game.wpm} Wpm</TableCell>
@@ -176,8 +219,23 @@ export default function DashboardPage() {
               })}
             </TableBody>
           </Table>
+          <div className="flex justify-center gap-4">
+            <Button variant={"outline"} onClick={() => handleChangePage(1)}>
+              <DoubleArrowLeftIcon />
+            </Button>
+            <Button variant={"outline"} onClick={() => handleChangePage(currentPage - 1)}>
+              <ArrowLeftIcon />
+            </Button>
+            <Input className="w-12 text-center" type="number" placeholder={`${currentPage}`} />
+            <Button variant={"outline"} onClick={() => handleChangePage(currentPage + 1)}>
+              <ArrowRightIcon />
+            </Button>
+            <Button variant={"outline"} onClick={() => handleChangePage(Math.ceil(recentGames.length / limit))}>
+              <DoubleArrowRightIcon />
+            </Button>
+          </div>
         </Card>
-        <Card className="w-[40vw] max-[850px]:w-screen min-[850px]:h-[50vh] mr-4">
+        <Card className="w-[40vw] max-[850px]:w-screen min-[850px]:h-[50vh] mr-4 overflow-y-scroll">
           <CardHeader>
             <CardTitle className="text-center m-2">Achievements</CardTitle>
           </CardHeader>
