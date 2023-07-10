@@ -1,7 +1,5 @@
 import * as React from "react";
-
 import { cn } from "@/lib/utils";
-import { ModeToggle } from "@/components/mode-toggle";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -41,7 +39,6 @@ export function Footer({ className }: React.HTMLAttributes<HTMLElement>) {
             .
           </p>
         </div>
-        <ModeToggle />
       </div>
     </footer>
   );
