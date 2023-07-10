@@ -7,7 +7,6 @@ import { useEffect, useRef, useState } from "react";
 import { deleteUserAction } from "../actions";
 import { throwError } from "@/lib/utils";
 import { signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
 
 export default function DeleteConfirmation({
   setWillDelete,
@@ -19,7 +18,6 @@ export default function DeleteConfirmation({
   uid: string;
 }) {
   const [inputValue, setInputValue] = useState("");
-  const router = useRouter();
   const divRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -74,7 +72,6 @@ export default function DeleteConfirmation({
                   throwError(new Error("Something went wrong!"));
                 }
                 await signOut();
-                router.replace("/");
               }}
             >
               CONFIRM
