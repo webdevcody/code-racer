@@ -202,35 +202,52 @@ export default function DashboardPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {recentGames.slice(currentPage - 1, (currentPage - 1 ) + limit).map((game) => {
-                return (
-                  <TableRow key={game.gameId}>
-                    <TableCell className="max-[900px]:hidden">
-                      {game.gameId}
-                    </TableCell>
-                    <TableCell className="text-red-600 hover:text-red-500">
-                      {game.errors} Errors
-                    </TableCell>
-                    <TableCell>{game.accuracy}%</TableCell>
-                    <TableCell>{game.wpm} Wpm</TableCell>
-                    <TableCell>{game.date}</TableCell>
-                  </TableRow>
-                );
-              })}
+              {recentGames
+                .slice(currentPage - 1, currentPage - 1 + limit)
+                .map((game) => {
+                  return (
+                    <TableRow key={game.gameId}>
+                      <TableCell className="max-[900px]:hidden">
+                        {game.gameId}
+                      </TableCell>
+                      <TableCell className="text-red-600 hover:text-red-500">
+                        {game.errors} Errors
+                      </TableCell>
+                      <TableCell>{game.accuracy}%</TableCell>
+                      <TableCell>{game.wpm} Wpm</TableCell>
+                      <TableCell>{game.date}</TableCell>
+                    </TableRow>
+                  );
+                })}
             </TableBody>
           </Table>
           <div className="flex justify-center gap-4">
             <Button variant={"outline"} onClick={() => handleChangePage(1)}>
               <DoubleArrowLeftIcon />
             </Button>
-            <Button variant={"outline"} onClick={() => handleChangePage(currentPage - 1)}>
+            <Button
+              variant={"outline"}
+              onClick={() => handleChangePage(currentPage - 1)}
+            >
               <ArrowLeftIcon />
             </Button>
-            <Input className="w-12 text-center" type="number" placeholder={`${currentPage}`} />
-            <Button variant={"outline"} onClick={() => handleChangePage(currentPage + 1)}>
+            <Input
+              className="w-12 text-center"
+              type="number"
+              placeholder={`${currentPage}`}
+            />
+            <Button
+              variant={"outline"}
+              onClick={() => handleChangePage(currentPage + 1)}
+            >
               <ArrowRightIcon />
             </Button>
-            <Button variant={"outline"} onClick={() => handleChangePage(Math.ceil(recentGames.length / limit))}>
+            <Button
+              variant={"outline"}
+              onClick={() =>
+                handleChangePage(Math.ceil(recentGames.length / limit))
+              }
+            >
               <DoubleArrowRightIcon />
             </Button>
           </div>
