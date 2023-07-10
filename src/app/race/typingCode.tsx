@@ -9,6 +9,14 @@ import { saveUserResult } from "./actions";
 
 const code = `printf("hello world")`;
 
+function calculateWPM() {
+  return 1;
+}
+
+function calculateAccuracy() {
+  return 92.2;
+}
+
 interface TypingCodeProps {
   user?: User;
 }
@@ -25,7 +33,14 @@ export default function TypingCode({ user }: TypingCodeProps) {
       const timeTaken: number =
         (endTime.getTime() - startTime.getTime()) / 1000;
 
-      if (user) saveUserResult({ userId: user.id, timeTaken });
+      if (user)
+        saveUserResult({
+          userId: user.id,
+          timeTaken,
+          errors: errors.length,
+          wpm: calculateWPM(),
+          accuracy: calculateAccuracy(),
+        });
 
       console.log("Time taken:", timeTaken);
     }
