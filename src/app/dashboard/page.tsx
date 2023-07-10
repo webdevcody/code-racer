@@ -68,7 +68,7 @@ export default function DashboardPage() {
       wpm: 80,
     },
     {
-      gameId: "cljvlqsj8000448ewhr36soj",
+      gameId: "cljvlqsj8000448ewhr36s32",
       date: "08/02/2023",
       accuracy: 92,
       errors: 2,
@@ -110,13 +110,13 @@ export default function DashboardPage() {
       progress: 33,
     },
     {
-      id: "cljvlqsj8000408l4ahr36sok",
+      id: "cljvlqsj8000408l4ahr36sda",
       title: "Play 10 races",
       description: "Play a total of 10 races online",
       progress: 33,
     },
     {
-      id: "cljvlqsj8000408l4ahr36sok",
+      id: "cljvlqsj8000408l4ahr36s23",
       title: "Play 10 races",
       description: "Play a total of 10 races online",
       progress: 33,
