@@ -67,7 +67,6 @@ model Result {
   accuracy  Decimal  @db.Decimal(3, 2)
   wpm       Int
   takenTime  String   @map("taken_time")
-  accuracy   Decimal
   errorCount Int?     @map("error_count")
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
