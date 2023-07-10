@@ -93,7 +93,7 @@ export default function DashboardPage() {
     { gameNumber: 1, wpm: 20 },
     { gameNumber: 2, wpm: 50 },
     { gameNumber: 3, wpm: 30 },
-    { gameNumber: 4, wpm: 50 },
+    { gameNumber: 4, wpm: 70 },
   ];
   // All achievements and the progress of finishing it. NOTE: This should be sorted on progress.
   const achievements = [
@@ -133,12 +133,27 @@ export default function DashboardPage() {
     setCurrentPage(newPage);
   }
 
+  let maxWpm = wpmData.reduce((max, value) => {
+    return (max = max > value.wpm ? max : value.wpm);
+  }, 0);
+  let maxAccuracy = accuracyData.reduce((max, value) => {
+    return (max = max > value.score ? max : value.score);
+  }, 0);
+  let minErrors = recentGames.reduce((min, value) => {
+    return (min = min > value.errors ? min : value.errors);
+  }, 0);
+  const wpm =
+    wpmData.reduce((total, current) => total + current.wpm, 0) / wpmData.length;
+  const accuracy =
+    accuracyData.reduce((total, current) => total + current.score, 0) /
+    accuracyData.length;
+
   return (
     <>
       <h1 className="text-4xl m-6 font-bold text-center max-[600px]:mb-10">
         Dashboard
       </h1>
-      <div className="flex max-[600px]:flex-col justify-center items-center w-screen h-[50vh] gap-6 m-2">
+      <div className="flex max-[600px]:flex-col justify-center items-center w-screen h-[55vh] gap-6 m-2">
         <Card className="w-[47.5%] max-[600px]:w-[100%] max-[600px]:mr-4 h-full max-[600px]:h-[50%]">
           <CardHeader>
             <CardTitle className="text-center m-2">Accuracy</CardTitle>
@@ -186,8 +201,8 @@ export default function DashboardPage() {
           </ResponsiveContainer>
         </Card>
       </div>
-      <div className="flex max-[850px]:flex-col justify-center items-center w-screen min-[850px]:h-[50vh] gap-4 m-4">
-        <Card className="w-[55vw] max-[850px]:w-[100vw] min-[850px]:h-[50vh] mr-4 p-4">
+      <div className="flex max-[850px]:flex-col justify-center items-center w-screen min-[850px]:h-[55vh] gap-4 m-4">
+        <Card className="w-[55vw] max-[850px]:w-[100vw] min-[850px]:h-[55vh] mr-4 p-4">
           <CardHeader>
             <CardTitle className="text-center m-2">Recent Races</CardTitle>
           </CardHeader>
@@ -221,7 +236,7 @@ export default function DashboardPage() {
                 })}
             </TableBody>
           </Table>
-          <div className="flex justify-center gap-4">
+          <div className="flex justify-center gap-4 mt-6">
             <Button variant={"outline"} onClick={() => handleChangePage(1)}>
               <DoubleArrowLeftIcon />
             </Button>
@@ -252,32 +267,40 @@ export default function DashboardPage() {
             </Button>
           </div>
         </Card>
-        <Card className="w-[40vw] max-[850px]:w-screen min-[850px]:h-[50vh] mr-4 overflow-y-scroll">
+        <Card className="w-[40vw] max-[850px]:w-screen min-[850px]:h-[55vh] mr-4">
           <CardHeader>
-            <CardTitle className="text-center m-2">Achievements</CardTitle>
+            <CardTitle className="text-center m-2">Statistics</CardTitle>
           </CardHeader>
-          {achievements.map((achievement) => {
-            return (
-              <Card
-                className="m-4 p-2 flex justify-between"
-                key={achievement.id}
-              >
+          <div className="flex flex-col justify-center gap-4 mt-4">
+            <div className="flex flex-row justify-center gap-6">
+              <Card className="w-[40%]">
                 <CardHeader>
-                  <CardTitle>{achievement.title}</CardTitle>
-                  <CardDescription>{achievement.description}</CardDescription>
+                  <CardTitle className="">Highest Wpm</CardTitle>
                 </CardHeader>
-                {achievement.progress > 50 ? (
-                  <p className="font-normal text-green-500 mt-auto mb-auto mr-2">
-                    {achievement.progress}%
-                  </p>
-                ) : (
-                  <p className="font-normal text-yellow-400 mt-auto mb-auto mr-2">
-                    {achievement.progress}%
-                  </p>
-                )}
+                <CardContent>{maxWpm.toFixed(2)} Wpm</CardContent>
               </Card>
-            );
-          })}
+              <Card className="w-[40%]">
+                <CardHeader>
+                  <CardTitle className="">Highest accuracy</CardTitle>
+                </CardHeader>
+                <CardContent>{maxAccuracy.toFixed(2)}%</CardContent>
+              </Card>
+            </div>
+            <div className="flex flex-row justify-center gap-6 max-[850px]:mb-10">
+              <Card className="w-[40%]">
+                <CardHeader>
+                  <CardTitle className="">Average Wpm</CardTitle>
+                </CardHeader>
+                <CardContent>{wpm.toFixed(2)} Wpm</CardContent>
+              </Card>
+              <Card className="w-[40%]">
+                <CardHeader>
+                  <CardTitle className="">Average accuracy</CardTitle>
+                </CardHeader>
+                <CardContent>{accuracy.toFixed(2)}%</CardContent>
+              </Card>
+            </div>
+          </div>
         </Card>
       </div>
     </>
