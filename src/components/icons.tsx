@@ -6,6 +6,10 @@ import {
   LogOut,
   Settings,
   BarChart,
+  ChevronsLeft,
+  ChevronsRight,
+  ChevronRight,
+  ChevronLeft,
   ChevronDownSquareIcon,
   ChevronLeftSquareIcon,
 } from "lucide-react";
@@ -32,6 +36,10 @@ export const Icons = {
   logout: LogOut,
   settings: Settings,
   chart: BarChart,
+  chevronLeft: ChevronLeft,
+  chevronRight: ChevronRight,
+  chevronsLeft: ChevronsLeft,
+  chevronsRight: ChevronsRight,
   mobileNavOpen: ChevronDownSquareIcon,
   mobileNavClosed: ChevronLeftSquareIcon,
 };
