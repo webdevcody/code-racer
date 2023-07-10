@@ -2,7 +2,7 @@ import Link from "next/link";
 import { SearchParamProfilePicture } from "../_components";
 
 export const metadata = {
-  title: "Profile | Profile Picture"
+  title: "Profile | Profile Picture",
 };
 
 export default function ViewPhoto() {
@@ -21,8 +21,8 @@ export default function ViewPhoto() {
             title="Close"
             href={"/profile"}
           >
-            <i className="w-full h-1 absolute top-1/2 left-0 rotate-[50deg] bg-monochrome"/>
-            <i className="w-full h-1 absolute top-1/2 left-0 rotate-[-50deg] bg-monochrome"/>
+            <i className="w-full h-1 absolute top-1/2 left-0 rotate-[50deg] bg-monochrome" />
+            <i className="w-full h-1 absolute top-1/2 left-0 rotate-[-50deg] bg-monochrome" />
           </Link>
         </div>
 
@@ -32,4 +32,4 @@ export default function ViewPhoto() {
       </div>
     </div>
   );
-};
+}

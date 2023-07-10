@@ -7,7 +7,9 @@ export default function SearchParamProfilePicture() {
 
   if (!searchParam) {
     return (
-      <h1 className="text-center">Please provide an image link to view it on full screen!</h1>
+      <h1 className="text-center">
+        Please provide an image link to view it on full screen!
+      </h1>
     );
   }
   return (
@@ -22,4 +24,4 @@ export default function SearchParamProfilePicture() {
       loading="eager"
     />
   );
-};
+}
