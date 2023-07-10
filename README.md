@@ -23,7 +23,7 @@ Code Racer is a multiplayer coding game where developers can compete against eac
 - [NextAuth](https://next-auth.js.org/) : For user authentication.
 - [Prisma](https://www.prisma.io/) : next-generation ORM, it provide a clean and type-safe API for submitting database queries
 - [Tailwind CSS](https://tailwindcss.com) : A utility-first CSS framework for rapid UI development.
-- TypeScript: A typed superset of JavaScript that provides enhanced tooling and developer productivity.
+- [TypeScript](https://www.typescriptlang.org/): A typed superset of JavaScript that provides enhanced tooling and developer productivity.
 
 ## Contribution
 
