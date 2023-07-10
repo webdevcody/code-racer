@@ -62,12 +62,12 @@ model VerificationToken {
 
 model Result {
   id         String   @id @default(cuid())
-  takenTime String @map("taken_time")
+  takenTime  String   @map("taken_time")
   finishedAt DateTime @default(now())
   accuracy   Decimal
-  errors     Int?
+  errorCount Int?     @map("error_count")
   wpm        Int
-  userId    String @map("user_id")
+  userId     String   @map("user_id")
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("results")
