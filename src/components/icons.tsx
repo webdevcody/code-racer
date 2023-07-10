@@ -12,6 +12,8 @@ import {
   ChevronLeft,
   ChevronDownSquareIcon,
   ChevronLeftSquareIcon,
+  User2,
+  LineChart,
 } from "lucide-react";
 
 import Image from "next/image";
@@ -40,6 +42,8 @@ export const Icons = {
   chevronRight: ChevronRight,
   chevronsLeft: ChevronsLeft,
   chevronsRight: ChevronsRight,
+  user: User2,
+  lineChart: LineChart,
   mobileNavOpen: ChevronDownSquareIcon,
   mobileNavClosed: ChevronLeftSquareIcon,
 };

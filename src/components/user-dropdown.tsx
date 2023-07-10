@@ -49,13 +49,13 @@ const AccountMenu = () => {
       <DropdownMenuContent align="end">
         <DropdownMenuItem>
           <Link href="/dashboard" className="flex gap-1 items-center">
-            <Icons.settings className="mr-2 h-4 w-4" />
+            <Icons.lineChart className="mr-2 h-4 w-4" />
             <span>Dashboard</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
           <Link href="/profile" className="flex gap-1 items-center">
-            <Icons.settings className="mr-2 h-4 w-4" />
+            <Icons.user className="mr-2 h-4 w-4" />
             <span>Profile</span>
           </Link>
         </DropdownMenuItem>
