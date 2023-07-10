@@ -1,10 +1,12 @@
 "use client"
 
-import { Navigation, ChevronDown } from "lucide-react";
-import React, { useState } from "react";
+import { Navigation } from "lucide-react";
+import React, { Suspense } from "react";
 
 import { Card } from "@/components/ui/card";
 import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@radix-ui/react-tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface User {
     name: string;
@@ -168,81 +170,44 @@ const UserCard = ({
     )
 }
 
-const TopUsers = () => {
-    const [visibleRecords, setVisibleRecords] = useState(5);
-
-    const handleShowMore = () => {
-        setVisibleRecords(
-            (prevVisibleRecords: number) => prevVisibleRecords + 5
-        );
-    };
-
-    const topUsers = leaderboardData.sort((a, b) => b.points - a.points).slice(0, visibleRecords);
-
+const DisplayUsers = ({
+    users, title
+}: { users: User[], title: string }) => {
     return (
-        <Card className="w-full md:w-96 p-4 bg-primary text-secondary">
-            <h2 className="text-lg font-semibold mb-2">Top Users</h2>
+        <Card className="w-full md:w-100 p-4 bg-accent text-primary">
+            <h1 className="text-2xl font-bold mb-4">{title}</h1>
             <ol className="list-decimal pl-6">
-                {topUsers.slice(0, visibleRecords).map((user, index) => (
+                {users.map((user, index) => (
                     <li className="mb-2" key={index}>
                         <UserCard user={user} />
                     </li>
                 ))}
             </ol>
-            <div className="flex justify-center">
-                {visibleRecords < leaderboardData.length && (
-                    <ChevronDown
-                        className="mt-4 bg-button text-button border-2 border-button hover:bg-gray-600"
-                        onClick={handleShowMore}
-                    >
-                        Show More
-                    </ChevronDown>
-                )}
-            </div>
         </Card>
     )
-};
-
-const FastestUsers = () => {
-    const [visibleRecords, setVisibleRecords] = useState(5);
-
-    const handleShowMore = () => {
-        setVisibleRecords(
-            (prevVisibleRecords: number) => prevVisibleRecords + 5
-        );
-    };
-
-    const fastestUsers = leaderboardData.sort((a, b) => b.highestScore - a.highestScore).slice(0, visibleRecords);
-
-    return (
-        <Card className="w-full md:w-96 p-4 bg-primary text-secondary">
-            <h2 className="text-lg font-semibold mb-2">Fastest Users</h2>
-            <ol className="list-decimal pl-6">
-                {fastestUsers.map((user, index) => (
-                    <li className="mb-2" key={index}>
-                        <UserCard user={user} />
-                    </li>
-                ))}
-            </ol>
-            <div className="flex justify-center">
-                {visibleRecords < leaderboardData.length && (
-                    <ChevronDown
-                        className="mt-4 bg-button text-button border-2 border-button hover:bg-gray-600"
-                        onClick={handleShowMore}
-                    >
-                        Show More
-                    </ChevronDown>
-                )}
-            </div>
-        </Card>
-    );
-};
+}
 
 export default function LeaderboardPage() {
     return (
-        <div className="flex flex-col md:flex-row p-3 gap-5 justify-evenly">
-            <TopUsers />
-            <FastestUsers />
+        <div className="flex justify-center">
+            <Tabs defaultValue="Top">
+                <TabsList className="p-2 grid text-primary rounded-md w-full grid-cols-2">
+                    <TabsTrigger className="rounded-md border-2 hover:border-primary focus:bg-accent" value="Top">Top</TabsTrigger>
+                    <TabsTrigger className="rounded-md border-2 hover:border-primary focus:bg-accent" value="Fastest">Fastest</TabsTrigger>
+                </TabsList>
+                <Suspense fallback={<div>Loading...</div>}>
+                    <TabsContent value="Top">
+                        <ScrollArea className="h-[490px] rounded-md border p-4">
+                            <DisplayUsers users={leaderboardData.sort((a, b) => b.points - a.points)} title="Top Users" />
+                        </ScrollArea>
+                    </TabsContent>
+                    <TabsContent value="Fastest">
+                        <ScrollArea className="h-[490px] rounded-md border p-4">
+                            <DisplayUsers users={leaderboardData.sort((a, b) => b.highestScore - a.highestScore)} title="Fastest Users" />
+                        </ScrollArea>
+                    </TabsContent>
+                </Suspense>
+            </Tabs>
         </div>
     );
 }
