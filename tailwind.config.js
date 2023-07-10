@@ -2,11 +2,11 @@
 module.exports = {
   darkMode: ["class"],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
-	],
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
   theme: {
     container: {
       center: true,
@@ -25,7 +25,7 @@ module.exports = {
         monochrome: {
           DEFAULT: "hsl(var(--monochrome-color))",
           "low-opacity": "hsla(var(--monochrome-color) / 0.25)",
-          "medium-opacity": "hsla(var(--monochrome-color) / 0.5)"
+          "medium-opacity": "hsla(var(--monochrome-color) / 0.5)",
         },
         primary: {
           DEFAULT: "hsl(var(--primary))",
@@ -78,4 +78,5 @@ module.exports = {
     },
   },
   plugins: [require("tailwindcss-animate")],
-}
+  plugins: [require("daisyui")],
+};
