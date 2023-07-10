@@ -88,6 +88,7 @@ export default function TypingCode({ user }: TypingCodeProps) {
   return (
     <div className="w-3/4 p-8 bg-accent rounded-md">
       <h1 className="text-2xl font-bold mb-4">Type this code:</h1>
+      {/* eslint-disable-next-line */}
       <code onClick={focusOnCode}>
         <DisplayedCode code={code} errors={errors} userInput={input} />
       </code>

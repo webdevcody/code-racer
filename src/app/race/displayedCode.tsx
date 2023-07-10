@@ -6,7 +6,7 @@ interface displayCodeProps {
 
 export default function DisplayedCode({ code, errors, userInput }: displayCodeProps) {
   return (
-    <p className="text-gray-600 mb-4">
+    <p className="text-primary mb-4">
       {code.split("").map((char, index) => (
         <span
           key={index}
