@@ -1,13 +1,20 @@
 name: Bug Report
 description: Create a bug report to help us improve
-title: "[BUG]: "
+title: '[BUG]: '
 labels:
-  - "bug"
+  - 'bug'
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to fill out this bug report!
+        Thanks for taking the time to submit this feature request!
+
+        Please answer the following questions before submitting an issue.
+
+        - [ ] I am running the latest version
+        - [ ] I checked the documentation and found no answer
+        - [ ] I checked to make sure that this issue has not already been filed
+
   - type: textarea
     id: description
     attributes:
@@ -16,6 +23,7 @@ body:
       placeholder: Try to describe what happened...
     validations:
       required: true
+
   - type: textarea
     id: reproduce
     attributes:
@@ -28,6 +36,7 @@ body:
         ...
     validations:
       required: true
+
   - type: textarea
     id: expected
     attributes:
@@ -36,6 +45,7 @@ body:
       placeholder: What should normally happen when steps are taken
     validations:
       required: true
+
   - type: textarea
     id: actual
     attributes:
@@ -44,6 +54,7 @@ body:
       placeholder: What actually happened when steps were taken instead of what should happen?
     validations:
       required: true
+
   - type: dropdown
     id: os
     attributes:
@@ -57,6 +68,7 @@ body:
         - iPhone (iOS)
     validations:
       required: true
+
   - type: dropdown
     id: browsers
     attributes:
@@ -67,17 +79,18 @@ body:
         - Chrome
         - Safari
         - Microsoft Edge
+
   - type: textarea
     id: logs
     attributes:
       label: Relevant log output
       description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
       render: bash
+
   - type: checkboxes
     id: terms
     attributes:
       label: Code of Conduct
-      # description: By submitting this issue, you agree to follow our [Code of Conduct](https://example.com)
       description: By submitting this issue, you agree to follow our [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
       options:
         - label: I agree to follow this project's Code of Conduct
