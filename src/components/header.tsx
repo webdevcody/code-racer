@@ -23,7 +23,7 @@ const AccountMenu = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="px-0 py-4 flex gap-4 items-center">
+        <Button variant="ghost" className="px-2 py-4 flex gap-4 items-center">
           <Image
             className="rounded-full"
             src={session?.data?.user.image ?? ""}
@@ -138,7 +138,7 @@ const Header = () => {
             </ul>
           </div>
           <div className="hidden md:flex gap-4 items-center">
-            <div className="flex w-36 justify-center">
+            <div className="flex w-40 justify-center">
               {session.status === "loading" && <Spinner />}
               {session.status === "unauthenticated" && <LoginButton />}
               {session.status === "authenticated" && <AccountMenu />}
