@@ -5,10 +5,6 @@ import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 
-export const metadata = {
-  title: "Profile | Profile Picture",
-};
-
 export default function ViewPhoto() {
   /** Tried to make the intercepting route method work in this
    * route segment for hours with a separate layout, but it kept sending errors.
