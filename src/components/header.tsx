@@ -3,10 +3,58 @@
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Icons } from "@/components/icons";
+import { SessionProvider, signOut, useSession } from "next-auth/react";
+import { LoginButton } from "./ui/buttons";
+import { ModeToggle } from "./mode-toggle";
 
-import { Button } from "./ui/button";
-import { SessionProvider, useSession } from "next-auth/react";
-import { LoginButton, LogoutButton } from "./ui/buttons";
+const AccountMenu = () => {
+  const session = useSession();
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="px-2 py-4 flex gap-4 items-center">
+          <Image
+            className="rounded-full"
+            src={session?.data?.user.image ?? ""}
+            alt="user avatar"
+            height={30}
+            width={30}
+          />
+          <p className="text-gray-700 font-bold">{session?.data?.user?.name}</p>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem>
+          <Link href="/dashboard" className="flex gap-1 items-center">
+            <Icons.settings className="mr-2 h-4 w-4" />
+            <span>Dashboard</span>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <Link href="/profile" className="flex gap-1 items-center">
+            <Icons.settings className="mr-2 h-4 w-4" />
+            <span>Profile</span>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={() => signOut()}>
+          <Icons.logout className="mr-2 h-4 w-4" />
+          <span>Logout</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
 
 const Header = () => {
   const [state, setState] = useState(false);
@@ -14,7 +62,7 @@ const Header = () => {
   const navigation = [
     { title: "Race", path: "/race" },
     { title: "Leaderboard", path: "/" },
-    { title: "About", path: "/" },
+    // { title: "About", path: "/about" },
   ];
 
   const session = useSession();
@@ -91,19 +139,10 @@ const Header = () => {
               <LoginButton />
             ) : (
               <>
-                <Image
-                  className="rounded-full"
-                  src={session?.data.user.image ?? ""}
-                  alt="user avatar"
-                  height={40}
-                  width={40}
-                />
-                <p className="text-gray-700 font-bold">
-                  {session?.data.user?.name}
-                </p>
-                <LogoutButton />
+                <AccountMenu />
               </>
             )}
+            <ModeToggle />
           </div>
         </div>
       </nav>
