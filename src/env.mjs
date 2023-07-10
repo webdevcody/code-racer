@@ -9,6 +9,7 @@ export const env = createEnv({
     GITHUB_CLIENT_ID: z.string().min(1),
     GITHUB_CLIENT_SECRET: z.string().min(1),
   },
+  skipValidation: process.env.SKIP_ENV_VALIDATION,
   client: {},
   // NOTE: specifying runtimeEnv is not necessary for Next,js >= 13.4.4
   // runtimeEnv: {},
