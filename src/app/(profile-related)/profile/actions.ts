@@ -2,7 +2,6 @@
 
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
-import { signOut } from "next-auth/react";
 
 export async function updateUserAction({ newName }: { newName: string }) {
   const user = await getCurrentUser();
