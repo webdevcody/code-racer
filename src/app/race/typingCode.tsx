@@ -29,7 +29,7 @@ export default function TypingCode({ user }: TypingCodeProps) {
 
       console.log("Time taken:", timeTaken);
     }
-  }, [endTime, startTime]);
+  }, [endTime, startTime, user]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
