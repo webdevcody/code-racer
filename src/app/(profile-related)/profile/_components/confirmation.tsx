@@ -73,7 +73,7 @@ export default function DeleteConfirmation({
                 if (response?.status === 401) {
                   throwError(new Error("Something went wrong!"));
                 }
-                signOut();
+                await signOut();
                 router.replace("/");
               }}
             >
