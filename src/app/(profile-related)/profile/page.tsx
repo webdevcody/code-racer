@@ -3,22 +3,13 @@ import Image from "next/image";
 import { getCurrentUser } from "@/lib/session";
 
 import Achievement from "@/components/achievement";
+import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { ChangeNameForm, ProfileNav } from "./_components";
 
 export const metadata = {
   title: "Profile Page",
 };
-
-const dummyAchievements = [
-  {
-    id: "1",
-    name: "First win",
-    description: "You won your first game!",
-    unlockedAt: "2023-08-01T00:00:00.000Z",
-    image: "/static/logo.png",
-  },
-];
 
 export default async function ProfilePage() {
   const user = await getCurrentUser();
@@ -28,6 +19,14 @@ export default async function ProfilePage() {
   {
     /** Static data unrelated to auth for now */
   }
+  const achievements = await prisma.userAchievement.findMany({
+    where: {
+      userId: uid,
+    },
+    include: {
+      achievement: true,
+    },
+  });
   const totalPoints = 0;
   return (
     <main className="py-8 grid place-items-center h-[clamp(40rem,82.5dvh,50rem)]">
@@ -55,20 +54,21 @@ export default async function ProfilePage() {
           </div>
           <ChangeNameForm displayName={displayName} />
           <span>Total Points: {totalPoints}</span>
-
-          <ul className="w-fit max-w-[292px] flex items-center flex-wrap gap-1 p-2 border-border rounded-sm bg-primary-foreground">
-            {dummyAchievements.map((achievement) => (
-              <Achievement
-                key={achievement.id}
-                achievement={{
-                  name: achievement.name,
-                  description: achievement.description,
-                  unlockedAt: achievement.unlockedAt,
-                  image: achievement.image,
-                }}
-              />
-            ))}
-          </ul>
+          {achievements.length ? (
+            <ul className="w-fit max-w-[292px] flex items-center flex-wrap gap-1 p-2 border-border rounded-sm bg-primary-foreground">
+              {achievements.map(({ achievement, unlockedAt }) => (
+                <Achievement
+                  key={achievement.id}
+                  achievement={{
+                    name: achievement.name,
+                    description: achievement.description,
+                    unlockedAt,
+                    image: achievement.image,
+                  }}
+                />
+              ))}
+            </ul>
+          ) : null}
         </article>
       </div>
     </main>

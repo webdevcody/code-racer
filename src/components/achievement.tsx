@@ -1,13 +1,11 @@
+import { Achievement } from "@prisma/client";
 import Image from "next/image";
 import { Icons } from "./icons";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
 
 interface AchievementProps {
-  achievement: {
-    name: string;
-    description: string;
-    unlockedAt: string;
-    image: string;
+  achievement: Pick<Achievement, "image" | "name" | "description"> & {
+    unlockedAt: Date;
   };
 }
 
@@ -46,9 +44,7 @@ const Achievement = ({ achievement }: AchievementProps) => {
               <Icons.trophy size="1rem" />
               <span>
                 Unlocked on{" "}
-                <time>
-                  {new Date(achievement.unlockedAt).toLocaleDateString()}
-                </time>
+                <time>{achievement.unlockedAt.toLocaleDateString()}</time>
               </span>
             </p>
           </div>
