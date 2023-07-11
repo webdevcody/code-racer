@@ -1,7 +1,6 @@
+import { MoonIcon, SunIcon } from "@radix-ui/react-icons";
 import {
   Laptop,
-  Moon,
-  SunMedium,
   type Icon as LucideIcon,
   LogOut,
   Settings,
@@ -32,8 +31,8 @@ export const Icons = {
     />
   ),
 
-  sun: SunMedium,
-  moon: Moon,
+  sun: SunIcon,
+  moon: MoonIcon,
   laptop: Laptop,
   logout: LogOut,
   settings: Settings,
@@ -42,7 +41,7 @@ export const Icons = {
   chevronRight: ChevronRight,
   chevronsLeft: ChevronsLeft,
   chevronsRight: ChevronsRight,
-  user: User2,
+  profile: User2,
   lineChart: LineChart,
   mobileNavOpen: ChevronDownSquareIcon,
   mobileNavClosed: ChevronLeftSquareIcon,
