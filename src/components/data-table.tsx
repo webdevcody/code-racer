@@ -25,7 +25,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { Input } from "./ui/input";
 
 interface ColumnSort {
   id: string;
@@ -119,7 +118,7 @@ export function DataTable<TData, TValue>({
       setSorting={setSorting}
       setPagination={setPagination}
       renders={{
-        table: ({ children, tableInstance }) => {
+        table: ({ children }) => {
           return (
             <div className="rounded-md border mt-8 mb-4">
               <Table>{children}</Table>
@@ -161,9 +160,9 @@ export function DataTable<TData, TValue>({
         // filter inputs for columns 
         // we can also specify them in our
         // columns
-        filterInput: ({ props }) => null,
+        filterInput: () => null,
         // custom pagination bar
-        paginationBar: ({ tableInstance }) => {
+        paginationBar: () => {
           return (
             <div className="flex justify-center flex-col-reverse items-center gap-4 py-2 md:flex-row">
               <div className="flex flex-col items-center gap-3 sm:flex-row sm:gap-6">

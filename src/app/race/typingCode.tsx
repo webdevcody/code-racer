@@ -6,6 +6,8 @@ import type { User } from "next-auth";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { saveUserResult } from "./actions";
+import { useRouter } from "next/navigation"
+import RacePositionTracker from "./racePositionTracker";
 
 const code = `printf("hello world")`;
 
@@ -28,6 +30,8 @@ export default function TypingCode({ user }: TypingCodeProps) {
   const [errors, setErrors] = useState<number[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const inputEl = useRef<HTMLInputElement | null>(null);
+  const [isEnd, setIsEnd] = useState(false)
+  const router = useRouter()
 
   useEffect(() => {
     if (startTime && endTime) {
@@ -48,7 +52,9 @@ export default function TypingCode({ user }: TypingCodeProps) {
       inputEl.current.focus();
     }
 
-  }, [endTime, startTime, user, errors.length]);
+    if (isEnd && endTime && startTime) router.push("/result")
+
+  }, [endTime, startTime, user, errors.length, isEnd, router]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
@@ -59,6 +65,7 @@ export default function TypingCode({ user }: TypingCodeProps) {
     } else if (event.target.value === code) {
       setEndTime(new Date());
       setIsTyping(false);
+      setIsEnd(true)
     } else {
       setErrors(() => {
         const currentText: string = code.substring(
@@ -87,6 +94,7 @@ export default function TypingCode({ user }: TypingCodeProps) {
 
   return (
     <div className="w-3/4 p-8 bg-accent rounded-md">
+      <RacePositionTracker inputLength={input.length - errors.length} actualSnippetLength={code.length} user={user}/>
       <h1 className="text-2xl font-bold mb-4">Type this code:</h1>
       {/* eslint-disable-next-line */}
       <code onClick={focusOnCode}>
