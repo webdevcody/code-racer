@@ -9,23 +9,25 @@ datasource db {
 
 model User {
   id            String    @id @default(cuid())
-  createdAt     DateTime  @default(now())
+  createdAt     DateTime  @default(now()) @map("created_at")
   name          String?
   email         String?   @unique
-  emailVerified DateTime?
+  emailVerified DateTime? @map("email_verified")
   image         String?
   accounts      Account[]
   sessions      Session[]
   results       Result[]
+
+  @@map("users")
 }
 
 // Necessary for Next auth
 model Account {
   id                String  @id @default(cuid())
-  userId            String
+  userId            String  @map("user_id")
   type              String
   provider          String
-  providerAccountId String
+  providerAccountId String  @map("provider_account_id")
   refresh_token     String? @db.Text
   access_token      String? @db.Text
   expires_at        Int?
@@ -36,14 +38,17 @@ model Account {
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@map("accounts")
 }
 
 model Session {
   id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
 }
 
 model VerificationToken {
@@ -52,11 +57,18 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+  @@map("verification_tokens")
 }
 
 model Result {
-  id        String @id @default(cuid())
-  takenTime String
-  userId    String
-  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  createdAt      DateTime @default(now()) @map("created_at")
+  accuracy  Decimal  @db.Decimal(5, 2)
+  wpm       Int
+  takenTime  String   @map("taken_time")
+  errorCount Int?     @map("error_count")
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("results")
 }

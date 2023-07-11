@@ -6,6 +6,8 @@ title: Issue # |
 [Issue ID] | Short description of the changes made
 -->
 
+Discord Username: @
+
 ## What type of PR is this? (select all that apply)
 
 - [ ] 🍕 Feature
