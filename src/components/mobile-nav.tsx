@@ -8,8 +8,9 @@ import { cn } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
 import { UserDropdown } from "./user-dropdown";
 import { Icons } from "./icons";
-import Link from "next/link";
+import Link, { LinkProps } from "next/link";
 import { ModeToggle } from "./mode-toggle";
+import { useRouter } from "next/navigation";
 
 export function MobileNav() {
   const [open, setOpen] = useState(false);
@@ -31,7 +32,8 @@ export function MobileNav() {
               <UserDropdown />
               <nav className="flex flex-1 flex-col space-y-4 items-center justify-center">
                 {siteConfig.mainNav.map((item) => (
-                  <Link
+                  // does router.push to close the mobile nav sheet
+                  <MobileLink
                     className={cn(
                       buttonVariants({ size: "lg" }),
                       "text-xl w-full"
@@ -40,7 +42,7 @@ export function MobileNav() {
                     key={item.href}
                   >
                     {item.title}
-                  </Link>
+                  </MobileLink>
                 ))}
               </nav>
               <div className="bottom-0 absolute right-0">
@@ -53,4 +55,34 @@ export function MobileNav() {
       </Sheet>
     </div>
   );
+}
+
+interface MobileLinkProps extends LinkProps {
+  // eslint-disable-next-line no-unused-vars
+  onOpenChange?: (open: boolean) => void
+  children: React.ReactNode
+  className?: string
+}
+
+function MobileLink({
+  href,
+  onOpenChange,
+  className,
+  children,
+  ...props
+}: MobileLinkProps) {
+  const router = useRouter()
+  return (
+    <Link
+      href={href}
+      onClick={() => {
+        router.push(href.toString())
+        onOpenChange?.(false)
+      }}
+      className={cn(className)}
+      {...props}
+    >
+      {children}
+    </Link>
+  )
 }

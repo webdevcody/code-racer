@@ -55,7 +55,7 @@ const AccountMenu = () => {
         </DropdownMenuItem>
         <DropdownMenuItem>
           <Link href="/profile" className="flex gap-1 items-center">
-            <Icons.user className="mr-2 h-4 w-4" />
+            <Icons.profile className="mr-2 h-4 w-4" />
             <span>Profile</span>
           </Link>
         </DropdownMenuItem>
