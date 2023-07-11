@@ -61,7 +61,7 @@ const AccountMenu = () => {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          className="text-red-500 hover:cursor-pointer"
+          className="text-red-500 hover:text-white focus:bg-destructive hover:cursor-pointer"
           onClick={() => signOut({ callbackUrl: `${window.location.origin}` })}
         >
           <Icons.logout className="w-4 h-4 mr-2" />
