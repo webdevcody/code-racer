@@ -14,6 +14,7 @@ import {
   RefreshCcwIcon,
   Settings,
   User2,
+  Info,
   type Icon as LucideIcon,
 } from "lucide-react";
 
@@ -49,4 +50,5 @@ export const Icons = {
   mobileNavClosed: ChevronLeftSquareIcon,
   refresh: RefreshCcwIcon,
   picture: ImageIcon,
+  info: Info
 };

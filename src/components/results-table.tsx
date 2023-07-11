@@ -7,6 +7,13 @@ import { type ColumnDef } from "unstyled-table";
 import Image from "next/image";
 import Link from "next/link";
 import { DataTable } from "./data-table";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Icons } from "./icons";
 
 type ResultWithUser = Result & { user: User };
 
@@ -49,6 +56,48 @@ export function ResultsTable({ data, pageCount }: ResultsTableProps) {
         // get the data.takenTime  value
         accessorKey: "takenTime",
         header: "Taken time",
+      },
+      {
+        // get the data.takenTime  value
+        accessorKey: "cpm",
+        header: () => {
+          return (
+            <div className="flex items-center gap-2">
+              <span>Cpm</span>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Icons.info className="w-4 h-4" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Characters per minute</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+          );
+        },
+      },
+      {
+        // get the data.takenTime  value
+        accessorKey: "accuracy",
+        header: "Accuracy",
+        cell: ({ cell }) => {
+          const accuracy = cell.getValue() as number;
+
+          if (accuracy > 0.8) {
+            return <span className="text-green-600">{accuracy}</span>;
+          } else if (accuracy > 0.5) {
+            return <span className="text-orange-600">{accuracy}</span>;
+          } else {
+            return <span className="text-destructive">{accuracy}</span>;
+          }
+        },
+      },
+      {
+        // get the data.takenTime  value
+        accessorKey: "errorCount",
+        header: "Errors",
       },
     ],
     []

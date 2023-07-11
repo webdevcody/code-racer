@@ -64,11 +64,11 @@ model VerificationToken {
 }
 
 model Result {
-  id         String   @id @default(cuid())
-  userId     String   @map("user_id")
-  createdAt  DateTime @default(now()) @map("created_at")
-  accuracy   Decimal  @db.Decimal(5, 2)
-  wpm        Int
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  createdAt      DateTime @default(now()) @map("created_at")
+  accuracy  Decimal  @db.Decimal(5, 2)
+  cpm       Int
   takenTime  String   @map("taken_time")
   errorCount Int?     @map("error_count")
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)

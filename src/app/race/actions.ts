@@ -7,7 +7,7 @@ export async function saveUserResult(input: {
   userId: User["id"];
   timeTaken: string | number;
   errors: number;
-  wpm: number;
+  cpm: number;
   accuracy: number;
 }) {
 
@@ -16,7 +16,7 @@ export async function saveUserResult(input: {
       userId: input.userId,
       takenTime: input.timeTaken.toString(),
       errorCount: input.errors,
-      wpm: input.wpm,
+      cpm: input.cpm,
       accuracy: new Prisma.Decimal(input.accuracy),
     },
   });
