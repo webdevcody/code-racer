@@ -1,12 +1,5 @@
-import { Navigation, ChevronDown } from "lucide-react";
-import React, { useState } from "react";
+import React from "react";
 
-import { Card } from "@/components/ui/card";
-import {
-  HoverCard,
-  HoverCardTrigger,
-  HoverCardContent,
-} from "@/components/ui/hover-card";
 import { prisma } from "@/lib/prisma";
 import { ResultsTable } from "@/components/results-table";
 import { Result } from "@prisma/client";
@@ -37,7 +30,7 @@ export default async function LeaderboardPage({
         ])
       : [];
 
-  const { results, totalResults } = await prisma.$transaction(async (tx) => {
+  const { results, totalResults } = await prisma.$transaction(async (_) => {
     const results = await prisma.result.findMany({
       take,
       skip,
