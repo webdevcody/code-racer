@@ -2,15 +2,25 @@ import Image from "next/image";
 
 import { getCurrentUser } from "@/lib/session";
 
-import { ChangeNameForm, ProfileNav } from "./_components";
+import Achievement from "@/components/achievement";
 import Link from "next/link";
+import { ChangeNameForm, ProfileNav } from "./_components";
 
 export const metadata = {
   title: "Profile Page",
 };
 
-export default async function ProfilePage() {
+const dummyAchievements = [
+  {
+    id: "1",
+    name: "First win",
+    description: "You won your first game!",
+    unlockedAt: "2023-08-01T00:00:00.000Z",
+    image: "/static/logo.png",
+  },
+];
 
+export default async function ProfilePage() {
   const user = await getCurrentUser();
   const photoURL = user?.image;
   const displayName = user?.name;
@@ -23,10 +33,7 @@ export default async function ProfilePage() {
     <main className="py-8 grid place-items-center h-[clamp(40rem,82.5dvh,50rem)]">
       <div className="overflow-hidden relative w-[95%] max-w-[22.5rem] h-[32.5rem] rounded-2xl border-2 border-solid border-secondary-foreground">
         <article className="p-2 flex flex-col gap-2 items-center">
-          <ProfileNav
-            displayName={displayName as string}
-            uid={uid as string}
-          />
+          <ProfileNav displayName={displayName as string} uid={uid as string} />
           <div className="pt-2 pb-1">
             <Link
               href={`/view-photo?photoURL=${photoURL}`}
@@ -48,6 +55,20 @@ export default async function ProfilePage() {
           </div>
           <ChangeNameForm displayName={displayName} />
           <span>Total Points: {totalPoints}</span>
+
+          <ul className="w-fit max-w-[292px] flex items-center flex-wrap gap-1 p-2 border-border rounded-sm bg-primary-foreground">
+            {dummyAchievements.map((achievement) => (
+              <Achievement
+                key={achievement.id}
+                achievement={{
+                  name: achievement.name,
+                  description: achievement.description,
+                  unlockedAt: achievement.unlockedAt,
+                  image: achievement.image,
+                }}
+              />
+            ))}
+          </ul>
         </article>
       </div>
     </main>
