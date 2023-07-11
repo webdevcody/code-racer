@@ -2,6 +2,7 @@ import {
   Laptop,
   Moon,
   SunMedium,
+  Crown,
   type Icon as LucideIcon,
   LogOut,
   Settings,
@@ -17,4 +18,5 @@ export const Icons = {
   logout: LogOut,
   settings: Settings,
   chart: BarChart,
+  crown: Crown,
 };
