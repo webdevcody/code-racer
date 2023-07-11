@@ -21,7 +21,7 @@ export const LogoutButton = () => {
   );
 };
 
-export const CloseButton = React.forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement>>(
+const CloseButton = React.forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement>>(
   ({ className, ...props }, ref) => {
     return (
       <button
@@ -39,3 +39,7 @@ export const CloseButton = React.forwardRef<HTMLButtonElement, React.ButtonHTMLA
     )
   }
 )
+
+CloseButton.displayName = "CloseButton";
+
+export { CloseButton }

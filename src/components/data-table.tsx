@@ -25,7 +25,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { Input } from "./ui/input";
 
 interface ColumnSort {
   id: string;
@@ -119,7 +118,7 @@ export function DataTable<TData, TValue>({
       setSorting={setSorting}
       setPagination={setPagination}
       renders={{
-        table: ({ children, tableInstance }) => {
+        table: ({ children, /* tableInstance */ }) => {
           return (
             <div className="rounded-md border mt-8 mb-4">
               <Table>{children}</Table>

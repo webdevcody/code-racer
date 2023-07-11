@@ -1,12 +1,3 @@
-import { Navigation, ChevronDown } from "lucide-react";
-import React, { useState } from "react";
-
-import { Card } from "@/components/ui/card";
-import {
-  HoverCard,
-  HoverCardTrigger,
-  HoverCardContent,
-} from "@/components/ui/hover-card";
 import { prisma } from "@/lib/prisma";
 import { ResultsTable } from "@/components/results-table";
 import { Result } from "@prisma/client";
