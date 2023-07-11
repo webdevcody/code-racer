@@ -18,6 +18,7 @@ export default function DeleteConfirmation({
   displayName: string;
   uid: string;
 }) {
+  const [isLoading, setIsLoading] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const divRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -52,10 +53,25 @@ export default function DeleteConfirmation({
             <AlertTriangle className="stroke-red-500" />
           </span>
 
-          <form className="mt-4 select-none flex flex-col gap-2">
+          <form
+            className="mt-4 select-none flex flex-col gap-2"
+            onSubmit={async (e) => {
+              setIsLoading(true);
+              e.preventDefault();
+              try {
+                await deleteUserAction({ id: uid });
+                await signOut();
+              } catch (err) {
+                console.log(err);
+              } finally {
+                setIsLoading(false);
+              }
+            }}
+          >
             <p>Please type &quot;{displayName}&quot; to confirm:</p>
             <Input
               type="text"
+              name="name"
               onChange={(e) => setInputValue(e.target.value)}
               placeholder="Type your username to confirm"
               value={inputValue}
@@ -71,15 +87,9 @@ export default function DeleteConfirmation({
                   ? "Delete your account"
                   : "Please type in your username"
               }
-              disabled={inputValue === displayName ? undefined : true}
-              onClick={async () => {
-                const response = await deleteUserAction({ userId: uid });
-                if (response?.status === 401) {
-                  throwError(new Error("Something went wrong!"));
-                }
-                await signOut();
-                router.push("/");
-              }}
+              disabled={
+                (inputValue === displayName ? undefined : true) || isLoading
+              }
             >
               CONFIRM
             </Button>

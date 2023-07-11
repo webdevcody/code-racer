@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
+import { User } from "next-auth";
 import { revalidatePath } from "next/cache";
 
 export async function updateUserAction({ newName }: { newName: string }) {
@@ -27,20 +28,16 @@ export async function updateUserAction({ newName }: { newName: string }) {
   revalidatePath("/profile");
 }
 
-export async function deleteUserAction({ userId }: { userId: string }) {
+export async function deleteUserAction(input: { id: User["id"] }) {
   const user = await getCurrentUser();
 
-  if (!user) {
-    return new Response("user-not-defined", { status: 401 });
-  }
-
-  if (userId !== user.id) {
-    return new Response("action-not-authorized", { status: 401 });
+  if (user?.id !== input.id) {
+    throw new Error("No permission.");
   }
 
   await prisma.user.delete({
     where: {
-      id: userId,
+      id: input.id,
     },
   });
 }
