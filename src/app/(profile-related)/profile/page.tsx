@@ -3,7 +3,8 @@ import Image from "next/image";
 import { getCurrentUser } from "@/lib/session";
 
 import Link from "next/link";
-import { ChangeNameForm, ProfileNav } from "./_components";
+import ProfileNav from "./_components/profile-nav";
+import ChangeNameForm from "./_components/change-name-form";
 
 export const metadata = {
   title: "Profile Page",
