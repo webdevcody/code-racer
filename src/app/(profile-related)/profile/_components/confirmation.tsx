@@ -3,11 +3,12 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AlertTriangle } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { deleteUserAction } from "../actions";
 import { throwError } from "@/lib/utils";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { env } from "@/env.mjs";
 
 export default function DeleteConfirmation({
   setWillDelete,
@@ -21,6 +22,7 @@ export default function DeleteConfirmation({
   const [inputValue, setInputValue] = useState("");
   const divRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const [status, startTransition] = useTransition();
 
   useEffect(() => {
     const onClick = () => setWillDelete(false);
@@ -52,7 +54,19 @@ export default function DeleteConfirmation({
             <AlertTriangle className="stroke-red-500" />
           </span>
 
-          <form className="mt-4 select-none flex flex-col gap-2">
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const response = await deleteUserAction({ userId: uid });
+              if (response?.status === 401) {
+                throwError(new Error("Something went wrong!"));
+              }
+              await signOut({
+                callbackUrl: "/",
+              });
+            }}
+            className="mt-4 select-none flex flex-col gap-2"
+          >
             <p>Please type &quot;{displayName}&quot; to confirm:</p>
             <Input
               type="text"
@@ -63,7 +77,6 @@ export default function DeleteConfirmation({
             />
             <Button
               variant={"destructive"}
-              type="submit"
               className="mt-2"
               tabIndex={inputValue === displayName ? 0 : -1}
               title={
@@ -72,14 +85,6 @@ export default function DeleteConfirmation({
                   : "Please type in your username"
               }
               disabled={inputValue === displayName ? undefined : true}
-              onClick={async () => {
-                const response = await deleteUserAction({ userId: uid });
-                if (response?.status === 401) {
-                  throwError(new Error("Something went wrong!"));
-                }
-                await signOut();
-                router.push("/");
-              }}
             >
               CONFIRM
             </Button>
