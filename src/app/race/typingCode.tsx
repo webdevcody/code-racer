@@ -113,7 +113,6 @@ export default function TypingCode({ user }: TypingCodeProps) {
         user={user}
       />
       <h1 className="text-2xl font-bold mb-4">Type this code:</h1>
-      {/* eslint-disable-next-line */}
       <DisplayedCode code={code} errors={errors} userInput={input} />
       <input
         type="text"
