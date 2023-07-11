@@ -6,6 +6,7 @@ import type { User } from "next-auth";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { saveUserResult } from "./actions";
+import RacePositionTracker from "./racePositionTracker";
 
 const code = `printf("hello world")`;
 
@@ -14,7 +15,7 @@ function calculateWPM() {
 }
 
 function calculateAccuracy() {
-  return 92.2;
+  return 0.92;
 }
 
 interface TypingCodeProps {
@@ -87,6 +88,7 @@ export default function TypingCode({ user }: TypingCodeProps) {
 
   return (
     <div className="w-3/4 p-8 bg-accent rounded-md">
+      <RacePositionTracker inputLength={input.length - errors.length} actualSnippetLength={code.length} user={user}/>
       <h1 className="text-2xl font-bold mb-4">Type this code:</h1>
       {/* eslint-disable-next-line */}
       <code onClick={focusOnCode}>

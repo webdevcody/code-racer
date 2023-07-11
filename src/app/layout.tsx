@@ -6,12 +6,13 @@ import NextTopLoader from "nextjs-toploader";
 import { Footer } from "@/components/footer";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
+import { siteConfig } from "@/config/site";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Code Racer",
-  description: "Accelerating coding skills, competitive thrills!",
+  title: siteConfig.name,
+  description: siteConfig.description,
   icons: {
     icon: "/static/logo.png",
   },
