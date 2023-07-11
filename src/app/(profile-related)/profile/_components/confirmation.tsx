@@ -28,14 +28,16 @@ export default function DeleteConfirmation({ setWillDelete, displayName }: Delet
   async function handleDelete(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     await deleteUserAction();
-    await signOut({ callbackUrl: `${window.location.origin}` })
+    await signOut({
+      callbackUrl: "/"
+    })
   }
 
   return (
     <div className="fixed inset-0 w-full h-full grid place-items-center bg-monochrome-with-bg-opacity bg-opacity-5 z-10">
       <div className="w-full h-full absolute inset-0 -z-10" ref={divRef} />
       <div className="w-[95%] max-w-[22.5rem]">
-        <div className="bg-background  min-h-[12.5rem] mt-2 rounded-lg p-4">
+        <div className="bg-background min-h-[12.5rem] rounded-lg p-4">
           <div className="flex items-center justify-end">
             <CloseButton
               onClick={() => setWillDelete(false)}
@@ -43,16 +45,16 @@ export default function DeleteConfirmation({ setWillDelete, displayName }: Delet
             />
           </div>
           <div className="p-2">
-            <span className="text-red-500 flex gap-2 items-center justify-center">
+            <span className="text-red-500 text-lg flex gap-2 mb-4 items-center justify-center">
               <AlertTriangle className="stroke-red-500" />
               DELETE ACCOUNT
               <AlertTriangle className="stroke-red-500" />
             </span>
             <form
-              className="mt-4 select-none flex flex-col gap-2"
+              className="select-none flex flex-col gap-2"
               onSubmit={handleDelete}
             >
-              <p>Please type &quot;{displayName}&quot; to confirm:</p>
+              <p className="break-words text-sm ml-1">Please type &quot;{displayName}&quot; to confirm</p>
               <Input
                 type="text"
                 onChange={(e) => setInputValue(e.target.value)}
