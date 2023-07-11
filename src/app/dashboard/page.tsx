@@ -96,7 +96,7 @@ export default function DashboardPage() {
         Dashboard
       </h1>
       <div className="flex max-[600px]:flex-col justify-center items-center w-screen h-[55vh] gap-6 m-2">
-        <Card className="w-[47.5%] max-[600px]:w-[100%] max-[600px]:mr-4 h-full max-[600px]:h-[50%]">
+        <Card className="w-[45.5%] max-[600px]:w-[100%] max-[600px]:mr-4 h-full max-[600px]:h-[50%]">
           <CardHeader>
             <CardTitle className="text-center m-2">Accuracy</CardTitle>
           </CardHeader>
@@ -119,7 +119,7 @@ export default function DashboardPage() {
             </LineChart>
           </ResponsiveContainer>
         </Card>
-        <Card className="w-[47.5%] max-[600px]:w-[100%] h-full max-[600px]:h-[50%] max-[600px]:mr-4 max-[600px]:ml-4 max-[600px]:mb-6">
+        <Card className="w-[45.5%] max-[600px]:w-[100%] h-full max-[600px]:h-[50%] max-[600px]:mr-4 max-[600px]:ml-4 max-[600px]:mb-6">
           <CardHeader>
             <CardTitle className="text-center m-2">Words per minute</CardTitle>
           </CardHeader>
@@ -144,11 +144,11 @@ export default function DashboardPage() {
         </Card>
       </div>
       <div className="flex max-[850px]:flex-col justify-center items-center w-screen min-[850px]:h-[55vh] gap-4 m-4">
-        <Card className="w-[55vw] max-[850px]:w-[100vw] min-[850px]:h-[55vh] mr-4 p-4">
+        <Card className="w-[50vw] max-[850px]:w-[100vw] min-[850px]:h-[55vh] mr-4 p-4 border-none">
           <CardHeader>
             <CardTitle className="text-center m-2">Recent Races</CardTitle>
           </CardHeader>
-          <Table className="w-full max-[600px]:text-sm">
+          <Table className="w-full max-[600px]:text-sm border-b-2">
             <TableHeader>
               <TableRow>
                 <TableHead className="max-[900px]:hidden">Game ID</TableHead>
@@ -209,7 +209,7 @@ export default function DashboardPage() {
             </Button>
           </div>
         </Card>
-        <Card className="w-[40vw] max-[850px]:w-screen min-[850px]:h-[55vh] mr-4">
+        <Card className="w-[42vw] max-[850px]:w-screen min-[850px]:h-[50vh] mr-4 border-none">
           <CardHeader>
             <CardTitle className="text-center m-2">Statistics</CardTitle>
           </CardHeader>
