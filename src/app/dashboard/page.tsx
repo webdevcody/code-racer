@@ -24,12 +24,8 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-import {
-  DoubleArrowLeftIcon,
-  ArrowLeftIcon,
-  ArrowRightIcon,
-  DoubleArrowRightIcon,
-} from "@radix-ui/react-icons";
+import { Icons } from "@/components/icons";
+
 
 export default function DashboardPage() {
   const [currentPage, setCurrentPage] = React.useState(1);
@@ -184,13 +180,13 @@ export default function DashboardPage() {
           </Table>
           <div className="flex justify-center gap-4 mt-6">
             <Button variant={"outline"} onClick={() => handleChangePage(1)}>
-              <DoubleArrowLeftIcon />
+              <Icons.chevronsLeft />
             </Button>
             <Button
               variant={"outline"}
               onClick={() => handleChangePage(currentPage - 1)}
             >
-              <ArrowLeftIcon />
+              <Icons.chevronLeft />
             </Button>
             <Input
               className="w-12 text-center"
@@ -201,7 +197,7 @@ export default function DashboardPage() {
               variant={"outline"}
               onClick={() => handleChangePage(currentPage + 1)}
             >
-              <ArrowRightIcon />
+              <Icons.chevronRight />
             </Button>
             <Button
               variant={"outline"}
@@ -209,7 +205,7 @@ export default function DashboardPage() {
                 handleChangePage(Math.ceil(recentGames.length / limit))
               }
             >
-              <DoubleArrowRightIcon />
+              <Icons.chevronsRight />
             </Button>
           </div>
         </Card>

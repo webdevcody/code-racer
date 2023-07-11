@@ -14,7 +14,7 @@ function calculateWPM() {
 }
 
 function calculateAccuracy() {
-  return 92.2;
+  return 0.92;
 }
 
 interface TypingCodeProps {
