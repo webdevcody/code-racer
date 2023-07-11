@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import NextTopLoader from "nextjs-toploader";
 import { Footer } from "@/components/footer";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ContextProvider } from "@/components/context-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,11 +21,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className={inter.className}>
         <NextTopLoader />
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <ContextProvider>
           <Header />
           {children}
           <Footer />
-        </ThemeProvider>
+        </ContextProvider>
       </body>
     </html>
   );

@@ -6,7 +6,7 @@ import { AlertTriangle } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { deleteUserAction } from "../actions";
 import { throwError } from "@/lib/utils";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export default function DeleteConfirmation({
@@ -21,6 +21,7 @@ export default function DeleteConfirmation({
   const [inputValue, setInputValue] = useState("");
   const divRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const session = useSession();
 
   useEffect(() => {
     const onClick = () => setWillDelete(false);
@@ -78,7 +79,10 @@ export default function DeleteConfirmation({
                   throwError(new Error("Something went wrong!"));
                 }
                 await signOut();
-                router.push("/");
+                /** still trying to fix. This does not work. */
+                if (session.status === "unauthenticated") {
+                  router.push("/");
+                }
               }}
             >
               CONFIRM

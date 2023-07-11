@@ -10,7 +10,6 @@ export const metadata = {
 };
 
 export default async function ProfilePage() {
-
   const user = await getCurrentUser();
   const photoURL = user?.image;
   const displayName = user?.name;

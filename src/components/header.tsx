@@ -9,7 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { SessionProvider, signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -151,10 +151,4 @@ const Header = () => {
   );
 };
 
-export default function WrappedHeader() {
-  return (
-    <SessionProvider>
-      <Header />
-    </SessionProvider>
-  );
-}
+export default Header;

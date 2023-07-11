@@ -1,9 +1,10 @@
 "use client";
-import { useRouter } from "next/navigation";
 import { useRef } from "react";
 import { updateUserAction } from "../actions";
 import { throwError } from "@/lib/utils";
 import { EditableInput } from "@/components/ui/editable-input";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 async function handleSubmit({
   newName,
@@ -25,6 +26,7 @@ export default function ChangeNameForm({
 }: {
   displayName: string | null | undefined;
 }) {
+  const session = useSession();
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   return (
@@ -33,11 +35,19 @@ export default function ChangeNameForm({
         value={displayName ?? "Llama1203x"}
         actionOnSave={async () => {
           if (inputRef) {
-            await handleSubmit({
-              newName: inputRef.current?.value as string,
-              currentName: displayName as string,
-            });
-            router.refresh();
+            const newName = inputRef.current?.value as string;
+            try {
+              await handleSubmit({
+                newName,
+                currentName: displayName as string,
+              });
+              /** to update the value returned by the useSession() hook. */
+              await session.update({ name: newName });
+              /** to reflect changes on the delete confirmation modal */
+              router.refresh();
+            } catch (e) {
+              throwError(e as Error);
+            }
           }
         }}
         ref={inputRef}
