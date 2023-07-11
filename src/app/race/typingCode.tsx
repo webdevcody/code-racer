@@ -52,9 +52,9 @@ export default function TypingCode({ user }: TypingCodeProps) {
       inputEl.current.focus();
     }
 
-    if (isEnd) router.push("/result")
+    if (isEnd && endTime && startTime) router.push("/result")
 
-  }, [endTime, startTime, user, errors.length, isEnd]);
+  }, [endTime, startTime, user, errors.length, isEnd, router]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
