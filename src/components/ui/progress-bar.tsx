@@ -17,7 +17,7 @@ const ProgressBar = React.forwardRef<
     <Progress.Root
       ref={ref}
       className={cn(
-        "overflow-hidden border border-monochrome rounded-full w-[100%] h-[15px]",
+        "overflow-hidden border border-border rounded-full w-[100%] h-[15px]",
         className
       )}
       {...props}
