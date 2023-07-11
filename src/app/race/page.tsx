@@ -7,7 +7,7 @@ export default async function Race() {
 
   return (
     <>
-      <main className="flex min-h-screen flex-col items-center justify-between p-24">
+      <main className="flex md:min-h-[calc(100vh-11rem)] flex-col items-center justify-between p-24">
         <TypingCode user={user} />
       </main>
     </>
