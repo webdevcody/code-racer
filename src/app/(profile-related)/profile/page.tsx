@@ -2,9 +2,8 @@ import Image from "next/image";
 
 import { getCurrentUser } from "@/lib/session";
 
-import { ChangeNameForm, ProfileNav } from "./_components";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { ChangeNameForm, ProfileNav } from "./_components";
 
 export const metadata = {
   title: "Profile Page",
@@ -15,6 +14,7 @@ export default async function ProfilePage() {
   const photoURL = user?.image as string;
   const displayName = user?.name as string;
   const totalPoints = 0;
+
 
   return (
     <main className="py-8 grid place-items-center h-[clamp(40rem,82.5dvh,50rem)]">
@@ -36,7 +36,7 @@ export default async function ProfilePage() {
                 loading="eager"
                 fetchPriority="high"
                 priority
-                className="w-full h-full object-cover"
+                className="object-cover w-full h-full"
               />
             </Link>
           </div>

@@ -2,11 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { AlertTriangle } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { deleteUserAction } from "../actions";
 import { signOut } from "next-auth/react";
 import { CloseButton } from "@/components/ui/buttons";
+import { AlertTriangle } from "lucide-react";
 
 interface DeleteConfirmationProps {
   setWillDelete: React.Dispatch<React.SetStateAction<boolean>>;
@@ -34,8 +34,8 @@ export default function DeleteConfirmation({ setWillDelete, displayName }: Delet
   }
 
   return (
-    <div className="fixed inset-0 w-full h-full grid place-items-center bg-monochrome-with-bg-opacity bg-opacity-5 z-10">
-      <div className="w-full h-full absolute inset-0 -z-10" ref={divRef} />
+    <div className="fixed inset-0 z-10 grid w-full h-full place-items-center bg-monochrome-with-bg-opacity bg-opacity-5">
+      <div className="absolute inset-0 w-full h-full -z-10" ref={divRef} />
       <div className="w-[95%] max-w-[22.5rem]">
         <div className="bg-background min-h-[12.5rem] rounded-lg p-4">
           <div className="flex items-center justify-end">
