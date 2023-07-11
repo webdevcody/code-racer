@@ -6,6 +6,7 @@ import NextTopLoader from "nextjs-toploader";
 import { Footer } from "@/components/footer";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
+import { ContextProvider } from "@/components/context-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,12 +27,12 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <NextTopLoader showSpinner={false} />
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <ContextProvider>
           <Header />
           {children}
           <Footer />
           <TailwindIndicator />
-        </ThemeProvider>
+        </ContextProvider>
       </body>
     </html>
   );
