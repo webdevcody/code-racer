@@ -28,16 +28,16 @@ export async function updateUserAction({ newName }: { newName: string }) {
   revalidatePath("/profile");
 }
 
-export async function deleteUserAction(input: { id: User["id"] }) {
+export async function deleteUserAction() {
   const user = await getCurrentUser();
 
-  if (user?.id !== input.id) {
+  if (!user) {
     throw new Error("No permission.");
   }
 
   await prisma.user.delete({
     where: {
-      id: input.id,
+      id: user.id,
     },
   });
 }
