@@ -5,12 +5,16 @@ import { Inter } from "next/font/google";
 import NextTopLoader from "nextjs-toploader";
 import { Footer } from "@/components/footer";
 import { ThemeProvider } from "@/components/theme-provider";
+import { TailwindIndicator } from "@/components/tailwind-indicator";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
 	title: "Code Racer",
 	description: "Accelerating coding skills, competitive thrills!",
+	icons: {
+		icon: "/static/logo.png",
+	},
 };
 
 export default function RootLayout({
@@ -21,10 +25,12 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body className={inter.className}>
-				<NextTopLoader />
+				<NextTopLoader showSpinner={false} />
 				<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
 					<Header />
-					{children} <Footer />
+					{children}
+					<Footer />
+					<TailwindIndicator />
 				</ThemeProvider>
 			</body>
 		</html>

@@ -1,8 +1,17 @@
-# Code Racer
+<div  align="center" >
+  <img src="./public/static/logo.png" width="60">
+  <p></p>
+  <h1>Code Racer</h1>
+</div>
 
-Welcome to Code Racer, a community project built with Next.js, Tailwind CSS, and TypeScript.
+<br>
 
+<div align="center">
+Welcome to Code Racer, a community project built with <a href="https://nextjs.org/">Next.js</a>, <a href="https://tailwindcss.com">Tailwind CSS</a>, and TypeScript.
 Code Racer is a multiplayer coding game where developers can compete against each other to solve programming challenges in real-time. Sharpen your coding skills, challenge your peers, and have fun while racing against the clock!
+</div>
+
+
 
 ## Features
 
@@ -10,11 +19,11 @@ Code Racer is a multiplayer coding game where developers can compete against eac
 
 ## Technologies Used
 
-- Next.js: A React framework for building server-side rendered and statically generated applications.
-- NextAuth: For user authentication.
-- Prisma:
-- Tailwind CSS: A utility-first CSS framework for rapid UI development.
-- TypeScript: A typed superset of JavaScript that provides enhanced tooling and developer productivity.
+- [Next.js](https://nextjs.org/) : A React framework for building server-side rendered and statically generated applications.
+- [NextAuth](https://next-auth.js.org/) : For user authentication.
+- [Prisma](https://www.prisma.io/) : next-generation ORM, it provide a clean and type-safe API for submitting database queries
+- [Tailwind CSS](https://tailwindcss.com) : A utility-first CSS framework for rapid UI development.
+- [TypeScript](https://www.typescriptlang.org/): A typed superset of JavaScript that provides enhanced tooling and developer productivity.
 
 ## Contribution
 
@@ -43,3 +52,8 @@ A big thank you to all the developers who have helped shape Code Racer into what
 If you have any questions, suggestions, or feedback regarding Code Racer, please feel free to reach out to us at in the WebDevCody [discord](https://discord.gg/4kGbBaa) server
 
 Happy coding and enjoy the race!
+
+## Related Youtube Videos & Progress
+
+1. [Community Project Announcement Video](https://www.youtube.com/watch?v=-n6tV3RPjGc)
+2. [First Q&A Livestream and Community Project Live Coding Session](https://www.youtube.com/watch?v=BQXXBsHXfak)

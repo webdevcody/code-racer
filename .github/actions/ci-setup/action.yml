@@ -1,4 +1,5 @@
 name: "CI setup"
+description: "utility for calling other actions"
 runs:
   using: "composite"
   steps:
@@ -6,7 +7,7 @@ runs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
+        cache: "npm"
 
     - name: Cache NPM dependencies
       uses: actions/cache@v3

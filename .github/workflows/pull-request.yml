@@ -39,4 +39,4 @@ jobs:
       - uses: ./.github/actions/ci-setup
 
       - name: Prebuild
-        run: CI=true SKIP_ENV_VALIDATION=1 npm run build
+        run: npm run db:generate && CI=true SKIP_ENV_VALIDATION=1 npm run build
