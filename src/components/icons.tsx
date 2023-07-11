@@ -32,7 +32,6 @@ export const Icons = {
       alt="Code Racer Logo"
     />
   ),
-
   sun: SunIcon,
   moon: MoonIcon,
   laptop: Laptop,
