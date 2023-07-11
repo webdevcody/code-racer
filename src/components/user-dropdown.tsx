@@ -1,7 +1,10 @@
 "use client";
 
 import { signOut, useSession } from "next-auth/react";
-import Spinner from "./ui/spinner";
+import Image from "next/image";
+import Link from "next/link";
+import { Icons } from "./icons";
+import { Button } from "./ui/button";
 import { LoginButton } from "./ui/buttons";
 import {
   DropdownMenu,
@@ -10,16 +13,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { Button } from "./ui/button";
-import Link from "next/link";
-import { Icons } from "./icons";
-import Image from "next/image";
+import Spinner from "./ui/spinner";
 
 export function UserDropdown() {
   const session = useSession();
 
   return (
-    <div className="flex gap-4 items-center">
+    <div className="flex items-center gap-4">
       <div className="flex justify-center">
         {session.status === "loading" && <Spinner />}
         {session.status === "unauthenticated" && <LoginButton />}
@@ -48,22 +48,23 @@ const AccountMenu = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem>
-          <Link href="/dashboard" className="flex gap-1 items-center">
-            <Icons.lineChart className="mr-2 h-4 w-4" />
+          <Link href="/dashboard" className="flex items-center gap-1">
+            <Icons.lineChart className="w-4 h-4 mr-2" />
             <span>Dashboard</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <Link href="/profile" className="flex gap-1 items-center">
-            <Icons.profile className="mr-2 h-4 w-4" />
+          <Link href="/profile" className="flex items-center gap-1">
+            <Icons.profile className="w-4 h-4 mr-2" />
             <span>Profile</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
+          className="text-red-500 hover:cursor-pointer"
           onClick={() => signOut({ callbackUrl: `${window.location.origin}` })}
         >
-          <Icons.logout className="mr-2 h-4 w-4" />
+          <Icons.logout className="w-4 h-4 mr-2" />
           <span>Logout</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
