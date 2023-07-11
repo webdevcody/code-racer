@@ -1,10 +1,10 @@
-<div  align="center" >
+<div align="center" >
   <img src="./public/static/logo.png" width="60">
-  <p></p>
+  <br/>
   <h1>Code Racer</h1>
 </div>
 
-<br>
+<br/>
 
 <div align="center">
 Welcome to Code Racer, a community project built with <a href="https://nextjs.org/">Next.js</a>, <a href="https://tailwindcss.com">Tailwind CSS</a>, and TypeScript.
@@ -56,7 +56,7 @@ Happy coding and enjoy the race!
 1. [Community Project Announcement Video](https://www.youtube.com/watch?v=-n6tV3RPjGc)
 2. [First Q&A Livestream and Community Project Live Coding Session](https://www.youtube.com/watch?v=BQXXBsHXfak)
 
-<detail>
+<details>
   <summary>
   <h2>How To(s) - A newbie section</h2>
   </summary>
@@ -73,5 +73,5 @@ Happy coding and enjoy the race!
 
 ### Check the logs of Post
   
-  >> Run the command - `docker logs --follow code-racer-postgres`
-</detail>
+  > Run the command - `docker logs --follow code-racer-postgres`
+</details>
