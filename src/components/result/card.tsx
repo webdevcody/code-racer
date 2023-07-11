@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react"
 
 interface cardResultProps {
     item: {
@@ -7,7 +7,7 @@ interface cardResultProps {
     }
 }
 
-const CardResult: React.FC<cardResultProps> = ({ item }: any) => {
+const CardResult: React.FC<cardResultProps> = ({ item }) => {
     return (
         <div className="w-48 bg-[#1E1E1E] rounded-lg ">
             <h2 className="text-sm p-2 font-semibold text-white">{item.title}</h2>
