@@ -9,15 +9,16 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  createdAt     DateTime  @default(now()) @map("created_at")
+  id            String            @id @default(cuid())
+  createdAt     DateTime          @default(now()) @map("created_at")
   name          String?
-  email         String?   @unique
-  emailVerified DateTime? @map("email_verified")
+  email         String?           @unique
+  emailVerified DateTime?         @map("email_verified")
   image         String?
   accounts      Account[]
   sessions      Session[]
   results       Result[]
+  achievements  UserAchievement[]
 
   @@map("users")
 }
@@ -72,4 +73,27 @@ model Result {
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("results")
+}
+
+model Achievement {
+  id          String            @id @default(cuid())
+  name        String
+  createdAt   DateTime          @default(now()) @map("created_at")
+  updatedAt   DateTime          @updatedAt @map("updated_at")
+  image       String
+  description String?
+  unlocks     UserAchievement[]
+
+  @@map("achievements")
+}
+
+model UserAchievement {
+  userId        String      @map("user_id")
+  achievementId String      @map("achievement_id")
+  unlockedAt    DateTime    @default(now()) @map("unlocked_at")
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  @@id([userId, achievementId])
+  @@map("user_achievements")
 }
