@@ -14,6 +14,8 @@ import {
   ChevronLeftSquareIcon,
   User2,
   LineChart,
+  RefreshCcwIcon,
+  ImageIcon
 } from "lucide-react";
 
 import Image from "next/image";
@@ -46,4 +48,6 @@ export const Icons = {
   lineChart: LineChart,
   mobileNavOpen: ChevronDownSquareIcon,
   mobileNavClosed: ChevronLeftSquareIcon,
+  refresh: RefreshCcwIcon,
+  picture: ImageIcon
 };
