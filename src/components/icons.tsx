@@ -1,18 +1,19 @@
 import { MoonIcon, SunIcon } from "@radix-ui/react-icons";
 import {
-  Laptop,
-  type Icon as LucideIcon,
-  LogOut,
-  Settings,
   BarChart,
+  ChevronDownSquareIcon,
+  ChevronLeft,
+  ChevronLeftSquareIcon,
+  ChevronRight,
   ChevronsLeft,
   ChevronsRight,
-  ChevronRight,
-  ChevronLeft,
-  ChevronDownSquareIcon,
-  ChevronLeftSquareIcon,
-  User2,
+  Laptop,
   LineChart,
+  LogOut,
+  Settings,
+  Trophy,
+  User2,
+  type Icon as LucideIcon,
 } from "lucide-react";
 
 import Image from "next/image";
@@ -45,4 +46,5 @@ export const Icons = {
   lineChart: LineChart,
   mobileNavOpen: ChevronDownSquareIcon,
   mobileNavClosed: ChevronLeftSquareIcon,
+  trophy: Trophy,
 };
