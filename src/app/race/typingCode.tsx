@@ -3,10 +3,9 @@
 import { useState, useEffect, useRef } from "react";
 import DisplayedCode from "./displayedCode";
 import type { User } from "next-auth";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { saveUserResult } from "./actions";
-import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation";
 import RacePositionTracker from "./racePositionTracker";
 
 const code = `printf("hello world")`;
@@ -23,7 +22,7 @@ function calculateAccuracy(
   numberOfCharacters: number,
   errorsCount: number
 ): number {
-  return (1 - (errorsCount / numberOfCharacters))
+  return 1 - errorsCount / numberOfCharacters;
 }
 
 interface TypingCodeProps {
@@ -37,8 +36,8 @@ export default function TypingCode({ user }: TypingCodeProps) {
   const [errors, setErrors] = useState<number[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const inputEl = useRef<HTMLInputElement | null>(null);
-  const [isEnd, setIsEnd] = useState(false)
-  const router = useRouter()
+  const [isEnd, setIsEnd] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     if (startTime && endTime) {
@@ -59,8 +58,7 @@ export default function TypingCode({ user }: TypingCodeProps) {
       inputEl.current.focus();
     }
 
-    if (isEnd && endTime && startTime) router.push("/result")
-
+    if (isEnd && endTime && startTime) router.push("/result");
   }, [endTime, startTime, user, errors.length, isEnd, router]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -75,7 +73,7 @@ export default function TypingCode({ user }: TypingCodeProps) {
     ) {
       setEndTime(new Date());
       setIsTyping(false);
-      setIsEnd(true)
+      setIsEnd(true);
     } else {
       setErrors(() => {
         const currentText: string = code.substring(
@@ -104,7 +102,11 @@ export default function TypingCode({ user }: TypingCodeProps) {
   };
 
   return (
-    <div className="w-3/4 p-8 bg-accent rounded-md">
+    <div
+      className="w-3/4 p-8 bg-accent rounded-md relative"
+      onClick={focusOnCode}
+      role="none" // eslint fix - will remove the semantic meaning of an element while still exposing it to assistive technology
+    >
       <RacePositionTracker
         inputLength={input.length - errors.length}
         actualSnippetLength={code.length}
@@ -112,16 +114,16 @@ export default function TypingCode({ user }: TypingCodeProps) {
       />
       <h1 className="text-2xl font-bold mb-4">Type this code:</h1>
       {/* eslint-disable-next-line */}
-      <code onClick={focusOnCode}>
-        <DisplayedCode code={code} errors={errors} userInput={input} />
-      </code>
-      <Input
+      <DisplayedCode code={code} errors={errors} userInput={input} />
+      <input
         type="text"
-        ref={inputEl}
         value={input}
+        ref={inputEl}
         onChange={handleInputChange}
         disabled={endTime !== null}
-        className="appearance-none focus:appearance-none absolute opacity-0 -z-40 w-0"
+        className="w-full h-full absolute p-8 inset-y-0 left-0 -z-40 focus:outline outline-blue-500 rounded-md"
+        // eslint-disable-next-line
+        autoFocus
       />
       {endTime && startTime && (
         <div>
