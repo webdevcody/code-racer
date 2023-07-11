@@ -1,10 +1,6 @@
 "use client";
 import AddSnippetForm from "./_components/add-snippet-form";
 
-export const metadata = {
-	title: "Add Snippet",
-};
-
 export default function AddSnippet() {
 	return (
 		<div className="min-h-screen py-24 ">
