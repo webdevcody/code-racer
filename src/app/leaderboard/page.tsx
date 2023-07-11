@@ -143,7 +143,7 @@ const UserCard = ({
     user
 }: { user: User }) => {
     return (
-        <Card className="p-2 flex flex-col sm:flex-row justify-between hover:bg-gray-200 hover:text-secondary">
+        <Card className="p-2 flex flex-col sm:flex-row justify-between hover:bg-accent hover:text-primary">
             <div className="flex flex-col">
                 <p className="text-lg">{user.name}</p>
                 <p className="text-sm">Points: {user.points}</p>
@@ -283,8 +283,3 @@ export default function LeaderboardPage() {
         </Tabs>
     );
 }
-
-// todo
-// - refactor card
-// - show scroll area from 4 onwards
-// - add hero compo for 1 2 3 ranks refer to css battles
