@@ -1,20 +1,20 @@
-import { MoonIcon, SunIcon } from "@radix-ui/react-icons";
+import { GitHubLogoIcon, MoonIcon, SunIcon } from "@radix-ui/react-icons";
 import {
-  Laptop,
-  type Icon as LucideIcon,
-  LogOut,
-  Settings,
   BarChart,
+  ChevronDownSquareIcon,
+  ChevronLeft,
+  ChevronLeftSquareIcon,
+  ChevronRight,
   ChevronsLeft,
   ChevronsRight,
-  ChevronRight,
-  ChevronLeft,
-  ChevronDownSquareIcon,
-  ChevronLeftSquareIcon,
-  User2,
+  ImageIcon,
+  Laptop,
   LineChart,
+  LogOut,
   RefreshCcwIcon,
-  ImageIcon
+  Settings,
+  User2,
+  type Icon as LucideIcon,
 } from "lucide-react";
 
 import Image from "next/image";
@@ -35,6 +35,7 @@ export const Icons = {
 
   sun: SunIcon,
   moon: MoonIcon,
+  github: GitHubLogoIcon,
   laptop: Laptop,
   logout: LogOut,
   settings: Settings,
@@ -48,5 +49,5 @@ export const Icons = {
   mobileNavOpen: ChevronDownSquareIcon,
   mobileNavClosed: ChevronLeftSquareIcon,
   refresh: RefreshCcwIcon,
-  picture: ImageIcon
+  picture: ImageIcon,
 };
