@@ -13,6 +13,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Icons } from "./icons";
 
 type ResultWithUser = Result & { user: User };
 
@@ -61,14 +62,19 @@ export function ResultsTable({ data, pageCount }: ResultsTableProps) {
         accessorKey: "cpm",
         header: () => {
           return (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger>Cpm</TooltipTrigger>
-                <TooltipContent>
-                  <p>Characters per minute</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <div className="flex items-center gap-2">
+              <span>Cpm</span>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Icons.info className="w-4 h-4" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Characters per minute</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
           );
         },
       },
