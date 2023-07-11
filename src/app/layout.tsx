@@ -19,21 +19,21 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
-  children,
+	children,
 }: {
-  children: React.ReactNode;
+	children: React.ReactNode;
 }) {
-  return (
-    <html lang="en">
-      <body className={inter.className}>
-        <NextTopLoader showSpinner={false} />
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <Header />
-          {children}
-          <Footer />
-          <TailwindIndicator />
-        </ThemeProvider>
-      </body>
-    </html>
-  );
+	return (
+		<html lang="en">
+			<body className={inter.className}>
+				<NextTopLoader showSpinner={false} />
+				<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+					<Header />
+					{children}
+					<Footer />
+					<TailwindIndicator />
+				</ThemeProvider>
+			</body>
+		</html>
+	);
 }
