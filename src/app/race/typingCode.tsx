@@ -122,8 +122,6 @@ export default function TypingCode({ user }: TypingCodeProps) {
         onChange={handleInputChange}
         disabled={endTime !== null}
         className="w-full h-full absolute p-8 inset-y-0 left-0 -z-40 focus:outline outline-blue-500 rounded-md"
-        // eslint-disable-next-line
-        autoFocus
       />
       {endTime && startTime && (
         <div>
