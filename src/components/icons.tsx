@@ -6,6 +6,10 @@ import {
   LogOut,
   Settings,
   BarChart,
+  ChevronsLeft,
+  ChevronsRight,
+  ChevronRight,
+  ChevronLeft,
 } from "lucide-react";
 
 export type Icon = LucideIcon;
@@ -17,4 +21,8 @@ export const Icons = {
   logout: LogOut,
   settings: Settings,
   chart: BarChart,
+  chevronLeft: ChevronLeft,
+  chevronRight: ChevronRight,
+  chevronsLeft: ChevronsLeft,
+  chevronsRight: ChevronsRight,
 };
