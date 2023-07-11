@@ -6,7 +6,7 @@ import type { User } from "next-auth";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { saveUserResult } from "./actions";
-import { useRouter } from 'next/navigation'
+import { useRouter } from "next/navigation"
 import RacePositionTracker from "./racePositionTracker";
 
 const code = `printf("hello world")`;
@@ -52,7 +52,7 @@ export default function TypingCode({ user }: TypingCodeProps) {
       inputEl.current.focus();
     }
 
-    if (isEnd) router.push('/result')
+    if (isEnd) router.push("/result")
 
   }, [endTime, startTime, user, errors.length, isEnd]);
 

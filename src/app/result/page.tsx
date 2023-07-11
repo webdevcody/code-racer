@@ -14,11 +14,11 @@ const card = [
   { title: "Times", value: "30s" },
 ]
 
-export default function ResultsChart({ handler }: any) {
+export default function ResultsChart() {
   const router = useRouter()
 
   const handlerChangePage = () => {
-    router.push('/race')
+    router.push("/race")
   }
 
   return (
@@ -46,20 +46,20 @@ export default function ResultsChart({ handler }: any) {
           <Chart />
         </div>
       </div>
-      <div className="flex flex-wrap justify-center gap-4 p-2" >
-        <Button onClick={handlerChangePage} className="bg-none" tabIndex={12} >
+      <div className="flex flex-wrap justify-center gap-4 p-2"  tabIndex={-1}  >
+        <Button onClick={handlerChangePage}  >
           <Icons.chevronRight
             className="h-5 w-5"
             aria-hidden="true"
           />
         </Button>
-        <Button onClick={handlerChangePage} tabIndex={13}>
+        <Button onClick={handlerChangePage}>
           <Icons.refresh
             className="h-5 w-5"
             aria-hidden="true"
           />
         </Button>
-        <Button tabIndex={14}>
+        <Button>
           <Icons.picture
             className="h-5 w-5"
             aria-hidden="true"
