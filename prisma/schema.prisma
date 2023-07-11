@@ -64,7 +64,7 @@ model Result {
   id        String   @id @default(cuid())
   userId    String   @map("user_id")
   createdAt      DateTime @default(now()) @map("created_at")
-  accuracy  Decimal  @db.Decimal(3, 2)
+  accuracy  Decimal  @db.Decimal(5, 2)
   wpm       Int
   takenTime  String   @map("taken_time")
   errorCount Int?     @map("error_count")
