@@ -104,7 +104,7 @@ export default function TypingCode({ user }: TypingCodeProps) {
 
   useEffect(() => {
     const handleRestartKey = (event: KeyboardEvent) => {
-      if (event.key === "Backspace") {
+      if (event.key === "Escape") {
         handleRestart();
       }
     };
