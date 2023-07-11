@@ -9,25 +9,24 @@ import { ThemeProvider } from "@/components/theme-provider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Code Racer",
-  description: "Accelerating coding skills, competitive thrills!",
+	title: "Code Racer",
+	description: "Accelerating coding skills, competitive thrills!",
 };
 
 export default function RootLayout({
-  children,
+	children,
 }: {
-  children: React.ReactNode;
+	children: React.ReactNode;
 }) {
-  return (
-    <html lang="en">
-      <body className={inter.className}>
-        <NextTopLoader />
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <Header />
-          {children}
-          <Footer />
-        </ThemeProvider>
-      </body>
-    </html>
-  );
+	return (
+		<html lang="en">
+			<body className={inter.className}>
+				<NextTopLoader />
+				<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+					<Header />
+					{children} <Footer />
+				</ThemeProvider>
+			</body>
+		</html>
+	);
 }
