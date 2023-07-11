@@ -211,3 +211,8 @@ export default function LeaderboardPage() {
         </div>
     );
 }
+
+// todo
+// - refactor card
+// - show scroll area from 4 onwards
+// - add fero compo for 1 2 3 ranks refer to css battles
