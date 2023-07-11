@@ -17,6 +17,8 @@ model User {
   accounts      Account[]
   sessions      Session[]
   results       Result[]
+
+  snippets Snippet[]
 }
 
 // Necessary for Next auth
@@ -59,4 +61,13 @@ model Result {
   takenTime String
   userId    String
   user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Snippet {
+  id String @id @default(cuid())
+
+  code     String
+  language String
+  User     User   @relation(fields: [userId], references: [id])
+  userId   String
 }
