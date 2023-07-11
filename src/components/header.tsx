@@ -1,18 +1,5 @@
 "use client";
 
-import { Icons } from "@/components/icons";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { SessionProvider, signOut, useSession } from "next-auth/react";
-import Image from "next/image";
-import Link from "next/link";
-import { useState } from "react";
 import { ModeToggle } from "./mode-toggle";
 import { siteConfig } from "@/config/site";
 import { MobileNav } from "./mobile-nav";

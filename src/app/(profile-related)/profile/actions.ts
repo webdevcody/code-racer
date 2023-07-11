@@ -2,16 +2,21 @@
 
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
+import { throwError } from "@/lib/utils";
 
 export async function updateUserAction({ newName }: { newName: string }) {
   const user = await getCurrentUser();
 
   if (!user) {
-    return new Response("user-not-defined", { status: 401 });
+    throwError(new Error("user-not-defined"))
   }
 
   if (!newName) {
-    return new Response("name-is-empty", { status: 400 });
+    throwError(new Error("name-is-empty"))
+  }
+
+  if (newName === user?.name) {
+    throwError(new Error("name-is-the-same"))
   }
 
   await prisma.user.update({
@@ -21,23 +26,20 @@ export async function updateUserAction({ newName }: { newName: string }) {
     data: {
       name: newName,
     },
-  });
+  })
 }
 
-export async function deleteUserAction({ userId }: { userId: string }) {
+export async function deleteUserAction() {
   const user = await getCurrentUser();
+  const uid = user?.id as string;
 
   if (!user) {
-    return new Response("user-not-defined", { status: 401 });
-  }
-
-  if (userId !== user.id) {
-    return new Response("action-not-authorized", { status: 401 });
+    throwError(new Error("user-not-defined"))
   }
 
   await prisma.user.delete({
     where: {
-      id: userId
+      id: uid
     }
   })
 }
