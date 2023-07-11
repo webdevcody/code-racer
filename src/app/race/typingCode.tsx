@@ -10,12 +10,19 @@ import RacePositionTracker from "./racePositionTracker";
 
 const code = `printf("hello world")`;
 
-function calculateWPM() {
-  return 1;
+function calculateCPM(
+  numberOfCharacters: number,
+  secondsTaken: number
+): number {
+  const minutesTaken = secondsTaken / 60;
+  return Math.round(numberOfCharacters / minutesTaken);
 }
 
-function calculateAccuracy() {
-  return 0.92;
+function calculateAccuracy(
+  numberOfCharacters: number,
+  errorsCount: number
+): number {
+  return (1 - (errorsCount / numberOfCharacters))
 }
 
 interface TypingCodeProps {
@@ -40,15 +47,14 @@ export default function TypingCode({ user }: TypingCodeProps) {
           userId: user.id,
           timeTaken,
           errors: errors.length,
-          wpm: calculateWPM(),
-          accuracy: calculateAccuracy(),
+          cpm: calculateCPM(code.length, timeTaken),
+          accuracy: calculateAccuracy(code.length, errors.length),
         });
       console.log("Time taken:", timeTaken);
     }
-    if (inputEl.current !== null){
+    if (inputEl.current !== null) {
       inputEl.current.focus();
     }
-
   }, [endTime, startTime, user, errors.length]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,7 +63,10 @@ export default function TypingCode({ user }: TypingCodeProps) {
     if (!isTyping && event.target.value.length > 0) {
       setStartTime(new Date());
       setIsTyping(true);
-    } else if (event.target.value === code) {
+    } else if (
+      event.target.value === code ||
+      event.target.value.length === code.length
+    ) {
       setEndTime(new Date());
       setIsTyping(false);
     } else {
@@ -69,15 +78,16 @@ export default function TypingCode({ user }: TypingCodeProps) {
         const newErrors: number[] = Array.from(event.target.value)
           .map((char, index) => (char !== currentText[index] ? index : -1))
           .filter((index) => index !== -1);
+        console.log(newErrors);
         return newErrors;
       });
     }
   };
   const focusOnCode = () => {
-    if (inputEl.current !== null){
+    if (inputEl.current !== null) {
       inputEl.current.focus();
     }
-  }
+  };
   const handleRestart = () => {
     setInput("");
     setIsTyping(false);
@@ -88,7 +98,11 @@ export default function TypingCode({ user }: TypingCodeProps) {
 
   return (
     <div className="w-3/4 p-8 bg-accent rounded-md">
-      <RacePositionTracker inputLength={input.length - errors.length} actualSnippetLength={code.length} user={user}/>
+      <RacePositionTracker
+        inputLength={input.length - errors.length}
+        actualSnippetLength={code.length}
+        user={user}
+      />
       <h1 className="text-2xl font-bold mb-4">Type this code:</h1>
       {/* eslint-disable-next-line */}
       <code onClick={focusOnCode}>
