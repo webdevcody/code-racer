@@ -3,19 +3,14 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useEffect, useRef, useState } from "react";
-import { AlertTriangle } from "lucide-react";
-import { signOut } from "next-auth/react";
 import { deleteUserAction } from "../actions";
 import { signOut } from "next-auth/react";
 import { AlertTriangle } from "lucide-react";
 
-export default function DeleteConfirmation({
-  setWillDelete,
-  displayName,
-}: {
+interface DeleteConfirmationProps {
   setWillDelete: React.Dispatch<React.SetStateAction<boolean>>;
-  displayName: string
-}
+  displayName: string;
+};
 
 export default function DeleteConfirmation({ setWillDelete, displayName }: DeleteConfirmationProps) {
   const [isLoading, setIsLoading] = useState(false);

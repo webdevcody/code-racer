@@ -6,27 +6,13 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { updateUserAction } from "../actions";
 
-async function handleSubmit({
-  newName,
-  currentName,
-}: {
-  newName: string;
-  currentName: string;
-}) {
-  if (newName === currentName) {
-    throwError(
-      new Error("The current username and the new one is still the same!"),
-    );
-  }
-  await updateUserAction({ newName });
-}
-
 export default function ChangeNameForm({
   displayName,
 }: {
   displayName: string | null | undefined;
 }) {
   const router = useRouter();
+  const session = useSession();
   const inputRef = useRef<HTMLInputElement>(null);
 
   async function handleSubmit() {
