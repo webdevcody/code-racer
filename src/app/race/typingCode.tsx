@@ -101,6 +101,18 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
     setErrors([]);
   };
 
+  useEffect(() => {
+    const handleRestartKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        handleRestart();
+      }
+    };
+    document.addEventListener("keydown", handleRestartKey);
+    return () => {
+      document.removeEventListener("keydown", handleRestartKey);
+    };
+  }, []);
+
   return (
     <div
       className="w-3/4 p-8 bg-accent rounded-md relative"
