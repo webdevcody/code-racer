@@ -20,6 +20,8 @@ model User {
   results       Result[]
   achievements  UserAchievement[]
 
+  snippets Snippet[]
+
   @@map("users")
 }
 
@@ -67,7 +69,7 @@ model Result {
   userId     String   @map("user_id")
   createdAt  DateTime @default(now()) @map("created_at")
   accuracy   Decimal  @db.Decimal(5, 2)
-  wpm        Int
+  cpm        Int
   takenTime  String   @map("taken_time")
   errorCount Int?     @map("error_count")
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -96,4 +98,15 @@ model UserAchievement {
 
   @@id([userId, achievementId])
   @@map("user_achievements")
+}
+
+model Snippet {
+  id String @id @default(cuid())
+
+  code     String
+  language String
+  User     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String @map("user_id")
+
+  @@map("snippets")
 }

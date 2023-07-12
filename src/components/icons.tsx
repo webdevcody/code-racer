@@ -1,4 +1,4 @@
-import { MoonIcon, SunIcon } from "@radix-ui/react-icons";
+import { GitHubLogoIcon, MoonIcon, SunIcon } from "@radix-ui/react-icons";
 import {
   BarChart,
   ChevronDownSquareIcon,
@@ -7,9 +7,12 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  ImageIcon,
+  Info,
   Laptop,
   LineChart,
   LogOut,
+  RefreshCcwIcon,
   Settings,
   Trophy,
   User2,
@@ -31,9 +34,9 @@ export const Icons = {
       alt="Code Racer Logo"
     />
   ),
-
   sun: SunIcon,
   moon: MoonIcon,
+  github: GitHubLogoIcon,
   laptop: Laptop,
   logout: LogOut,
   settings: Settings,
@@ -47,4 +50,7 @@ export const Icons = {
   mobileNavOpen: ChevronDownSquareIcon,
   mobileNavClosed: ChevronLeftSquareIcon,
   trophy: Trophy,
+  refresh: RefreshCcwIcon,
+  picture: ImageIcon,
+  info: Info,
 };

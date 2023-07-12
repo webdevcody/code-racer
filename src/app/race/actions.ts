@@ -3,20 +3,19 @@
 import { User, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
-export async function saveUserResult(input: {
+export async function saveUserResultAction(input: {
   userId: User["id"];
   timeTaken: string | number;
   errors: number;
-  wpm: number;
+  cpm: number;
   accuracy: number;
 }) {
-
   await prisma.result.create({
     data: {
       userId: input.userId,
       takenTime: input.timeTaken.toString(),
       errorCount: input.errors,
-      wpm: input.wpm,
+      cpm: input.cpm,
       accuracy: new Prisma.Decimal(input.accuracy),
     },
   });

@@ -1,4 +1,4 @@
-export type SiteConfig = typeof siteConfig
+export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
   name: "CodeRacer",
@@ -12,9 +12,12 @@ export const siteConfig = {
       title: "Leaderboard",
       href: "/leaderboard",
     },
-    // ...
+    {
+      title: "Add Snippet",
+      href: "/add-snippet",
+    },
   ],
   links: {
     github: "https://github.com/webdevcody/code-racer",
   },
-}
+};

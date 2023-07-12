@@ -25,7 +25,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { Input } from "./ui/input";
 
 interface ColumnSort {
   id: string;
@@ -60,7 +59,6 @@ export function DataTable<TData, TValue>({
   const per_page = searchParams.get("per_page") ?? "5";
   const sort = searchParams?.get("sort");
   const [column, order] = sort?.split(".") ?? [];
-
 
   const [sorting, setSorting] = React.useState<SortingState>([
     {
@@ -110,16 +108,15 @@ export function DataTable<TData, TValue>({
   return (
     <ShadcnTable
       columns={columns}
-      data={data ?? []}
-      // Rows per page
-      pageCount={pageCount ?? 0}
+      data={data}
+      pageCount={pageCount}
       state={{ sorting, pagination }}
       manualPagination
       manualSorting
       setSorting={setSorting}
       setPagination={setPagination}
       renders={{
-        table: ({ children, tableInstance }) => {
+        table: ({ children }) => {
           return (
             <div className="rounded-md border mt-8 mb-4">
               <Table>{children}</Table>
@@ -158,12 +155,12 @@ export function DataTable<TData, TValue>({
             {isPending ? <Skeleton className="h-6 w-20" /> : children}
           </TableCell>
         ),
-        // filter inputs for columns 
+        // filter inputs for columns
         // we can also specify them in our
         // columns
-        filterInput: ({ props }) => null,
+        filterInput: () => null,
         // custom pagination bar
-        paginationBar: ({ tableInstance }) => {
+        paginationBar: () => {
           return (
             <div className="flex justify-center flex-col-reverse items-center gap-4 py-2 md:flex-row">
               <div className="flex flex-col items-center gap-3 sm:flex-row sm:gap-6">
