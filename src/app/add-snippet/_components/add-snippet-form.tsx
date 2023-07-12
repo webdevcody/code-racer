@@ -4,18 +4,33 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { addSnippetAction } from "../actions";
 
+const snippetLangs = [
+	{ name: "C/C++" },
+	{ name: "C#" },
+	{ name: "Go" },
+	{ name: "HTML" },
+	{ name: "Java" },
+	{ name: "Javascript" },
+	{ name: "PHP" },
+	{ name: "Python" },
+	{ name: "Ruby" },
+	{ name: "Swift" },
+	{ name: "Typescript" },
+];
+
 export default function AddSnippetForm({}) {
 	const [codeSnippet, setCodeSnippet] = useState("");
 	const [codeLanguage, setCodeLanguage] = useState("");
 
 	async function handleSubmit(e: any) {
 		e.preventDefault();
+		// console.log("language: ", codeLanguage);
+		// console.log("snippet: ", codeSnippet);
+
 		await addSnippetAction({
 			language: codeLanguage,
 			code: codeSnippet,
 		});
-		console.log("language: ", codeLanguage);
-		console.log("snippet: ", codeSnippet);
 
 		resetFields();
 	}
@@ -37,9 +52,11 @@ export default function AddSnippetForm({}) {
 					id=""
 				>
 					<option value="select">Select Snippet Language</option>
-					<option value="typescript">Typescript</option>
-					<option value="python">Python</option>
-					<option value="javascript">Javascript</option>
+					{snippetLangs.map((lang) => (
+						<option value={lang.name.toLowerCase()} key={lang.name}>
+							{lang.name}
+						</option>
+					))}
 				</select>
 			</div>
 			<div>
@@ -49,7 +66,7 @@ export default function AddSnippetForm({}) {
 					value={codeSnippet}
 					id=""
 					rows={8}
-					className="border p-2 w-full"
+					className="border border-gray-500 p-2 w-full"
 				></textarea>
 			</div>
 			<Button className="w-fit">Upload</Button>
