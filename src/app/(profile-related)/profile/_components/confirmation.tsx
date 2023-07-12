@@ -90,6 +90,13 @@ export default function DeleteConfirmation({
             >
               CONFIRM
             </Button>
+            <Button
+              variant={"secondary"}
+              className="mt-2"
+              onClick={() => setWillDelete(false)}
+            >
+              CANCEL
+            </Button> 
           </form>
         </div>
       </div>
