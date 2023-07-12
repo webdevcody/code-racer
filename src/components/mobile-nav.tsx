@@ -32,7 +32,6 @@ export function MobileNav() {
               <UserDropdown />
               <nav className="flex flex-1 flex-col space-y-4 items-center justify-center">
                 {siteConfig.mainNav.map((item) => (
-                  // does router.push to close the mobile nav sheet
                   <MobileLink
                     className={cn(
                       buttonVariants({ size: "lg" }),
@@ -40,6 +39,7 @@ export function MobileNav() {
                     )}
                     href={item.href}
                     key={item.href}
+                    onOpenChange={setOpen}
                   >
                     {item.title}
                   </MobileLink>

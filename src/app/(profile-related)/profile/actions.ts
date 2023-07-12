@@ -30,16 +30,17 @@ export async function updateUserAction({ newName }: { newName: string }) {
 }
 
 export async function deleteUserAction() {
+export async function deleteUserAction() {
   const user = await getCurrentUser();
   const uid = user?.id as string;
 
   if (!user) {
-    throwError(new Error("user-not-defined"))
+    throw new Error("No permission.");
   }
 
   await prisma.user.delete({
     where: {
-      id: uid
-    }
-  })
+      id: user.id,
+    },
+  });
 }
