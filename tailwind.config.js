@@ -89,7 +89,7 @@ module.exports = {
         "accordion-up": "accordion-up 0.2s ease-out",
         "gear-rotate-left": "gear-rotate-left 5s linear infinite",
         "gear-rotate-right": "gear-rotate-right 5s linear infinite",
-        "dash":"dash 8s linear infinite",
+        "dash":"dash linear infinite",
       },
     },
   },
