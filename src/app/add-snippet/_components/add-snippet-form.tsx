@@ -4,6 +4,20 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { addSnippetAction } from "../actions";
 
+const snippetLangs = [
+  { name: "C/C++" },
+  { name: "C#" },
+  { name: "Go" },
+  { name: "HTML" },
+  { name: "Java" },
+  { name: "Javascript" },
+  { name: "PHP" },
+  { name: "Python" },
+  { name: "Ruby" },
+  { name: "Swift" },
+  { name: "Typescript" },
+];
+
 export default function AddSnippetForm({}) {
   const [codeSnippet, setCodeSnippet] = useState("");
   const [codeLanguage, setCodeLanguage] = useState("");
