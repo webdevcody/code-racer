@@ -47,7 +47,7 @@ const EditableInput = React.forwardRef<HTMLInputElement, EditableInputProps>(
               className={cn(
                 "border-0 ring-offset-0 placeholder:text-sm",
                 className,
-                "text-base"
+                "text-base",
               )}
               // onBlur={() => {
               //   if (edit) {
@@ -93,7 +93,7 @@ const EditableInput = React.forwardRef<HTMLInputElement, EditableInputProps>(
             role="button"
             className={cn(
               "bg-background h-10 px-3 py-2 w-full text-base",
-              className
+              className,
             )}
           >
             {newValue}
@@ -101,7 +101,7 @@ const EditableInput = React.forwardRef<HTMLInputElement, EditableInputProps>(
         )}
       </div>
     );
-  }
+  },
 );
 
 export { EditableInput };

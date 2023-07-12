@@ -11,7 +11,7 @@ import { Snippet } from "@prisma/client";
 
 function calculateCPM(
   numberOfCharacters: number,
-  secondsTaken: number
+  secondsTaken: number,
 ): number {
   const minutesTaken = secondsTaken / 60;
   return Math.round(numberOfCharacters / minutesTaken);
@@ -19,7 +19,7 @@ function calculateCPM(
 
 function calculateAccuracy(
   numberOfCharacters: number,
-  errorsCount: number
+  errorsCount: number,
 ): number {
   return 1 - errorsCount / numberOfCharacters;
 }
@@ -78,7 +78,7 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
       setErrors(() => {
         const currentText: string = code.substring(
           0,
-          event.target.value.length
+          event.target.value.length,
         );
         const newErrors: number[] = Array.from(event.target.value)
           .map((char, index) => (char !== currentText[index] ? index : -1))
@@ -100,6 +100,18 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
     setEndTime(null);
     setErrors([]);
   };
+
+  useEffect(() => {
+    const handleRestartKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        handleRestart();
+      }
+    };
+    document.addEventListener("keydown", handleRestartKey);
+    return () => {
+      document.removeEventListener("keydown", handleRestartKey);
+    };
+  }, []);
 
   return (
     <div
