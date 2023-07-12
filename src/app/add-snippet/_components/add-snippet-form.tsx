@@ -1,12 +1,13 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { addSnippetAction } from "../actions";
 
 export default function AddSnippetForm({}) {
 	const [codeSnippet, setCodeSnippet] = useState("");
 	const [codeLanguage, setCodeLanguage] = useState("");
+	const [canUpload, setCanUpload] = useState(false);
 
 	async function handleSubmit(e: any) {
 		e.preventDefault();
@@ -23,16 +24,27 @@ export default function AddSnippetForm({}) {
 		setCodeSnippet("");
 		setCodeLanguage("");
 	}
+
+	function handleCodeSnippetChange(e: ChangeEvent<HTMLTextAreaElement>){
+
+		setCodeSnippet(e.target.value)
+		
+		if(codeSnippet.replace(/[\n\t\s]/g, "").length >= 30){
+			setCanUpload(true);
+		}else
+			setCanUpload(false)
+
+	}
 	return (
 		<form
 			onSubmit={handleSubmit}
 			action=""
-			className="mt-5 flex flex-col gap-3"
+			className="flex flex-col gap-3 mt-5"
 		>
 			<div>
 				<select
 					onChange={(e) => setCodeLanguage(e.target.value)}
-					className="py-3 px-4 w-full"
+					className="w-full px-4 py-3"
 					name=""
 					id=""
 				>
@@ -44,15 +56,15 @@ export default function AddSnippetForm({}) {
 			</div>
 			<div>
 				<textarea
-					onChange={(e) => setCodeSnippet(e.target.value)}
+					onChange={(e) => handleCodeSnippetChange(e)}
 					name=""
 					value={codeSnippet}
 					id=""
 					rows={8}
-					className="border p-2 w-full"
+					className="w-full p-2 border"
 				></textarea>
 			</div>
-			<Button className="w-fit">Upload</Button>
+			<Button className={`w-fit`} disabled={!canUpload} >Upload</Button>
 		</form>
 	);
 }
