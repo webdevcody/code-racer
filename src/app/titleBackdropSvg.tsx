@@ -13,15 +13,35 @@ export type configType = {
 };
 
 type lineObject = {
-    x1: number;
-    x2: number;
-    y1: number;
-    y2: number;
-    stroke: string;
-    strokeWidth: number;
-    animationDelay: string;
-    animationDuration: string;
-  };
+  x1: number;
+  x2: number;
+  y1: number;
+  y2: number;
+  stroke: string;
+  strokeWidth: number;
+  animationDelay: string;
+  animationDuration: string;
+};
+
+const useWindowWide = () => {
+  const [width, setWidth] = useState(0);
+
+  useEffect(() => {
+    function handleResize() {
+      setWidth(window.innerWidth);
+    }
+
+    window.addEventListener("resize", handleResize);
+
+    handleResize();
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [setWidth]);
+
+  return width;
+};
 
 const config = {
   count: 100,
@@ -34,13 +54,14 @@ const config = {
   height: 400,
 };
 
-
 export default function TitleBackdropSvg() {
   const [lines, setLines] = useState<lineObject[]>([]);
+  const windowWidth = useWindowWide();
+  const width = Math.min(windowWidth, config.width);
 
-  const constructSvg = () => {
+  useEffect(() => {
     const lineArray = [];
-    const w = config.width;
+    const w = width;
     const lineLength = w * config.dashLengthInit;
 
     for (let i = 0; i < config.count; ++i) {
@@ -68,18 +89,14 @@ export default function TitleBackdropSvg() {
       });
     }
     setLines(lineArray);
-  };
-
-  useEffect(() => {
-    constructSvg();
-  }, []);
+  }, [width]);
 
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width={window.innerWidth<config.width ? window.innerWidth: config.width}
+      width={width}
       height={config.height}
-      viewBox={`0 0 ${config.width} ${config.height}`}
+      viewBox={`0 0 ${width} ${config.height}`}
       fill="none"
     >
       <g id="dashContainer" className="[&>*]:animate-dash">
