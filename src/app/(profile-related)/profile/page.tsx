@@ -16,6 +16,7 @@ export default async function ProfilePage() {
   const user = await getCurrentUser();
   const photoURL = user?.image as string;
   const displayName = user?.name as string;
+  const uid = user?.id as string;
   const achievements = await prisma.userAchievement.findMany({
     where: {
       userId: uid,
@@ -25,7 +26,6 @@ export default async function ProfilePage() {
     },
   });
   const totalPoints = 0;
-
 
   return (
     <main className="py-8 grid place-items-center h-[clamp(40rem,82.5dvh,50rem)]">

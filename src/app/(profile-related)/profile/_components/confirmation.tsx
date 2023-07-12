@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { useEffect, useRef, useState } from "react";
 import { deleteUserAction } from "../actions";
 import { signOut } from "next-auth/react";
-import { CloseButton } from "@/components/ui/buttons";
 import { AlertTriangle } from "lucide-react";
 
 interface DeleteConfirmationProps {
@@ -27,11 +26,18 @@ export default function DeleteConfirmation({ setWillDelete, displayName }: Delet
   }, [divRef, setWillDelete]);
 
   async function handleDelete(e: React.FormEvent<HTMLFormElement>) {
+    setIsLoading(true);
     e.preventDefault();
-    await deleteUserAction();
-    await signOut({
-      callbackUrl: "/"
-    })
+    try {
+      await deleteUserAction();
+      await signOut({
+        callbackUrl: "/",
+      });
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -58,20 +64,7 @@ export default function DeleteConfirmation({ setWillDelete, displayName }: Delet
 
           <form
             className="mt-4 select-none flex flex-col gap-2"
-            onSubmit={async (e) => {
-              setIsLoading(true);
-              e.preventDefault();
-              try {
-                await deleteUserAction();
-                await signOut({
-                  callbackUrl: "/",
-                });
-              } catch (err) {
-                console.log(err);
-              } finally {
-                setIsLoading(false);
-              }
-            }}
+            onSubmit={handleDelete}
           >
             <p>Please type &quot;{displayName}&quot; to confirm:</p>
             <Input
@@ -86,16 +79,12 @@ export default function DeleteConfirmation({ setWillDelete, displayName }: Delet
               variant={"destructive"}
               className="mt-2"
               tabIndex={inputValue === displayName ? 0 : -1}
-              title={
-                inputValue === displayName
-                  ? "Delete your account"
-                  : "Please type in your username"
-              }
+              title="Delete your account"
               disabled={
                 (inputValue === displayName ? undefined : true) || isLoading
               }
             >
-              CONFIRM
+              { isLoading ? "DELETING..." : "CONFIRM" }
             </Button>
           </form>
         </div>

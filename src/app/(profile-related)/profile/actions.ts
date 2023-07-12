@@ -30,9 +30,7 @@ export async function updateUserAction({ newName }: { newName: string }) {
 }
 
 export async function deleteUserAction() {
-export async function deleteUserAction() {
   const user = await getCurrentUser();
-  const uid = user?.id as string;
 
   if (!user) {
     throw new Error("No permission.");
