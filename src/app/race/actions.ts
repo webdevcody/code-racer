@@ -1,18 +1,23 @@
 "use server";
 
-import { Result } from "@prisma/client";
+import { User, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
-type NewResult = Omit<Result, "id" | "createdAt">;
-
-export async function saveUserResultAction(input: NewResult) {
+export async function saveUserResultAction(input: {
+  userId: User["id"];
+  timeTaken: string | number;
+  errors: number;
+  cpm: number;
+  accuracy: number;
+  snippetId: string;
+}) {
   await prisma.result.create({
     data: {
       userId: input.userId,
-      takenTime: input.takenTime,
-      errorCount: input.errorCount,
+      takenTime: input.timeTaken.toString(),
+      errorCount: input.errors,
       cpm: input.cpm,
-      accuracy: input.accuracy,
+      accuracy: new Prisma.Decimal(input.accuracy),
       snippetId: input.snippetId,
     },
   });
