@@ -1,8 +1,8 @@
 name: Task
 description: Request a new task for this project
-title: '[TASK]: '
+title: "[TASK]: "
 labels:
-  - 'task'
+  - "task"
 body:
   - type: markdown
     attributes:
@@ -20,24 +20,6 @@ body:
     attributes:
       label: Task Summary
       description: A brief description of what the task will accomplish.
-      placeholder: 'Example: Make [x] do [y]'
+      placeholder: "Example: Make [x] do [y]"
     validations:
       required: true
-
-  - type: textarea
-    id: acceptance
-    attributes:
-      label: Acceptance criteria
-      description: What would you consider to be completion for this task?
-      placeholder: |
-        - [ ] [x] does/is [y] or [x] exists 
-        ...
-    validations:
-      required: true
-
-  - type: textarea
-    id: context
-    attributes:
-      label: Any Additional Context
-      description: Any other context or additional information.
-      placeholder: Any other context or additional information you wish to share about the proposed feature...
