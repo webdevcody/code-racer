@@ -59,7 +59,7 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
     }
 
     if (isEnd && endTime && startTime) router.push("/result");
-  }, [endTime, startTime, user, errors.length, isEnd, router]);
+  }, [endTime, startTime, user, errors.length, isEnd, router, code.length]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
