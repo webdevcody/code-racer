@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-1.0.x"]
 }
 
 datasource db {
@@ -17,6 +18,8 @@ model User {
   accounts      Account[]
   sessions      Session[]
   results       Result[]
+
+  snippets Snippet[]
 
   @@map("users")
 }
@@ -64,11 +67,22 @@ model Result {
   id        String   @id @default(cuid())
   userId    String   @map("user_id")
   createdAt      DateTime @default(now()) @map("created_at")
-  accuracy  Decimal  @db.Decimal(3, 2)
-  wpm       Int
+  accuracy  Decimal  @db.Decimal(5, 2)
+  cpm       Int
   takenTime  String   @map("taken_time")
   errorCount Int?     @map("error_count")
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("results")
+}
+
+model Snippet {
+  id String @id @default(cuid())
+
+  code     String
+  language String
+  User     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String @map("user_id")
+
+  @@map("snippets")
 }

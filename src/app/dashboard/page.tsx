@@ -24,12 +24,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-import {
-  DoubleArrowLeftIcon,
-  ArrowLeftIcon,
-  ArrowRightIcon,
-  DoubleArrowRightIcon,
-} from "@radix-ui/react-icons";
+import { Icons } from "@/components/icons";
 
 export default function DashboardPage() {
   const [currentPage, setCurrentPage] = React.useState(1);
@@ -95,12 +90,10 @@ export default function DashboardPage() {
     recentGames.length;
 
   return (
-    <>
-      <h1 className="text-4xl m-6 font-bold text-center max-[600px]:mb-10">
-        Dashboard
-      </h1>
-      <div className="flex max-[600px]:flex-col justify-center items-center w-screen h-[55vh] gap-6 m-2">
-        <Card className="w-[47.5%] max-[600px]:w-[100%] max-[600px]:mr-4 h-full max-[600px]:h-[50%]">
+    <div className="flex flex-col gap-8 container mx-auto mb-8">
+      <h1 className="text-4xl m-6 font-bold text-center mb-4">Dashboard</h1>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <Card className="h-[400px]">
           <CardHeader>
             <CardTitle className="text-center m-2">Accuracy</CardTitle>
           </CardHeader>
@@ -123,7 +116,8 @@ export default function DashboardPage() {
             </LineChart>
           </ResponsiveContainer>
         </Card>
-        <Card className="w-[47.5%] max-[600px]:w-[100%] h-full max-[600px]:h-[50%] max-[600px]:mr-4 max-[600px]:ml-4 max-[600px]:mb-6">
+
+        <Card className="h-[400px]">
           <CardHeader>
             <CardTitle className="text-center m-2">Words per minute</CardTitle>
           </CardHeader>
@@ -147,12 +141,12 @@ export default function DashboardPage() {
           </ResponsiveContainer>
         </Card>
       </div>
-      <div className="flex max-[850px]:flex-col justify-center items-center w-screen min-[850px]:h-[55vh] gap-4 m-4">
-        <Card className="w-[55vw] max-[850px]:w-[100vw] min-[850px]:h-[55vh] mr-4 p-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <Card className="border-none">
           <CardHeader>
             <CardTitle className="text-center m-2">Recent Races</CardTitle>
           </CardHeader>
-          <Table className="w-full max-[600px]:text-sm">
+          <Table className="w-full max-[600px]:text-sm border-b-2">
             <TableHeader>
               <TableRow>
                 <TableHead className="max-[900px]:hidden">Game ID</TableHead>
@@ -184,13 +178,13 @@ export default function DashboardPage() {
           </Table>
           <div className="flex justify-center gap-4 mt-6">
             <Button variant={"outline"} onClick={() => handleChangePage(1)}>
-              <DoubleArrowLeftIcon />
+              <Icons.chevronsLeft />
             </Button>
             <Button
               variant={"outline"}
               onClick={() => handleChangePage(currentPage - 1)}
             >
-              <ArrowLeftIcon />
+              <Icons.chevronLeft />
             </Button>
             <Input
               className="w-12 text-center"
@@ -201,7 +195,7 @@ export default function DashboardPage() {
               variant={"outline"}
               onClick={() => handleChangePage(currentPage + 1)}
             >
-              <ArrowRightIcon />
+              <Icons.chevronRight />
             </Button>
             <Button
               variant={"outline"}
@@ -209,11 +203,11 @@ export default function DashboardPage() {
                 handleChangePage(Math.ceil(recentGames.length / limit))
               }
             >
-              <DoubleArrowRightIcon />
+              <Icons.chevronsRight />
             </Button>
           </div>
         </Card>
-        <Card className="w-[40vw] max-[850px]:w-screen min-[850px]:h-[55vh] mr-4">
+        <Card className="w-[42vw] max-[850px]:w-screen min-[850px]:h-[50vh] mr-4 border-none">
           <CardHeader>
             <CardTitle className="text-center m-2">Statistics</CardTitle>
           </CardHeader>
@@ -249,6 +243,6 @@ export default function DashboardPage() {
           </div>
         </Card>
       </div>
-    </>
+    </div>
   );
 }

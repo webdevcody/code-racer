@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import type { Result, User } from "@prisma/client";
 import {
   Table,
   TableBody,
@@ -16,8 +15,6 @@ import {
   type PaginationState,
 } from "unstyled-table";
 import { Skeleton } from "./ui/skeleton";
-import Image from "next/image";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/icons";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -34,54 +31,29 @@ interface ColumnSort {
   desc: boolean;
 }
 
-type SortingState = ColumnSort[]
+type SortingState = ColumnSort[];
 
-type ResultWithUser = Result & { user: User };
-
-interface ResultsTableProps {
-  data: ResultWithUser[];
+interface DataTableProps<TData, TValue> {
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
   pageCount: number;
+  defaultSorting?: {
+    prop: string;
+    val: "asc" | "desc";
+  };
 }
 
-export function ResultsTable({ data, pageCount }: ResultsTableProps) {
+export function DataTable<TData, TValue>({
+  columns,
+  data,
+  pageCount,
+  defaultSorting,
+}: DataTableProps<TData, TValue>) {
   const [isPending, startTransition] = React.useTransition();
 
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
-
-  const columns = React.useMemo<ColumnDef<Result, unknown>[]>(
-    () => [
-      {
-        accessorKey: "user",
-        header: "User",
-        cell: ({ cell }) => {
-          const user = cell.getValue() as User;
-
-          return (
-            <Link href={`${user.id}`}>
-              <div className="flex items-center gap-2">
-                <Image
-                  className="rounded-full"
-                  src={user.image ?? ""}
-                  alt="user avatar"
-                  height={30}
-                  width={30}
-                />
-                <span>{user.name}</span>
-              </div>
-            </Link>
-          );
-        },
-        enableSorting: false,
-      },
-      {
-        accessorKey: "takenTime",
-        header: "Taken time",
-      },
-    ],
-    []
-  );
 
   const page = searchParams.get("page") ?? "1";
   const per_page = searchParams.get("per_page") ?? "5";
@@ -90,8 +62,12 @@ export function ResultsTable({ data, pageCount }: ResultsTableProps) {
 
   const [sorting, setSorting] = React.useState<SortingState>([
     {
-      id: column ?? "takenTime",
-      desc: order === "desc",
+      id: column ?? defaultSorting?.prop,
+      desc: order
+        ? order === "desc"
+        : defaultSorting?.val
+        ? defaultSorting.val === "desc"
+        : true,
     },
   ]);
 
@@ -129,13 +105,11 @@ export function ResultsTable({ data, pageCount }: ResultsTableProps) {
     },
     [searchParams]
   );
-
   return (
     <ShadcnTable
       columns={columns}
-      data={data ?? []}
-      // Rows per page
-      pageCount={pageCount ?? 0}
+      data={data}
+      pageCount={pageCount}
       state={{ sorting, pagination }}
       manualPagination
       manualSorting
@@ -170,14 +144,23 @@ export function ResultsTable({ data, pageCount }: ResultsTableProps) {
             )}
           </TableBody>
         ),
-        bodyRow: ({ children }) => <TableRow>{children}</TableRow>,
+        bodyRow: ({ children }) => (
+          <TableRow className="table-row">{children}</TableRow>
+        ),
+        // here in children we get our data that we defined in columns
+        // by specifying values in accessorKey / or if we made our
+        // custom cell by specifying cell function
         bodyCell: ({ children }) => (
-          <TableCell>
-            {isPending ? <Skeleton className="w-20 h-6" /> : children}
+          <TableCell className="body-cell">
+            {isPending ? <Skeleton className="h-6 w-20" /> : children}
           </TableCell>
         ),
-        filterInput: ({}) => null,
-        paginationBar: ({  }) => {
+        // filter inputs for columns
+        // we can also specify them in our
+        // columns
+        filterInput: () => null,
+        // custom pagination bar
+        paginationBar: () => {
           return (
             <div className="flex flex-col-reverse items-center justify-center gap-4 py-2 md:flex-row">
               <div className="flex flex-col items-center gap-3 sm:flex-row sm:gap-6">
