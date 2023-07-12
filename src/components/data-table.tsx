@@ -78,7 +78,7 @@ export function DataTable<TData, TValue>({
         sort: sorting[0]?.id
           ? `${sorting[0]?.id}.${sorting[0]?.desc ? "desc" : "asc"}`
           : null,
-      })}`
+      })}`,
     );
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -103,7 +103,7 @@ export function DataTable<TData, TValue>({
 
       return newSearchParams.toString();
     },
-    [searchParams]
+    [searchParams],
   );
   return (
     <ShadcnTable
@@ -176,7 +176,7 @@ export function DataTable<TData, TValue>({
                             page: 1,
                             per_page: value,
                             sort,
-                          })}`
+                          })}`,
                         );
                       });
                     }}
@@ -210,7 +210,7 @@ export function DataTable<TData, TValue>({
                             page: 1,
                             per_page,
                             sort,
-                          })}`
+                          })}`,
                         );
                       });
                     }}
@@ -233,7 +233,7 @@ export function DataTable<TData, TValue>({
                             page: Number(page) - 1,
                             per_page,
                             sort,
-                          })}`
+                          })}`,
                         );
                       });
                     }}
@@ -253,7 +253,7 @@ export function DataTable<TData, TValue>({
                             page: Number(page) + 1,
                             per_page,
                             sort,
-                          })}`
+                          })}`,
                         );
                       });
                     }}
@@ -275,7 +275,7 @@ export function DataTable<TData, TValue>({
                           page: pageCount ?? 1,
                           per_page,
                           sort,
-                        })}`
+                        })}`,
                       );
                     }}
                     disabled={Number(page) >= (pageCount ?? 1) || isPending}

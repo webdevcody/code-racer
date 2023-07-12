@@ -14,7 +14,7 @@ async function handleSubmit({
 }) {
   if (newName === currentName) {
     throwError(
-      new Error("The current username and the new one is still the same!")
+      new Error("The current username and the new one is still the same!"),
     );
   }
   await updateUserAction({ newName });
