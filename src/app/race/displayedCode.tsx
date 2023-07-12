@@ -1,3 +1,5 @@
+import { cn } from "@/lib/utils";
+
 interface displayCodeProps {
   code: string;
   userInput: string;
@@ -14,10 +16,14 @@ export default function DisplayedCode({
       {code.split("").map((char, index) => (
         <span
           key={index}
-          className={`
-          ${errors.includes(index) ? "bg-red-500 opacity-100" : ""} 
-          ${userInput[index] === char ? "opacity-100" : "opacity-50"}
-        `}
+          className={cn({
+            "bg-red-500 opacity-100": errors.includes(index),
+            "bg-yellow-200 opacity-80 text-black": userInput.length === index,
+            "opacity-100":
+              userInput.length !== index && userInput[index] === char,
+            "opacity-50":
+              userInput.length !== index && userInput[index] !== char,
+          })}
         >
           {char}
         </span>

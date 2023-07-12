@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 
 async function getRandomSnippet() {
   const itemCount = await prisma.snippet.count();
-  const skip = Math.max(0, Math.floor(Math.random() * itemCount) - 1);
+  const skip = Math.max(0, Math.floor(Math.random() * itemCount));
 
   return prisma.snippet
     .findMany({
