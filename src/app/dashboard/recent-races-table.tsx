@@ -14,43 +14,39 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Icons } from "@/components/icons";
+import { formatDate } from "@/lib/utils";
 
-type ResultWithUser = Result & { user: User };
-
-interface ResultsTableProps {
-  data: ResultWithUser[];
+interface RecentRacesTableProps {
+  data: Result[];
   pageCount: number;
 }
 
-export function ResultsTable({ data, pageCount }: ResultsTableProps) {
+export function RecentRacesTable({ data, pageCount }: RecentRacesTableProps) {
   const columns = React.useMemo<ColumnDef<Result, unknown>[]>(
     () => [
       {
-        accessorKey: "user",
-        header: "User",
-        cell: ({ cell }) => {
-          const user = cell.getValue() as User;
-
-          return (
-            <Link href={`${user.id}`}>
-              <div className="flex items-center gap-2">
-                <Image
-                  className="rounded-full"
-                  src={user.image ?? ""}
-                  alt="user avatar"
-                  height={30}
-                  width={30}
-                />
-                <span>{user.name}</span>
-              </div>
-            </Link>
-          );
-        },
+        accessorKey: "id",
+        header: "Game id",
         enableSorting: false,
       },
       {
-        accessorKey: "takenTime",
-        header: "Taken time",
+        accessorKey: "errorCount",
+        header: "Errors",
+      },
+      {
+        accessorKey: "accuracy",
+        header: "Accuracy",
+        cell: ({ cell }) => {
+          const accuracy = cell.getValue() as number;
+
+          if (accuracy > 0.8) {
+            return <span className="text-green-600">{accuracy}</span>;
+          } else if (accuracy > 0.5) {
+            return <span className="text-orange-600">{accuracy}</span>;
+          } else {
+            return <span className="text-destructive">{accuracy}</span>;
+          }
+        },
       },
       {
         accessorKey: "cpm",
@@ -73,23 +69,13 @@ export function ResultsTable({ data, pageCount }: ResultsTableProps) {
         },
       },
       {
-        accessorKey: "accuracy",
-        header: "Accuracy",
+        accessorKey: "createdAt",
+        header: "Date",
         cell: ({ cell }) => {
-          const accuracy = cell.getValue() as number;
+          const date = cell.getValue() as Date;
 
-          if (accuracy > 0.8) {
-            return <span className="text-green-600">{accuracy}</span>;
-          } else if (accuracy > 0.5) {
-            return <span className="text-orange-600">{accuracy}</span>;
-          } else {
-            return <span className="text-destructive">{accuracy}</span>;
-          }
+          return <span> {formatDate(date)}</span>;
         },
-      },
-      {
-        accessorKey: "errorCount",
-        header: "Errors",
       },
     ],
     [],
@@ -101,7 +87,7 @@ export function ResultsTable({ data, pageCount }: ResultsTableProps) {
       data={data}
       pageCount={pageCount}
       defaultSorting={{
-        prop: "takenTime",
+        prop: "createdAt",
         val: "asc",
       }}
     />

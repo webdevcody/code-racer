@@ -18,7 +18,7 @@ const ProgressBar = React.forwardRef<
       ref={ref}
       className={cn(
         "overflow-hidden border border-border rounded-full w-[100%] h-[15px]",
-        className
+        className,
       )}
       {...props}
     >
@@ -38,7 +38,7 @@ const ProgressIndicator = React.forwardRef<
       ref={ref}
       className={cn(
         "bg-primary w-[0%] h-full transition-all duration-700 ease-[cubic-bezier(0.65, 0, 0.35, 1)]",
-        className
+        className,
       )}
       {...props}
       style={{ width: `${progress}%` }}
