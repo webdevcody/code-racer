@@ -92,7 +92,7 @@ export function ResultsTable({ data, pageCount }: ResultsTableProps) {
         header: "Errors",
       },
     ],
-    []
+    [],
   );
 
   return (

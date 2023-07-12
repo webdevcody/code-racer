@@ -16,7 +16,6 @@ import {
 import { Icons } from "@/components/icons";
 import { formatDate } from "@/lib/utils";
 
-
 interface RecentRacesTableProps {
   data: Result[];
   pageCount: number;
@@ -79,7 +78,7 @@ export function RecentRacesTable({ data, pageCount }: RecentRacesTableProps) {
         },
       },
     ],
-    []
+    [],
   );
 
   return (

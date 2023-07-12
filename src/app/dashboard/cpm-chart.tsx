@@ -27,7 +27,6 @@ const CpmChart: React.FC<CpmChartProps> = ({ recentGames }) => {
         <ComposedChart
           data={recentGames}
           margin={{ right: 25, left: 25, bottom: 100 }}
-
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="gameNumber" />
