@@ -46,21 +46,21 @@ To get started with Code Racer locally, follow these steps
    cd code-racer
    ```
 
-3. Install NPM packages
+3. Create a .env file inside the project's root directory.
+
+4. Copy and paste variables from `.env.example` into `.env`
+
+5. Install NPM packages
 
    ```sh
    npm i
    ```
 
-4. Generate a version of Prisma Client that is tailored to the models.
+6. Generate a version of Prisma Client that is tailored to the models.
 
    ```js
    npx prisma generate
    ```
-
-5. Create a .env file inside the project's root directory.
-
-6. Copy and paste variables from `.env.example` into `.env`
 
 7. Open Docker Desktop Application and go back to your VSCode terminal and run this command:
 
