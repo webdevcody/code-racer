@@ -3,14 +3,13 @@
 import { User, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
-export async function saveUserResult(input: {
+export async function saveUserResultAction(input: {
   userId: User["id"];
   timeTaken: string | number;
   errors: number;
   cpm: number;
   accuracy: number;
 }) {
-
   await prisma.result.create({
     data: {
       userId: input.userId,

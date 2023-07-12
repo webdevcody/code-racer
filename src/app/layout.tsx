@@ -1,5 +1,5 @@
-import Header from "@/components/header";
 import "./globals.css";
+import Header from "@/components/header";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import NextTopLoader from "nextjs-toploader";
@@ -19,21 +19,21 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
-	children,
+  children,
 }: {
-	children: React.ReactNode;
+  children: React.ReactNode;
 }) {
-	return (
-		<html lang="en">
-			<body className={inter.className}>
-				<NextTopLoader showSpinner={false} />
-				<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-					<Header />
-					{children}
-					<Footer />
-					<TailwindIndicator />
-				</ThemeProvider>
-			</body>
-		</html>
-	);
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body className={inter.className}>
+        <NextTopLoader showSpinner={false} />
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <Header />
+          {children}
+          <Footer />
+          <TailwindIndicator />
+        </ThemeProvider>
+      </body>
+    </html>
+  );
 }

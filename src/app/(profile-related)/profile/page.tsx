@@ -2,8 +2,11 @@ import Image from "next/image";
 
 import { getCurrentUser } from "@/lib/session";
 
+import Achievement from "@/components/achievement";
+import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { ChangeNameForm, ProfileNav } from "./_components";
+import ChangeNameForm from "./_components/change-name-form";
+import ProfileNav from "./_components/profile-nav";
 
 export const metadata = {
   title: "Profile Page",
@@ -17,6 +20,14 @@ export default async function ProfilePage() {
   {
     /** Static data unrelated to auth for now */
   }
+  const achievements = await prisma.userAchievement.findMany({
+    where: {
+      userId: uid,
+    },
+    include: {
+      achievement: true,
+    },
+  });
   const totalPoints = 0;
 
   return (
@@ -45,6 +56,21 @@ export default async function ProfilePage() {
           </div>
           <ChangeNameForm displayName={displayName} />
           <span>Total Points: {totalPoints}</span>
+          {achievements.length ? (
+            <ul className="w-fit max-w-[292px] flex items-center flex-wrap gap-1 p-2 border-border rounded-sm bg-primary-foreground">
+              {achievements.map(({ achievement, unlockedAt }) => (
+                <Achievement
+                  key={achievement.id}
+                  achievement={{
+                    name: achievement.name,
+                    description: achievement.description,
+                    unlockedAt,
+                    image: achievement.image,
+                  }}
+                />
+              ))}
+            </ul>
+          ) : null}
         </article>
       </div>
     </main>
