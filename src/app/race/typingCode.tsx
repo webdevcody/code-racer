@@ -59,7 +59,7 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
     }
 
     if (isEnd && endTime && startTime) router.push("/result");
-  }, [endTime, startTime, user, errors.length, isEnd, router]);
+  }, [endTime, startTime, user, errors.length, isEnd, router, code.length]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
@@ -113,7 +113,6 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
         user={user}
       />
       <h1 className="text-2xl font-bold mb-4">Type this code:</h1>
-      {/* eslint-disable-next-line */}
       <DisplayedCode code={code} errors={errors} userInput={input} />
       <input
         type="text"
@@ -122,8 +121,6 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
         onChange={handleInputChange}
         disabled={endTime !== null}
         className="w-full h-full absolute p-8 inset-y-0 left-0 -z-40 focus:outline outline-blue-500 rounded-md"
-        // eslint-disable-next-line
-        autoFocus
       />
       {endTime && startTime && (
         <div>
