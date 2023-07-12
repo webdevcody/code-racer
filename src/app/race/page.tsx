@@ -20,7 +20,7 @@ export default async function Race() {
   const snippet = await getRandomSnippet();
 
   return (
-    <main className="flex md:min-h-[calc(100vh-11rem)] flex-col items-center justify-between p-24">
+    <main className="flex md:min-h-[calc(100vh-11rem)] flex-col items-center justify-between lg:p-24 p-10">
       {snippet && <TypingCode snippet={snippet} user={user} />}
     </main>
   );

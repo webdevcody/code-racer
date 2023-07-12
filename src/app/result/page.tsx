@@ -6,12 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Chart from "./chart";
 import { Icons } from "@/components/icons";
 import { useRouter } from "next/navigation";
-import {
-  FacebookIcon,
-  FacebookShareButton,
-  TwitterIcon,
-  TwitterShareButton,
-} from "react-share";
 
 const card = [
   { title: "WPM", value: "81 %" },
@@ -31,10 +25,10 @@ export default function ResultsChart() {
   return (
     <div className="w-auto">
       <div className="flex flex-col justify-center gap-4 mt-5">
-        <div className="flex flex-row mx-28 gap-6">
+        <div className="flex md:flex-row flex-col md:mx-28 mx-20 gap-6">
           {card.map((c, idx) => {
             return (
-              <Card className="w-[30%]" key={idx}>
+              <Card className="md:w-[30%] w-[80%]" key={idx}>
                 <CardHeader>
                   <CardTitle className="">{c.title}</CardTitle>
                 </CardHeader>
