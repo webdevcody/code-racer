@@ -7,8 +7,7 @@ import { Button } from "@/components/ui/button";
 import { saveUserResultAction } from "./actions";
 import { useRouter } from "next/navigation";
 import RacePositionTracker from "./racePositionTracker";
-
-const code = `printf("hello world")`;
+import { Snippet } from "@prisma/client";
 
 function calculateCPM(
   numberOfCharacters: number,
@@ -27,9 +26,11 @@ function calculateAccuracy(
 
 interface TypingCodeProps {
   user?: User;
+  snippet: Snippet;
 }
 
-export default function TypingCode({ user }: TypingCodeProps) {
+export default function TypingCode({ user, snippet }: TypingCodeProps) {
+  const code = snippet.code;
   const [input, setInput] = useState("");
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [endTime, setEndTime] = useState<Date | null>(null);
@@ -52,7 +53,6 @@ export default function TypingCode({ user }: TypingCodeProps) {
           cpm: calculateCPM(code.length, timeTaken),
           accuracy: calculateAccuracy(code.length, errors.length),
         });
-      console.log("Time taken:", timeTaken);
     }
     if (inputEl.current !== null) {
       inputEl.current.focus();
