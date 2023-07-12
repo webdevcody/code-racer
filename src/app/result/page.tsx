@@ -74,10 +74,10 @@ export default function ResultsChart() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-row justify-center gap-4">
-            <TwitterShareButton url="https://code-racer-eight.vercel.app/race" title={"Checkout my score!!"} >
+            <TwitterShareButton url={String(process.env.NEXT_PUBLIC_DOMAIN)} title={"Checkout my score!!"}>
               <TwitterIcon size={32} round={true} />
             </TwitterShareButton>
-            <FacebookShareButton url="https://code-racer-eight.vercel.app/race" title={"Checkout my score!!"} >
+            <FacebookShareButton url={String(process.env.NEXT_PUBLIC_DOMAIN)} title={"Checkout my score!!"}>
               <FacebookIcon size={32} round={true} />
             </FacebookShareButton>
           </div>
@@ -85,7 +85,7 @@ export default function ResultsChart() {
       </Card>
       <div className="text-center mt-5 text-gray-600">
         <span className="bg-[#0b1225]  m-1 p-1 rounded-md" > tab </span> + <span className="bg-[#0b1225] m-1 p-1 rounded-md" > enter </span> - restart game
-        C</div>
+      </div>
     </div>
   );
 }
