@@ -1,0 +1,12 @@
+{
+  "MD033": {
+    "allowed_elements": ["details" , "summary" , "div" , "h1" , "h2" , "a" , "img" , "br"]
+  },
+  "MD013": {
+    "line_length": 420,
+    "code_blocks": false,
+    "tables": false,
+    "headers": false
+  },
+  "MD041":false
+}

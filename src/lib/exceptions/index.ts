@@ -1,7 +1,3 @@
-import {
-  ContextDoesNotExistError
-} from "./custom-hooks";
+import { ContextDoesNotExistError } from "./custom-hooks";
 
-export {
-  ContextDoesNotExistError
-};
+export { ContextDoesNotExistError };

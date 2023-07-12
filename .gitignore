@@ -39,3 +39,7 @@ next-env.d.ts
 # SQLite
 prisma/dev.db
 prisma/dev.db-journal
+
+
+#local notes & todos - for personal track only
+Note.md

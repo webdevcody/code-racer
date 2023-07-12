@@ -10,11 +10,26 @@ import { siteConfig } from "@/config/site";
 
 const inter = Inter({ subsets: ["latin"] });
 
+const domain = process.env.NEXT_PUBLIC_DOMAIN;
+
 export const metadata: Metadata = {
   title: siteConfig.name,
   description: siteConfig.description,
   icons: {
     icon: "/static/logo.png",
+  },
+  openGraph: {
+    type: "website",
+    url: domain,
+    title: siteConfig.name,
+    description: siteConfig.description,
+    images: `${domain}/static/logo.png`,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Checkout Code Racer!",
+    description: siteConfig.description,
+    images: `${domain}/static/logo.png`,
   },
 };
 
