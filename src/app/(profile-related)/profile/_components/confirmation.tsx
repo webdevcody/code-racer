@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useEffect, useRef, useState } from "react";
-import { throwError } from "@/lib/utils";
 import { AlertTriangle } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { deleteUserAction } from "../actions";
@@ -11,7 +10,6 @@ import { deleteUserAction } from "../actions";
 export default function DeleteConfirmation({
   setWillDelete,
   displayName,
-  uid,
 }: {
   setWillDelete: React.Dispatch<React.SetStateAction<boolean>>;
   displayName: string;
@@ -52,7 +50,7 @@ export default function DeleteConfirmation({
           </span>
 
           <form
-            className="mt-4 select-none flex flex-col gap-2"
+            className="flex flex-col gap-2 mt-4 select-none"
             onSubmit={async (e) => {
               setIsLoading(true);
               e.preventDefault();

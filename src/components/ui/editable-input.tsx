@@ -3,11 +3,11 @@
 "use client";
 
 import React from "react";
-import { Input, InputProps } from "./input";
+import { Input } from "./input";
 import { Button } from "./button";
 import { cn, throwError } from "@/lib/utils";
 
-export interface EditableInputProps extends InputProps {
+export interface EditableInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   /** How would you like to save the text? */
   actionOnSave: () => Promise<void>;
 }
@@ -58,10 +58,10 @@ const EditableInput = React.forwardRef<HTMLInputElement, EditableInputProps>(
               autoFocus
               {...props}
             />
-            <div className="absolute items-center justify-center flex gap-2 right-0 h-full w-24 top-0 bg-background">
+            <div className="absolute top-0 right-0 flex items-center justify-center w-24 h-full gap-2 bg-background">
               <button
                 type="button"
-                className="w-4 h-4 relative"
+                className="relative w-4 h-4"
                 onClick={() => {
                   setNewValue(value);
                   setEdit(false);

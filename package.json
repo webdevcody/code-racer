@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "predev": "prisma generate && prisma db push",
+    "predev": "husky install && prisma generate && prisma db push ",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
     "db:generate": "prisma generate",
+    "prepare": "husky install",
     "format:write": "prettier --write \"**/*.{ts,tsx,mdx}\" --cache",
     "format:check": "prettier --check \"**/*.{ts,tsx,mdx}\" --cache"
   },
@@ -57,6 +58,7 @@
     "eslint-config-next": "13.4.9",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-jsx-a11y": "^6.7.1",
+    "husky": "^8.0.0",
     "prettier": "^3.0.0",
     "prisma": "^4.16.2"
   }
