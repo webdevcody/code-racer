@@ -108,8 +108,8 @@ export default function TitleBackdropSvg() {
             y1={item.x1}
             y2={item.x2}
             stroke={item.stroke}
-            stroke-width={item.strokeWidth}
-            stroke-linecap="round"
+            strokeWidth={item.strokeWidth}
+            strokeLinecap="round"
             className="origin-[50%_50%]"
             style={{
               animationDelay: item.animationDelay,
