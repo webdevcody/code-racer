@@ -60,7 +60,6 @@ export function DataTable<TData, TValue>({
   const sort = searchParams?.get("sort");
   const [column, order] = sort?.split(".") ?? [];
 
-
   const [sorting, setSorting] = React.useState<SortingState>([
     {
       id: column ?? defaultSorting?.prop,
@@ -109,9 +108,8 @@ export function DataTable<TData, TValue>({
   return (
     <ShadcnTable
       columns={columns}
-      data={data ?? []}
-      // Rows per page
-      pageCount={pageCount ?? 0}
+      data={data}
+      pageCount={pageCount}
       state={{ sorting, pagination }}
       manualPagination
       manualSorting
@@ -157,7 +155,7 @@ export function DataTable<TData, TValue>({
             {isPending ? <Skeleton className="h-6 w-20" /> : children}
           </TableCell>
         ),
-        // filter inputs for columns 
+        // filter inputs for columns
         // we can also specify them in our
         // columns
         filterInput: () => null,

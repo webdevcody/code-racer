@@ -2,7 +2,6 @@
 
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
-import { User } from "next-auth";
 import { revalidatePath } from "next/cache";
 
 export async function updateUserAction({ newName }: { newName: string }) {

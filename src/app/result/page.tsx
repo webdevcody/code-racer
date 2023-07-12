@@ -1,10 +1,12 @@
 "use client"
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Chart from "./chart";
 import { Icons } from "@/components/icons";
 import { useRouter } from "next/navigation";
+import { FacebookIcon, FacebookShareButton, TwitterIcon, TwitterShareButton } from "react-share";
 
 const card = [
   { title: "WPM", value: "81 %" },
@@ -66,9 +68,24 @@ export default function ResultsChart() {
           />
         </Button>
       </div>
-        <div className="text-center mt-5 text-gray-600">
-          <span className="bg-[#0b1225]  m-1 p-1 rounded-md" > tab </span> + <span className="bg-[#0b1225] m-1 p-1 rounded-md" > enter </span> - restart game
-        </div>
+      <Card className="w-[30%] mx-auto">
+        <CardHeader>
+          <CardTitle className="">Share</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-row justify-center gap-4">
+            <TwitterShareButton url={String(process.env.NEXT_PUBLIC_DOMAIN)} title={"Checkout my score!!"}>
+              <TwitterIcon size={32} round={true} />
+            </TwitterShareButton>
+            <FacebookShareButton url={String(process.env.NEXT_PUBLIC_DOMAIN)} title={"Checkout my score!!"}>
+              <FacebookIcon size={32} round={true} />
+            </FacebookShareButton>
+          </div>
+        </CardContent>
+      </Card>
+      <div className="text-center mt-5 text-gray-600">
+        <span className="bg-[#0b1225]  m-1 p-1 rounded-md" > tab </span> + <span className="bg-[#0b1225] m-1 p-1 rounded-md" > enter </span> - restart game
+      </div>
     </div>
   );
 }

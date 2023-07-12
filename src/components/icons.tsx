@@ -8,13 +8,14 @@ import {
   ChevronsLeft,
   ChevronsRight,
   ImageIcon,
+  Info,
   Laptop,
   LineChart,
   LogOut,
   RefreshCcwIcon,
   Settings,
+  Trophy,
   User2,
-  Info,
   type Icon as LucideIcon,
 } from "lucide-react";
 
@@ -48,7 +49,8 @@ export const Icons = {
   lineChart: LineChart,
   mobileNavOpen: ChevronDownSquareIcon,
   mobileNavClosed: ChevronLeftSquareIcon,
+  trophy: Trophy,
   refresh: RefreshCcwIcon,
   picture: ImageIcon,
-  info: Info
+  info: Info,
 };
