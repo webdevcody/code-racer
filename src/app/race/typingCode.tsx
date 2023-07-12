@@ -8,6 +8,7 @@ import { saveUserResultAction } from "./actions";
 import { useRouter } from "next/navigation";
 import RacePositionTracker from "./racePositionTracker";
 import { Snippet } from "@prisma/client";
+import { Decimal } from "@prisma/client/runtime";
 
 function calculateCPM(
   numberOfCharacters: number,
@@ -17,10 +18,7 @@ function calculateCPM(
   return Math.round(numberOfCharacters / minutesTaken);
 }
 
-function calculateAccuracy(
-  numberOfCharacters: number,
-  errorsCount: number,
-): number {
+function calculateAccuracy(numberOfCharacters: number, errorsCount: number) {
   return 1 - errorsCount / numberOfCharacters;
 }
 
@@ -42,16 +40,16 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
 
   useEffect(() => {
     if (startTime && endTime) {
-      const timeTaken: number =
+      const takenTime: number =
         (endTime.getTime() - startTime.getTime()) / 1000;
 
       if (user)
         saveUserResultAction({
           userId: user.id,
-          timeTaken,
-          errors: errors.length,
-          cpm: calculateCPM(code.length, timeTaken),
-          accuracy: calculateAccuracy(code.length, errors.length),
+          takenTime: takenTime.toString(),
+          errorCount: errors.length,
+          cpm: calculateCPM(code.length, takenTime),
+          accuracy: new Decimal(calculateAccuracy(code.length, errors.length)),
           snippetId: snippet.id,
         });
     }
@@ -60,7 +58,16 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
     }
 
     if (isEnd && endTime && startTime) router.push("/result");
-  }, [endTime, startTime, user, errors.length, isEnd, router, code.length]);
+  }, [
+    endTime,
+    startTime,
+    user,
+    errors.length,
+    isEnd,
+    router,
+    code.length,
+    snippet.id,
+  ]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
