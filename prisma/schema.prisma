@@ -8,6 +8,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  ADMIN
+  USER
+}
+
 model User {
   id            String            @id @default(cuid())
   createdAt     DateTime          @default(now()) @map("created_at")
@@ -19,6 +24,8 @@ model User {
   sessions      Session[]
   results       Result[]
   achievements  UserAchievement[]
+
+  role UserRole @default(USER)
 
   snippets Snippet[]
 
