@@ -114,7 +114,10 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
         }
 
         // Rebuild Input
-        const whiteSpaceCreatedOnEnter = " ".repeat(s.length - input.length);
+        let whiteSpaceCreatedOnEnter = "";
+        if (s.length - input.length > 0) {
+          whiteSpaceCreatedOnEnter = " ".repeat(s.length - input.length);
+        }
         const s1 = input + whiteSpaceCreatedOnEnter + indentWhiteSpace;
 
         // Set Values
@@ -280,6 +283,8 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
           <TooltipContent>
             <p>Press Esc to reset quickly</p>
           </TooltipContent>
+          <br />
+          <br />
         </Tooltip>
       </TooltipProvider>
     </div>
