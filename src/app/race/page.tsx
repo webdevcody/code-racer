@@ -9,6 +9,9 @@ async function getRandomSnippet() {
 
   return prisma.snippet
     .findMany({
+      where: {
+        onReview: false,
+      },
       take: 1,
       skip: skip,
     })
