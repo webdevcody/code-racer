@@ -86,6 +86,15 @@ const EditableInput = React.forwardRef<HTMLInputElement, EditableInputProps>(
                       variant: "destructive",
                     });
                   }
+                  if (newValue === value) {
+                    throwError(new Error("name-is-the-same"));
+                    toast({
+                      title: "Same username as before.",
+                      description:
+                        "Oops look like your username is same as it was.",
+                      variant: "middle",
+                    });
+                  }
                   setEdit(false);
                   await actionOnSave();
                   toast({
