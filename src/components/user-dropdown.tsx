@@ -59,6 +59,16 @@ const AccountMenu = () => {
             <span>Profile</span>
           </Link>
         </DropdownMenuItem>
+        {
+          session.data?.user.role === "ADMIN" && (
+          <DropdownMenuItem asChild>
+            <Link href="/review" className="flex items-center gap-1">
+              <Icons.review className="w-4 h-4 mr-2" />
+              <span>Review</span>
+            </Link>
+          </DropdownMenuItem>
+          )
+        }
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="text-red-500 hover:text-white focus:bg-destructive hover:cursor-pointer"

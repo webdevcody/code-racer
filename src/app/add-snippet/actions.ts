@@ -1,13 +1,12 @@
 "use server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
+import type { Snippet } from "@prisma/client";
 
-export interface Snippet {
-  code: string;
-  language: string;
-}
-
-export async function addSnippetAction({ code, language }: Snippet) {
+export async function addSnippetAction({
+  code,
+  language,
+}: Pick<Snippet, "code" | "language">) {
   const user = await getCurrentUser();
 
   if (!user) {

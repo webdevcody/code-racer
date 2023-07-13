@@ -15,9 +15,28 @@ async function getRandomSnippet() {
     .then((results) => (results.length > 0 ? results[0] : undefined));
 }
 
-export default async function Race() {
+async function getSearchParamSnippet(snippetId: string | string[]) {
+  if (typeof snippetId === "string") {
+    return await prisma.snippet.findFirst({
+      where: {
+        id: snippetId,
+      },
+    });
+  }
+  return null;
+}
+
+export default async function Race({
+  searchParams,
+}: {
+  searchParams: Record<string, string | string[]>;
+}) {
   const user = await getCurrentUser();
-  const snippet = await getRandomSnippet();
+  const snippet =
+    (await getSearchParamSnippet(searchParams.snippetId)) ??
+    (await getRandomSnippet());
+
+  console.log(snippet);
 
   return (
     <main className="flex md:min-h-[calc(100vh-11rem)] flex-col items-center justify-between p-24">

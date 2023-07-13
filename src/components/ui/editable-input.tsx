@@ -32,7 +32,7 @@ const EditableInput = React.forwardRef<HTMLInputElement, EditableInputProps>(
     }, [edit, divRef]);
 
     return (
-      <div className="relative rounded-md ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+      <div className="relative rounded-md ring-offset-background">
         {edit ? (
           <>
             <label htmlFor="change-text-input" className="sr-only">
@@ -89,10 +89,10 @@ const EditableInput = React.forwardRef<HTMLInputElement, EditableInputProps>(
         ) : (
           <div
             ref={divRef}
-            title={`Change current username: ${value}`}
+            title={`Click to change the text: ${value}`}
             role="button"
             className={cn(
-              "bg-background h-10 px-3 py-2 w-full text-base",
+              "bg-background h-fit px-3 py-2 w-full text-base overflow-hidden",
               className,
             )}
           >

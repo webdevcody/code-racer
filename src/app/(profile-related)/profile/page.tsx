@@ -14,12 +14,9 @@ export const metadata = {
 
 export default async function ProfilePage() {
   const user = await getCurrentUser();
-  const photoURL = user?.image;
-  const displayName = user?.name;
-  const uid = user?.id;
-  {
-    /** Static data unrelated to auth for now */
-  }
+  const photoURL = user?.image as string;
+  const displayName = user?.name as string;
+  const uid = user?.id as string;
   const achievements = await prisma.userAchievement.findMany({
     where: {
       userId: uid,
@@ -33,8 +30,8 @@ export default async function ProfilePage() {
   return (
     <main className="py-8 grid place-items-center h-[clamp(40rem,82.5dvh,50rem)]">
       <div className="overflow-hidden relative w-[95%] max-w-[22.5rem] h-[32.5rem] rounded-2xl border-2 border-solid border-secondary-foreground">
-        <article className="flex flex-col items-center gap-2 p-2">
-          <ProfileNav displayName={displayName as string} uid={uid as string} />
+        <article className="p-2 flex flex-col gap-2 items-center">
+          <ProfileNav displayName={displayName} />
           <div className="pt-2 pb-1">
             <Link
               href={`/view-photo?photoURL=${photoURL}`}
@@ -55,7 +52,7 @@ export default async function ProfilePage() {
             </Link>
           </div>
           <ChangeNameForm displayName={displayName} />
-          <span>Total Points: {totalPoints}</span>
+          <span className="mt-10">Total Points: {totalPoints}</span>
           {achievements.length ? (
             <ul className="w-fit max-w-[292px] flex items-center flex-wrap gap-1 p-2 border-border rounded-sm bg-primary-foreground">
               {achievements.map(({ achievement, unlockedAt }) => (
