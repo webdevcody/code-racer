@@ -16,6 +16,7 @@ import {
   Settings,
   Trophy,
   User2,
+  FileCheck2,
   type Icon as LucideIcon,
 } from "lucide-react";
 
@@ -53,4 +54,5 @@ export const Icons = {
   refresh: RefreshCcwIcon,
   picture: ImageIcon,
   info: Info,
+  review: FileCheck2
 };

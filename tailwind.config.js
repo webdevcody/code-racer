@@ -6,7 +6,7 @@ module.exports = {
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
-	],
+  ],
   theme: {
     container: {
       center: true,
@@ -71,10 +71,25 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: 0 },
         },
+        "gear-rotate-left": {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" }
+        },
+        "gear-rotate-right": {
+          "0%": { transform: "rotate(360deg)" },
+          "100%": { transform: "rotate(0deg)" }
+        },
+        "dash": {
+          "0%": { transform: "translate(2539.6383913420013px, 0)" },
+          "100%": { transform: "translate(-2539.6383913420013px, 0)" }
+        }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "gear-rotate-left": "gear-rotate-left 5s linear infinite",
+        "gear-rotate-right": "gear-rotate-right 5s linear infinite",
+        "dash":"dash linear infinite",
       },
     },
   },

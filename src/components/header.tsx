@@ -1,6 +1,5 @@
 "use client";
 
-import { SessionProvider } from "next-auth/react";
 import { ModeToggle } from "./mode-toggle";
 import { siteConfig } from "@/config/site";
 import { MobileNav } from "./mobile-nav";
@@ -24,10 +23,4 @@ export function Header() {
   );
 }
 
-export default function WrappedHeader() {
-  return (
-    <SessionProvider>
-      <Header />
-    </SessionProvider>
-  );
-}
+export default Header;
