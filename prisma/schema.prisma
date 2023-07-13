@@ -93,7 +93,7 @@ model Achievement {
   updatedAt   DateTime          @updatedAt @map("updated_at")
   image       String
   description String?
-  unlocks     UserAchievement[]
+  userAchievements      UserAchievement[]
 
   @@map("achievements")
 }

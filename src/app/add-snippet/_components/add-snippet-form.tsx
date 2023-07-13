@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { addSnippetAction } from "../actions";
+import { toast } from "@/components/ui/use-toast";
 
 const snippetLangs = [
   { name: "C/C++" },
@@ -27,7 +28,22 @@ export default function AddSnippetForm({}) {
     await addSnippetAction({
       language: codeLanguage,
       code: codeSnippet,
-    });
+    })
+      .then((res) => {
+        if (res?.message === "snippet-created-and-achievement-unlocked") {
+          toast({
+            title: "Achievement Unlocked",
+            description: "Uploaded First Snippet",
+          });
+        }
+        toast({ title: "Success", description: "Code Snippet Added" });
+      })
+      .catch(() => {
+        toast({
+          title: "Error",
+          description: "Error Occurred while adding Snippet",
+        });
+      });
     console.log("language: ", codeLanguage);
     console.log("snippet: ", codeSnippet);
 
