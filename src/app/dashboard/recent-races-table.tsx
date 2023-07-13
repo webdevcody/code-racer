@@ -1,10 +1,9 @@
 "use client";
 
 import * as React from "react";
-import type { Result, User } from "@prisma/client";
+import type { Result } from "@prisma/client";
 
 import { type ColumnDef } from "unstyled-table";
-import Image from "next/image";
 import Link from "next/link";
 import { DataTable } from "@/components/data-table";
 import {
@@ -15,6 +14,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Icons } from "@/components/icons";
 import { formatDate } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
 
 interface RecentRacesTableProps {
   data: Result[];
@@ -25,10 +25,31 @@ export function RecentRacesTable({ data, pageCount }: RecentRacesTableProps) {
   const columns = React.useMemo<ColumnDef<Result, unknown>[]>(
     () => [
       {
-        accessorKey: "id",
-        header: "Game id",
+        accessorKey: "snippetId",
+        header: "Race",
         enableSorting: false,
+        cell: ({ cell }) => {
+          const snippetId = cell.getValue() as string;
+          return (
+            <Link
+              className={buttonVariants({ variant: "default" })}
+              href={`/race?snippetId=${snippetId}`}
+            >
+              Re-race
+            </Link>
+          );
+        },
       },
+      {
+        accessorKey: "id",
+        header: "Result Id",
+        enableSorting: false,
+        cell: ({ cell }) => {
+          const id = cell.getValue() as string;
+          return id.slice(0, 4) + "..." + id.slice(id.length - 4);
+        },
+      },
+
       {
         accessorKey: "errorCount",
         header: "Errors",

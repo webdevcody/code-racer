@@ -73,6 +73,7 @@ model VerificationToken {
 
 model Result {
   id         String   @id @default(cuid())
+  snippet    Snippet  @relation(fields: [snippetId], references: [id], onDelete: Cascade)
   userId     String   @map("user_id")
   createdAt  DateTime @default(now()) @map("created_at")
   accuracy   Decimal  @db.Decimal(5, 2)
@@ -80,6 +81,7 @@ model Result {
   takenTime  String   @map("taken_time")
   errorCount Int?     @map("error_count")
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  snippetId  String
 
   @@map("results")
 }
@@ -112,8 +114,9 @@ model Snippet {
 
   code     String
   language String
-  User     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId   String @map("user_id")
+  User     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String   @map("user_id")
+  Result   Result[]
 
   @@map("snippets")
 }

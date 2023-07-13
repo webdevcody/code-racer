@@ -59,6 +59,7 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
           errors: errors.length,
           cpm: calculateCPM(code.length, timeTaken),
           accuracy: calculateAccuracy(code.length, errors.length),
+          snippetId: snippet.id,
         });
     }
     if (inputEl.current !== null) {
