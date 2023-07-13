@@ -28,6 +28,15 @@ export async function upvoteSnippetAction(input: {
     throw new Error("Snippet is already on review.");
   }
 
+  const previousVote = await prisma.snippetVote.findUnique({
+    where: {
+      userId_snippetId: {
+        userId: input.userId,
+        snippetId: input.snippetId,
+      },
+    },
+  });
+
   await prisma.$transaction(async (tx) => {
     await tx.snippetVote.upsert({
       where: {
@@ -52,7 +61,8 @@ export async function upvoteSnippetAction(input: {
       },
       data: {
         rating: {
-          increment: 1,
+          // if user downvoted before, decrement by 2
+          increment: 1 + Number(!!previousVote),
         },
       },
     });
@@ -79,6 +89,15 @@ export async function downvoteSnippetAction(input: {
     throw new Error("Snippet is already on review.");
   }
 
+  const previousVote = await prisma.snippetVote.findUnique({
+    where: {
+      userId_snippetId: {
+        userId: input.userId,
+        snippetId: input.snippetId,
+      },
+    },
+  });
+
   await prisma.$transaction(async (tx) => {
     await tx.snippetVote.upsert({
       where: {
@@ -103,7 +122,8 @@ export async function downvoteSnippetAction(input: {
       },
       data: {
         rating: {
-          decrement: 1,
+          // if user upvoted before, decrement by 2
+          decrement: 1 + Number(!!previousVote),
         },
       },
     });
@@ -115,6 +135,71 @@ export async function downvoteSnippetAction(input: {
         },
         data: {
           onReview: true,
+        },
+      });
+    }
+  });
+
+  revalidatePath("/result");
+}
+
+export async function deleteVoteAction(input: {
+  snippetId: Snippet["id"];
+  userId: User["id"];
+}) {
+  const snippet = await prisma.snippet.findUnique({
+    where: {
+      id: input.snippetId,
+    },
+  });
+
+  if (!snippet) {
+    throw new Error("Snippet doesnt exist.");
+  }
+
+  const previousVote = await prisma.snippetVote.findUnique({
+    where: {
+      userId_snippetId: {
+        userId: input.userId,
+        snippetId: input.snippetId,
+      },
+    },
+  });
+
+  if (!previousVote) {
+    throw new Error("Something went wrong...");
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.snippetVote.delete({
+      where: {
+        userId_snippetId: {
+          userId: input.userId,
+          snippetId: input.snippetId,
+        },
+      },
+    });
+
+    if (previousVote!.type === "DOWN") {
+      await tx.snippet.update({
+        where: {
+          id: input.snippetId,
+        },
+        data: {
+          rating: {
+            increment: 1,
+          },
+        },
+      });
+    } else {
+      await tx.snippet.update({
+        where: {
+          id: input.snippetId,
+        },
+        data: {
+          rating: {
+            decrement: 1,
+          },
         },
       });
     }
