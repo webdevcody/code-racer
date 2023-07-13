@@ -45,7 +45,7 @@ export default function RootLayout({
         <NextTopLoader showSpinner={false} />
         <ContextProvider>
           <Header />
-          {children}
+          <div className="container h-fit py-2 md:py-24">{children}</div>
           <Footer />
           <Toaster />
           <TailwindIndicator />
