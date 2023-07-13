@@ -6,8 +6,10 @@ import React from "react";
 import { Input } from "./input";
 import { Button } from "./button";
 import { cn, throwError } from "@/lib/utils";
+import { useToast } from "./use-toast";
 
-export interface EditableInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface EditableInputProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
   /** How would you like to save the text? */
   actionOnSave: () => Promise<void>;
 }
@@ -22,6 +24,7 @@ const EditableInput = React.forwardRef<HTMLInputElement, EditableInputProps>(
     const [edit, setEdit] = React.useState(false);
     const [newValue, setNewValue] = React.useState(value);
     const divRef = React.useRef<HTMLDivElement>(null);
+    const { toast } = useToast();
 
     React.useEffect(() => {
       const onClickEdit = () => setEdit(true);
@@ -58,7 +61,7 @@ const EditableInput = React.forwardRef<HTMLInputElement, EditableInputProps>(
               autoFocus
               {...props}
             />
-            <div className="absolute top-0 right-0 flex items-center justify-center w-24 h-full gap-2 bg-background">
+            <div className="absolute top-11 right-0 flex items-center w-full justify-evenly h-full gap-2 bg-background">
               <button
                 type="button"
                 className="relative w-4 h-4"
@@ -77,9 +80,28 @@ const EditableInput = React.forwardRef<HTMLInputElement, EditableInputProps>(
                 onClick={async () => {
                   if (!newValue) {
                     throwError(new Error("Empty strings are not allowed!"));
+                    toast({
+                      title: "Username cannot be an empty string.",
+                      description: "Your username cannot be an empty string.",
+                      variant: "destructive",
+                    });
+                  }
+                  if (newValue === value) {
+                    throwError(new Error("name-is-the-same"));
+                    toast({
+                      title: "Same username as before.",
+                      description:
+                        "Oops look like your username is same as it was.",
+                      variant: "middle",
+                    });
                   }
                   setEdit(false);
                   await actionOnSave();
+                  toast({
+                    title: "Username successfully updated.",
+                    description: "Your username has been successfully updated.",
+                    variant: "default",
+                  });
                 }}
               >
                 Save
