@@ -61,7 +61,7 @@ const EditableInput = React.forwardRef<HTMLInputElement, EditableInputProps>(
               autoFocus
               {...props}
             />
-            <div className="absolute top-0 right-0 flex items-center justify-center w-24 h-full gap-2 bg-background">
+            <div className="absolute top-11 right-0 flex items-center w-full justify-evenly h-full gap-2 bg-background">
               <button
                 type="button"
                 className="relative w-4 h-4"
@@ -84,6 +84,15 @@ const EditableInput = React.forwardRef<HTMLInputElement, EditableInputProps>(
                       title: "Username cannot be an empty string.",
                       description: "Your username cannot be an empty string.",
                       variant: "destructive",
+                    });
+                  }
+                  if (newValue === value) {
+                    throwError(new Error("name-is-the-same"));
+                    toast({
+                      title: "Same username as before.",
+                      description:
+                        "Oops look like your username is same as it was.",
+                      variant: "middle",
                     });
                   }
                   setEdit(false);
