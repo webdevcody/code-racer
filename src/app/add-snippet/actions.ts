@@ -45,6 +45,7 @@ export async function addSnippetAction({
   }
 
   // Create a new snippet
+  // why am i getting errors here with where?
   await prisma.snippet.create({
     data: {
       userId: user.id,
