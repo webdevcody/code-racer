@@ -28,9 +28,9 @@ export default async function ResultsChart() {
         },
       });
       if (!firstRaceAchievement) {
-        console.error("bedge, where badge?")
+        console.error("bedge, where badge?");
         return null;
-      };
+      }
 
       const userFirstRaceAchievement = await tx.userAchievement.findUnique({
         where: {
@@ -56,7 +56,7 @@ export default async function ResultsChart() {
       timeout: 10_000,
     },
   );
-  
+
   return (
     <div className="w-auto">
       <div className="flex flex-col justify-center gap-4 mt-5">
