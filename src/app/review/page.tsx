@@ -9,10 +9,9 @@ export default async function ReviewPage() {
   if (user?.role !== "ADMIN") notFound();
 
   const downvotedSnippets = await prisma.snippet.findMany({
-    // Get snippets that are too much downvoted by community
-    // where: {
-    //   rating: -10
-    // }
+    where: {
+      onReview: true,
+    },
   });
 
   return (
