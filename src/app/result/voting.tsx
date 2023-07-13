@@ -5,7 +5,11 @@ import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import type { Snippet, SnippetVote } from "@prisma/client";
 import { User } from "next-auth";
-import { downvoteSnippetAction, upvoteSnippetAction } from "./actions";
+import {
+  deleteVoteAction,
+  downvoteSnippetAction,
+  upvoteSnippetAction,
+} from "./actions";
 import { toast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import Spinner from "@/components/ui/spinner";
@@ -29,15 +33,19 @@ export function Voting({ userId, snippetId, usersVote }: VotingProps) {
           variant={"outline"}
           disabled={isPending}
           onClick={() => {
-            if (usersVote?.type === "UP") return;
             startTransition(async () => {
               try {
-                await upvoteSnippetAction({ userId, snippetId });
-                toast({
-                  title: "Success.",
-                  description: "Thanks for your feedback! We will consider it.",
-                  variant: "default",
-                });
+                if (usersVote?.type === "UP") {
+                  await deleteVoteAction({ userId, snippetId });
+                } else {
+                  await upvoteSnippetAction({ userId, snippetId });
+                  toast({
+                    title: "Success.",
+                    description:
+                      "Thanks for your feedback! We will consider it.",
+                    variant: "default",
+                  });
+                }
               } catch (err) {
                 err instanceof Error
                   ? toast({
@@ -65,15 +73,19 @@ export function Voting({ userId, snippetId, usersVote }: VotingProps) {
           variant={"outline"}
           disabled={isPending}
           onClick={() => {
-            if (usersVote?.type === "DOWN") return;
             startTransition(async () => {
               try {
-                await downvoteSnippetAction({ userId, snippetId });
-                toast({
-                  title: "Success.",
-                  description: "Thanks for your feedback! We will consider it.",
-                  variant: "default",
-                });
+                if (usersVote?.type === "DOWN") {
+                  await deleteVoteAction({ userId, snippetId });
+                } else {
+                  await downvoteSnippetAction({ userId, snippetId });
+                  toast({
+                    title: "Success.",
+                    description:
+                      "Thanks for your feedback! We will consider it.",
+                    variant: "default",
+                  });
+                }
               } catch (err) {
                 err instanceof Error
                   ? toast({
