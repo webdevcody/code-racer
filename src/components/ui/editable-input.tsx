@@ -80,6 +80,11 @@ const EditableInput = React.forwardRef<HTMLInputElement, EditableInputProps>(
                 onClick={async () => {
                   if (!newValue) {
                     throwError(new Error("Empty strings are not allowed!"));
+                    toast({
+                      title: "Username cannot be an empty string.",
+                      description: "Your username cannot be an empty string.",
+                      variant: "destructive",
+                    });
                   }
                   setEdit(false);
                   await actionOnSave();
