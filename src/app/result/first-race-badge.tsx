@@ -25,7 +25,7 @@ export function FirstRaceBadge({ image }: { image: string | null }) {
     toast({
       description: (
         <div className="flex flex-col gap-4">
-          <div className="flex gap-2 text-xl items-center">
+          <div className="flex gap-2 text-lg md:text-xl items-center">
             <UnlockIcon className="text-accent-foreground" />{" "}
             <span className="text-muted-foreground">Unlocked:</span>{" "}
             <span className="text-accent-foreground">First Race</span>

@@ -61,10 +61,10 @@ export default async function ResultsChart() {
     <div className="w-auto">
       <div className="flex flex-col justify-center gap-4 mt-5">
         <FirstRaceBadge image={firstRaceBadge} />
-        <div className="flex md:flex-row flex-col md:mx-28 mx-20 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-5 mx-auto gap-3 md:gap-6">
           {card.map((c, idx) => {
             return (
-              <Card className="md:w-[30%] w-[80%]" key={idx}>
+              <Card key={idx}>
                 <CardHeader>
                   <CardTitle className="">{c.title}</CardTitle>
                 </CardHeader>
