@@ -6,8 +6,10 @@ import React from "react";
 import { Input } from "./input";
 import { Button } from "./button";
 import { cn, throwError } from "@/lib/utils";
+import { useToast } from "./use-toast";
 
-export interface EditableInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface EditableInputProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
   /** How would you like to save the text? */
   actionOnSave: () => Promise<void>;
 }
@@ -22,6 +24,7 @@ const EditableInput = React.forwardRef<HTMLInputElement, EditableInputProps>(
     const [edit, setEdit] = React.useState(false);
     const [newValue, setNewValue] = React.useState(value);
     const divRef = React.useRef<HTMLDivElement>(null);
+    const { toast } = useToast();
 
     React.useEffect(() => {
       const onClickEdit = () => setEdit(true);
@@ -80,6 +83,11 @@ const EditableInput = React.forwardRef<HTMLInputElement, EditableInputProps>(
                   }
                   setEdit(false);
                   await actionOnSave();
+                  toast({
+                    title: "Username successfully updated.",
+                    description: "Your username has been successfully updated.",
+                    variant: "default",
+                  });
                 }}
               >
                 Save
