@@ -13,14 +13,9 @@ import { Suspense, useState } from "react";
 
 const DeleteConfirmation = dynamic(() => import("./confirmation"));
 
-export default function ProfileNav({
-  displayName,
-  uid,
-}: {
-  displayName: string;
-  uid: string;
-}) {
+export default function ProfileNav({ displayName }: { displayName: string }) {
   const [willDelete, setWillDelete] = useState(false);
+
   return (
     <>
       <div className="w-full flex justify-end">
@@ -48,7 +43,6 @@ export default function ProfileNav({
           <DeleteConfirmation
             setWillDelete={setWillDelete}
             displayName={displayName}
-            uid={uid}
           />
         </Suspense>
       ) : null}
