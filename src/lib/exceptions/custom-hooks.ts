@@ -15,3 +15,17 @@ export class ContextDoesNotExistError extends Error {
     this.name = "ContextDoesNotExistError";
   }
 }
+
+export class UnauthorizedError extends Error {
+  constructor(message = "You are unauthorized to do this command") {
+    super(message);
+    this.name = "UnauthorizedError";
+  }
+}
+
+export class ValidationError extends Error {
+  constructor(errors: Record<string, string>) {
+    super(JSON.stringify(errors));
+    this.name = "ValidationError";
+  }
+}

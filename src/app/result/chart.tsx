@@ -83,7 +83,7 @@ export default function Chart() {
   );
 
   return (
-    <div style={{ width: "100%", height: 300 }} className="mx-auto">
+    <div style={{ width: "100%", height: 300 }} className="mx-auto ">
       <ResponsiveContainer>
         <LineChart
           data={data}

@@ -45,13 +45,11 @@ export default function RootLayout({
       <body className={cn("min-h-screen bg-background", inter.className)}>
         <NextTopLoader showSpinner={false} />
         <ContextProvider>
-          <div className="relative flex min-h-screen flex-col">
-            <Header />
-            <div className="flex-1">{children}</div>
-            <Footer />
-            <Toaster />
-            <TailwindIndicator />
-          </div>
+          <Header />
+          <div className="container h-fit py-2 md:py-24">{children}</div>
+          <Footer />
+          <Toaster />
+          <TailwindIndicator />
         </ContextProvider>
       </body>
     </html>
