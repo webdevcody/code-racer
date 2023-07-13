@@ -4,20 +4,7 @@ import { Button } from "@/components/ui/button";
 import React, { useState } from "react";
 import { addSnippetAction } from "../actions";
 import { Textarea } from "@/components/ui/textarea";
-
-const snippetLangs: { name: string; value: string }[] = [
-  { name: "C/C++", value: "c_cpp" },
-  { name: "C#", value: "csharp" },
-  { name: "Go", value: "go" },
-  { name: "HTML", value: "html" },
-  { name: "Java", value: "java" },
-  { name: "Javascript", value: "javascript" },
-  { name: "PHP", value: "php" },
-  { name: "Python", value: "python" },
-  { name: "Ruby", value: "ruby" },
-  { name: "Swift", value: "swift" },
-  { name: "Typescript", value: "typescript" },
-];
+import LanguageDropDown from "./language-dropdown";
 
 export default function AddSnippetForm({}) {
   const [codeSnippet, setCodeSnippet] = useState("");
@@ -44,8 +31,11 @@ export default function AddSnippetForm({}) {
       action=""
       className="flex flex-col gap-3 mt-5"
     >
-      <div>
-        <select
+      <div className="w-full">
+        
+        <LanguageDropDown codeLanguage={codeLanguage} setCodeLanguage={setCodeLanguage} />
+
+        {/* <select
           onChange={(e) => setCodeLanguage(e.target.value)}
           className="w-full px-4 py-3"
           name=""
@@ -57,7 +47,7 @@ export default function AddSnippetForm({}) {
               {lang.name}
             </option>
           ))}
-        </select>
+        </select> */}
       </div>
       <div>
         <Textarea
@@ -67,7 +57,7 @@ export default function AddSnippetForm({}) {
           id=""
           rows={8}
           className="w-full p-2 border"
-          placeholder="Type your message here."
+          placeholder="Type your custom code here..."
         />
       </div>
       <Button className="w-fit">Upload</Button>
