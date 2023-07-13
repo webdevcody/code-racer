@@ -32,8 +32,10 @@ export default function AddSnippetForm({}) {
       className="flex flex-col gap-3 mt-5"
     >
       <div className="w-full">
-        
-        <LanguageDropDown codeLanguage={codeLanguage} setCodeLanguage={setCodeLanguage} />
+        <LanguageDropDown
+          codeLanguage={codeLanguage}
+          setCodeLanguage={setCodeLanguage}
+        />
 
         {/* <select
           onChange={(e) => setCodeLanguage(e.target.value)}
