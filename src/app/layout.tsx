@@ -7,6 +7,7 @@ import { Footer } from "@/components/footer";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { ContextProvider } from "@/components/context-provider";
 import { siteConfig } from "@/config/site";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -46,6 +47,7 @@ export default function RootLayout({
           <Header />
           {children}
           <Footer />
+          <Toaster />
           <TailwindIndicator />
         </ContextProvider>
       </body>
