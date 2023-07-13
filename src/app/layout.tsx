@@ -8,6 +8,7 @@ import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { ContextProvider } from "@/components/context-provider";
 import { siteConfig } from "@/config/site";
 import { Toaster } from "@/components/ui/toaster";
+import { cn } from "@/lib/utils";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -41,14 +42,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={cn("min-h-screen bg-background", inter.className)}>
         <NextTopLoader showSpinner={false} />
         <ContextProvider>
-          <Header />
-          {children}
-          <Footer />
-          <Toaster />
-          <TailwindIndicator />
+          <div className="relative flex min-h-screen flex-col">
+            <Header />
+            <div className="flex-1">{children}</div>
+            <Footer />
+            <Toaster />
+            <TailwindIndicator />
+          </div>
         </ContextProvider>
       </body>
     </html>

@@ -38,6 +38,7 @@
     "nextjs-toploader": "^1.4.2",
     "postcss": "8.4.25",
     "react": "18.2.0",
+    "react-confetti": "^6.1.0",
     "react-dom": "18.2.0",
     "react-share": "^4.4.1",
     "recharts": "^2.7.2",
