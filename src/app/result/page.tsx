@@ -6,6 +6,8 @@ import { Voting } from "./voting";
 import { getCurrentUser } from "@/lib/session";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { Icons } from "@/components/icons";
+import { useRouter } from "next/navigation";
 
 interface ResultsPageProps {
   searchParams: {
@@ -46,10 +48,10 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
   return (
     <div className="w-auto">
       <div className="flex flex-col justify-center gap-4 mt-5">
-        <div className="flex flex-row mx-28 gap-6">
+        <div className="flex md:flex-row flex-col md:mx-28 mx-20 gap-6">
           {card.map((c, idx) => {
             return (
-              <Card className="w-[30%]" key={idx}>
+              <Card className="md:w-[30%] w-[80%]" key={idx}>
                 <CardHeader>
                   <CardTitle className="">{c.title}</CardTitle>
                 </CardHeader>

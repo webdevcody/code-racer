@@ -123,7 +123,7 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
 
   return (
     <div
-      className="w-3/4 p-8 bg-accent rounded-md relative"
+      className="w-3/4 lg:p-8 p-4 bg-accent rounded-md relative"
       onClick={focusOnCode}
       role="none" // eslint fix - will remove the semantic meaning of an element while still exposing it to assistive technology
     >
@@ -141,7 +141,9 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
         onChange={handleInputChange}
         disabled={endTime !== null}
         className="w-full h-full absolute p-8 inset-y-0 left-0 -z-40 focus:outline outline-blue-500 rounded-md"
+        onPaste={(e) => e.preventDefault()}
       />
+
       {endTime && startTime && (
         <div>
           <p className="mb-2">
