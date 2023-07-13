@@ -86,6 +86,13 @@ export default function DeleteConfirmation({ setWillDelete, displayName }: Delet
             >
               { isLoading ? "DELETING..." : "CONFIRM" }
             </Button>
+            <Button
+              variant={"secondary"}
+              className="mt-2"
+              onClick={() => setWillDelete(false)}
+            >
+              CANCEL
+            </Button> 
           </form>
         </div>
       </div>
