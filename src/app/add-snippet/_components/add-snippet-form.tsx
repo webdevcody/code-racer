@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { addSnippetAction } from "../actions";
 import { toast } from "@/components/ui/use-toast";
+import { useConfettiContext } from "@/context/confetti";
 
 const snippetLangs = [
   { name: "C/C++" },
@@ -22,6 +23,7 @@ const snippetLangs = [
 export default function AddSnippetForm({}) {
   const [codeSnippet, setCodeSnippet] = useState("");
   const [codeLanguage, setCodeLanguage] = useState("");
+  const confettiCtx = useConfettiContext();
 
   async function handleSubmit(e: any) {
     e.preventDefault();
@@ -35,6 +37,7 @@ export default function AddSnippetForm({}) {
             title: "Achievement Unlocked",
             description: "Uploaded First Snippet",
           });
+          confettiCtx.showConfetti();
         }
         toast({ title: "Success", description: "Code Snippet Added" });
       })
