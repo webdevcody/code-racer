@@ -1,4 +1,6 @@
 // import "./styles.css";
+"use client";
+
 import React, { useState, useCallback } from "react";
 import {
   LineChart,
