@@ -52,7 +52,7 @@ export default async function ProfilePage() {
             </Link>
           </div>
           <ChangeNameForm displayName={displayName} />
-          <span>Total Points: {totalPoints}</span>
+          <span className="mt-10">Total Points: {totalPoints}</span>
           {achievements.length ? (
             <ul className="w-fit max-w-[292px] flex items-center flex-wrap gap-1 p-2 border-border rounded-sm bg-primary-foreground">
               {achievements.map(({ achievement, unlockedAt }) => (
