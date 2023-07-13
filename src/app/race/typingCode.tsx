@@ -66,7 +66,7 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
       inputEl.current.focus();
     }
 
-    if (isEnd && endTime && startTime) router.push("/result");
+    if (isEnd && endTime && startTime) router.push(`/result?snippetId=${snippet.id}`);
   }, [endTime, startTime, user, errors.length, isEnd, router, code.length]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
