@@ -1,17 +1,17 @@
-"use client";
-
 import React from "react";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Chart from "./chart";
-import { Icons } from "@/components/icons";
-import { useRouter } from "next/navigation";
-import {
-  FacebookIcon,
-  FacebookShareButton,
-  TwitterIcon,
-  TwitterShareButton,
-} from "react-share";
+import NavigationButtons from "./navigation-buttons";
+import { Voting } from "./voting";
+import { getCurrentUser } from "@/lib/session";
+import { notFound } from "next/navigation";
+import { prisma } from "@/lib/prisma";
+
+interface ResultsPageProps {
+  searchParams: {
+    snippetId: string;
+  };
+}
 
 const card = [
   { title: "WPM", value: "81 %" },
@@ -21,12 +21,27 @@ const card = [
   { title: "Times", value: "30s" },
 ];
 
-export default function ResultsChart() {
-  const router = useRouter();
+export default async function ResultsPage({ searchParams }: ResultsPageProps) {
+  const user = await getCurrentUser();
 
-  const handlerChangePage = () => {
-    router.push("/race");
-  };
+  if (!user) notFound();
+
+  const usersVote = await prisma.snippetVote.findUnique({
+    where: {
+      userId_snippetId: {
+        userId: user.id,
+        snippetId: searchParams.snippetId,
+      },
+    },
+  });
+
+  const { snippetId } = searchParams;
+
+  const snippet = await prisma.snippet.findUnique({
+    where: {
+      id: snippetId,
+    },
+  });
 
   return (
     <div className="w-auto">
@@ -50,17 +65,12 @@ export default function ResultsChart() {
           <Chart />
         </div>
       </div>
-      <div className="flex flex-wrap justify-center gap-4 p-2" tabIndex={-1}>
-        <Button onClick={handlerChangePage}>
-          <Icons.chevronRight className="h-5 w-5" aria-hidden="true" />
-        </Button>
-        <Button onClick={handlerChangePage}>
-          <Icons.refresh className="h-5 w-5" aria-hidden="true" />
-        </Button>
-        <Button>
-          <Icons.picture className="h-5 w-5" aria-hidden="true" />
-        </Button>
-      </div>
+      <Voting
+        userId={user.id}
+        snippetId={snippetId}
+        usersVote={usersVote ?? undefined}
+      />
+      <NavigationButtons onReview={snippet?.onReview} />
       <div className="text-center mt-5 text-gray-600">
         <span className="bg-[#0b1225]  m-1 p-1 rounded-md"> tab </span> +{" "}
         <span className="bg-[#0b1225] m-1 p-1 rounded-md"> enter </span> -
