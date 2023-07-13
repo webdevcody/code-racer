@@ -9,6 +9,13 @@ import { useRouter } from "next/navigation";
 import RacePositionTracker from "./racePositionTracker";
 import { Snippet } from "@prisma/client";
 
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 function calculateCPM(
   numberOfCharacters: number,
   secondsTaken: number,
@@ -52,6 +59,7 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
           errors: errors.length,
           cpm: calculateCPM(code.length, timeTaken),
           accuracy: calculateAccuracy(code.length, errors.length),
+          snippetId: snippet.id,
         });
     }
     if (inputEl.current !== null) {
@@ -143,7 +151,16 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
           <p className="mb-4">Errors: {errors.length}</p>
         </div>
       )}
-      <Button onClick={handleRestart}>Restart</Button>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button onClick={handleRestart}>Restart</Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Press Esc to reset quickly</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     </div>
   );
 }
