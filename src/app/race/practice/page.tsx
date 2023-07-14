@@ -41,7 +41,6 @@ export default async function PracticeRacePage({
     (await getSearchParamSnippet(searchParams.snippetId)) ??
     (await getRandomSnippet());
 
-  console.log(snippet);
 
   return (
     <main className="flex md:min-h-[calc(100vh-11rem)] flex-col items-center justify-between lg:p-24 py-10">

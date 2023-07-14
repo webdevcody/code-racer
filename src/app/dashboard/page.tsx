@@ -108,7 +108,6 @@ export default async function DashboardPage({
       avarageAccuracy: aggregations._avg.accuracy,
     };
   });
-  console.log(recentGames);
 
   const pageCount =
     totalRecentGames === 0 ? 1 : Math.ceil(totalRecentGames / take);
