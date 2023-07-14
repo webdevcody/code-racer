@@ -7,6 +7,9 @@ import { useConfettiContext } from "@/context/confetti";
 import { Textarea } from "@/components/ui/textarea";
 import LanguageDropDown from "./language-dropdown";
 import { useToast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
+import { CrossCircledIcon } from "@radix-ui/react-icons";
+import { CheckIcon } from "lucide-react";
 import Link from "next/link";
 
 export default function AddSnippetForm({}) {
