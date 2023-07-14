@@ -254,7 +254,7 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
 
   return (
     <div
-      className="w-3/4 lg:p-8 p-4 bg-accent rounded-md relative"
+      className=" w-full md:w-3/4 lg:p-8 p-4 bg-accent rounded-md relative"
       onClick={focusOnLoad}
       role="none" // eslint fix - will remove the semantic meaning of an element while still exposing it to assistive technology
     >

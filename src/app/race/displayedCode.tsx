@@ -12,7 +12,7 @@ export default function DisplayedCode({
   userInput,
 }: displayCodeProps) {
   return (
-    <pre className="text-primary mb-4">
+    <pre className="text-primary mb-4 overflow-auto">
       {code.split("").map((char, index) => (
         <span
           key={index}
