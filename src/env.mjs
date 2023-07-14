@@ -14,5 +14,5 @@ export const env = createEnv({
   // NOTE: specifying runtimeEnv is not necessary for Next,js >= 13.4.4
   // runtimeEnv: {},
   // you only need to destructure client variables:
-  experimental__runtimeEnv: {}
+  experimental__runtimeEnv: {},
 });

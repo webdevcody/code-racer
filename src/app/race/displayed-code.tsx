@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import "./animation.css"
+import "./animation.css";
 
 interface displayCodeProps {
   code: string;

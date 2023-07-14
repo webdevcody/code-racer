@@ -5,13 +5,13 @@
 @keyframes blink {
   0% {
     background: rgb(254 240 138);
-    color: rgba(135,140,142,255);
+    color: rgba(135, 140, 142, 255);
   }
   50% {
     background: transparent;
   }
   100% {
     background: rgb(254 240 138);
-    color: rgba(135,140,142,255);
+    color: rgba(135, 140, 142, 255);
   }
 }
