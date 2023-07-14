@@ -29,15 +29,10 @@ export default function AddSnippetForm({}) {
       toast({
         title: "Error!",
         description: "Please fill all the fields",
-        duration: 5000,
+        duration: 2000,
         style: {
           background: "hsl(var(--destructive))",
-        },
-        action: (
-          <ToastAction altText="error">
-            <CrossCircledIcon width={32} height={32} />
-          </ToastAction>
-        ),
+        }
       });
       return;
     }
@@ -61,45 +56,37 @@ export default function AddSnippetForm({}) {
     }
 
     // error handling if prisma upload fails
-    try {
-      await addSnippetAction({
-        language: codeLanguage,
-        code: codeSnippet,
-      }).then((res) => {
-        if (res?.message === "snippet-created-and-achievement-unlocked") {
-          toast({
-            title: "Achievement Unlocked",
-            description: "Uploaded First Snippet",
-          });
-          confettiCtx.showConfetti();
-        }
-      });
-    } catch (err) {
-      console.log(err);
+    await addSnippetAction({
+      language: codeLanguage,
+      code: codeSnippet,
+    }).then((res) => {
+      if (res?.message === "snippet-created-and-achievement-unlocked") {
+        toast({
+          title: "Achievement Unlocked",
+          description: "Uploaded First Snippet",
+        });
+        confettiCtx.showConfetti();
+      }
+    }).catch((err) => {
       toast({
         title: "Error!",
-        description: "Something went wrong! Please try again later.",
-        duration: 5000,
+        description: "Something went wrong!" + err.message,
+        duration: 2000,
         style: {
           background: "hsl(var(--destructive))",
-        },
-        action: (
-          <ToastAction altText="error">
-            <CrossCircledIcon width={32} height={32} />
-          </ToastAction>
-        ),
+        }
       });
-    }
+    });
     console.log("language: ", codeLanguage);
     console.log("snippet: ", codeSnippet);
 
     toast({
       title: "Success!",
       description: "Snippet added successfully",
-      duration: 5000,
+      duration: 3000,
       variant: "middle",
       action: (
-        <Link href="/race" className={buttonVariants({ variant: "outline" })}>
+        <Link href="/race" className={`${buttonVariants({ variant: "outline" })} text-primary`}>
           Click to Race
         </Link>
       ),
