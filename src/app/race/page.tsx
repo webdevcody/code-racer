@@ -59,6 +59,7 @@ export default async function Race({
           message={"Uh Oh, You currently do not have any snippet. Create one?"}
         />
       )}
+
     </main>
   );
 }
