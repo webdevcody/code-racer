@@ -5,12 +5,14 @@ interface displayCodeProps {
   code: string;
   userInput: string;
   errors: number[];
+  isCurrentLineEmpty: boolean;
 }
 
 export default function DisplayedCode({
   code,
   errors,
   userInput,
+  isCurrentLineEmpty = false
 }: displayCodeProps) {
   return (
     <pre className="mb-4 text-primary">
@@ -26,7 +28,7 @@ export default function DisplayedCode({
               userInput.length !== index && userInput[index] !== char,
           })}
         >
-          {char}
+          {isCurrentLineEmpty && userInput.length === index ? " \n" : char}
         </span>
       ))}
     </pre>
