@@ -35,6 +35,18 @@ async function createUserAchievement(userId: string, achievementId: string): Pro
   });
 }
 
+async function userFirstSnipperAchievement(userId: string, achievementId: string): Promise<boolean> {
+  const hasAchievement = await prisma.userAchievement.findUnique({
+    where: {
+      userId_achievementId: {
+        userId: userId,
+        achievementId: achievementId
+      },
+    },
+  });
+  return !!hasAchievement?.userId;
+}
+
 export async function addSnippetAction({
   code,
   language,
@@ -55,11 +67,12 @@ export async function addSnippetAction({
     },
   });
 
+  const achievementId = "first-snippet-created";
   const hasMultipleSnippet = await hasUserCreatedSnippet(user.id);
 
-  const achievementId = "first-snippet-created";
+  const hasFirstSnippetAchievement = await userFirstSnipperAchievement(user.id, achievementId);
 
-  if(!hasMultipleSnippet) {
+  if(!hasMultipleSnippet && !hasFirstSnippetAchievement) {
     await upsertAchievement(achievementId);
     await createUserAchievement(user.id, achievementId);
     return {message: "snippet-created-and-achievement-unlocked",  status: 200 }
