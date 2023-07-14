@@ -1,5 +1,5 @@
 import HeroBanner from "./hero-banner";
-import BannerSvg from "./bannerSvg";
+import BannerSvg from "./banner-svg";
 
 export default async function Home() {
   return (
