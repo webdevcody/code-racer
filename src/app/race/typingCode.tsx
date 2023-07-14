@@ -147,87 +147,94 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
     }
   };
 
+  const enterKeyEffect = () => {
+    // Reset Character Counter
+    setCounter(1);
+
+    // Check Start
+    if (!isTyping && input.length > 0) {
+      setStartTime(new Date());
+      setIsTyping(true);
+    }
+
+    // Build string
+    let s = "";
+    for (let i = 0; i < line; i++) {
+      s += lines[i] + "\n";
+    }
+
+    // Check Array Bounds
+    if (line < lines.length) {
+      // Calculate Indentation
+      let indentWhiteSpace = "";
+      for (let i = 0; i <= lines[line].length; i++) {
+        if (lines[line].charAt(i) == " ") {
+          indentWhiteSpace += " ";
+        } else {
+          break;
+        }
+      }
+
+      // Rebuild Input
+      let whiteSpaceCreatedOnEnter = "";
+      if (s.length - input.length > 0) {
+        whiteSpaceCreatedOnEnter = " ".repeat(s.length - input.length);
+      }
+      const s1 = input + whiteSpaceCreatedOnEnter + indentWhiteSpace;
+
+      // Set Values
+      setInput(s1);
+      setLine(line + 1);
+      setErrors(() => {
+        const currentText: string = code.substring(0, s1.length);
+        const newErrors: number[] = Array.from(s1)
+          .map((char, index) => (char !== currentText[index] ? index : -1))
+          .filter((index) => index !== -1);
+        return newErrors;
+      });
+    }
+
+    //Check Last Line
+    if (line == lines.length) {
+      // Rebuild Input
+      const whiteSpaceCreatedOnEnter = " ".repeat(s.length - input.length);
+      const s1 = input + whiteSpaceCreatedOnEnter;
+
+      // Set Values
+      setInput(s1);
+      setLine(line + 1);
+      setErrors(() => {
+        const currentText: string = code.substring(0, s1.length);
+        const newErrors: number[] = Array.from(s1)
+          .map((char, index) => (char !== currentText[index] ? index : -1))
+          .filter((index) => index !== -1);
+        return newErrors;
+      });
+    }
+
+    // Check End
+    if (s.length - 1 === code.length) {
+      setEndTime(new Date());
+      setIsTyping(false);
+      setIsEnd(true);
+    }
+  };
+
   const handleKeyboardEvent = (
     event: React.KeyboardEvent<HTMLInputElement>,
   ) => {
-    // Check Backspace Key - Disabled
-    if (event.key === "Backspace") {
-      event.preventDefault();
-    }
-
-    // Check Enter Key
-    if (event.key === "Enter") {
-      // Reset Character Counter
-      setCounter(1);
-
-      // Check Start
-      if (!isTyping && input.length > 0) {
-        setStartTime(new Date());
-        setIsTyping(true);
-      }
-
-      // Build string
-      let s = "";
-      for (let i = 0; i < line; i++) {
-        s += lines[i] + "\n";
-      }
-
-      // Check Array Bounds
-      if (line < lines.length) {
-        // Calculate Indentation
-        let indentWhiteSpace = "";
-        for (let i = 0; i <= lines[line].length; i++) {
-          if (lines[line].charAt(i) == " ") {
-            indentWhiteSpace += " ";
-          } else {
-            break;
-          }
-        }
-
-        // Rebuild Input
-        let whiteSpaceCreatedOnEnter = "";
-        if (s.length - input.length > 0) {
-          whiteSpaceCreatedOnEnter = " ".repeat(s.length - input.length);
-        }
-        const s1 = input + whiteSpaceCreatedOnEnter + indentWhiteSpace;
-
-        // Set Values
-        setInput(s1);
-        setLine(line + 1);
-        setErrors(() => {
-          const currentText: string = code.substring(0, s1.length);
-          const newErrors: number[] = Array.from(s1)
-            .map((char, index) => (char !== currentText[index] ? index : -1))
-            .filter((index) => index !== -1);
-          return newErrors;
-        });
-      }
-
-      //Check Last Line
-      if (line == lines.length) {
-        // Rebuild Input
-        const whiteSpaceCreatedOnEnter = " ".repeat(s.length - input.length);
-        const s1 = input + whiteSpaceCreatedOnEnter;
-
-        // Set Values
-        setInput(s1);
-        setLine(line + 1);
-        setErrors(() => {
-          const currentText: string = code.substring(0, s1.length);
-          const newErrors: number[] = Array.from(s1)
-            .map((char, index) => (char !== currentText[index] ? index : -1))
-            .filter((index) => index !== -1);
-          return newErrors;
-        });
-      }
-
-      // Check End
-      if (s.length - 1 === code.length) {
-        setEndTime(new Date());
-        setIsTyping(false);
-        setIsEnd(true);
-      }
-    }
+    switch (event.key) {
+      case "Backspace":
+      case "ArrowLeft":
+      case "ArrowRight":
+      case "ArrowDown":
+      case "ArrowUp":
+        event.preventDefault();
+        break;
+      case "Enter":
+        enterKeyEffect();
+        break;
+    };
   };
 
   const focusOnLoad = () => {
