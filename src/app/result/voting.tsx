@@ -25,7 +25,7 @@ export function Voting({ userId, snippetId, usersVote }: VotingProps) {
   const [isPending, startTransition] = React.useTransition();
 
   return (
-    <div className="container flex items-center gap-2 max-w-xl">
+    <div className="flex flex-col md:flex-row items-center justify-center gap-2">
       <span>How do you feel about the last snippet?</span>
       <div className="flex items-center gap-2">
         <Button

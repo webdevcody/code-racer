@@ -8,6 +8,7 @@ import { FirstRaceBadge } from "./first-race-badge";
 import { getCurrentUser } from "@/lib/session";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { Voting } from "./voting";
 
 const card = [
   { title: "WPM", value: "81 %" },
@@ -17,7 +18,13 @@ const card = [
   { title: "Times", value: "30s" },
 ];
 
-export default async function ResultsChart() {
+interface ResultsChartProps {
+  searchParams: { snippetId: string };
+}
+
+export default async function ResultsChart({
+  searchParams,
+}: ResultsChartProps) {
   const user = await getCurrentUser();
   if (!user || !user.id) notFound();
   const firstRaceBadge = await prisma.$transaction(
@@ -57,6 +64,15 @@ export default async function ResultsChart() {
     },
   );
 
+  const usersVote = await prisma.snippetVote.findUnique({
+    where: {
+      userId_snippetId: {
+        userId: user.id,
+        snippetId: searchParams.snippetId,
+      },
+    },
+  });
+
   return (
     <div className="w-auto">
       <div className="flex flex-col justify-center gap-4 mt-5">
@@ -92,6 +108,13 @@ export default async function ResultsChart() {
         <Button>
           <Icons.picture className="h-5 w-5" aria-hidden="true" />
         </Button>
+      </div>
+      <div className="my-4">
+        <Voting
+          snippetId={searchParams.snippetId}
+          userId={user.id}
+          usersVote={usersVote ?? undefined}
+        />
       </div>
       <div className="flex items-center justify-center space-x-2">
         <span className={buttonVariants()}>tab</span> <span>+</span>
