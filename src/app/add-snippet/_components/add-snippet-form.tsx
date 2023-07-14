@@ -6,8 +6,9 @@ import { useToast } from "@/components/ui/use-toast";
 import { useConfettiContext } from "@/context/confetti";
 import Link from "next/link";
 import React, { useState } from "react";
-import { addSnippetAction } from "../actions";
+import { addSnippetAction } from "../../_actions/snippet";
 import LanguageDropDown from "./language-dropdown";
+import { catchError } from "@/lib/utils";
 
 const MIN_SNIPPET_LENGTH = 30;
 
@@ -21,72 +22,35 @@ export default function AddSnippetForm({}) {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    // form validation for empty fields
-    if (!codeLanguage || !codeSnippet) {
-      toast({
-        title: "Error!",
-        description: "Please fill all the fields",
-        duration: 5000,
-        style: {
-          background: "hsl(var(--destructive))",
-        },
+    try {
+      // error handling if prisma upload fails
+      const res = await addSnippetAction({
+        language: codeLanguage,
+        code: codeSnippet,
       });
-      return;
-    }
-
-    // form validation for codeSnippet Length
-    if (codeSnippet.replace(/[\n\t\s]/g, "").length < MIN_SNIPPET_LENGTH) {
-      toast({
-        title: "Error!",
-        description:
-          "Minimum number of character is not met. Please enter more than 30 characters",
-        duration: 5000,
-        style: {
-          background: "hsl(var(--destructive))",
-        },
-      });
-      return;
-    }
-
-    // error handling if prisma upload fails
-    await addSnippetAction({
-      language: codeLanguage,
-      code: codeSnippet,
-    })
-      .then((res) => {
-        if (res?.message === "snippet-created-and-achievement-unlocked") {
-          toast({
-            title: "Achievement Unlocked",
-            description: "Uploaded First Snippet",
-          });
-          confettiCtx.showConfetti();
-        }
+      if (res?.message === "snippet-created-and-achievement-unlocked") {
         toast({
-          title: "Success!",
-          description: "Snippet added successfully",
-          duration: 5000,
-          variant: "middle",
-          action: (
-            <Link href="/race" className={buttonVariants({ variant: "outline" })}>
-              Click to Race
-            </Link>
-          ),
+          title: "Achievement Unlocked",
+          description: "Uploaded First Snippet",
         });
-      })
-      .catch((err) => {
-        toast({
-          title: "Error!",
-          description: "Something went wrong!" + err.message,
-          duration: 5000,
-          style: {
-            background: "hsl(var(--destructive))",
-          },
-        });
+        confettiCtx.showConfetti();
+      }
+      toast({
+        title: "Success!",
+        description: "Snippet added successfully",
+        duration: 5000,
+        variant: "middle",
+        action: (
+          <Link href="/race" className={buttonVariants({ variant: "outline" })}>
+            Click to Race
+          </Link>
+        ),
       });
-    console.log("language: ", codeLanguage);
-    console.log("snippet: ", codeSnippet);
 
-    resetFields();
+      resetFields();
+    } catch (err) {
+      catchError(err);
+    }
   }
 
   function resetFields() {

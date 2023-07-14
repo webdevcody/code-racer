@@ -17,20 +17,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-
-const snippetLangs: { label: string; value: string }[] = [
-  { label: "C++", value: "c++" },
-  { label: "C#", value: "c#" },
-  { label: "Go", value: "go" },
-  { label: "HTML", value: "html" },
-  { label: "Java", value: "java" },
-  { label: "Javascript", value: "javascript" },
-  { label: "PHP", value: "php" },
-  { label: "Python", value: "python" },
-  { label: "Ruby", value: "ruby" },
-  { label: "Swift", value: "swift" },
-  { label: "Typescript", value: "typescript" },
-];
+import { snippetLanguages } from "@/config/languages";
 
 const LanguageDropDown = ({
   codeLanguage,
@@ -53,7 +40,7 @@ const LanguageDropDown = ({
           className={cn("justify-between w-full px-4 py-3", className)}
         >
           {codeLanguage
-            ? snippetLangs.find((language) => language.value === codeLanguage)
+            ? snippetLanguages.find((language) => language.value === codeLanguage)
                 ?.label
             : "Select language..."}
           <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
@@ -64,7 +51,7 @@ const LanguageDropDown = ({
           <CommandInput placeholder="Search a Language..." />
           <CommandEmpty>No language found.</CommandEmpty>
           <CommandGroup>
-            {snippetLangs.map((language) => (
+            {snippetLanguages.map((language) => (
               <CommandItem
                 key={language.value}
                 onSelect={(currentValue) => {

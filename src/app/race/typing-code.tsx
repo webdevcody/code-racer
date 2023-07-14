@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import DisplayedCode from "./displayed-code";
 import type { User } from "next-auth";
 import { Button } from "@/components/ui/button";
-import { saveUserResultAction } from "./actions";
+import { saveUserResultAction } from "../_actions/user";
 import { useRouter } from "next/navigation";
 import RacePositionTracker from "./race-position-tracker";
 import { Snippet } from "@prisma/client";
