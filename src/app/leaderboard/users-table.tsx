@@ -14,34 +14,44 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Icons } from "@/components/icons";
+import { cn } from "@/lib/utils";
 
-type ResultWithUser = Result & { user: User };
+type UserWithAvarage = User & {
+  avarageCpm: string;
+  avarageAccuracy: string;
+} & { results: Result[] };
 
-interface ResultsTableProps {
-  data: ResultWithUser[];
+interface UsersTableProps {
+  data: UserWithAvarage[];
   pageCount: number;
 }
 
-export function ResultsTable({ data, pageCount }: ResultsTableProps) {
-  const columns = React.useMemo<ColumnDef<Result, unknown>[]>(
+export function UsersTable({ data, pageCount }: UsersTableProps) {
+  const columns = React.useMemo<ColumnDef<UserWithAvarage, unknown>[]>(
     () => [
       {
-        accessorKey: "user",
+        accessorFn: (user) => {
+          return {
+            id: user.id,
+            image: user.image ?? "",
+            name: user.name,
+          };
+        },
         header: "User",
         cell: ({ cell }) => {
-          const user = cell.getValue() as User;
+          const userInfo = cell.getValue() as User;
 
           return (
-            <Link href={`${user.id}`}>
+            <Link href={`${userInfo.id}`}>
               <div className="flex items-center gap-2">
                 <Image
                   className="rounded-full"
-                  src={user.image ?? ""}
+                  src={userInfo.image ?? ""}
                   alt="user avatar"
                   height={30}
                   width={30}
                 />
-                <span>{user.name}</span>
+                <span>{userInfo.name}</span>
               </div>
             </Link>
           );
@@ -49,15 +59,11 @@ export function ResultsTable({ data, pageCount }: ResultsTableProps) {
         enableSorting: false,
       },
       {
-        accessorKey: "takenTime",
-        header: "Taken time",
-      },
-      {
-        accessorKey: "cpm",
+        accessorKey: "avarageCpm",
         header: () => {
           return (
             <div className="flex items-center gap-2">
-              <span>Cpm</span>
+              <span>Avarage cpm</span>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger>
@@ -73,26 +79,31 @@ export function ResultsTable({ data, pageCount }: ResultsTableProps) {
         },
       },
       {
-        accessorKey: "accuracy",
-        header: "Accuracy",
+        accessorKey: "avarageAccuracy",
+        header: "Avarage accuracy",
         cell: ({ cell }) => {
-          const accuracy = cell.getValue() as number;
+          const avgAccuracy = cell.getValue() as number;
 
-          if (accuracy > 0.8) {
-            return <span className="text-green-600">{accuracy}</span>;
-          } else if (accuracy > 0.5) {
-            return <span className="text-orange-600">{accuracy}</span>;
-          } else {
-            return <span className="text-destructive">{accuracy}</span>;
-          }
+          return (
+            <span
+              className={cn("text-green-600", {
+                "text-orange-600": avgAccuracy > 0.5 && avgAccuracy < 0.8,
+                "text-destructive": avgAccuracy < 0.5,
+              })}
+            >
+              {avgAccuracy}
+            </span>
+          );
         },
       },
       {
-        accessorKey: "errorCount",
-        header: "Errors",
+        accessorFn: ({results}) => {
+          return results.length;
+        },
+        header: "Races played",
       },
     ],
-    []
+    [],
   );
 
   return (
@@ -100,10 +111,10 @@ export function ResultsTable({ data, pageCount }: ResultsTableProps) {
       columns={columns}
       data={data}
       pageCount={pageCount}
-      defaultSorting={{
-        prop: "takenTime",
-        val: "asc",
-      }}
+      // defaultSorting={{
+      //   prop: "avarageCpm",
+      //   val: "asc",
+      // }}
     />
   );
 }

@@ -2,26 +2,28 @@
 /* eslint-disable jsx-a11y/no-autofocus */
 "use client";
 
-import React from "react";
-import { Input, InputProps } from "./input";
+import React, {  RefObject } from "react";
+import { Input } from "./input";
 import { Button } from "./button";
-import { cn, throwError } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
-export interface EditableInputProps extends InputProps {
-  /** How would you like to save the text? */
-  actionOnSave: () => Promise<void>;
-}
+export type Controls = {
+  setEdit: (isEdit: boolean) => void;
+};
 
-/** Provide a ref to this component to access its value for submission.
- *
- * @param actionOnSave
- * @param value to show text
- */
-const EditableInput = React.forwardRef<HTMLInputElement, EditableInputProps>(
-  ({ className, type, value, actionOnSave, ...props }, ref) => {
+const EditableInput = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>  & {
+  controls: RefObject<Controls>
+}>(
+  ({ className, type, value, controls, ...props }, ref) => {
     const [edit, setEdit] = React.useState(false);
     const [newValue, setNewValue] = React.useState(value);
     const divRef = React.useRef<HTMLDivElement>(null);
+    
+    if (controls.current) {
+      controls.current.setEdit = (isEdit: boolean) => {
+        setEdit(isEdit)
+      }
+    }
 
     React.useEffect(() => {
       const onClickEdit = () => setEdit(true);
@@ -32,7 +34,7 @@ const EditableInput = React.forwardRef<HTMLInputElement, EditableInputProps>(
     }, [edit, divRef]);
 
     return (
-      <div className="relative rounded-md ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+      <div className="relative rounded-md ring-offset-background">
         {edit ? (
           <>
             <label htmlFor="change-text-input" className="sr-only">
@@ -42,45 +44,32 @@ const EditableInput = React.forwardRef<HTMLInputElement, EditableInputProps>(
               type={type}
               value={newValue}
               onChange={(e) => setNewValue(e.target.value)}
+              onKeyDown={(e) => e.key === "Escape" && setEdit(false)}
               placeholder="Please provide a value!"
               ref={ref}
               className={cn(
                 "border-0 ring-offset-0 placeholder:text-sm",
                 className,
-                "text-base"
+                "text-base",
               )}
-              // onBlur={() => {
-              //   if (edit) {
-              //     setNewValue(value);
-              //     setEdit(false);
-              //   }
-              // }}
               autoFocus
               {...props}
             />
-            <div className="absolute items-center justify-center flex gap-2 right-0 h-full w-24 top-0 bg-background">
-              <button
+            <div className="mt-2 absolute top-11 right-0 flex items-center w-full justify-evenly h-full gap-2 bg-background">
+              <Button
                 type="button"
-                className="w-4 h-4 relative"
                 onClick={() => {
                   setNewValue(value);
                   setEdit(false);
                 }}
+                variant={"ghost"}
                 title="Revert Changes"
               >
-                <i className="absolute w-full h-[0.1rem] bg-monochrome left-0 top-1/2 -translate-y-1/2 rotate-[50deg]" />
-                <i className="absolute w-full h-[0.1rem] bg-monochrome left-0 top-1/2 -translate-y-1/2 rotate-[-50deg]" />
-              </button>
+                Cancel
+              </Button>
 
               <Button
-                variant={"ghost"}
-                onClick={async () => {
-                  if (!newValue) {
-                    throwError(new Error("Empty strings are not allowed!"));
-                  }
-                  setEdit(false);
-                  await actionOnSave();
-                }}
+                variant={"default"}
               >
                 Save
               </Button>
@@ -89,11 +78,11 @@ const EditableInput = React.forwardRef<HTMLInputElement, EditableInputProps>(
         ) : (
           <div
             ref={divRef}
-            title={`Change current username: ${value}`}
+            title={`Click to change the text: ${value}`}
             role="button"
             className={cn(
-              "bg-background h-10 px-3 py-2 w-full text-base",
-              className
+              "bg-background h-fit px-3 py-2 w-full text-base overflow-hidden",
+              className,
             )}
           >
             {newValue}
@@ -101,7 +90,7 @@ const EditableInput = React.forwardRef<HTMLInputElement, EditableInputProps>(
         )}
       </div>
     );
-  }
+  },
 );
 
 export { EditableInput };

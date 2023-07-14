@@ -4,17 +4,34 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import NextTopLoader from "nextjs-toploader";
 import { Footer } from "@/components/footer";
-import { ThemeProvider } from "@/components/theme-provider";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
+import { ContextProvider } from "@/components/context-provider";
 import { siteConfig } from "@/config/site";
+import { Toaster } from "@/components/ui/toaster";
+import { cn } from "@/lib/utils";
 
 const inter = Inter({ subsets: ["latin"] });
+
+const domain = process.env.NEXT_PUBLIC_DOMAIN;
 
 export const metadata: Metadata = {
   title: siteConfig.name,
   description: siteConfig.description,
   icons: {
     icon: "/static/logo.png",
+  },
+  openGraph: {
+    type: "website",
+    url: domain,
+    title: siteConfig.name,
+    description: siteConfig.description,
+    images: `${domain}/static/logo.png`,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Checkout Code Racer!",
+    description: siteConfig.description,
+    images: `${domain}/static/logo.png`,
   },
 };
 
@@ -25,14 +42,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={cn("min-h-screen bg-background", inter.className)}>
         <NextTopLoader showSpinner={false} />
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <ContextProvider>
           <Header />
-          {children}
+          <div className="container h-fit py-2 md:py-24">{children}</div>
           <Footer />
+          <Toaster />
           <TailwindIndicator />
-        </ThemeProvider>
+        </ContextProvider>
       </body>
     </html>
   );

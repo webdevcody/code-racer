@@ -3,11 +3,13 @@ import NextAuth, { AuthOptions, DefaultSession } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import { env } from "@/env.mjs";
 import { prisma } from "@/lib/prisma";
+import type { UserRole } from "@prisma/client";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
+      role: UserRole;
     } & DefaultSession["user"];
   }
 }
@@ -43,6 +45,7 @@ export const nextAuthOptions = {
         id: dbUser.id,
         name: dbUser.name,
         email: dbUser.email,
+        role: dbUser.role,
         picture: dbUser.image,
       };
     },
@@ -51,6 +54,7 @@ export const nextAuthOptions = {
         session.user.id = token.id;
         session.user.name = token.name;
         session.user.email = token.email;
+        session.user.role = token.role;
         session.user.image = token.picture;
       }
 

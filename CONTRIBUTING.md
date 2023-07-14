@@ -8,7 +8,7 @@ Please note if you are working on a certain issue then make sure to stay active 
 
 When you are working with git, please be sure to follow the conventions below on your pull requests, branches, and commits:
 
-```
+```text
 PR: [#ISSUE ID] Title of the PR
 Branch: [ISSUE ID]-title-of-the-pr (shorter)
 Commit: [[ISSUE ID]] [ACTION]: what was done
@@ -16,7 +16,7 @@ Commit: [[ISSUE ID]] [ACTION]: what was done
 
 Examples:
 
-```
+```text
 PR: #2 Add Docker container for Postgres
 Branch: 2-add-container-postgres
 Commit: [2] feat: add docker container for postgres
@@ -26,48 +26,61 @@ Commit: [2] feat: add docker container for postgres
 
 You will need to [install docker](https://www.docker.com/get-started/) on your local machine.
 
-If you do not have docker, go here to download and install: https://www.docker.com/get-started/
+If you do not have docker, go here to download and install: <https://www.docker.com/get-started/>
 
-If you are getting WSL error when you launch your desktop docker application, go here and follow these steps for windows: https://learn.microsoft.com/en-us/windows/wsl/install-manual#step-4---download-the-linux-kernel-update-package.
+If you are getting WSL error when you launch your desktop docker application, go here and follow these steps for windows: <https://learn.microsoft.com/en-us/windows/wsl/install-manual#step-4---download-the-linux-kernel-update-package>.
 
 ## Installation
 
 To get started with Code Racer locally, follow these steps
 
 1. Fork my repo and clone your fork
+
    ```sh
     git clone https://github.com/webdevcody/code-racer.git
    ```
+
 2. Navigate to the project directory
+
    ```sh
    cd code-racer
    ```
-3. Install NPM packages
+
+3. Create a .env file inside the project's root directory.
+
+4. Copy and paste variables from `.env.example` into `.env`
+
+5. Install NPM packages
+
    ```sh
    npm i
    ```
-4. Generate a version of Prisma Client that is tailored to the models.
+
+6. Generate a version of Prisma Client that is tailored to the models.
+
    ```js
    npx prisma generate
    ```
-5. Create a .env file inside the project's root directory.
-
-6. Copy and paste variables from `.env.example` into `.env`
 
 7. Open Docker Desktop Application and go back to your VSCode terminal and run this command:
+
    ```sh
    docker compose up -d
    ```
+
 8. Once your database is ready, push your prisma schema to the database.
+
    ```sh
    npx prisma db push
    ```
+
 9. Finally start your dev server.
+
    ```sh
    npm run dev
    ```
 
-Open your browser and visit http://localhost:3000 to see the application running.
+Open your browser and visit <http://localhost:3000> to see the application running.
 
 ## Working on New Features
 

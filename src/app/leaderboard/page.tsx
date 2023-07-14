@@ -1,14 +1,23 @@
 import React from "react";
 
 import { prisma } from "@/lib/prisma";
-import { ResultsTable } from "./results-table";
+import { UsersTable } from "./users-table";
 import { Result } from "@prisma/client";
+import { Heading } from "@/components/ui/heading";
 
 interface LeaderboardPageProps {
   searchParams: {
     [key: string]: string | string[] | undefined;
   };
 }
+
+function calculateUsersAvarage(array: any[], key: string) {
+  const overall = array.reduce((acc, obj) => {
+    return Number(obj[key]) + acc;
+  }, 0);
+  return (overall / array.length).toFixed(2);
+}
+
 
 export default async function LeaderboardPage({
   searchParams,
@@ -26,36 +35,47 @@ export default async function LeaderboardPage({
     typeof sort === "string"
       ? (sort.split(".") as [
           keyof Result | undefined,
-          "asc" | "desc" | undefined
+          "asc" | "desc" | undefined,
         ])
       : [];
 
-  const { results, totalResults } = await prisma.$transaction(async (_) => {
-    const results = await prisma.result.findMany({
-      take,
-      skip,
-      orderBy: {
-        [column ?? "takenTime"]: order,
-      },
-      include: {
-        user: true,
-      },
-    });
+  const { usersWithAvg: users, totalUsers } = await prisma.$transaction(
+    async () => {
+      const users = await prisma.user.findMany({
+        take,
+        skip,
+        // orderBy: {
+        //   [column ?? ""]: order,
+        // },
+        include: {
+          results: true,
+        },
+      });
 
-    const totalResults = await prisma.result.count();
+      const totalUsers = await prisma.user.count();
 
-    return {
-      results,
-      totalResults,
-    };
-  });
+      console.log(users[0]);
 
-  const pageCount = totalResults === 0 ? 1 : Math.ceil(totalResults / take);
+      const usersWithAvg = users.map((user) => ({
+        ...user,
+        avarageCpm: calculateUsersAvarage(user.results, "cpm"),
+        avarageAccuracy: calculateUsersAvarage(user.results, "accuracy"),
+      }));
+
+      return {
+        usersWithAvg,
+        totalUsers,
+      };
+    },
+  );
+
+  const pageCount = totalUsers === 0 ? 1 : Math.ceil(totalUsers / take);
 
   return (
-    <div className="container md:min-h-[calc(100vh-12rem)] max-w-4xl">
-      <h1 className="text-3xl text-foreground my-4">Leaderboard.</h1>
-      <ResultsTable data={results} pageCount={pageCount} />
+    <div>
+      {/* <h1 className="my-4 text-3xl text-foreground">Leaderboard.</h1> */}
+      <Heading title="Leaderboard" description="Find your competition" />
+      <UsersTable data={users} pageCount={pageCount} />
     </div>
   );
 }

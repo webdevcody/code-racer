@@ -3,20 +3,19 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useEffect, useRef, useState } from "react";
-import { throwError } from "@/lib/utils";
-import { AlertTriangle } from "lucide-react";
-import { signOut } from "next-auth/react";
 import { deleteUserAction } from "../actions";
+import { signOut } from "next-auth/react";
+import { AlertTriangle } from "lucide-react";
+
+interface DeleteConfirmationProps {
+  setWillDelete: React.Dispatch<React.SetStateAction<boolean>>;
+  displayName: string;
+}
 
 export default function DeleteConfirmation({
   setWillDelete,
   displayName,
-  uid,
-}: {
-  setWillDelete: React.Dispatch<React.SetStateAction<boolean>>;
-  displayName: string;
-  uid: string;
-}) {
+}: DeleteConfirmationProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const divRef = useRef<HTMLDivElement>(null);
@@ -29,21 +28,26 @@ export default function DeleteConfirmation({
     return () => el.removeEventListener("click", onClick);
   }, [divRef, setWillDelete]);
 
+  async function handleDelete(e: React.FormEvent<HTMLFormElement>) {
+    setIsLoading(true);
+    e.preventDefault();
+    try {
+      await deleteUserAction();
+      await signOut({
+        callbackUrl: "/",
+      });
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
     <div className="fixed inset-0 z-10 grid w-full h-full place-items-center bg-monochrome-with-bg-opacity bg-opacity-5">
       <div className="absolute inset-0 w-full h-full -z-10" ref={divRef} />
       <div className="w-[95%] max-w-[22.5rem]">
-        <div className="flex items-center justify-end">
-          <button
-            type="button"
-            className="relative w-6 h-6 hover:bg-monochrome-with-bg-opacity bg-opacity-10"
-            onClick={() => setWillDelete(false)}
-            title="Revert Changes"
-          >
-            <i className="absolute w-full h-[0.1rem] bg-monochrome left-0 top-1/2 -translate-y-1/2 rotate-[50deg]" />
-            <i className="absolute w-full h-[0.1rem] bg-monochrome left-0 top-1/2 -translate-y-1/2 rotate-[-50deg]" />
-          </button>
-        </div>
+        <div className="flex items-center justify-end"></div>
         <div className="bg-background  min-h-[12.5rem] mt-2 rounded-lg p-6">
           <span className="flex items-center justify-center gap-2 text-red-500">
             <AlertTriangle className="stroke-red-500" />
@@ -52,21 +56,8 @@ export default function DeleteConfirmation({
           </span>
 
           <form
-            className="mt-4 select-none flex flex-col gap-2"
-            onSubmit={async (e) => {
-              setIsLoading(true);
-              e.preventDefault();
-              try {
-                await deleteUserAction();
-                await signOut({
-                  callbackUrl: "/",
-                });
-              } catch (err) {
-                console.log(err);
-              } finally {
-                setIsLoading(false);
-              }
-            }}
+            className="flex flex-col gap-2 mt-4 select-none"
+            onSubmit={handleDelete}
           >
             <p>Please type &quot;{displayName}&quot; to confirm:</p>
             <Input
@@ -81,17 +72,14 @@ export default function DeleteConfirmation({
               variant={"destructive"}
               className="mt-2"
               tabIndex={inputValue === displayName ? 0 : -1}
-              title={
-                inputValue === displayName
-                  ? "Delete your account"
-                  : "Please type in your username"
-              }
+              title="Delete your account"
               disabled={
                 (inputValue === displayName ? undefined : true) || isLoading
               }
             >
-              CONFIRM
+              {isLoading ? "DELETING..." : "CONFIRM"}
             </Button>
+            <Button onClick={() => setWillDelete(false)}>CANCEL</Button>
           </form>
         </div>
       </div>

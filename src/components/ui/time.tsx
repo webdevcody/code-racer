@@ -13,7 +13,7 @@ const Time = React.forwardRef<HTMLTimeElement, TimeProps>(
         })}
       </time>
     );
-  }
+  },
 );
 
 Time.displayName = "Time";

@@ -9,6 +9,7 @@ export async function saveUserResultAction(input: {
   errors: number;
   cpm: number;
   accuracy: number;
+  snippetId: string;
 }) {
   await prisma.result.create({
     data: {
@@ -17,6 +18,7 @@ export async function saveUserResultAction(input: {
       errorCount: input.errors,
       cpm: input.cpm,
       accuracy: new Prisma.Decimal(input.accuracy),
+      snippetId: input.snippetId,
     },
   });
 }

@@ -35,7 +35,7 @@ export function MobileNav() {
                   <MobileLink
                     className={cn(
                       buttonVariants({ size: "lg" }),
-                      "text-xl w-full"
+                      "text-xl w-full",
                     )}
                     href={item.href}
                     key={item.href}
@@ -46,7 +46,6 @@ export function MobileNav() {
                 ))}
               </nav>
               <div className="bottom-0 absolute right-0">
-
                 <ModeToggle />
               </div>
             </div>
@@ -59,9 +58,9 @@ export function MobileNav() {
 
 interface MobileLinkProps extends LinkProps {
   // eslint-disable-next-line no-unused-vars
-  onOpenChange?: (open: boolean) => void
-  children: React.ReactNode
-  className?: string
+  onOpenChange?: (open: boolean) => void;
+  children: React.ReactNode;
+  className?: string;
 }
 
 function MobileLink({
@@ -71,18 +70,18 @@ function MobileLink({
   children,
   ...props
 }: MobileLinkProps) {
-  const router = useRouter()
+  const router = useRouter();
   return (
     <Link
       href={href}
       onClick={() => {
-        router.push(href.toString())
-        onOpenChange?.(false)
+        router.push(href.toString());
+        onOpenChange?.(false);
       }}
       className={cn(className)}
       {...props}
     >
       {children}
     </Link>
-  )
+  );
 }

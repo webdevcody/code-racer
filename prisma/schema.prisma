@@ -8,6 +8,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  ADMIN
+  USER
+}
+
 model User {
   id            String            @id @default(cuid())
   createdAt     DateTime          @default(now()) @map("created_at")
@@ -20,7 +25,10 @@ model User {
   results       Result[]
   achievements  UserAchievement[]
 
-  snippets Snippet[]
+  role UserRole @default(USER)
+
+  snippets     Snippet[]
+  snippetVotes SnippetVote[]
 
   @@map("users")
 }
@@ -66,6 +74,7 @@ model VerificationToken {
 
 model Result {
   id         String   @id @default(cuid())
+  snippet    Snippet  @relation(fields: [snippetId], references: [id], onDelete: Cascade)
   userId     String   @map("user_id")
   createdAt  DateTime @default(now()) @map("created_at")
   accuracy   Decimal  @db.Decimal(5, 2)
@@ -73,6 +82,7 @@ model Result {
   takenTime  String   @map("taken_time")
   errorCount Int?     @map("error_count")
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  snippetId  String
 
   @@map("results")
 }
@@ -84,7 +94,7 @@ model Achievement {
   updatedAt   DateTime          @updatedAt @map("updated_at")
   image       String
   description String?
-  unlocks     UserAchievement[]
+  userAchievements      UserAchievement[]
 
   @@map("achievements")
 }
@@ -105,8 +115,29 @@ model Snippet {
 
   code     String
   language String
-  User     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId   String @map("user_id")
+  User     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String   @map("user_id")
+  onReview Boolean  @default(false) @map("on_review")
+  rating   Int      @default(0)
+  Result   Result[]
+
+  votes SnippetVote[]
 
   @@map("snippets")
+}
+
+enum VoteType {
+  UP
+  DOWN
+}
+
+model SnippetVote {
+  snippetId String
+  userId    String
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Snippet   Snippet  @relation(fields: [snippetId], references: [id], onDelete: Cascade)
+  type      VoteType
+
+  @@id([userId, snippetId])
+  @@map("snippet_votes")
 }
