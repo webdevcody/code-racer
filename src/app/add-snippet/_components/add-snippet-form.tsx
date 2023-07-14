@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import React, { useState } from "react";
 import { addSnippetAction } from "../actions";
 import { toast } from "@/components/ui/use-toast";
@@ -11,6 +11,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { CheckCircledIcon, CrossCircledIcon } from "@radix-ui/react-icons";
 import { CheckIcon } from "lucide-react";
+import Link from "next/link";
 
 export default function AddSnippetForm({}) {
   const [codeSnippet, setCodeSnippet] = useState("");
@@ -44,8 +45,7 @@ export default function AddSnippetForm({}) {
       await addSnippetAction({
         language: codeLanguage,
         code: codeSnippet,
-      })
-      .then((res) => {
+      }).then((res) => {
         if (res?.message === "snippet-created-and-achievement-unlocked") {
           toast({
             title: "Achievement Unlocked",
@@ -76,15 +76,12 @@ export default function AddSnippetForm({}) {
     toast({
       title: "Success!",
       description: "Snippet added successfully",
-      duration: 3000,
-      style: {
-        background: "#A2FF86",
-        color: "#213363",
-      },
+      duration: 5000,
+      variant: "middle",
       action: (
-        <ToastAction altText="error">
-          <CheckIcon width={32} height={32} />
-        </ToastAction>
+        <Link href="/race" className={buttonVariants({ variant: "outline" })}>
+          Click to Race
+        </Link>
       ),
     });
 
