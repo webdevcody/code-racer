@@ -11,7 +11,7 @@ interface LeaderboardPageProps {
   };
 }
 
-export function calculateUsersAvarage(array: any[], key: string) {
+function calculateUsersAvarage(array: any[], key: string) {
   const overall = array.reduce((acc, obj) => {
     return Number(obj[key]) + acc;
   }, 0);
