@@ -3,14 +3,10 @@
 import { Button, buttonVariants } from "@/components/ui/button";
 import React, { useState } from "react";
 import { addSnippetAction } from "../actions";
-import { toast } from "@/components/ui/use-toast";
 import { useConfettiContext } from "@/context/confetti";
 import { Textarea } from "@/components/ui/textarea";
 import LanguageDropDown from "./language-dropdown";
 import { useToast } from "@/components/ui/use-toast";
-import { ToastAction } from "@/components/ui/toast";
-import { CheckCircledIcon, CrossCircledIcon } from "@radix-ui/react-icons";
-import { CheckIcon } from "lucide-react";
 import Link from "next/link";
 
 export default function AddSnippetForm({}) {
@@ -27,59 +23,46 @@ export default function AddSnippetForm({}) {
       toast({
         title: "Error!",
         description: "Please fill all the fields",
-        duration: 5000,
+        duration: 2000,
         style: {
           background: "hsl(var(--destructive))",
-        },
-        action: (
-          <ToastAction altText="error">
-            <CrossCircledIcon width={32} height={32} />
-          </ToastAction>
-        ),
+        }
       });
       return;
     }
 
     // error handling if prisma upload fails
-    try {
-      await addSnippetAction({
-        language: codeLanguage,
-        code: codeSnippet,
-      }).then((res) => {
-        if (res?.message === "snippet-created-and-achievement-unlocked") {
-          toast({
-            title: "Achievement Unlocked",
-            description: "Uploaded First Snippet",
-          });
-          confettiCtx.showConfetti();
-        }
-      });
-    } catch (err) {
-      console.log(err);
+    await addSnippetAction({
+      language: codeLanguage,
+      code: codeSnippet,
+    }).then((res) => {
+      if (res?.message === "snippet-created-and-achievement-unlocked") {
+        toast({
+          title: "Achievement Unlocked",
+          description: "Uploaded First Snippet",
+        });
+        confettiCtx.showConfetti();
+      }
+    }).catch((err) => {
       toast({
         title: "Error!",
-        description: "Something went wrong! Please try again later.",
-        duration: 5000,
+        description: "Something went wrong!" + err.message,
+        duration: 2000,
         style: {
           background: "hsl(var(--destructive))",
-        },
-        action: (
-          <ToastAction altText="error">
-            <CrossCircledIcon width={32} height={32} />
-          </ToastAction>
-        ),
+        }
       });
-    }
+    });
     console.log("language: ", codeLanguage);
     console.log("snippet: ", codeSnippet);
 
     toast({
       title: "Success!",
       description: "Snippet added successfully",
-      duration: 5000,
+      duration: 3000,
       variant: "middle",
       action: (
-        <Link href="/race" className={buttonVariants({ variant: "outline" })}>
+        <Link href="/race" className={`${buttonVariants({ variant: "outline" })} text-primary`}>
           Click to Race
         </Link>
       ),
