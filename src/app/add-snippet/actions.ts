@@ -57,14 +57,16 @@ export async function addSnippetAction({
     throw new UnauthorizedError();
   }
 
-  // Create a new snippet
   // why am i getting errors here with where?
   await prisma.snippet.create({
     data: {
-      userId: user.id,
+      userId: user?.id,
       code,
       language,
     },
+  }).catch((e) => {
+    console.log(e);
+    return new Error("Error creating snippet");
   });
 
   const achievementId = "first-snippet-created";
@@ -78,5 +80,4 @@ export async function addSnippetAction({
     return {message: "snippet-created-and-achievement-unlocked",  status: 200 }
   }
   return {message: "snippet-created",  status: 200 }
-
-}
+};
