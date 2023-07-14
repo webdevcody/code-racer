@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import DisplayedCode from "./displayedCode";
+import DisplayedCode from "./displayed-code";
 import type { User } from "next-auth";
 import { Button } from "@/components/ui/button";
 import { saveUserResultAction } from "./actions";
 import { useRouter } from "next/navigation";
-import RacePositionTracker from "./racePositionTracker";
+import RacePositionTracker from "./race-position-tracker";
 import { Snippet } from "@prisma/client";
 import {
   Tooltip,

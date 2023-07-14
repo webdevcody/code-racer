@@ -1,9 +1,9 @@
 import { getCurrentUser } from "@/lib/session";
 
-import TypingCode from "./typingCode";
+import TypingCode from "./typing-code";
 import { prisma } from "@/lib/prisma";
 
-import NoSnippet from "./noSnippet";
+import NoSnippet from "./no-snippet";
 
 async function getRandomSnippet() {
   const itemCount = await prisma.snippet.count();

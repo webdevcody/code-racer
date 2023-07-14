@@ -8,7 +8,7 @@ import { redirect } from "next/navigation";
 import type { Result } from "@prisma/client";
 import AccuracyChart from "./accuracy-chart";
 import { RecentRacesTable } from "./recent-races-table";
-import PerformanceComparison from "./PerformanceComparison";
+import PerformanceComparison from "./performance-comparison";
 import { Heading } from "@/components/ui/heading";
 
 interface DashboardPageProps {
