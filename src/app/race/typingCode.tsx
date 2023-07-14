@@ -14,6 +14,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import Header from "@/components/header";
+import { Heading } from "@/components/ui/heading";
 
 function calculateCPM(
   numberOfCharacters: number,
@@ -263,7 +265,10 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
         actualSnippetLength={code.length}
         user={user}
       />
-      <h1 className="text-2xl font-bold mb-4">Type this code:</h1>
+      {/* <h1 className="text-2xl font-bold mb-4">Type this code:</h1> */}
+      <div className="mb-2 md:mb-4">
+      <Heading title="Type this code" description="Start typing to get racing"/>
+      </div>
       <DisplayedCode code={code} errors={errors} userInput={input} />
       <input
         type="text"
