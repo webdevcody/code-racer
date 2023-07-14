@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import DisplayedCode from "./displayedCode";
+import DisplayedCode from "./displayed-code";
 import type { User } from "next-auth";
 import { Button } from "@/components/ui/button";
 import { saveUserResultAction } from "./actions";
 import { useRouter } from "next/navigation";
-import RacePositionTracker from "./racePositionTracker";
+import RacePositionTracker from "./race-position-tracker";
 import { Snippet } from "@prisma/client";
 import {
   Tooltip,
@@ -281,7 +281,7 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
           description="Start typing to get racing"
         />
       </div>
-      <DisplayedCode code={code} errors={errors} userInput={input} />
+      <DisplayedCode code={code} errors={errors} userInput={input} isCurrentLineEmpty={(lines[line - 1]?.length ?? -1 ) === 0}/>
       <input
         type="text"
         value={input}
