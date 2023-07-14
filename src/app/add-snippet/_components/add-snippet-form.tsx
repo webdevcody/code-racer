@@ -3,19 +3,38 @@
 import { Button } from "@/components/ui/button";
 import React, { useState } from "react";
 import { addSnippetAction } from "../actions";
+import { toast } from "@/components/ui/use-toast";
+import { useConfettiContext } from "@/context/confetti";
 import { Textarea } from "@/components/ui/textarea";
 import LanguageDropDown from "./language-dropdown";
 
 export default function AddSnippetForm({}) {
   const [codeSnippet, setCodeSnippet] = useState("");
   const [codeLanguage, setCodeLanguage] = useState("");
+  const confettiCtx = useConfettiContext();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     await addSnippetAction({
       language: codeLanguage,
       code: codeSnippet,
-    });
+    })
+      .then((res) => {
+        if (res?.message === "snippet-created-and-achievement-unlocked") {
+          toast({
+            title: "Achievement Unlocked",
+            description: "Uploaded First Snippet",
+          });
+          confettiCtx.showConfetti();
+        }
+        toast({ title: "Success", description: "Code Snippet Added" });
+      })
+      .catch(() => {
+        toast({
+          title: "Error",
+          description: "Error Occurred while adding Snippet",
+        });
+      });
     console.log("language: ", codeLanguage);
     console.log("snippet: ", codeSnippet);
 
