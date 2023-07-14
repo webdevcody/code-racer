@@ -36,7 +36,7 @@ export default function RacePage() {
               <Link
                 href={`/race/multiplayer${
                   languageMultiplayer ? "?lang=" : ""
-                }${languageMultiplayer}`}
+                }${encodeURIComponent(languageMultiplayer)}`} // Make sure it is URL encoded
               >
                 Enter a typing race
               </Link>
@@ -68,7 +68,7 @@ export default function RacePage() {
                 <Link
                   href={`/race/practice${
                     languageSinglePlayer ? "?lang=" : ""
-                  }${languageSinglePlayer}`}
+                  }${encodeURIComponent(languageSinglePlayer)}`} // Make sure it is URL encoded
                 >
                   Practice yourself
                 </Link>
