@@ -61,6 +61,17 @@ export default function AddSnippetForm({}) {
           });
           confettiCtx.showConfetti();
         }
+        toast({
+          title: "Success!",
+          description: "Snippet added successfully",
+          duration: 5000,
+          variant: "middle",
+          action: (
+            <Link href="/race" className={buttonVariants({ variant: "outline" })}>
+              Click to Race
+            </Link>
+          ),
+        });
       })
       .catch((err) => {
         toast({
@@ -74,18 +85,6 @@ export default function AddSnippetForm({}) {
       });
     console.log("language: ", codeLanguage);
     console.log("snippet: ", codeSnippet);
-
-    toast({
-      title: "Success!",
-      description: "Snippet added successfully",
-      duration: 5000,
-      variant: "middle",
-      action: (
-        <Link href="/race" className={buttonVariants({ variant: "outline" })}>
-          Click to Race
-        </Link>
-      ),
-    });
 
     resetFields();
   }
