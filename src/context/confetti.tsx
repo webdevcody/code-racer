@@ -6,7 +6,7 @@ type ConfettiContextType = {
 };
 
 const ConfettiContext = React.createContext<ConfettiContextType>(
-  {} as ConfettiContextType
+  {} as ConfettiContextType,
 );
 
 const ConfettiProvider = ({ children }: { children: React.ReactNode }) => {
@@ -17,7 +17,7 @@ const ConfettiProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const confettiContextValue: ConfettiContextType = {
-    showConfetti: showConfetti
+    showConfetti: showConfetti,
   };
   return (
     <ConfettiContext.Provider value={confettiContextValue}>

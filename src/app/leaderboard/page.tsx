@@ -18,7 +18,6 @@ function calculateUsersAvarage(array: any[], key: string) {
   return (overall / array.length).toFixed(2);
 }
 
-
 export default async function LeaderboardPage({
   searchParams,
 }: LeaderboardPageProps) {

@@ -22,3 +22,11 @@ export async function saveUserResultAction(input: {
     },
   });
 }
+
+/**
+ * This should create a private room for the user
+ * Not implemented. Need to decide on the multiplayer architecture
+ **/
+export async function createPrivateRaceRoom(input: { userId: User["id"] }) {
+  throw new Error("Not implemented");
+}

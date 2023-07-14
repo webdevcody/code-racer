@@ -36,9 +36,15 @@ export function Voting({ userId, snippetId, usersVote }: VotingProps) {
             startTransition(async () => {
               try {
                 if (usersVote?.type === "UP") {
-                  await deleteVoteAction({ userId, snippetId });
+                  await deleteVoteAction({
+                    userId,
+                    snippetId,
+                  });
                 } else {
-                  await upvoteSnippetAction({ userId, snippetId });
+                  await upvoteSnippetAction({
+                    userId,
+                    snippetId,
+                  });
                   toast({
                     title: "Success.",
                     description:
@@ -76,9 +82,15 @@ export function Voting({ userId, snippetId, usersVote }: VotingProps) {
             startTransition(async () => {
               try {
                 if (usersVote?.type === "DOWN") {
-                  await deleteVoteAction({ userId, snippetId });
+                  await deleteVoteAction({
+                    userId,
+                    snippetId,
+                  });
                 } else {
-                  await downvoteSnippetAction({ userId, snippetId });
+                  await downvoteSnippetAction({
+                    userId,
+                    snippetId,
+                  });
                   toast({
                     title: "Success.",
                     description:
