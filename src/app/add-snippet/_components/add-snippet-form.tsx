@@ -6,6 +6,9 @@ import { addSnippetAction } from "../actions";
 import { Textarea } from "@/components/ui/textarea";
 import LanguageDropDown from "./language-dropdown";
 import { useToast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
+import { CheckCircledIcon, CrossCircledIcon } from "@radix-ui/react-icons";
+import { CheckIcon } from "lucide-react";
 
 export default function AddSnippetForm({}) {
   const [codeSnippet, setCodeSnippet] = useState("");
@@ -23,7 +26,12 @@ export default function AddSnippetForm({}) {
         duration: 5000,
         style: {
           background: "hsl(var(--destructive))",
-        }
+        },
+        action: (
+          <ToastAction altText="error">
+            <CrossCircledIcon width={32} height={32} />
+          </ToastAction>
+        ),
       });
       return;
     }
@@ -42,7 +50,12 @@ export default function AddSnippetForm({}) {
         duration: 5000,
         style: {
           background: "hsl(var(--destructive))",
-        }
+        },
+        action: (
+          <ToastAction altText="error">
+            <CrossCircledIcon width={32} height={32} />
+          </ToastAction>
+        ),
       });
     }
     // console.log("language: ", codeLanguage);
@@ -55,7 +68,12 @@ export default function AddSnippetForm({}) {
       style: {
         background: "#A2FF86",
         color: "#213363",
-      }
+      },
+      action: (
+        <ToastAction altText="error">
+          <CheckIcon width={32} height={32} />
+        </ToastAction>
+      ),
     });
 
     resetFields();
