@@ -5,14 +5,19 @@ import { prisma } from "@/lib/prisma";
 
 import NoSnippet from "../no-snippet";
 
-async function getRandomSnippet() {
+interface RacePageSearchParams {
+  snippetId: string;
+  lang: string;
+}
+
+async function getRandomSnippet(lang: string) {
   const itemCount = await prisma.snippet.count();
   const skip = Math.max(0, Math.floor(Math.random() * itemCount));
-
   return prisma.snippet
     .findMany({
       where: {
         onReview: false,
+        language: lang,
       },
       take: 1,
       skip: skip,
@@ -33,18 +38,15 @@ async function getSearchParamSnippet(snippetId: string | string[]) {
 
 export default async function PracticeRacePage({
   searchParams,
-}: {
-  searchParams: Record<string, string | string[]>;
-}) {
+}: { searchParams: RacePageSearchParams }) {
   const user = await getCurrentUser();
   const snippet =
     (await getSearchParamSnippet(searchParams.snippetId)) ??
-    (await getRandomSnippet());
+    (await getRandomSnippet(searchParams.lang));
 
-  console.log(snippet);
 
   return (
-    <main className="flex md:min-h-[calc(100vh-11rem)] flex-col items-center justify-between lg:p-24 py-10">
+    <main className="flex flex-col items-center justify-between py-10 lg:p-24">
       {snippet && <TypingCode snippet={snippet} user={user} />}
       {!snippet && (
         <NoSnippet

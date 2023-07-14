@@ -36,7 +36,7 @@ export default function RacePage() {
               <Link
                 href={`/race/multiplayer${
                   languageMultiplayer ? "?lang=" : ""
-                }${languageMultiplayer}`}
+                }${encodeURIComponent(languageMultiplayer)}`} // Make sure it is URL encoded
               >
                 Enter a typing race
               </Link>
@@ -68,7 +68,7 @@ export default function RacePage() {
                 <Link
                   href={`/race/practice${
                     languageSinglePlayer ? "?lang=" : ""
-                  }${languageSinglePlayer}`}
+                  }${encodeURIComponent(languageSinglePlayer)}`} // Make sure it is URL encoded
                 >
                   Practice yourself
                 </Link>
@@ -82,11 +82,9 @@ export default function RacePage() {
           </CardContent>
         </Card>
         <Card className="max-w-[50%] flex-1 flex flex-col">
-          <CardHeader>
+          <CardHeader className="h-full justify-center">
             <div className="flex items-center gap-4">
-              <div>
-                <User size={32} />
-              </div>
+                <Users size={32} />
               <div>
                 <h2 className="text-2xl font-bold">Race your friends</h2>
                 <p>Create your own racetrack and play with friends</p>

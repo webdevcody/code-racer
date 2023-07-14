@@ -152,7 +152,7 @@ export function DataTable<TData, TValue>({
         // custom cell by specifying cell function
         bodyCell: ({ children }) => (
           <TableCell className="body-cell">
-            {isPending ? <Skeleton className="h-6 w-20" /> : children}
+            {isPending ? <Skeleton className="w-20 h-6" /> : children}
           </TableCell>
         ),
         // filter inputs for columns
@@ -169,7 +169,6 @@ export function DataTable<TData, TValue>({
                   <Select
                     value={per_page ?? "10"}
                     onValueChange={(value) => {
-                      console.log(sort);
                       startTransition(() => {
                         router.push(
                           `${pathname}?${createQueryString({
@@ -204,7 +203,6 @@ export function DataTable<TData, TValue>({
                     className="w-8 h-8"
                     onClick={() => {
                       startTransition(() => {
-                        console.log(sort);
                         router.push(
                           `${pathname}?${createQueryString({
                             page: 1,
