@@ -43,7 +43,7 @@ export default async function PracticeRacePage({
 
 
   return (
-    <main className="flex md:min-h-[calc(100vh-11rem)] flex-col items-center justify-between lg:p-24 py-10">
+    <main className="flex flex-col items-center justify-between py-10 lg:p-24">
       {snippet && <TypingCode snippet={snippet} user={user} />}
       {!snippet && (
         <NoSnippet

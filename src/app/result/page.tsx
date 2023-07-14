@@ -35,7 +35,6 @@ export default async function ResultsChart({
         },
       });
       if (!firstRaceAchievement) {
-        console.error("bedge, where badge?");
         return null;
       }
 
@@ -77,7 +76,7 @@ export default async function ResultsChart({
     <div className="w-auto">
       <div className="flex flex-col justify-center gap-4 mt-5">
         <FirstRaceBadge image={firstRaceBadge} />
-        <div className="grid grid-cols-2 md:grid-cols-5 mx-auto gap-3 md:gap-6">
+        <div className="grid grid-cols-2 gap-3 mx-auto md:grid-cols-5 md:gap-6">
           {card.map((c, idx) => {
             return (
               <Card key={idx}>
@@ -90,7 +89,7 @@ export default async function ResultsChart({
           })}
         </div>
       </div>
-      <div className="p-8 flex flex-col rounded-xl">
+      <div className="flex flex-col p-8 rounded-xl">
         <div className="flex flex-wrap justify-center gap-4">
           <Chart />
         </div>
@@ -100,13 +99,13 @@ export default async function ResultsChart({
         tabIndex={-1}
       >
         <Link className={buttonVariants()} href="/race">
-          <Icons.chevronRight className="h-5 w-5" aria-hidden="true" />
+          <Icons.chevronRight className="w-5 h-5" aria-hidden="true" />
         </Link>
         <Link className={buttonVariants()} href="/race">
-          <Icons.refresh className="h-5 w-5" aria-hidden="true" />
+          <Icons.refresh className="w-5 h-5" aria-hidden="true" />
         </Link>
         <Button>
-          <Icons.picture className="h-5 w-5" aria-hidden="true" />
+          <Icons.picture className="w-5 h-5" aria-hidden="true" />
         </Button>
       </div>
       <div className="my-4">
