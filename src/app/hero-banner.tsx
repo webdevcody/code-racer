@@ -1,5 +1,5 @@
 import Link from "next/link";
-import TitleBackdropSvg from "./titleBackdropSvg";
+import TitleBackdropSvg from "./title-backdrop-svg";
 
 export default function HeroBanner() {
   return (
