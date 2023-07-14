@@ -57,10 +57,6 @@ export async function addSnippetAction({
     throw new UnauthorizedError();
   }
 
-  if(code.replace(/[\n\t\s]/g, "").length < 30)
-  return {message: "minimum number of character is not met",  status: 400 }
-
-
   // why am i getting errors here with where?
   await prisma.snippet.create({
     data: {

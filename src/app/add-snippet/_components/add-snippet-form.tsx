@@ -41,6 +41,24 @@ export default function AddSnippetForm({}) {
       return;
     }
 
+    // form validation for codeSnippet Length
+    if(codeSnippet.replace(/[\n\t\s]/g, "").length < MIN_SNIPPET_LENGTH) {
+      toast({
+        title: "Error!",
+        description: "Minimum number of character is not met. Please enter more than 30 characters",
+        duration: 5000,
+        style: {
+          background: "hsl(var(--destructive))",
+        },
+        action: (
+          <ToastAction altText="error">
+            <CrossCircledIcon width={32} height={32} />
+          </ToastAction>
+        ),
+      });
+      return;
+    }
+
     // error handling if prisma upload fails
     try {
       await addSnippetAction({
@@ -135,7 +153,7 @@ export default function AddSnippetForm({}) {
           placeholder="Type your custom code here..."
         />
       </div>
-      <Button className="w-fit" disabled={codeSnippet.replace(/[\n\t\s]/g, "").length >= MIN_SNIPPET_LENGTH}>Upload</Button>
+      <Button className="w-fit">Upload</Button>
     </form>
   );
 }
