@@ -3,6 +3,8 @@
 import { Button } from "@/components/ui/button";
 import React, { useState } from "react";
 import { addSnippetAction } from "../actions";
+import { toast } from "@/components/ui/use-toast";
+import { useConfettiContext } from "@/context/confetti";
 import { Textarea } from "@/components/ui/textarea";
 import LanguageDropDown from "./language-dropdown";
 import { useToast } from "@/components/ui/use-toast";
@@ -14,6 +16,7 @@ export default function AddSnippetForm({}) {
   const [codeSnippet, setCodeSnippet] = useState("");
   const [codeLanguage, setCodeLanguage] = useState("");
   const { toast } = useToast();
+  const confettiCtx = useConfettiContext();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -41,6 +44,29 @@ export default function AddSnippetForm({}) {
       await addSnippetAction({
         language: codeLanguage,
         code: codeSnippet,
+      })
+      .then((res) => {
+        if (res?.message === "snippet-created-and-achievement-unlocked") {
+          toast({
+            title: "Achievement Unlocked",
+            description: "Uploaded First Snippet",
+          });
+          confettiCtx.showConfetti();
+          toast({
+            title: "Success!",
+            description: "Snippet added successfully",
+            duration: 3000,
+            style: {
+              background: "#A2FF86",
+              color: "#213363",
+            },
+            action: (
+              <ToastAction altText="error">
+                <CheckIcon width={32} height={32} />
+              </ToastAction>
+            ),
+          });
+        }
       });
     } catch (err) {
       console.log(err);
@@ -58,23 +84,10 @@ export default function AddSnippetForm({}) {
         ),
       });
     }
-    // console.log("language: ", codeLanguage);
-    // console.log("snippet: ", codeSnippet);
+    console.log("language: ", codeLanguage);
+    console.log("snippet: ", codeSnippet);
 
-    toast({
-      title: "Success!",
-      description: "Snippet added successfully",
-      duration: 3000,
-      style: {
-        background: "#A2FF86",
-        color: "#213363",
-      },
-      action: (
-        <ToastAction altText="error">
-          <CheckIcon width={32} height={32} />
-        </ToastAction>
-      ),
-    });
+    
 
     resetFields();
   }

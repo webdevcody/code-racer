@@ -8,7 +8,7 @@ import { UserDropdown } from "./user-dropdown";
 
 export function Header() {
   return (
-    <header className="bg-background/90 backdrop-blur flex sticky top-0 z-40 w-full border-b-2 border-yellow-500">
+    <header className="bg-background/10 backdrop-blur-sm flex sticky top-0 z-40 w-full border-b-2 border-yellow-500">
       <div className="container flex h-20 items-center w-full space-x-4 sm:space-x-0">
         <div className="flex-1">
           <MainNav items={siteConfig.mainNav} />
