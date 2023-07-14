@@ -274,7 +274,7 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
           description="Start typing to get racing"
         />
       </div>
-      <DisplayedCode code={code} errors={errors} userInput={input} />
+      <DisplayedCode code={code} errors={errors} userInput={input} isCurrentLineEmpty={(lines[line - 1]?.length ?? -1 ) === 0}/>
       <input
         type="text"
         value={input}
