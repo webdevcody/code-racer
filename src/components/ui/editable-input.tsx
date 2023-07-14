@@ -44,6 +44,7 @@ const EditableInput = React.forwardRef<HTMLInputElement, React.InputHTMLAttribut
               type={type}
               value={newValue}
               onChange={(e) => setNewValue(e.target.value)}
+              onKeyDown={(e) => e.key === "Escape" && setEdit(false)}
               placeholder="Please provide a value!"
               ref={ref}
               className={cn(
