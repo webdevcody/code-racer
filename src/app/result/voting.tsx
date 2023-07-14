@@ -9,9 +9,9 @@ import {
   deleteVoteAction,
   downvoteSnippetAction,
   upvoteSnippetAction,
-} from "./actions";
+} from "../_actions/result";
 import { toast } from "@/components/ui/use-toast";
-import { cn } from "@/lib/utils";
+import { catchError, cn } from "@/lib/utils";
 import Spinner from "@/components/ui/spinner";
 
 interface VotingProps {
@@ -53,17 +53,7 @@ export function Voting({ userId, snippetId, usersVote }: VotingProps) {
                   });
                 }
               } catch (err) {
-                err instanceof Error
-                  ? toast({
-                      title: "Error",
-                      description: err.message,
-                      variant: "destructive",
-                    })
-                  : toast({
-                      title: "Error",
-                      description: "Something went wrong, please try again.",
-                      variant: "destructive",
-                    });
+                catchError(err);
               }
             });
           }}
@@ -99,17 +89,7 @@ export function Voting({ userId, snippetId, usersVote }: VotingProps) {
                   });
                 }
               } catch (err) {
-                err instanceof Error
-                  ? toast({
-                      title: "Error",
-                      description: err.message,
-                      variant: "destructive",
-                    })
-                  : toast({
-                      title: "Error",
-                      description: "Something went wrong, please try again.",
-                      variant: "destructive",
-                    });
+                catchError(err);
               }
             });
           }}

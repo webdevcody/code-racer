@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Users, User } from "lucide-react";
 import Link from "next/link";
 import LanguageDropDown from "../add-snippet/_components/language-dropdown";
-import { createPrivateRaceRoom } from "./actions";
+import { createPrivateRaceRoom } from "../_actions/room";
 import { useSession } from "next-auth/react";
 import { useToast } from "@/components/ui/use-toast";
 
