@@ -54,5 +54,5 @@ export const Icons = {
   refresh: RefreshCcwIcon,
   picture: ImageIcon,
   info: Info,
-  review: FileCheck2
+  review: FileCheck2,
 };
