@@ -256,7 +256,7 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
 
   return (
     <div
-      className=" w-full md:w-3/4 lg:p-8 p-4 bg-accent rounded-md relative"
+      className=" w-full md:w-3/4 lg:p-8 p-4 bg-accent rounded-md relative overflow-x-auto"
       onClick={focusOnLoad}
       role="none" // eslint fix - will remove the semantic meaning of an element while still exposing it to assistive technology
     >
@@ -265,6 +265,7 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
         actualSnippetLength={code.length}
         user={user}
       />
+
       {/* <h1 className="text-2xl font-bold mb-4">Type this code:</h1> */}
       <div className="mb-2 md:mb-4">
       <Heading title="Type this code" description="Start typing to get racing"/>
@@ -277,7 +278,7 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
         onChange={handleChangeEvent}
         onKeyDown={handleKeyboardEvent}
         disabled={endTime !== null}
-        className="w-full h-full absolute p-8 inset-y-0 left-0 -z-40 focus:outline outline-blue-500 rounded-md"
+        className="absolute inset-y-0 left-0 w-full h-full p-8 rounded-md -z-40 focus:outline outline-blue-500"
         onPaste={(e) => e.preventDefault()}
       />
       <TooltipProvider>

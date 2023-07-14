@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import "./animation.css"
 
 interface displayCodeProps {
   code: string;
@@ -12,13 +13,13 @@ export default function DisplayedCode({
   userInput,
 }: displayCodeProps) {
   return (
-    <pre className="text-primary mb-4 overflow-auto">
+    <pre className="mb-4 text-primary">
       {code.split("").map((char, index) => (
         <span
           key={index}
           className={cn({
             "bg-red-500 opacity-100": errors.includes(index),
-            "bg-yellow-200 opacity-80 text-black": userInput.length === index,
+            "blink-animation": userInput.length === index,
             "opacity-100":
               userInput.length !== index && userInput[index] === char,
             "opacity-50":
