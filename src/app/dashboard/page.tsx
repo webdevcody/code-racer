@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import type { Result } from "@prisma/client";
 import AccuracyChart from "./accuracy-chart";
 import { RecentRacesTable } from "./recent-races-table";
+import { Heading } from "@/components/ui/heading";
 
 interface DashboardPageProps {
   searchParams: {
@@ -110,10 +111,11 @@ export default async function DashboardPage({
     totalRecentGames === 0 ? 1 : Math.ceil(totalRecentGames / take);
 
   return (
-    <div className="flex flex-col gap-8 container mx-auto mb-8">
-      <h1 className="text-4xl m-6 font-bold text-center mb-4">Dashboard</h1>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <Card className="border-none">
+    <div className=" text-center">
+      {/* <h1 className="text-4xl m-6 font-bold text-center mb-4">Dashboard</h1> */}
+      <Heading title="Dashboard" description="Find your stats" />
+      <div className="grid grid-cols-1 md:grid-cols-2 pb-5 mt-5">
+        <Card className="px-3 md:mr-4">
           <CardHeader>
             <CardTitle className="text-center m-2">Recent Races</CardTitle>
           </CardHeader>
@@ -121,41 +123,38 @@ export default async function DashboardPage({
           <RecentRacesTable data={recentGames} pageCount={pageCount} />
         </Card>
 
-        <Card className="w-[42vw] max-[850px]:w-screen min-[850px]:h-[50vh] mr-4 border-none">
+        <Card className="px-3 mt-5 md:mt-0 md:ml-4">
           <CardHeader>
             <CardTitle className="text-center m-2">Statistics</CardTitle>
           </CardHeader>
-          <div className="flex flex-col justify-center gap-4 mt-4">
-            <div className="flex flex-row justify-center gap-6">
-              <Card className="w-[40%]">
-                <CardHeader>
-                  <CardTitle className="">Highest Cpm</CardTitle>
-                </CardHeader>
-                <CardContent>{maxCpm} Cpm</CardContent>
-              </Card>
-              <Card className="w-[40%]">
-                <CardHeader>
-                  <CardTitle className="">Highest accuracy</CardTitle>
-                </CardHeader>
-                <CardContent>{Number(maxAccuracy) * 100}%</CardContent>
-              </Card>
-            </div>
-            <div className="flex flex-row justify-center gap-6 max-[850px]:mb-10">
-              <Card className="w-[40%]">
-                <CardHeader>
-                  <CardTitle className="">Average Cpm</CardTitle>
-                </CardHeader>
-                <CardContent>{avarageCpm?.toFixed(2)} Cpm</CardContent>
-              </Card>
-              <Card className="w-[40%]">
-                <CardHeader>
-                  <CardTitle className="">Average accuracy</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {Number(avarageAccuracy?.toFixed(2)) * 100}%
-                </CardContent>
-              </Card>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2">
+            <Card className="w-fill mb-1">
+              <CardHeader>
+                <CardTitle className="">Highest Cpm</CardTitle>
+              </CardHeader>
+              <CardContent>{maxCpm} Cpm</CardContent>
+            </Card>
+            <Card className="w-fill mb-1 md:ml-2">
+              <CardHeader>
+                <CardTitle className="">Highest accuracy</CardTitle>
+              </CardHeader>
+              <CardContent>{Number(maxAccuracy) * 100}%</CardContent>
+            </Card>
+
+            <Card className="w-fill max-sm:mb-1">
+              <CardHeader>
+                <CardTitle className="">Average Cpm</CardTitle>
+              </CardHeader>
+              <CardContent>{avarageCpm?.toFixed(2)} Cpm</CardContent>
+            </Card>
+            <Card className="w-fill max-sm:mb-1 md:ml-2">
+              <CardHeader>
+                <CardTitle className="">Average accuracy</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {Number(avarageAccuracy?.toFixed(2)) * 100}%
+              </CardContent>
+            </Card>
           </div>
         </Card>
       </div>
