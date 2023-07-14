@@ -3,19 +3,21 @@
 import { Button, buttonVariants } from "@/components/ui/button";
 import React, { useState } from "react";
 import { addSnippetAction } from "../actions";
-import { toast } from "@/components/ui/use-toast";
 import { useConfettiContext } from "@/context/confetti";
 import { Textarea } from "@/components/ui/textarea";
 import LanguageDropDown from "./language-dropdown";
 import { useToast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
-import { CheckCircledIcon, CrossCircledIcon } from "@radix-ui/react-icons";
+import { CrossCircledIcon } from "@radix-ui/react-icons";
 import { CheckIcon } from "lucide-react";
 import Link from "next/link";
+
+const MIN_SNIPPET_LENGTH = 30;
 
 export default function AddSnippetForm({}) {
   const [codeSnippet, setCodeSnippet] = useState("");
   const [codeLanguage, setCodeLanguage] = useState("");
+
   const { toast } = useToast();
   const confettiCtx = useConfettiContext();
 
@@ -27,6 +29,24 @@ export default function AddSnippetForm({}) {
       toast({
         title: "Error!",
         description: "Please fill all the fields",
+        duration: 5000,
+        style: {
+          background: "hsl(var(--destructive))",
+        },
+        action: (
+          <ToastAction altText="error">
+            <CrossCircledIcon width={32} height={32} />
+          </ToastAction>
+        ),
+      });
+      return;
+    }
+
+    // form validation for codeSnippet Length
+    if(codeSnippet.replace(/[\n\t\s]/g, "").length < MIN_SNIPPET_LENGTH) {
+      toast({
+        title: "Error!",
+        description: "Minimum number of character is not met. Please enter more than 30 characters",
         duration: 5000,
         style: {
           background: "hsl(var(--destructive))",
