@@ -19,8 +19,8 @@ import {
 } from "@/components/ui/popover";
 
 const snippetLangs: { label: string; value: string }[] = [
-  { label: "C/C++", value: "c_cpp" },
-  { label: "C#", value: "csharp" },
+  { label: "C++", value: "c++" },
+  { label: "C#", value: "c#" },
   { label: "Go", value: "go" },
   { label: "HTML", value: "html" },
   { label: "Java", value: "java" },
