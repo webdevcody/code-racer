@@ -67,5 +67,4 @@ export async function addSnippetAction({
     return {message: "snippet-created-and-achievement-unlocked",  status: 200 }
   }
   return {message: "snippet-created",  status: 200 }
-
-}
+};

@@ -52,20 +52,6 @@ export default function AddSnippetForm({}) {
             description: "Uploaded First Snippet",
           });
           confettiCtx.showConfetti();
-          toast({
-            title: "Success!",
-            description: "Snippet added successfully",
-            duration: 3000,
-            style: {
-              background: "#A2FF86",
-              color: "#213363",
-            },
-            action: (
-              <ToastAction altText="error">
-                <CheckIcon width={32} height={32} />
-              </ToastAction>
-            ),
-          });
         }
       });
     } catch (err) {
@@ -87,7 +73,20 @@ export default function AddSnippetForm({}) {
     console.log("language: ", codeLanguage);
     console.log("snippet: ", codeSnippet);
 
-    
+    toast({
+      title: "Success!",
+      description: "Snippet added successfully",
+      duration: 3000,
+      style: {
+        background: "#A2FF86",
+        color: "#213363",
+      },
+      action: (
+        <ToastAction altText="error">
+          <CheckIcon width={32} height={32} />
+        </ToastAction>
+      ),
+    });
 
     resetFields();
   }
