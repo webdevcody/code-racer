@@ -5,26 +5,67 @@ import React, { useState } from "react";
 import { addSnippetAction } from "../actions";
 import { Textarea } from "@/components/ui/textarea";
 import LanguageDropDown from "./language-dropdown";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function AddSnippetForm({}) {
   const [codeSnippet, setCodeSnippet] = useState("");
   const [codeLanguage, setCodeLanguage] = useState("");
+  const { toast } = useToast();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    await addSnippetAction({
-      language: codeLanguage,
-      code: codeSnippet,
+
+    // form validation for empty fields
+    if (!codeLanguage || !codeSnippet) {
+      toast({
+        title: "Error!",
+        description: "Please fill all the fields",
+        duration: 5000,
+        style: {
+          background: "hsl(var(--destructive))",
+        }
+      });
+      return;
+    }
+
+    // error handling if prisma upload fails
+    try {
+      await addSnippetAction({
+        language: codeLanguage,
+        code: codeSnippet,
+      });
+    } catch (err) {
+      console.log(err);
+      toast({
+        title: "Error!",
+        description: "Something went wrong! Please try again later.",
+        duration: 5000,
+        style: {
+          background: "hsl(var(--destructive))",
+        }
+      });
+    }
+    // console.log("language: ", codeLanguage);
+    // console.log("snippet: ", codeSnippet);
+
+    toast({
+      title: "Success!",
+      description: "Snippet added successfully",
+      duration: 3000,
+      style: {
+        background: "#A2FF86",
+        color: "#213363",
+      }
     });
-    console.log("language: ", codeLanguage);
-    console.log("snippet: ", codeSnippet);
 
     resetFields();
   }
+
   function resetFields() {
     setCodeSnippet("");
     setCodeLanguage("");
   }
+
   return (
     <form
       onSubmit={handleSubmit}

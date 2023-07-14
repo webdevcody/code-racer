@@ -14,12 +14,16 @@ export async function addSnippetAction({
     throw new UnauthorizedError();
   }
 
-  // why am i getting errors here with where?
-  await prisma.snippet.create({
-    data: {
-      userId: user?.id,
-      code,
-      language,
-    },
-  });
+  try{
+    await prisma.snippet.create({
+      data: {
+        userId: user?.id,
+        code,
+        language,
+      },
+    })
+  } catch (e) {
+    console.log(e)
+    return new Error("Something went wrong!")
+  }
 }
