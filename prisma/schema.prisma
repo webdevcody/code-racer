@@ -27,7 +27,8 @@ model User {
 
   role UserRole @default(USER)
 
-  snippets Snippet[]
+  snippets     Snippet[]
+  snippetVotes SnippetVote[]
 
   @@map("users")
 }
@@ -116,7 +117,27 @@ model Snippet {
   language String
   User     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId   String   @map("user_id")
+  onReview Boolean  @default(false) @map("on_review")
+  rating   Int      @default(0)
   Result   Result[]
 
+  votes SnippetVote[]
+
   @@map("snippets")
+}
+
+enum VoteType {
+  UP
+  DOWN
+}
+
+model SnippetVote {
+  snippetId String
+  userId    String
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Snippet   Snippet  @relation(fields: [snippetId], references: [id], onDelete: Cascade)
+  type      VoteType
+
+  @@id([userId, snippetId])
+  @@map("snippet_votes")
 }

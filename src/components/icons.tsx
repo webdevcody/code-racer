@@ -17,7 +17,10 @@ import {
   Trophy,
   User2,
   FileCheck2,
+  ThumbsUp,
+  ThumbsDown,
   type Icon as LucideIcon,
+  Loader2,
 } from "lucide-react";
 
 import Image from "next/image";
@@ -55,4 +58,7 @@ export const Icons = {
   picture: ImageIcon,
   info: Info,
   review: FileCheck2,
+  thumbsUp: ThumbsUp,
+  thumbsDown: ThumbsDown,
+  spinner: Loader2,
 };

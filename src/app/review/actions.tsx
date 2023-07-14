@@ -1,3 +1,5 @@
+"use server";
+
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { revalidatePath } from "next/cache";
@@ -16,14 +18,15 @@ export async function acquitSnippetAction(id: Snippet["id"]) {
   // will no longer be able
   // to down/upvote it
 
-  // await prisma.snippet.update({
-  //   data: {
-  //     rating: 0
-  //   },
-  //   where: {
-  //     id,
-  //   }
-  // })
+  await prisma.snippet.update({
+    data: {
+      rating: 0,
+      onReview: false,
+    },
+    where: {
+      id,
+    },
+  });
 
   revalidatePath("/review");
 }
@@ -40,6 +43,10 @@ export async function deleteSnippetAction(id: Snippet["id"]) {
       id,
     },
   });
+
+  // TODO:
+  // create a counter for user's bad
+  // snippets (that was deleted)
 
   revalidatePath("/review");
 }

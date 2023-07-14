@@ -71,7 +71,7 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
       inputElement.current.focus();
     }
 
-    if (isEnd && endTime && startTime) router.push("/result");
+    if (isEnd && endTime && startTime) router.push("/result?snippetId=${snippet.id}");
   }, [
     endTime,
     startTime,
