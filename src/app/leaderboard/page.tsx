@@ -3,6 +3,7 @@ import React from "react";
 import { prisma } from "@/lib/prisma";
 import { UsersTable } from "./users-table";
 import { Result } from "@prisma/client";
+import { Heading } from "@/components/ui/heading";
 
 interface LeaderboardPageProps {
   searchParams: {
@@ -71,8 +72,9 @@ export default async function LeaderboardPage({
   const pageCount = totalUsers === 0 ? 1 : Math.ceil(totalUsers / take);
 
   return (
-    <div className="container md:min-h-[calc(100vh-12rem)] max-w-4xl">
-      <h1 className="my-4 text-3xl text-foreground">Leaderboard.</h1>
+    <div>
+      {/* <h1 className="my-4 text-3xl text-foreground">Leaderboard.</h1> */}
+      <Heading title="Leaderboard" description="Find your competition" />
       <UsersTable data={users} pageCount={pageCount} />
     </div>
   );

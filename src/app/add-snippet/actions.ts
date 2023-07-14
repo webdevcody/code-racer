@@ -1,4 +1,5 @@
 "use server";
+import { UnauthorizedError } from "@/lib/exceptions/custom-hooks";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import type { Snippet } from "@prisma/client";
@@ -10,7 +11,7 @@ export async function addSnippetAction({
   const user = await getCurrentUser();
 
   if (!user) {
-    return new Response("user-not-defined", { status: 401 });
+    throw new UnauthorizedError();
   }
 
   // why am i getting errors here with where?

@@ -8,6 +8,7 @@ import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { ContextProvider } from "@/components/context-provider";
 import { siteConfig } from "@/config/site";
 import { Toaster } from "@/components/ui/toaster";
+import { cn } from "@/lib/utils";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -41,11 +42,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={cn("min-h-screen bg-background", inter.className)}>
         <NextTopLoader showSpinner={false} />
         <ContextProvider>
           <Header />
-          {children}
+          <div className="container h-fit py-2 md:py-24">{children}</div>
           <Footer />
           <Toaster />
           <TailwindIndicator />
