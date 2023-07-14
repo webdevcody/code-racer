@@ -71,7 +71,8 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
       inputElement.current.focus();
     }
 
-    if (isEnd && endTime && startTime) router.push("/result?snippetId=${snippet.id}");
+    if (isEnd && endTime && startTime)
+      router.push(`/result?snippetId=${snippet.id}`);
   }, [
     endTime,
     startTime,
@@ -96,7 +97,7 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
 
     // Check Newline
     const lineLength = lines[line - 1].length;
-    if (lineLength === counter) {
+    if (lineLength <= counter) {
       // Build string
       let s = "";
       for (let i = 0; i < line; i++) {
@@ -268,7 +269,10 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
 
       {/* <h1 className="text-2xl font-bold mb-4">Type this code:</h1> */}
       <div className="mb-2 md:mb-4">
-      <Heading title="Type this code" description="Start typing to get racing"/>
+        <Heading
+          title="Type this code"
+          description="Start typing to get racing"
+        />
       </div>
       <DisplayedCode code={code} errors={errors} userInput={input} />
       <input
