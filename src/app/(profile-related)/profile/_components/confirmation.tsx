@@ -10,9 +10,12 @@ import { AlertTriangle } from "lucide-react";
 interface DeleteConfirmationProps {
   setWillDelete: React.Dispatch<React.SetStateAction<boolean>>;
   displayName: string;
-};
+}
 
-export default function DeleteConfirmation({ setWillDelete, displayName }: DeleteConfirmationProps) {
+export default function DeleteConfirmation({
+  setWillDelete,
+  displayName,
+}: DeleteConfirmationProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const divRef = useRef<HTMLDivElement>(null);
@@ -44,17 +47,7 @@ export default function DeleteConfirmation({ setWillDelete, displayName }: Delet
     <div className="fixed inset-0 z-10 grid w-full h-full place-items-center bg-monochrome-with-bg-opacity bg-opacity-5">
       <div className="absolute inset-0 w-full h-full -z-10" ref={divRef} />
       <div className="w-[95%] max-w-[22.5rem]">
-        <div className="flex items-center justify-end">
-          <button
-            type="button"
-            className="relative w-6 h-6 hover:bg-monochrome-with-bg-opacity bg-opacity-10"
-            onClick={() => setWillDelete(false)}
-            title="Revert Changes"
-          >
-            <i className="absolute w-full h-[0.1rem] bg-monochrome left-0 top-1/2 -translate-y-1/2 rotate-[50deg]" />
-            <i className="absolute w-full h-[0.1rem] bg-monochrome left-0 top-1/2 -translate-y-1/2 rotate-[-50deg]" />
-          </button>
-        </div>
+        <div className="flex items-center justify-end"></div>
         <div className="bg-background  min-h-[12.5rem] mt-2 rounded-lg p-6">
           <span className="flex items-center justify-center gap-2 text-red-500">
             <AlertTriangle className="stroke-red-500" />
@@ -84,15 +77,9 @@ export default function DeleteConfirmation({ setWillDelete, displayName }: Delet
                 (inputValue === displayName ? undefined : true) || isLoading
               }
             >
-              { isLoading ? "DELETING..." : "CONFIRM" }
+              {isLoading ? "DELETING..." : "CONFIRM"}
             </Button>
-            <Button
-              variant={"secondary"}
-              className="mt-2"
-              onClick={() => setWillDelete(false)}
-            >
-              CANCEL
-            </Button> 
+            <Button onClick={() => setWillDelete(false)}>CANCEL</Button>
           </form>
         </div>
       </div>

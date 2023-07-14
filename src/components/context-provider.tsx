@@ -10,5 +10,5 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
         <ConfettiProvider>{children}</ConfettiProvider>
       </SessionProvider>
     </ThemeProvider>
-  )
+  );
 }

@@ -1,22 +1,23 @@
 "use server";
 
+import {
+  UnauthorizedError,
+  ValidationError,
+} from "@/lib/exceptions/custom-hooks";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
-import { throwError } from "@/lib/utils";
 
-export async function updateUserAction({ newName }: { newName: string }) {
+export async function updateUserAction({ name }: { name: string }) {
   const user = await getCurrentUser();
 
   if (!user) {
-    throwError(new Error("user-not-defined"))
+    throw new UnauthorizedError();
   }
 
-  if (!newName) {
-    throwError(new Error("name-is-empty"))
-  }
-
-  if (newName === user?.name) {
-    throwError(new Error("name-is-the-same"))
+  if (!name) {
+    throw new ValidationError({
+      name: "is required",
+    });
   }
 
   await prisma.user.update({
@@ -24,16 +25,16 @@ export async function updateUserAction({ newName }: { newName: string }) {
       id: user?.id,
     },
     data: {
-      name: newName,
+      name,
     },
-  })
+  });
 }
 
 export async function deleteUserAction() {
   const user = await getCurrentUser();
 
   if (!user) {
-    throw new Error("No permission.");
+    throw new UnauthorizedError();
   }
 
   await prisma.user.delete({
