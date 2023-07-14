@@ -1,12 +1,14 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import CpmChart from "./cpm-chart";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { redirect } from "next/navigation";
 import type { Result } from "@prisma/client";
 import AccuracyChart from "./accuracy-chart";
 import { RecentRacesTable } from "./recent-races-table";
+import PerformanceComparison from "./PerformanceComparison";
 
 interface DashboardPageProps {
   searchParams: {
@@ -105,6 +107,7 @@ export default async function DashboardPage({
       avarageAccuracy: aggregations._avg.accuracy,
     };
   });
+  console.log(recentGames);
 
   const pageCount =
     totalRecentGames === 0 ? 1 : Math.ceil(totalRecentGames / take);
@@ -112,6 +115,21 @@ export default async function DashboardPage({
   return (
     <div className="flex flex-col gap-8 container mx-auto mb-8">
       <h1 className="text-4xl m-6 font-bold text-center mb-4">Dashboard</h1>
+      <div className="w-full">
+        <Tabs defaultValue="cpm" className="w-full">
+          <TabsList>
+            <TabsTrigger value="cpm">Cpm</TabsTrigger>
+            <TabsTrigger value="accuracy">Accuracy</TabsTrigger>
+          </TabsList>
+          <TabsContent value="cpm">
+            <PerformanceComparison obj="cpm" usersData={recentGames} />
+          </TabsContent>
+          <TabsContent value="accuracy">
+            <PerformanceComparison obj="accuracy" usersData={recentGames} />
+          </TabsContent>
+        </Tabs>
+
+      </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <Card className="border-none">
           <CardHeader>
