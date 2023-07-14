@@ -1,4 +1,5 @@
 "use server";
+
 import { UnauthorizedError } from "@/lib/exceptions/custom-hooks";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
@@ -51,6 +52,7 @@ export async function addSnippetAction({
   code,
   language,
 }: Pick<Snippet, "code" | "language">) {
+
   const user = await getCurrentUser();
 
   if (!user) {
