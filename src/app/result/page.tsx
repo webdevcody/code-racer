@@ -1,19 +1,13 @@
 import React from "react";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Chart from "./chart";
-import NavigationButtons from "./navigation-buttons";
-import { Voting } from "./voting";
+import { Icons } from "@/components/icons";
+import Link from "next/link";
+import { FirstRaceBadge } from "./first-race-badge";
 import { getCurrentUser } from "@/lib/session";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { Icons } from "@/components/icons";
-import { useRouter } from "next/navigation";
-
-interface ResultsPageProps {
-  searchParams: {
-    snippetId: string;
-  };
-}
 
 const card = [
   { title: "WPM", value: "81 %" },
@@ -23,35 +17,54 @@ const card = [
   { title: "Times", value: "30s" },
 ];
 
-export default async function ResultsPage({ searchParams }: ResultsPageProps) {
+export default async function ResultsChart() {
   const user = await getCurrentUser();
+  if (!user || !user.id) notFound();
+  const firstRaceBadge = await prisma.$transaction(
+    async (tx) => {
+      const firstRaceAchievement = await tx.achievement.findFirst({
+        where: {
+          name: "First Race",
+        },
+      });
+      if (!firstRaceAchievement) {
+        console.error("bedge, where badge?");
+        return null;
+      }
 
-  if (!user) notFound();
+      const userFirstRaceAchievement = await tx.userAchievement.findUnique({
+        where: {
+          userId_achievementId: {
+            userId: user.id,
+            achievementId: firstRaceAchievement.id,
+          },
+        },
+      });
+      if (!userFirstRaceAchievement) {
+        await tx.userAchievement.create({
+          data: {
+            achievementId: firstRaceAchievement.id,
+            userId: user.id,
+          },
+        });
 
-  const usersVote = await prisma.snippetVote.findUnique({
-    where: {
-      userId_snippetId: {
-        userId: user.id,
-        snippetId: searchParams.snippetId,
-      },
+        return firstRaceAchievement.image;
+      }
+      return null;
     },
-  });
-
-  const { snippetId } = searchParams;
-
-  const snippet = await prisma.snippet.findUnique({
-    where: {
-      id: snippetId,
+    {
+      timeout: 10_000,
     },
-  });
+  );
 
   return (
     <div className="w-auto">
       <div className="flex flex-col justify-center gap-4 mt-5">
-        <div className="flex md:flex-row flex-col md:mx-28 mx-20 gap-6">
+        <FirstRaceBadge image={firstRaceBadge} />
+        <div className="grid grid-cols-2 md:grid-cols-5 mx-auto gap-3 md:gap-6">
           {card.map((c, idx) => {
             return (
-              <Card className="md:w-[30%] w-[80%]" key={idx}>
+              <Card key={idx}>
                 <CardHeader>
                   <CardTitle className="">{c.title}</CardTitle>
                 </CardHeader>
@@ -61,22 +74,29 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
           })}
         </div>
       </div>
-      <div className="p-8 flex flex-col  rounded-xl bg-dark-lake">
-        <div></div>
+      <div className="p-8 flex flex-col rounded-xl">
         <div className="flex flex-wrap justify-center gap-4">
           <Chart />
         </div>
       </div>
-      <Voting
-        userId={user.id}
-        snippetId={snippetId}
-        usersVote={usersVote ?? undefined}
-      />
-      <NavigationButtons onReview={snippet?.onReview} />
-      <div className="text-center mt-5 text-gray-600">
-        <span className="bg-[#0b1225]  m-1 p-1 rounded-md"> tab </span> +{" "}
-        <span className="bg-[#0b1225] m-1 p-1 rounded-md"> enter </span> -
-        restart game
+      <div
+        className="flex flex-wrap items-center justify-center gap-4 p-2"
+        tabIndex={-1}
+      >
+        <Link className={buttonVariants()} href="/race">
+          <Icons.chevronRight className="h-5 w-5" aria-hidden="true" />
+        </Link>
+        <Link className={buttonVariants()} href="/race">
+          <Icons.refresh className="h-5 w-5" aria-hidden="true" />
+        </Link>
+        <Button>
+          <Icons.picture className="h-5 w-5" aria-hidden="true" />
+        </Button>
+      </div>
+      <div className="flex items-center justify-center space-x-2">
+        <span className={buttonVariants()}>tab</span> <span>+</span>
+        <span className={buttonVariants()}>enter</span> <span>-</span>
+        <span>restart game</span>
       </div>
     </div>
   );

@@ -44,7 +44,7 @@ export default async function Race({
   console.log(snippet);
 
   return (
-    <main className="flex md:min-h-[calc(100vh-11rem)] flex-col items-center justify-between lg:p-24 p-10">
+    <main className="flex md:min-h-[calc(100vh-11rem)] flex-col items-center justify-between lg:p-24 py-10">
       {snippet && <TypingCode snippet={snippet} user={user} />}
       {!snippet && (
         <NoSnippet
