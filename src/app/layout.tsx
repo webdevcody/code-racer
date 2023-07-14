@@ -42,11 +42,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn("min-h-screen bg-background", inter.className)}>
+      <body className={cn("min-h-screen flex flex-col bg-background", inter.className)}>
         <NextTopLoader showSpinner={false} />
         <ContextProvider>
           <Header />
-          <div className="container h-fit py-2 md:py-24">{children}</div>
+          <div className="container py-2 h-fit md:py-24 grow">{children}</div>
           <Footer />
           <Toaster />
           <TailwindIndicator />

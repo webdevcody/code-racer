@@ -108,14 +108,13 @@ export default async function DashboardPage({
       avarageAccuracy: aggregations._avg.accuracy,
     };
   });
-  console.log(recentGames);
 
   const pageCount =
     totalRecentGames === 0 ? 1 : Math.ceil(totalRecentGames / take);
 
   return (
-    <div className=" text-center">
-      {/* <h1 className="text-4xl m-6 font-bold text-center mb-4">Dashboard</h1> */}
+    <div className="text-center ">
+      {/* <h1 className="m-6 mb-4 text-4xl font-bold text-center">Dashboard</h1> */}
       <Heading title="Dashboard" description="Find your stats" />
       <div className="w-full mt-5">
         <Tabs defaultValue="cpm" className="w-full">
@@ -131,10 +130,10 @@ export default async function DashboardPage({
           </TabsContent>
         </Tabs>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 pb-5 mt-5">
+      <div className="grid grid-cols-1 pb-5 mt-5 md:grid-cols-2">
         <Card className="px-3 md:mr-4">
           <CardHeader>
-            <CardTitle className="text-center m-2">Recent Races</CardTitle>
+            <CardTitle className="m-2 text-center">Recent Races</CardTitle>
           </CardHeader>
           {/* recent-races-table w-full max-[600px]:text-sm border-b-2 */}
           <RecentRacesTable data={recentGames} pageCount={pageCount} />
@@ -142,16 +141,16 @@ export default async function DashboardPage({
 
         <Card className="px-3 mt-5 md:mt-0 md:ml-4">
           <CardHeader>
-            <CardTitle className="text-center m-2">Statistics</CardTitle>
+            <CardTitle className="m-2 text-center">Statistics</CardTitle>
           </CardHeader>
           <div className="grid grid-cols-1 md:grid-cols-2">
-            <Card className="w-fill mb-1">
+            <Card className="mb-1 w-fill">
               <CardHeader>
                 <CardTitle className="">Highest Cpm</CardTitle>
               </CardHeader>
               <CardContent>{maxCpm} Cpm</CardContent>
             </Card>
-            <Card className="w-fill mb-1 md:ml-2">
+            <Card className="mb-1 w-fill md:ml-2">
               <CardHeader>
                 <CardTitle className="">Highest accuracy</CardTitle>
               </CardHeader>
@@ -175,7 +174,7 @@ export default async function DashboardPage({
           </div>
         </Card>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
         <AccuracyChart recentGames={recentGames} />
         <CpmChart recentGames={recentGames} />
       </div>

@@ -54,8 +54,6 @@ export default async function LeaderboardPage({
 
       const totalUsers = await prisma.user.count();
 
-      console.log(users[0]);
-
       const usersWithAvg = users.map((user) => ({
         ...user,
         avarageCpm: calculateUsersAvarage(user.results, "cpm"),
