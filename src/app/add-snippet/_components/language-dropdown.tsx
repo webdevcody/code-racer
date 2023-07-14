@@ -35,9 +35,11 @@ const snippetLangs: { label: string; value: string }[] = [
 const LanguageDropDown = ({
   codeLanguage,
   setCodeLanguage,
+  className,
 }: {
   codeLanguage: string;
   setCodeLanguage: React.Dispatch<React.SetStateAction<string>>;
+  className?: string;
 }) => {
   const [open, setOpen] = React.useState(false);
 
@@ -48,7 +50,7 @@ const LanguageDropDown = ({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="justify-between w-full px-4 py-3"
+          className={cn("justify-between w-full px-4 py-3", className)}
         >
           {codeLanguage
             ? snippetLangs.find((language) => language.value === codeLanguage)

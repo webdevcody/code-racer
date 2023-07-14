@@ -43,10 +43,11 @@ export default function AddSnippetForm({}) {
     }
 
     // form validation for codeSnippet Length
-    if(codeSnippet.replace(/[\n\t\s]/g, "").length < MIN_SNIPPET_LENGTH) {
+    if (codeSnippet.replace(/[\n\t\s]/g, "").length < MIN_SNIPPET_LENGTH) {
       toast({
         title: "Error!",
-        description: "Minimum number of character is not met. Please enter more than 30 characters",
+        description:
+          "Minimum number of character is not met. Please enter more than 30 characters",
         duration: 5000,
         style: {
           background: "hsl(var(--destructive))",
