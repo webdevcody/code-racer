@@ -96,7 +96,7 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
 
     // Check Newline
     const lineLength = lines[line - 1].length;
-    if (lineLength === counter) {
+    if (lineLength <= counter) {
       // Build string
       let s = "";
       for (let i = 0; i < line; i++) {
