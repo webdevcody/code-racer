@@ -9,6 +9,7 @@ import { getCurrentUser } from "@/lib/session";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Voting } from "./voting";
+import { Badge } from "@/components/ui/badge";
 
 const card = [
   { title: "WPM", value: "81 %" },
@@ -116,9 +117,15 @@ export default async function ResultsChart({
         />
       </div>
       <div className="flex items-center justify-center space-x-2">
-        <span className={buttonVariants()}>tab</span> <span>+</span>
-        <span className={buttonVariants()}>enter</span> <span>-</span>
-        <span>restart game</span>
+        <Badge variant="outline">
+          <Badge variant="secondary" className="mr-2">tab</Badge>
+          <span>+</span>
+          <Badge variant="secondary" className="mx-2">enter</Badge>
+          <span>restart game</span>
+        </Badge>
+
+        {/* <span className={buttonVariants()}>tab</span> <span>+</span>
+        <span className={buttonVariants()}>enter</span> <span>-</span> */}
       </div>
     </div>
   );
