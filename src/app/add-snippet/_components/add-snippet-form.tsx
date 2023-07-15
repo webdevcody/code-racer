@@ -1,189 +1,96 @@
-// "use client";
-
-// import { Button, buttonVariants } from "@/components/ui/button";
-// import { Textarea } from "@/components/ui/textarea";
-// import { useToast } from "@/components/ui/use-toast";
-// import { useConfettiContext } from "@/context/confetti";
-// import Link from "next/link";
-// import React, { useState } from "react";
-// import { addSnippetAction } from "../../_actions/snippet";
-// import LanguageDropDown from "./language-dropdown";
-// import { catchError } from "@/lib/utils";
-
-// export default function AddSnippetForm({}) {
-//   const [codeSnippet, setCodeSnippet] = useState("");
-//   const [codeLanguage, setCodeLanguage] = useState("");
-
-//   const { toast } = useToast();
-//   const confettiCtx = useConfettiContext();
-
-//   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-//     e.preventDefault();
-
-//     try {
-//       // error handling if prisma upload fails
-//       const res = await addSnippetAction({
-//         language: codeLanguage,
-//         code: codeSnippet,
-//       });
-//       if (res?.message === "snippet-created-and-achievement-unlocked") {
-//         toast({
-//           title: "Achievement Unlocked",
-//           description: "Uploaded First Snippet",
-//         });
-//         confettiCtx.showConfetti();
-//       }
-//       toast({
-//         title: "Success!",
-//         description: "Snippet added successfully",
-//         duration: 5000,
-//         variant: "middle",
-//         action: (
-//           <Link href="/race" className={buttonVariants({ variant: "outline" })}>
-//             Click to Race
-//           </Link>
-//         ),
-//       });
-
-//       resetFields();
-//     } catch (err) {
-//       catchError(err);
-//     }
-//   }
-
-//   function resetFields() {
-//     setCodeSnippet("");
-//     setCodeLanguage("");
-//   }
-
-//   return (
-//     <form
-//       onSubmit={handleSubmit}
-//       action=""
-//       className="flex flex-col gap-3 mt-5"
-//     >
-//       <div className="w-full">
-//         <LanguageDropDown
-//           codeLanguage={codeLanguage}
-//           setCodeLanguage={setCodeLanguage}
-//         />
-//       </div>
-//       <div>
-//         <Textarea
-//           onChange={(e) => setCodeSnippet(e.target.value)}
-//           name=""
-//           value={codeSnippet}
-//           id=""
-//           rows={8}
-//           className="w-full p-2 border"
-//           placeholder="Type your custom code here..."
-//         />
-//       </div>
-//       <Button className="w-fit">Upload</Button>
-//     </form>
-//   );
-// }
-
-// Below is the code for how zod can be implemented to do the validations.
-
 "use client";
 
-import * as z from "zod";
 import { Button, buttonVariants } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { useConfettiContext } from "@/context/confetti";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 import { addSnippetAction } from "../../_actions/snippet";
 import LanguageDropDown from "./language-dropdown";
 
 const formDataSchema = z.object({
-  codeLanguage: z.string().nonempty(),
-  codeSnippet: z.string().min(30),
+  codeLanguage: z
+    .string({
+      required_error: "Please select a language",
+    })
+    .nonempty(),
+  codeSnippet: z
+    .string({
+      required_error: "Please enter a code snippet",
+    })
+    .min(30, "Code snippet must be at least 30 characters long"),
 });
 
-export default function AddSnippetForm({}) {
-  const [codeSnippet, setCodeSnippet] = useState("");
-  const [codeLanguage, setCodeLanguage] = useState("");
+type FormData = z.infer<typeof formDataSchema>;
 
+export default function AddSnippetForm({}) {
   const { toast } = useToast();
   const confettiCtx = useConfettiContext();
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  const form = useForm<FormData>({
+    resolver: zodResolver(formDataSchema),
+    mode: "onSubmit",
+  });
 
-    // Validate form data
-    try {
-      formDataSchema.parse({ codeLanguage, codeSnippet });
-    } catch (err) {
-      if (err instanceof z.ZodError) {
-        // Handle Zod validation errors
-        const codeLanguageError = err.errors.find((error) =>
-          error.path.includes("codeLanguage"),
-        );
-        const codeSnippetError = err.errors.find((error) =>
-          error.path.includes("codeSnippet"),
-        );
-
-        if (codeLanguageError && codeSnippetError) {
-          toast({
-            title: "Error. Both fields required.",
-            description:
-              "Language is required and Snippets much be 30 characters long.",
-            duration: 5000,
-            style: {
-              background: "hsl(var(--destructive))",
-            },
-          });
-        } else if (codeLanguageError) {
-          // Handle codeLanguage validation error
-          toast({
-            title: "Error language not selected",
-            description: "Please select a language to successfully upload.",
-            duration: 5000,
-            style: {
-              background: "hsl(var(--destructive))",
-            },
-          });
-        } else if (codeSnippetError) {
-          // Handle codeSnippet validation error
-          toast({
-            title: "Error. Snippet short.",
-            description: "Code snippet must be at least 30 characters long.",
-            duration: 5000,
-            style: {
-              background: "hsl(var(--destructive))",
-            },
-          });
-        }
-      } else {
-        // Handle other errors
-        toast({
-          title: "Error!",
-          description: "An unknown error occurred",
-          duration: 5000,
-          style: {
-            background: "hsl(var(--destructive))",
-          },
-        });
-      }
-      return;
-    }
-
+  async function onSubmit(data: FormData) {
     // error handling if prisma upload fails
     await addSnippetAction({
-      language: codeLanguage,
-      code: codeSnippet,
+      language: data.codeLanguage,
+      code: data.codeSnippet,
     })
       .then((res) => {
-        if (res?.message === "snippet-created-and-achievement-unlocked") {
+        if (res.validationError) {
+          toast({
+            title: "Error!",
+            description:
+              "Something went wrong! " +
+              (res.validationError.code ?? "") +
+              "\n" +
+              (res.validationError.language ?? ""),
+            duration: 5000,
+            style: {
+              background: "hsl(var(--destructive))",
+            },
+          });
+          return;
+        }
+
+        if (res?.data?.message === "snippet-created-and-achievement-unlocked") {
           toast({
             title: "Achievement Unlocked",
             description: "Uploaded First Snippet",
           });
           confettiCtx.showConfetti();
         }
+
+        toast({
+          title: "Success!",
+          description: "Snippet added successfully",
+          duration: 5000,
+          variant: "middle",
+          action: (
+            <Link
+              href="/race"
+              className={buttonVariants({ variant: "outline" })}
+            >
+              Click to Race
+            </Link>
+          ),
+        });
+        // this is bugged, idk why it doesn't reset the textarea
+        // TODO: fix this
+        // form.reset();
       })
       .catch((err) => {
         toast({
@@ -197,51 +104,54 @@ export default function AddSnippetForm({}) {
       });
     // console.log("language: ", codeLanguage);
     // console.log("snippet: ", codeSnippet);
-
-    toast({
-      title: "Success!",
-      description: "Snippet added successfully",
-      duration: 5000,
-      variant: "middle",
-      action: (
-        <Link href="/race" className={buttonVariants({ variant: "outline" })}>
-          Click to Race
-        </Link>
-      ),
-    });
-
-    resetFields();
-  }
-
-  function resetFields() {
-    setCodeSnippet("");
-    setCodeLanguage("");
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      action=""
-      className="flex flex-col gap-3 mt-5"
-    >
-      <div className="w-full">
-        <LanguageDropDown
-          codeLanguage={codeLanguage}
-          setCodeLanguage={setCodeLanguage}
+    <Form {...form}>
+      <form
+        className="flex flex-col gap-3 mt-5"
+        onSubmit={form.handleSubmit(onSubmit)}
+      >
+        <FormField
+          control={form.control}
+          name="codeLanguage"
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel>Language</FormLabel>
+              <FormControl>
+                <LanguageDropDown
+                  codeLanguage={field.value}
+                  // TODO: Refactor this component's props.
+                  //@ts-expect-error type mismatch
+                  setCodeLanguage={field.onChange}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </div>
-      <div>
-        <Textarea
-          onChange={(e) => setCodeSnippet(e.target.value)}
-          name=""
-          value={codeSnippet}
-          id=""
-          rows={8}
-          className="w-full p-2 border"
-          placeholder="Type your custom code here... Minimum 30 characters required."
+        <FormField
+          control={form.control}
+          name="codeSnippet"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Code Snippet</FormLabel>
+              <FormControl>
+                <Textarea
+                  rows={8}
+                  className="w-full p-2 border"
+                  placeholder="Type your custom code here... Minimum 30 characters required."
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </div>
-      <Button className="w-fit">Upload</Button>
-    </form>
+        <Button className="w-fit" type="submit">
+          Upload
+        </Button>
+      </form>
+    </Form>
   );
 }

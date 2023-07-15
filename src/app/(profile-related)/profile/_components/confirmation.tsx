@@ -33,7 +33,7 @@ export default function DeleteConfirmation({
     setIsLoading(true);
     e.preventDefault();
     try {
-      await deleteUserAction();
+      await deleteUserAction({});
       await signOut({
         callbackUrl: "/",
       });
