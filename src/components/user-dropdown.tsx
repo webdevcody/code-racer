@@ -14,9 +14,12 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import type { User } from "next-auth";
+import { UserRole } from "@prisma/client";
 
 interface UserDropdownProps {
-  user?: User;
+  user?: User & {
+    role: UserRole
+  };
 }
 
 export function UserDropdown({ user }: UserDropdownProps) {
@@ -30,7 +33,9 @@ export function UserDropdown({ user }: UserDropdownProps) {
 }
 
 interface AccountMenuProps {
-  user: User;
+  user: User & {
+    role: UserRole
+  };
 }
 
 const AccountMenu = ({ user }: AccountMenuProps) => {
