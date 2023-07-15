@@ -10,6 +10,8 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Voting } from "./voting";
 import { Badge } from "@/components/ui/badge";
+import { getFirstRaceBadge } from "./loaders";
+import { Achievement, SnippetVote, UserAchievement } from "@prisma/client";
 
 const card = [
   { title: "WPM", value: "81 %" },
@@ -27,56 +29,26 @@ export default async function ResultsChart({
   searchParams,
 }: ResultsChartProps) {
   const user = await getCurrentUser();
-  if (!user || !user.id) notFound();
-  const firstRaceBadge = await prisma.$transaction(
-    async (tx) => {
-      const firstRaceAchievement = await tx.achievement.findFirst({
-        where: {
-          name: "First Race",
+
+  let usersVote: SnippetVote | undefined | null;
+  let firstRaceBadge: Achievement | undefined;
+
+  if (user) {
+    firstRaceBadge = await getFirstRaceBadge();
+    usersVote = await prisma.snippetVote.findUnique({
+      where: {
+        userId_snippetId: {
+          userId: user.id,
+          snippetId: searchParams.snippetId,
         },
-      });
-      if (!firstRaceAchievement) {
-        return null;
-      }
-
-      const userFirstRaceAchievement = await tx.userAchievement.findUnique({
-        where: {
-          userId_achievementId: {
-            userId: user.id,
-            achievementId: firstRaceAchievement.id,
-          },
-        },
-      });
-      if (!userFirstRaceAchievement) {
-        await tx.userAchievement.create({
-          data: {
-            achievementId: firstRaceAchievement.id,
-            userId: user.id,
-          },
-        });
-
-        return firstRaceAchievement.image;
-      }
-      return null;
-    },
-    {
-      timeout: 10_000,
-    },
-  );
-
-  const usersVote = await prisma.snippetVote.findUnique({
-    where: {
-      userId_snippetId: {
-        userId: user.id,
-        snippetId: searchParams.snippetId,
       },
-    },
-  });
+    });
+  }
 
   return (
     <div className="w-auto">
       <div className="flex flex-col justify-center gap-4 mt-5">
-        <FirstRaceBadge image={firstRaceBadge} />
+        {firstRaceBadge && <FirstRaceBadge image={firstRaceBadge.image} />}
         <div className="grid grid-cols-2 gap-3 mx-auto md:grid-cols-5 md:gap-6">
           {card.map((c, idx) => {
             return (
@@ -110,17 +82,23 @@ export default async function ResultsChart({
         </Button>
       </div>
       <div className="my-4">
-        <Voting
-          snippetId={searchParams.snippetId}
-          userId={user.id}
-          usersVote={usersVote ?? undefined}
-        />
+        {user && (
+          <Voting
+            snippetId={searchParams.snippetId}
+            userId={user.id}
+            usersVote={usersVote ?? undefined}
+          />
+        )}
       </div>
       <div className="flex items-center justify-center space-x-2">
         <Badge variant="outline">
-          <Badge variant="secondary" className="mr-2">tab</Badge>
+          <Badge variant="secondary" className="mr-2">
+            tab
+          </Badge>
           <span>+</span>
-          <Badge variant="secondary" className="mx-2">enter</Badge>
+          <Badge variant="secondary" className="mx-2">
+            enter
+          </Badge>
           <span>restart game</span>
         </Badge>
 

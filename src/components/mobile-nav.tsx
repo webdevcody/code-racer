@@ -11,9 +11,12 @@ import { Icons } from "./icons";
 import Link, { LinkProps } from "next/link";
 import { ModeToggle } from "./mode-toggle";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export function MobileNav() {
   const [open, setOpen] = useState(false);
+  const isLoggedIn = !!useSession().data;
+
   return (
     <div className="md:hidden">
       <Sheet open={open} onOpenChange={setOpen}>
@@ -31,7 +34,7 @@ export function MobileNav() {
             <div className="flex flex-col items-center justify-center gap-10 py-2">
               <UserDropdown />
               <nav className="flex flex-1 flex-col space-y-4 items-center justify-center">
-                {siteConfig.mainNav.map((item) => (
+                {siteConfig.getHeaderLinks(isLoggedIn).map((item) => (
                   <MobileLink
                     className={cn(
                       buttonVariants({ size: "lg" }),
