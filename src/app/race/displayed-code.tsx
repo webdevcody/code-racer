@@ -11,7 +11,7 @@ export default function DisplayedCode({
   code,
   errors,
   userInput,
-  isCurrentLineEmpty = false
+  isCurrentLineEmpty = false,
 }: displayCodeProps) {
   return (
     <pre className="mb-4 text-primary">

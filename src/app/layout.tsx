@@ -42,7 +42,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn("min-h-screen flex flex-col bg-background", inter.className)}>
+      <body
+        className={cn(
+          "min-h-screen flex flex-col bg-background",
+          inter.className,
+        )}
+      >
         <NextTopLoader showSpinner={false} />
         <ContextProvider>
           <Header />
