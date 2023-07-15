@@ -257,7 +257,7 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
 
   return (
     <div
-      className=" w-full md:w-3/4 lg:p-8 p-4 bg-accent rounded-md relative overflow-x-auto"
+      className="relative w-full p-4 overflow-x-auto rounded-md  md:w-3/4 lg:p-8 bg-accent"
       onClick={focusOnLoad}
       role="none" // eslint fix - will remove the semantic meaning of an element while still exposing it to assistive technology
     >
@@ -267,7 +267,7 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
         user={user}
       />
 
-      {/* <h1 className="text-2xl font-bold mb-4">Type this code:</h1> */}
+      {/* <h1 className="mb-4 text-2xl font-bold">Type this code:</h1> */}
       <div className="mb-2 md:mb-4">
         <Heading
           title="Type this code"

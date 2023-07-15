@@ -10,7 +10,6 @@ import { addSnippetAction } from "../../_actions/snippet";
 import LanguageDropDown from "./language-dropdown";
 import { catchError } from "@/lib/utils";
 
-const MIN_SNIPPET_LENGTH = 30;
 
 export default function AddSnippetForm({}) {
   const [codeSnippet, setCodeSnippet] = useState("");
@@ -69,20 +68,6 @@ export default function AddSnippetForm({}) {
           codeLanguage={codeLanguage}
           setCodeLanguage={setCodeLanguage}
         />
-
-        {/* <select
-          onChange={(e) => setCodeLanguage(e.target.value)}
-          className="w-full px-4 py-3"
-          name=""
-          id=""
-        >
-          <option value="select">Select Snippet Language</option>
-          {snippetLangs.map((lang) => (
-            <option key={lang.value} value={lang.value}>
-              {lang.name}
-            </option>
-          ))}
-        </select> */}
       </div>
       <div>
         <Textarea

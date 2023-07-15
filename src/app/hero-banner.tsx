@@ -9,7 +9,7 @@ export default function HeroBanner() {
         <h1 className="text-5xl leading-normal md:text-7xl md:leading-relaxed color-primary">
           Code Racer
         </h1>
-        <h2 className="text-lg md:text-2xl color-primary italic">
+        <h2 className="text-lg italic md:text-2xl color-primary">
           The Ultimate Coding Challenge
         </h2>
         <div className="my-7">
@@ -17,7 +17,7 @@ export default function HeroBanner() {
             href={"/race"}
             title="View Profile Picture"
             prefetch
-            className="bg-yellow-500 rounded-md text-sm md:text-2xl font-medium italic ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2  focus:bg-accent hover:bg-accent hover:text-accent-foreground px-4 py-2"
+            className="px-4 py-2 text-sm italic font-medium transition-colors bg-yellow-500 rounded-md md:text-2xl ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:bg-accent hover:bg-accent hover:text-accent-foreground"
           >
             {"Start Racing"}
           </Link>

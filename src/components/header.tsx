@@ -11,13 +11,13 @@ export function Header() {
   const isLoggedIn = !!useSession().data;
 
   return (
-    <header className="bg-background/10 backdrop-blur-sm flex sticky top-0 z-40 w-full border-b-2 border-yellow-500">
-      <div className="container flex h-20 items-center w-full space-x-4 sm:space-x-0">
+    <header className="sticky top-0 z-40 flex w-full border-b-2 border-yellow-500 bg-background/10 backdrop-blur-sm">
+      <div className="container flex items-center w-full h-20 space-x-4 sm:space-x-0">
         <div className="flex-1">
           <MainNav items={siteConfig.getHeaderLinks(isLoggedIn)} />
         </div>
         <MobileNav />
-        <nav className="hidden md:flex items-center space-x-4">
+        <nav className="items-center hidden space-x-4 md:flex">
           <UserDropdown />
           <ModeToggle />
         </nav>

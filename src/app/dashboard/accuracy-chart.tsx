@@ -22,7 +22,7 @@ const AccuracyChart: React.FC<AccuracyChartProps> = ({ recentGames }) => {
   return (
     <Card className="h-[400px]">
       <CardHeader>
-        <CardTitle className="text-center m-2">Accuracy</CardTitle>
+        <CardTitle className="m-2 text-center">Accuracy</CardTitle>
       </CardHeader>
       <ResponsiveContainer height="100%">
         <LineChart

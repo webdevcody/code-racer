@@ -49,7 +49,7 @@ export default function RacePage() {
                 }${languageSinglePlayer}`,
               );
             }}
-            className="flex gap-2 items-start"
+            className="flex items-start gap-2"
           >
             <Button>Practice</Button>
             <div className="flex flex-col">
@@ -83,7 +83,7 @@ export default function RacePage() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-2 items-center">
+          <div className="flex items-center gap-2">
             <Link
               className={cn(
                 buttonVariants({ variant: "default" }),
@@ -111,8 +111,8 @@ export default function RacePage() {
     const [languagePrivate, setLanguagePrivate] = useState("");
 
     return (
-      <Card className="flex-1 flex flex-col text-gray-700">
-        <CardHeader className="h-full justify-center">
+      <Card className="flex flex-col flex-1 text-gray-700">
+        <CardHeader className="justify-center h-full">
           <div className="flex items-center gap-4">
             <Users size={32} />
             <div>
@@ -122,7 +122,7 @@ export default function RacePage() {
           </div>
         </CardHeader>
         <CardContent className="mt-auto">
-          <div className="flex gap-2 items-center">
+          <div className="flex items-center gap-2">
             <Button
               disabled
               onClick={() => {
@@ -159,7 +159,7 @@ export default function RacePage() {
         title="Choose a Race Mode"
         description="Practice your typing skills by yourself, with friends, or with other soy devs online"
       />
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 my-8">
+      <div className="grid grid-cols-1 gap-8 my-8 lg:grid-cols-3">
         <RacePractice />
         <RaceMultiplayer />
         <RaceWithFriends />

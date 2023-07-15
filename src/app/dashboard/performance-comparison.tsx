@@ -145,7 +145,7 @@ const renderTooltip = (
     const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
     return (
-      <div className="border-2 bg-accent rounded-lg border-primary text-primary m-0 p-5">
+      <div className="p-5 m-0 border-2 rounded-lg bg-accent border-primary text-primary">
         <p>{dayNames[date.getDay()]}</p>
         <p>
           <span>Cpm : </span>
