@@ -1,9 +1,9 @@
 import { getCurrentUser } from "@/lib/session";
 
-import TypingCode from "../typing-code";
 import { prisma } from "@/lib/prisma";
 
 import NoSnippet from "../no-snippet";
+import Race from "../Race";
 
 interface RacePageSearchParams {
   snippetId: string;
@@ -38,7 +38,9 @@ async function getSearchParamSnippet(snippetId: string | string[]) {
 
 export default async function PracticeRacePage({
   searchParams,
-}: { searchParams: RacePageSearchParams }) {
+}: {
+  searchParams: RacePageSearchParams;
+}) {
   const user = await getCurrentUser();
   const snippet =
     (await getSearchParamSnippet(searchParams.snippetId)) ??
@@ -47,7 +49,7 @@ export default async function PracticeRacePage({
 
   return (
     <main className="flex flex-col items-center justify-between py-10 lg:p-24">
-      {snippet && <TypingCode snippet={snippet} user={user} />}
+      {snippet && <Race snippet={snippet} user={user} />}
       {!snippet && (
         <NoSnippet
           message={"Look like there is no snippet available yet. Create one?"}
