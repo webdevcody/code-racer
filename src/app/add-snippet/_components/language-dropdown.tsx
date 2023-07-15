@@ -40,8 +40,9 @@ const LanguageDropDown = ({
           className={cn("justify-between w-full px-4 py-3", className)}
         >
           {codeLanguage
-            ? snippetLanguages.find((language) => language.value === codeLanguage)
-                ?.label
+            ? snippetLanguages.find(
+                (language) => language.value === codeLanguage,
+              )?.label
             : "Select language..."}
           <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
         </Button>
