@@ -27,12 +27,10 @@ export function AddBio() {
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
+          <Label htmlFor="bio" className="text-left">
             Biography
-            </Label>
-          </div>
-          <Textarea placeholder="Add your bio" />
+          </Label>
+          <Textarea placeholder="Add your bio" id="bio" />
         </div>
         <DialogFooter>
           <Button type="submit">Save changes</Button>
