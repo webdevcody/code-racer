@@ -72,7 +72,6 @@ export default function Race({ user, snippet }: RaceProps) {
       // If logged in
       if (user)
         saveUserResultAction({
-          userId: user.id,
           timeTaken,
           // errors: errorTotal,
           errors: errors.length,
@@ -97,6 +96,7 @@ export default function Race({ user, snippet }: RaceProps) {
     startTime,
     user,
     errors.length,
+    errorTotal,
     code.length,
     router,
     snippet.id,
