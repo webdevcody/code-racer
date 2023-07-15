@@ -56,7 +56,7 @@ export function UsersTable({ data, pageCount }: UsersTableProps) {
         enableSorting: false,
       },
       {
-        accessorKey: "avarageCpm",
+        accessorKey: "averageCpm",
         header: () => {
           return (
             <div className="flex items-center gap-2">
@@ -76,7 +76,7 @@ export function UsersTable({ data, pageCount }: UsersTableProps) {
         },
       },
       {
-        accessorKey: "avarageAccuracy",
+        accessorKey: "averageAccuracy",
         header: "Average accuracy",
         cell: ({ cell }) => {
           const avgAccuracy = cell.getValue() as number;
@@ -109,7 +109,7 @@ export function UsersTable({ data, pageCount }: UsersTableProps) {
       data={data}
       pageCount={pageCount}
       // defaultSorting={{
-      //   prop: "avarageCpm",
+      //   prop: "averageCpm",
       //   val: "asc",
       // }}
     />
