@@ -43,14 +43,15 @@ export default async function PracticeRacePage({
   const snippet =
     (await getSearchParamSnippet(searchParams.snippetId)) ??
     (await getRandomSnippet(searchParams.lang));
-
+  const language = searchParams.lang;
 
   return (
     <main className="flex flex-col items-center justify-between py-10 lg:p-24">
       {snippet && <TypingCode snippet={snippet} user={user} />}
       {!snippet && (
         <NoSnippet
-          message={"Uh Oh, You currently do not have any snippet. Create one?"}
+          message={"Look like there is no snippet available yet. Create one?"}
+          language={language}
         />
       )}
     </main>
