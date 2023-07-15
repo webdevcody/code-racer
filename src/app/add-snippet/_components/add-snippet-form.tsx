@@ -229,7 +229,7 @@ export default function AddSnippetForm({}) {
           id=""
           rows={8}
           className="w-full p-2 border"
-          placeholder="Type your custom code here..."
+          placeholder="Type your custom code here... Minimum 30 characters required."
         />
       </div>
       <Button className="w-fit">Upload</Button>
