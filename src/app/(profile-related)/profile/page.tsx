@@ -57,7 +57,7 @@ export default async function ProfilePage() {
             <ul className="w-fit max-w-[292px] flex items-center flex-wrap gap-1 p-2 border-border rounded-sm bg-primary-foreground">
               {achievements.map(({ achievement, unlockedAt }) => (
                 <Achievement
-                  key={achievement.id}
+                  key={achievement.type}
                   achievement={{
                     name: achievement.name,
                     description: achievement.description,
