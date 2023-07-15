@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import DisplayedCode from "./displayed-code";
 import type { User } from "next-auth";
 import { Button } from "@/components/ui/button";
-import { saveUserResultAction } from "../_actions/user";
+import { saveUserResultAction } from "../_actions/result";
 import { useRouter } from "next/navigation";
 import RacePositionTracker from "./race-position-tracker";
 import { Snippet } from "@prisma/client";
@@ -28,7 +28,7 @@ function calculateAccuracy(
   numberOfCharacters: number,
   errorsCount: number,
 ): number {
-  return 1 - errorsCount / numberOfCharacters;
+  return (1 - errorsCount / numberOfCharacters) * 100;
 }
 
 interface TypingCodeProps {
@@ -273,7 +273,12 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
           description="Start typing to get racing"
         />
       </div>
-      <DisplayedCode code={code} errors={errors} userInput={input} isCurrentLineEmpty={(lines[line - 1]?.length ?? -1 ) === 0}/>
+      <DisplayedCode
+        code={code}
+        errors={errors}
+        userInput={input}
+        isCurrentLineEmpty={(lines[line - 1]?.length ?? -1) === 0}
+      />
       <input
         type="text"
         value={input}
