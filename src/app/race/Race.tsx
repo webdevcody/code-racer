@@ -63,10 +63,13 @@ export default function Race({ user, snippet }: RaceProps) {
     }
 
     // Calculate result
+    if (input.length === code.length && input === code) {
+      setEndTime(new Date());
+    }
     if (startTime && endTime) {
       const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
 
-      // if logged in
+      // If logged in
       if (user)
         saveUserResultAction({
           userId: user.id,
@@ -78,11 +81,7 @@ export default function Race({ user, snippet }: RaceProps) {
           snippetId: snippet.id,
         });
 
-      // Result
-      if (input.length === code.length && input === code) {
-        setEndTime(new Date());
-        router.push("/result");
-      }
+      router.push("/result");
     }
 
     // Set Errors
@@ -105,7 +104,7 @@ export default function Race({ user, snippet }: RaceProps) {
     code,
   ]);
 
-  // Reset
+  // Reset Race
   useEffect(() => {
     const handleRestartKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -122,7 +121,7 @@ export default function Race({ user, snippet }: RaceProps) {
     }
   }
 
-  // Key Events
+  // Key Events - Enabled / Disable / Support Func
   function handleKeyboardEvent(e: React.KeyboardEvent<HTMLInputElement>) {
     setStartTime(new Date());
 
@@ -244,7 +243,7 @@ export default function Race({ user, snippet }: RaceProps) {
     }
   }
 
-  // Reset
+  // Reset Race Values
   function handleRestart() {
     setStartTime(null);
     setEndTime(null);

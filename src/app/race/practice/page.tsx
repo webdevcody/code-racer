@@ -45,6 +45,7 @@ export default async function PracticeRacePage({
   const snippet =
     (await getSearchParamSnippet(searchParams.snippetId)) ??
     (await getRandomSnippet(searchParams.lang));
+  const language = searchParams.lang;
 
   return (
     <main className="flex flex-col items-center justify-between py-10 lg:p-24">
