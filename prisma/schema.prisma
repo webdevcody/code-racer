@@ -30,8 +30,8 @@ model User {
   results       Result[]
   achievements  UserAchievement[]
 
-  avarageAccuracy Decimal @default(0) @db.Decimal(5, 2)
-  avarageCpm      Decimal @default(0) @db.Decimal(6, 2)
+  averageAccuracy Decimal @default(0) @db.Decimal(5, 2)
+  averageCpm      Decimal @default(0) @db.Decimal(6, 2)
 
   role UserRole @default(USER)
 
