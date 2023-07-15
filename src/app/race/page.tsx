@@ -46,7 +46,7 @@ export default function RacePage() {
               router.push(
                 `/race/practice${
                   languageSinglePlayer ? "?lang=" : ""
-                }${languageSinglePlayer}`,
+                }${encodeURIComponent(languageSinglePlayer)}`, // Make sure it is URL encoded
               );
             }}
             className="flex gap-2 items-start"
