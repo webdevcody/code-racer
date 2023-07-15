@@ -6,7 +6,7 @@ import { UnlockIcon } from "lucide-react";
 import { useTimeout } from "react-use";
 import Confetti from "react-confetti";
 
-const CONFETTI_TIME = 10_000;
+const CONFETTI_TIME = 5_000;
 
 export function FirstRaceBadge({ image }: { image: string }) {
   const [isExpired] = useTimeout(CONFETTI_TIME);
@@ -21,12 +21,7 @@ export function FirstRaceBadge({ image }: { image: string }) {
             <span className="text-accent-foreground">First Race</span>
           </div>
           <div className="flex gap-8 items-center">
-            <Image
-              src={`/static${image}`}
-              width={65}
-              height={65}
-              alt="First Race Badge"
-            />
+            <Image src={image} width={65} height={65} alt="First Race Badge" />
 
             <span>Congrats on completing your first race! </span>
           </div>

@@ -7,7 +7,7 @@ async function main() {
     update: {},
     create: {
       type: "FIRST_RACE",
-      image: "/first.png",
+      image: "/static/first.png",
       name: "First Race",
     },
   });
@@ -17,7 +17,7 @@ async function main() {
     update: {},
     create: {
       type: "FIRST_SNIPPET",
-      image: "/first.png",
+      image: "/static/first.png",
       name: "First Snippet",
     },
   });
