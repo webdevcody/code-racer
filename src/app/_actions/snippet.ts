@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { zact } from "zact/server";
 import { snippetSchema } from "@/lib/validations/snippet";
+import type { Snippet } from "@prisma/client";
+import { revalidatePath } from "next/cache";
 
 export const addSnippetAction = zact(snippetSchema)(async (input) => {
   const user = await getCurrentUser();
@@ -41,3 +43,48 @@ export const addSnippetAction = zact(snippetSchema)(async (input) => {
   }
   return { message: "snippet-created", status: 200 };
 });
+
+export async function acquitSnippetAction(id: Snippet["id"]) {
+  const user = await getCurrentUser();
+
+  if (user?.role !== "ADMIN") {
+    throw new UnauthorizedError();
+  }
+
+  // TODO : Update the snippet
+  // Would be good if users
+  // will no longer be able
+  // to down/upvote it
+
+  await prisma.snippet.update({
+    data: {
+      rating: 0,
+      onReview: false,
+    },
+    where: {
+      id,
+    },
+  });
+
+  revalidatePath("/review");
+}
+
+export async function deleteSnippetAction(id: Snippet["id"]) {
+  const user = await getCurrentUser();
+
+  if (user?.role !== "ADMIN") {
+    throw new UnauthorizedError();
+  }
+
+  await prisma.snippet.delete({
+    where: {
+      id,
+    },
+  });
+
+  // TODO:
+  // create a counter for user's bad
+  // snippets (that was deleted)
+
+  revalidatePath("/review");
+}

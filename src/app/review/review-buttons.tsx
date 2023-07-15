@@ -3,7 +3,10 @@
 import { Button } from "@/components/ui/button";
 import * as React from "react";
 import type { Snippet } from "@prisma/client";
-import { acquitSnippetAction, deleteSnippetAction } from "./actions";
+import {
+  acquitSnippetAction,
+  deleteSnippetAction,
+} from "@/app/_actions/snippet";
 
 interface ReviewButtonsProps {
   snippetId: Snippet["id"];
