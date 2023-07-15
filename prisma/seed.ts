@@ -11,5 +11,15 @@ async function main() {
       name: "First Race",
     },
   });
+
+  await prisma.achievement.upsert({
+    where: { type: "FIRST_SNIPPET" },
+    update: {},
+    create: {
+      type: "FIRST_SNIPPET",
+      image: "/first.png",
+      name: "First Snippet",
+    },
+  });
 }
 main();

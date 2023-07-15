@@ -13,6 +13,11 @@ enum UserRole {
   USER
 }
 
+enum AchievementType {
+  FIRST_RACE
+  FIRST_SNIPPET
+}
+
 model User {
   id            String            @id @default(cuid())
   createdAt     DateTime          @default(now()) @map("created_at")
@@ -85,10 +90,6 @@ model Result {
   snippetId  String
 
   @@map("results")
-}
-
-enum AchievementType {
-  FIRST_RACE
 }
 
 model Achievement {
