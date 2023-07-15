@@ -10,7 +10,6 @@
 // import LanguageDropDown from "./language-dropdown";
 // import { catchError } from "@/lib/utils";
 
-
 // export default function AddSnippetForm({}) {
 //   const [codeSnippet, setCodeSnippet] = useState("");
 //   const [codeLanguage, setCodeLanguage] = useState("");
@@ -127,7 +126,17 @@ export default function AddSnippetForm({}) {
           error.path.includes("codeSnippet"),
         );
 
-        if (codeLanguageError) {
+        if (codeLanguageError && codeSnippetError) {
+          toast({
+            title: "Error. Both fields required.",
+            description:
+              "Language is required and Snippets much be 30 characters long.",
+            duration: 5000,
+            style: {
+              background: "hsl(var(--destructive))",
+            },
+          });
+        } else if (codeLanguageError) {
           // Handle codeLanguage validation error
           toast({
             title: "Error language not selected",
