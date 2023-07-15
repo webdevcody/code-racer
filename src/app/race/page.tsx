@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Users, User } from "lucide-react";
@@ -20,6 +20,11 @@ export default function RacePage() {
   function RacePractice() {
     const [languageSinglePlayer, setLanguageSinglePlayer] = useState("");
     const [error, setError] = useState("");
+
+    function handleSetCodeLanguage(props: SetStateAction<string>) {
+      setLanguageSinglePlayer(props);
+      setError("");
+    }
 
     return (
       <Card className="flex-1">
@@ -44,8 +49,7 @@ export default function RacePage() {
                 return;
               }
               router.push(
-                `/race/practice${
-                  languageSinglePlayer ? "?lang=" : ""
+                `/race/practice${languageSinglePlayer ? "?lang=" : ""
                 }${encodeURIComponent(languageSinglePlayer)}`, // Make sure it is URL encoded
               );
             }}
@@ -56,7 +60,7 @@ export default function RacePage() {
               <LanguageDropDown
                 className={cn("w-fit", error && "border-red-500")}
                 codeLanguage={languageSinglePlayer}
-                setCodeLanguage={setLanguageSinglePlayer}
+                setCodeLanguage={handleSetCodeLanguage}
               />
               <span className="text-red-500">{error}</span>
             </div>
@@ -90,9 +94,8 @@ export default function RacePage() {
                 true && "pointer-events-none cursor-not-allowed opacity-30",
               )}
               onClick={(e) => e.preventDefault()}
-              href={`/race/multiplayer${
-                languageMultiplayer ? "?lang=" : ""
-              }${encodeURIComponent(languageMultiplayer)}`} // Make sure it is URL encoded
+              href={`/race/multiplayer${languageMultiplayer ? "?lang=" : ""
+                }${encodeURIComponent(languageMultiplayer)}`} // Make sure it is URL encoded
             >
               Start Racing (Coming Soon)
             </Link>
@@ -106,8 +109,8 @@ export default function RacePage() {
     const [languagePrivate, setLanguagePrivate] = useState("");
 
     return (
-      <Card className="flex flex-col flex-1 text-gray-700">
-        <CardHeader className="justify-center h-full">
+      <Card className="text-gray-700">
+        <CardHeader>
           <div className="flex items-center gap-4">
             <Users size={32} />
             <div>
@@ -116,33 +119,31 @@ export default function RacePage() {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="mt-auto">
-          <div className="flex items-center gap-2">
-            <Button
-              disabled
-              onClick={() => {
-                if (!session) {
-                  toast({
-                    title: "Unauthorized",
-                    description:
-                      "You need to be logged in to create a racetrack",
-                  });
-                  return;
-                }
-
-                createPrivateRaceRoom({
-                  userId: session?.user.id,
+        <CardContent className="flex gap-2 items-center">
+          <Button
+            disabled
+            onClick={() => {
+              if (!session) {
+                toast({
+                  title: "Unauthorized",
+                  description:
+                    "You need to be logged in to create a racetrack",
                 });
-              }}
-            >
-              Create Room (Coming Soon)
-            </Button>
-            {/* <LanguageDropDown
+                return;
+              }
+
+              createPrivateRaceRoom({
+                userId: session?.user.id,
+              });
+            }}
+          >
+            Create Room (Coming Soon)
+          </Button>
+          {/* <LanguageDropDown
           className="w-fit"
           codeLanguage={languagePrivate}
           setCodeLanguage={setLanguagePrivate}
         /> */}
-          </div>
         </CardContent>
       </Card>
     );
