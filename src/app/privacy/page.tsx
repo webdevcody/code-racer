@@ -2,9 +2,9 @@ import { Heading } from "@/components/ui/heading";
 import { Subheading } from "@/components/ui/sub-heading";
 import { FC } from "react";
 
-interface pageProps {}
+interface PrivacyPageProps {}
 
-const page: FC<pageProps> = ({}) => {
+const PrivacyPage: FC<PrivacyPageProps> = ({}) => {
   return (
     <>
       <Heading
@@ -16,4 +16,4 @@ const page: FC<pageProps> = ({}) => {
   );
 };
 
-export default page;
+export default PrivacyPage;
