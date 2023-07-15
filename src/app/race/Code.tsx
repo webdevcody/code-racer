@@ -1,14 +1,10 @@
 import { cn } from "@/lib/utils";
-interface displayCodeProps {
+interface CodeProps {
   code: string;
   userInput: string;
   errors: number[];
 }
-export default function DisplayedCode({
-  code,
-  errors,
-  userInput,
-}: displayCodeProps) {
+export default function Code({ code, errors, userInput }: CodeProps) {
   return (
     <pre className="text-primary mb-4 overflow-auto">
       {code.split("").map((char, index) => (

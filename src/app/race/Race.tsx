@@ -15,38 +15,48 @@ import {
   calculateAccuracy,
   calculateCPM,
   createIndent,
-  calculateLineRemainder,
-  buildString,
+  calculateRemainder,
+  previousLines,
 } from "./utils";
 
 import { Heading } from "@/components/ui/heading";
 import { saveUserResultAction } from "../_actions/user";
-import RacePositionTracker from "./race-position-tracker";
-import DisplayedCode from "./displayed-code";
+import RaceTracker from "./RaceTracker";
+import Code from "./Code";
 
-interface TypingCodeProps {
+interface RaceProps {
   user?: User;
   snippet: Snippet;
 }
 
-export default function TypingCode({ user, snippet }: TypingCodeProps) {
+export default function Race({ user, snippet }: RaceProps) {
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [endTime, setEndTime] = useState<Date | null>(null);
-  const [errorTotal, setErrorTotal] = useState(0);
   const [input, setInput] = useState("");
 
   const [counter, setCounter] = useState(0);
   const [line, setLine] = useState(0);
-  const router = useRouter();
 
   const [errors, setErrors] = useState<number[]>([]);
-  const [index, setIndex] = useState(0);
+  const [errorTotal, setErrorTotal] = useState(0);
+
+  const router = useRouter();
 
   const inputElement = useRef<HTMLInputElement | null>(null);
   const code = snippet.code.trimEnd(); // remove trailing "\n"
   const lines = code.split("\n");
 
   useEffect(() => {
+    // Debug
+    // console.log(JSON.stringify(input));
+    // console.log(JSON.stringify(code));
+    console.log(input.length);
+    console.log(code.length);
+    // console.log("Index: " + index);
+    // console.log("Line Index: " + lineIndex);
+    // console.log("Line Number: " + line);
+    // console.log(lines[line]);
+
     // Focus element
     if (inputElement.current !== null) {
       inputElement.current.focus();
@@ -61,31 +71,33 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
         saveUserResultAction({
           userId: user.id,
           timeTaken,
-          errors: errorTotal,
+          // errors: errorTotal,
+          errors: errors.length,
           cpm: calculateCPM(code.length - 1, timeTaken),
           accuracy: calculateAccuracy(code.length - 1, errorTotal),
           snippetId: snippet.id,
         });
 
       // Result
-      if (input.length - 1 === code.length - 1 && input === code) {
+      if (input.length === code.length && input === code) {
         setEndTime(new Date());
         router.push("/result");
       }
     }
+
+    // Set Errors
     setErrors(() => {
       const currentText = code.substring(0, input.length);
       const newErrors = Array.from(input)
         .map((char, index) => (char !== currentText[index] ? index : -1))
         .filter((index) => index !== -1);
-      console.log(newErrors);
       return newErrors;
     });
   }, [
     endTime,
     startTime,
     user,
-    errorTotal,
+    errors.length,
     code.length,
     router,
     snippet.id,
@@ -93,6 +105,7 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
     code,
   ]);
 
+  // Reset
   useEffect(() => {
     const handleRestartKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -102,38 +115,54 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
     document.addEventListener("keydown", handleRestartKey);
   }, []);
 
+  // Focus On Load
   function focusOnLoad() {
     if (inputElement.current !== null) {
       inputElement.current.focus();
     }
   }
 
+  // Key Events
   function handleKeyboardEvent(e: React.KeyboardEvent<HTMLInputElement>) {
     setStartTime(new Date());
 
     if (e.key === "Backspace") {
-      Back();
+      Backspace();
     } else if (e.key === "Enter") {
       Enter();
     } else if (e.key === "Shift") {
       e.preventDefault();
     } else if (e.key === "Alt") {
       e.preventDefault();
+    } else if (e.key === "ArrowUp") {
+      // plug in arrow keys here
+      e.preventDefault();
+    } else if (e.key === "ArrowDown") {
+      // plug in arrow keys here
+      e.preventDefault();
+    } else if (e.key === "ArrowRight") {
+      // plug in arrow keys here
+      e.preventDefault();
+    } else if (e.key === "ArrowLeft") {
+      // plug in arrow keys here
+      e.preventDefault();
     } else if (e.key === "Control") {
       e.preventDefault();
     } else if (e.key === "Escape") {
       e.preventDefault();
     } else {
-      KeyStroke(e);
+      Key(e);
+      // Check Errors here
     }
   }
 
-  function Back() {
+  // Backspace
+  function Backspace() {
     const ln = lines[line];
-    const pln = lines[line - 1];
+    const nextLine = lines[line - 1];
     const indent = createIndent(ln);
-
     const array = input.split("");
+
     if (array.lastIndexOf("\n") == input.length - 1) {
       setInput(input.slice(0, -2));
       if (line != 0) {
@@ -147,7 +176,7 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
       if (line != 0) {
         setLine(line - 1);
       }
-      setCounter(pln.length - 1);
+      setCounter(nextLine.length - 1);
     } else {
       setInput(input.slice(0, -1));
 
@@ -155,80 +184,75 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
         setCounter(counter - 1);
       }
     }
-    setIndex(index - 1);
   }
 
+  // Enter
   function Enter() {
+    // Stop at end of line if not matching
+    if (input.length - 1 === code.length) {
+      return;
+    }
+
     if (line < lines.length) {
       const ln = lines[line];
       const nextLine = lines[line + 1];
-      const remainingCharactersOfLine = calculateLineRemainder(counter, ln);
-
+      const remainder = calculateRemainder(counter, ln);
       const indent = createIndent(nextLine);
 
       if (line < lines.length - 1) {
-        setInput(input + remainingCharactersOfLine + indent);
+        setInput(input + remainder + indent);
         setLine(line + 1);
       }
+
       setCounter(indent.length);
       setErrors(() => {
-        const currentText = code.slice(
-          0,
-          (input + remainingCharactersOfLine + indent).length,
-        );
-        // const currentText = input;
-        const newErrors = Array.from(input + remainingCharactersOfLine + indent)
+        const currentText = code.slice(0, (input + remainder + indent).length);
+        const newErrors = Array.from(input + remainder + indent)
           .map((char, index) => (char !== currentText[index] ? index : -1))
           .filter((index) => index !== -1);
-        console.log(newErrors);
         return newErrors;
       });
     }
-
-    if (input.length == code.length - 1) {
-      router.push("/result");
-    }
   }
 
-  function KeyStroke(e: React.KeyboardEvent<HTMLInputElement>) {
-    const character = e.key;
+  // Default
+  function Key(e: React.KeyboardEvent<HTMLInputElement>) {
     const ln = lines[line];
     const nextLine = lines[line + 1];
     const indent = createIndent(nextLine);
-    const s = character + "\n" + indent;
+
+    // Stop at end of line if not matching
+    if (input.length - 1 === code.length) {
+      return;
+    }
 
     if (counter == ln.length - 1) {
       setCounter(indent.length);
-      setInput(input + s);
+      setInput(input + e.key + "\n" + indent);
       if (line < lines.length - 1) {
         setLine(line + 1);
       }
-      setIndex(index + indent.length + 2);
-    } else if (ln.length - 1 == counter - buildString(lines, line).length) {
+    } else if (ln.length - 1 == counter - previousLines(lines, line).length) {
       setCounter(indent.length);
-      setInput(input + s);
+      setInput(input + e.key + "\n" + indent);
       if (line < lines.length - 1) {
         setLine(line + 1);
       }
-      setIndex(index + indent.length);
     } else {
-      setInput(input + character);
+      setInput(input + e.key);
       setCounter(counter + 1);
-      setIndex(index + 1);
-    }
-
-    if (input.length == code.length - 1) {
-      router.push("/result");
     }
   }
 
+  // Reset
   function handleRestart() {
     setStartTime(null);
     setEndTime(null);
     setInput("");
-    setErrorTotal(0);
     setLine(0);
     setCounter(0);
+    setErrorTotal(0);
+    setErrors([]);
   }
 
   return (
@@ -237,19 +261,18 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
       onClick={focusOnLoad}
       role="none" // eslint fix - will remove the semantic meaning of an element while still exposing it to assistive technology
     >
-      <RacePositionTracker
+      <RaceTracker
         codeLength={code.length}
         inputLength={input.length}
         user={user}
       />
-      {/* <h1 className="text-2xl font-bold mb-4">Type this code:</h1> */}
       <div className="mb-2 md:mb-4">
         <Heading
           title="Type this code"
           description="Start typing to get racing"
         />
       </div>
-      <DisplayedCode code={code} errors={errors} userInput={input} />
+      <Code code={code} errors={errors} userInput={input} />
       <input
         type="text"
         // value={input}

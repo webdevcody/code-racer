@@ -5,7 +5,7 @@ import {
 import Image from "next/image";
 import type { User } from "next-auth";
 
-interface RacePositionProps {
+interface RaceTrackerProps {
   codeLength: number;
   inputLength: number;
   user?: User;
@@ -13,11 +13,11 @@ interface RacePositionProps {
 
 const GOAL_COMPLETED = 100;
 
-export default function RacePositionTracker({
+export default function RaceTracker({
   codeLength,
   inputLength,
   user,
-}: RacePositionProps) {
+}: RaceTrackerProps) {
   const progress = (inputLength / codeLength) * 100;
 
   return (

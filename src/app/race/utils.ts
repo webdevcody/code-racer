@@ -13,6 +13,14 @@ export function calculateAccuracy(
   return 1 - errorsCount / numberOfCharacters;
 }
 
+export function calculateRemainder(counter: number, line: string): string {
+  let s = "";
+  for (let i = counter; i < line.length; i++) {
+    s += " ";
+  }
+  return s + "\n";
+}
+
 export function createIndent(line: string): string {
   let s = "";
   if (line != undefined) {
@@ -27,15 +35,7 @@ export function createIndent(line: string): string {
   return s;
 }
 
-export function calculateLineRemainder(counter: number, line: string): string {
-  let s = "";
-  for (let i = counter; i < line.length; i++) {
-    s += " ";
-  }
-  return s + "\n";
-}
-
-export function buildString(lines: string[], line: number): string {
+export function previousLines(lines: string[], line: number): string {
   let s = "";
   for (let i = 0; i < line; i++) {
     s += lines[i] + "\n";
