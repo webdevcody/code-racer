@@ -14,7 +14,7 @@ import { toast } from "@/components/ui/use-toast";
 import { catchError, cn } from "@/lib/utils";
 
 interface VotingProps {
-  userId: User["id"] | undefined;
+  userId?: User["id"];
   snippetId: Snippet["id"];
   usersVote?: SnippetVote;
 }
@@ -33,7 +33,12 @@ export function Voting({ userId, snippetId, usersVote }: VotingProps) {
           disabled={isPending}
           onClick={() => {
             startTransition(async () => {
-              if (userId) {
+              if (!userId)
+                toast({
+                  title: "Warning",
+                  description: "You should sign in first to vote.",
+                  variant: "middle",
+                });
               try {
                 if (usersVote?.type === "UP") {
                   await deleteVoteAction({ snippetId });
@@ -48,13 +53,6 @@ export function Voting({ userId, snippetId, usersVote }: VotingProps) {
                 }
               } catch (err) {
                 catchError(err);
-              }
-             } else {
-                toast({
-                  title: "Warning",
-                  description: "You should sign in first to vote.",
-                  variant: "middle",
-                });
               }
             });
           }}
@@ -71,7 +69,12 @@ export function Voting({ userId, snippetId, usersVote }: VotingProps) {
           disabled={isPending}
           onClick={() => {
             startTransition(async () => {
-              if (userId) {
+              if (!userId)
+                toast({
+                  title: "Warning",
+                  description: "You should sign in first to vote.",
+                  variant: "middle",
+                });
               try {
                 if (usersVote?.type === "DOWN") {
                   await deleteVoteAction({
@@ -85,18 +88,11 @@ export function Voting({ userId, snippetId, usersVote }: VotingProps) {
                     title: "Success.",
                     description:
                       "Thanks for your feedback! We will consider it.",
-                      variant: "default",
-                    });
-                  }
-                } catch (err) {
-                  catchError(err);
+                    variant: "default",
+                  });
                 }
-              } else {
-                toast({
-                  title: "Warning",
-                  description: "You should sign in first to vote.",
-                  variant: "middle",
-                });
+              } catch (err) {
+                catchError(err);
               }
             });
           }}
