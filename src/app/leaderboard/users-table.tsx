@@ -60,7 +60,7 @@ export function UsersTable({ data, pageCount }: UsersTableProps) {
         header: () => {
           return (
             <div className="flex items-center gap-2">
-              <span>Avarage cpm</span>
+              <span>Average cpm</span>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger>
@@ -77,7 +77,7 @@ export function UsersTable({ data, pageCount }: UsersTableProps) {
       },
       {
         accessorKey: "avarageAccuracy",
-        header: "Avarage accuracy",
+        header: "Average accuracy",
         cell: ({ cell }) => {
           const avgAccuracy = cell.getValue() as number;
 
