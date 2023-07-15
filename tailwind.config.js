@@ -92,9 +92,9 @@ module.exports = {
           "100%": { transform: "translate(-2539.6383913420013px, 0)" }
         },
         "blink": {
-          "0%": { background: "bg-warning-200", color: "##878c8e" },
-          "50%": { background: "transparent" },
-          "100%": { background: "bg-warning-200", color: "##878c8e" },
+          "0%": { background: "hsl(var(--warning-light))", color: "#878c8e" },
+          "50%": { background: "transparent"},
+          "100%": { background: "hsl(var(--warning-light))", color: "#878c8e" },
         }
       },
       animation: {
