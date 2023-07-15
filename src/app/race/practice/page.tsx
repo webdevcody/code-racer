@@ -38,7 +38,9 @@ async function getSearchParamSnippet(snippetId: string | string[]) {
 
 export default async function PracticeRacePage({
   searchParams,
-}: { searchParams: RacePageSearchParams }) {
+}: {
+  searchParams: RacePageSearchParams;
+}) {
   const user = await getCurrentUser();
   const snippet =
     (await getSearchParamSnippet(searchParams.snippetId)) ??

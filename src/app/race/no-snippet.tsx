@@ -9,13 +9,18 @@ interface NoSnippetProps {
 }
 
 export default function NoSnippet({ message, language }: NoSnippetProps) {
-  const formattedLanguage = snippetLanguages.find(snippet => snippet.value === language)?.label ?? language;
+  const formattedLanguage =
+    snippetLanguages.find((snippet) => snippet.value === language)?.label ??
+    language;
   return (
     <div className="flex flex-col gap-4 justify-start">
-      <Heading title={`No ${formattedLanguage} snippet found`} description={message}/>
+      <Heading
+        title={`No ${formattedLanguage} snippet found`}
+        description={message}
+      />
       <Link href={"/add-snippet"}>
         <Button>Create New Snippet</Button>
       </Link>
     </div>
-  )
+  );
 }
