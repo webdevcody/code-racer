@@ -31,7 +31,7 @@ export default async function ProfilePage() {
   return (
     <main className="py-8 grid place-items-center h-[clamp(40rem,82.5dvh,50rem)]">
       <div className="overflow-hidden relative w-[95%] max-w-[22.5rem] h-[32.5rem] rounded-2xl border-2 border-solid border-secondary-foreground">
-        <article className="p-2 flex flex-col gap-2 items-center">
+        <article className="flex flex-col items-center gap-2 p-2">
           <ProfileNav displayName={displayName} />
           <div className="pt-2 pb-1">
             <Link

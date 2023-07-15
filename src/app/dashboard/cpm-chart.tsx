@@ -21,7 +21,7 @@ const CpmChart: React.FC<CpmChartProps> = ({ recentGames }) => {
   return (
     <Card className="h-[400px]">
       <CardHeader>
-        <CardTitle className="text-center m-2">Characters per minute</CardTitle>
+        <CardTitle className="m-2 text-center">Characters per minute</CardTitle>
       </CardHeader>
       <ResponsiveContainer height="100%">
         <ComposedChart

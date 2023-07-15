@@ -19,7 +19,7 @@ export default async function ReviewPage() {
       <h1 className="text-4xl">Review page </h1>
       {downvotedSnippets.map((s) => (
         <div
-          className="flex flex-col gap-4 w-full max-w-sm rounded border border-border p-4"
+          className="flex flex-col w-full max-w-sm gap-4 p-4 border rounded border-border"
           key={s.id}
         >
           <code className="text-muted-foreground">{s.code}</code>
