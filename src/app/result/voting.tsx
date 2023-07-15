@@ -14,7 +14,7 @@ import { toast } from "@/components/ui/use-toast";
 import { catchError, cn } from "@/lib/utils";
 
 interface VotingProps {
-  userId: User["id"];
+  userId: User["id"] | undefined;
   snippetId: Snippet["id"];
   usersVote?: SnippetVote;
 }
@@ -33,6 +33,7 @@ export function Voting({ userId, snippetId, usersVote }: VotingProps) {
           disabled={isPending}
           onClick={() => {
             startTransition(async () => {
+              if (userId) {
               try {
                 if (usersVote?.type === "UP") {
                   await deleteVoteAction({ snippetId });
@@ -47,6 +48,13 @@ export function Voting({ userId, snippetId, usersVote }: VotingProps) {
                 }
               } catch (err) {
                 catchError(err);
+              }
+             } else {
+                toast({
+                  title: "Warning",
+                  description: "You should sign in first to vote.",
+                  variant: "middle",
+                });
               }
             });
           }}
@@ -63,6 +71,7 @@ export function Voting({ userId, snippetId, usersVote }: VotingProps) {
           disabled={isPending}
           onClick={() => {
             startTransition(async () => {
+              if (userId) {
               try {
                 if (usersVote?.type === "DOWN") {
                   await deleteVoteAction({
@@ -76,11 +85,18 @@ export function Voting({ userId, snippetId, usersVote }: VotingProps) {
                     title: "Success.",
                     description:
                       "Thanks for your feedback! We will consider it.",
-                    variant: "default",
-                  });
+                      variant: "default",
+                    });
+                  }
+                } catch (err) {
+                  catchError(err);
                 }
-              } catch (err) {
-                catchError(err);
+              } else {
+                toast({
+                  title: "Warning",
+                  description: "You should sign in first to vote.",
+                  variant: "middle",
+                });
               }
             });
           }}

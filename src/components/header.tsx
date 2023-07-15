@@ -14,7 +14,7 @@ export async function Header() {
         <div className="flex-1">
           <MainNav items={siteConfig.getHeaderLinks(!!user)} />
         </div>
-        <MobileNav />
+        <MobileNav user={user} />
         <nav className="items-center hidden space-x-4 md:flex">
           <UserDropdown user={user} />
           <ModeToggle />

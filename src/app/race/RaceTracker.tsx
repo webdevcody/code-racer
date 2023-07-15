@@ -18,7 +18,7 @@ export default function RaceTracker({
   inputLength,
   user,
 }: RaceTrackerProps) {
-  const progress = (inputLength / codeLength) * 100;
+  const progress = ((inputLength / codeLength) * 100) % 100;
 
   return (
     <div className="relative mb-5 flex items-center">

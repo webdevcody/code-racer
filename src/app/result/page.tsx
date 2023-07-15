@@ -81,13 +81,11 @@ export default async function ResultsChart({
         </Button>
       </div>
       <div className="my-4">
-        {user && (
-          <Voting
-            snippetId={searchParams.snippetId}
-            userId={user.id}
-            usersVote={usersVote ?? undefined}
-          />
-        )}
+        <Voting
+          snippetId={searchParams.snippetId}
+          userId={user?.id ?? undefined}
+          usersVote={usersVote ?? undefined}
+        />
       </div>
       <div className="flex items-center justify-center space-x-2">
         <Badge variant="outline">

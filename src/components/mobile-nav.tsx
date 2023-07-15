@@ -12,8 +12,16 @@ import Link, { LinkProps } from "next/link";
 import { ModeToggle } from "./mode-toggle";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import type { User } from "next-auth";
+import { UserRole } from "@prisma/client";
 
-export function MobileNav() {
+interface MobileNavProps {
+  user?: User & {
+    role: UserRole;
+  };
+}
+
+export function MobileNav({ user }: MobileNavProps) {
   const [open, setOpen] = useState(false);
   const isLoggedIn = !!useSession().data;
 
@@ -32,7 +40,7 @@ export function MobileNav() {
         <SheetContent side="right" className="w-[300px] sm:w-[540px]">
           <ScrollArea className="my-4 h-[calc(100vh-9rem)] pb-10">
             <div className="flex flex-col items-center justify-center gap-10 py-2">
-              <UserDropdown />
+              <UserDropdown user={user} />
               <nav className="flex flex-col items-center justify-center flex-1 space-y-4">
                 {siteConfig.getHeaderLinks(isLoggedIn).map((item) => (
                   <MobileLink
