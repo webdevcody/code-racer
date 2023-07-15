@@ -51,7 +51,8 @@ export default async function PracticeRacePage({
       {snippet && <Race snippet={snippet} user={user} />}
       {!snippet && (
         <NoSnippet
-          message={"Uh Oh, You currently do not have any snippet. Create one?"}
+          message={"Look like there is no snippet available yet. Create one?"}
+          language={language}
         />
       )}
     </main>

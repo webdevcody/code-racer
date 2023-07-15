@@ -23,7 +23,7 @@ export function ReviewButtons({ snippetId }: ReviewButtonsProps) {
         onClick={async () => {
           setIsAcquitting(true);
           try {
-            await acquitSnippetAction(snippetId);
+            await acquitSnippetAction({ id: snippetId });
           } catch (err) {
             console.log(err);
           } finally {
@@ -39,7 +39,7 @@ export function ReviewButtons({ snippetId }: ReviewButtonsProps) {
         onClick={async () => {
           setIsDeleting(true);
           try {
-            await deleteSnippetAction(snippetId);
+            await deleteSnippetAction({ id: snippetId });
           } catch (err) {
             console.log(err);
           } finally {
