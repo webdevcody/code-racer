@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import ChangeNameForm from "./_components/change-name-form";
 import ProfileNav from "./_components/profile-nav";
+import { AddBio } from "@/components/add-bio";
 
 export const metadata = {
   title: "Profile Page",
@@ -52,6 +53,7 @@ export default async function ProfilePage() {
             </Link>
           </div>
           <ChangeNameForm displayName={displayName} />
+          <AddBio />
           <span className="mt-10">Total Points: {totalPoints}</span>
           {achievements.length ? (
             <ul className="w-fit max-w-[292px] flex items-center flex-wrap gap-1 p-2 border-border rounded-sm bg-primary-foreground">
