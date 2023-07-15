@@ -1,7 +1,6 @@
 import { Result } from "@prisma/client";
 
-export type ParsedRacesResult = Omit<Result, "accuracy" | "createdAt"> & {
-    accuracy: number,
+export type ParsedRacesResult = Omit<Result, "createdAt"> & {
     createdAt: string
 }
 

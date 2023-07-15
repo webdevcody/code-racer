@@ -52,12 +52,13 @@ export async function getUserResultsForSnippet(snippetId: string) {
       userId: user.id,
       snippetId: snippetId,
     },
+    take:7,
     orderBy: {
       createdAt: "asc"
     }
   });
   const parsedRaceResult = raceResults.map(item=>{
-    return {...item, accuracy: Number(item.accuracy)*100, createdAt: formatDate(item.createdAt)}
+    return {...item, createdAt: formatDate(item.createdAt)}
   })
   return parsedRaceResult;
 }
@@ -83,7 +84,7 @@ export async function getCurrentRaceResult(snippetId: string) {
       title: "CPM",
       value: raceResults?.cpm.toString(),
     },
-    { title: "Accuracy", value: raceResults?.accuracy ? `${Number(raceResults.accuracy)*100}%` : "0%"},
+    { title: "Accuracy", value: raceResults?.accuracy ? `${Number(raceResults.accuracy)}%` : "0%"},
     {
       title: "Misses",
       value: raceResults?.errorCount?.toString(),
