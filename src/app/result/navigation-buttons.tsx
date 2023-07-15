@@ -25,14 +25,14 @@ const NavigationButtons: React.FC<NavigationButtonsProps> = ({ onReview }) => {
   return (
     <div className="flex flex-wrap justify-center gap-4 p-2" tabIndex={-1}>
       <Button onClick={handlerChangePage}>
-        <Icons.chevronRight className="h-5 w-5" aria-hidden="true" />
+        <Icons.chevronRight className="w-5 h-5" aria-hidden="true" />
       </Button>
       {onReview ? (
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>
               <Button disabled={onReview}>
-                <Icons.refresh className="h-5 w-5" aria-hidden="true" />
+                <Icons.refresh className="w-5 h-5" aria-hidden="true" />
               </Button>
             </TooltipTrigger>
             <TooltipContent>
@@ -42,11 +42,11 @@ const NavigationButtons: React.FC<NavigationButtonsProps> = ({ onReview }) => {
         </TooltipProvider>
       ) : (
         <Button onClick={handlerChangePage}>
-          <Icons.refresh className="h-5 w-5" aria-hidden="true" />
+          <Icons.refresh className="w-5 h-5" aria-hidden="true" />
         </Button>
       )}
       <Button>
-        <Icons.picture className="h-5 w-5" aria-hidden="true" />
+        <Icons.picture className="w-5 h-5" aria-hidden="true" />
       </Button>
     </div>
   );

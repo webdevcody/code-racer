@@ -1,10 +1,9 @@
 "use client";
 
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   LineChart,
-  ComposedChart,
   Line,
   XAxis,
   YAxis,
@@ -22,7 +21,7 @@ const AccuracyChart: React.FC<AccuracyChartProps> = ({ recentGames }) => {
   return (
     <Card className="h-[400px]">
       <CardHeader>
-        <CardTitle className="text-center m-2">Accuracy</CardTitle>
+        <CardTitle className="m-2 text-center">Accuracy</CardTitle>
       </CardHeader>
       <ResponsiveContainer height="100%">
         <LineChart

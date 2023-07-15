@@ -19,7 +19,7 @@ const Achievement = ({ achievement }: AchievementProps) => {
           tabIndex={0}
         >
           <Image
-            className="w-6 h-6 object-fill"
+            className="object-fill w-6 h-6"
             src={achievement.image}
             width={24}
             height={24}
@@ -27,9 +27,9 @@ const Achievement = ({ achievement }: AchievementProps) => {
           />
         </HoverCardTrigger>
         <HoverCardContent sideOffset={12} className="p-0">
-          <div className="w-full h-36 flex items-center justify-center border-b border-border">
+          <div className="flex items-center justify-center w-full border-b h-36 border-border">
             <Image
-              className="w-16 h-16 object-fill"
+              className="object-fill w-16 h-16"
               src={achievement.image}
               width={64}
               height={64}
@@ -37,10 +37,10 @@ const Achievement = ({ achievement }: AchievementProps) => {
             />
           </div>
           <div className="p-4">
-            <h3 className="text-xl font-bold pb-2">{achievement.name}</h3>
+            <h3 className="pb-2 text-xl font-bold">{achievement.name}</h3>
             <p className="text-sm">{achievement.description}</p>
-            <div className="border-b border-border w-full my-4" />
-            <p className="text-xs text-gray-500 flex items-center gap-2">
+            <div className="w-full my-4 border-b border-border" />
+            <p className="flex items-center gap-2 text-xs text-gray-500">
               <Icons.trophy size="1rem" />
               <span>
                 Unlocked on{" "}

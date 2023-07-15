@@ -16,7 +16,7 @@ export default function ChangeNameForm({
   const router = useRouter();
   const session = useSession();
   const controlsRef = useRef<Controls>({
-    setEdit: (isEdit: boolean) => undefined,
+    setEdit: () => undefined,
   });
   const inputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();

@@ -49,12 +49,11 @@ export default function RacePage() {
                 return;
               }
               router.push(
-                `/race/practice${
-                  languageSinglePlayer ? "?lang=" : ""
-                }${languageSinglePlayer}`,
+                `/race/practice${languageSinglePlayer ? "?lang=" : ""
+                }${encodeURIComponent(languageSinglePlayer)}`, // Make sure it is URL encoded
               );
             }}
-            className="flex gap-2 items-start"
+            className="flex items-start gap-2"
           >
             <Button>Practice</Button>
             <div className="flex flex-col">
@@ -88,24 +87,18 @@ export default function RacePage() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-2 items-center">
+          <div className="flex items-center gap-2">
             <Link
               className={cn(
                 buttonVariants({ variant: "default" }),
                 true && "pointer-events-none cursor-not-allowed opacity-30",
               )}
               onClick={(e) => e.preventDefault()}
-              href={`/race/multiplayer${
-                languageMultiplayer ? "?lang=" : ""
-              }${encodeURIComponent(languageMultiplayer)}`} // Make sure it is URL encoded
+              href={`/race/multiplayer${languageMultiplayer ? "?lang=" : ""
+                }${encodeURIComponent(languageMultiplayer)}`} // Make sure it is URL encoded
             >
               Start Racing (Coming Soon)
             </Link>
-            {/* <LanguageDropDown
-          className="w-fit"
-          codeLanguage={languageMultiplayer}
-          setCodeLanguage={setLanguageMultiplayer}
-        /> */}
           </div>
         </CardContent>
       </Card>
@@ -127,26 +120,26 @@ export default function RacePage() {
           </div>
         </CardHeader>
         <CardContent className="flex gap-2 items-center">
-            <Button
-              disabled
-              onClick={() => {
-                if (!session) {
-                  toast({
-                    title: "Unauthorized",
-                    description:
-                      "You need to be logged in to create a racetrack",
-                  });
-                  return;
-                }
-
-                createPrivateRaceRoom({
-                  userId: session?.user.id,
+          <Button
+            disabled
+            onClick={() => {
+              if (!session) {
+                toast({
+                  title: "Unauthorized",
+                  description:
+                    "You need to be logged in to create a racetrack",
                 });
-              }}
-            >
-              Create Room (Coming Soon)
-            </Button>
-            {/* <LanguageDropDown
+                return;
+              }
+
+              createPrivateRaceRoom({
+                userId: session?.user.id,
+              });
+            }}
+          >
+            Create Room (Coming Soon)
+          </Button>
+          {/* <LanguageDropDown
           className="w-fit"
           codeLanguage={languagePrivate}
           setCodeLanguage={setLanguagePrivate}
@@ -162,7 +155,7 @@ export default function RacePage() {
         title="Choose a Race Mode"
         description="Practice your typing skills by yourself, with friends, or with other soy devs online"
       />
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 my-8">
+      <div className="grid grid-cols-1 gap-8 my-8 lg:grid-cols-3">
         <RacePractice />
         <RaceMultiplayer />
         <RaceWithFriends />

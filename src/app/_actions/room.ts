@@ -1,6 +1,5 @@
 "use server";
 
-import { User } from "@prisma/client";
 import { z } from "zod";
 import { zact } from "zact/server";
 
@@ -9,7 +8,7 @@ import { zact } from "zact/server";
  * Not implemented. Need to decide on the multiplayer architecture
  **/
 export const createPrivateRaceRoom = zact(z.object({ userId: z.string() }))(
-  async (input) => {
+  async () => {
     throw new Error("Not implemented");
   },
 );

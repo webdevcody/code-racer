@@ -30,7 +30,7 @@ export default async function LeaderboardPage({
   const skip = typeof page === "string" ? (parseInt(page) - 1) * take : 0;
 
   // Column and order to sort by
-  const [column, order] =
+  const [] =
     typeof sort === "string"
       ? (sort.split(".") as [
           keyof Result | undefined,

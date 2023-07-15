@@ -21,7 +21,7 @@ export default function RacePositionTracker({
   const progress = (inputLength / actualSnippetLength) * 100;
 
   return (
-    <div className="relative mb-5 flex items-center">
+    <div className="relative flex items-center mb-5">
       <ProgressBar>
         <ProgressIndicator progress={progress}>
           {progress !== GOAL_COMPLETED && (
