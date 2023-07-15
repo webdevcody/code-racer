@@ -1,7 +1,6 @@
 import { Heading } from "@/components/ui/heading";
 import { prisma } from "@/lib/prisma";
 
-
 interface PageProps {
   params: {
     userId: string;
@@ -20,7 +19,10 @@ const page = async ({ params }: PageProps) => {
         title="Hello, Welcome to my profile"
         description="Here you can find information about the user"
       />
-      <h1>If anyone works on the design of this page let me know discord @trace2798</h1>
+      <h1>
+        If anyone works on the design of this page let me know discord
+        @trace2798
+      </h1>
       {/* <h1>Account Created:{formatTime}</h1> */}
       <h1>My Id is: {user?.id}</h1>
       <h2>Name: {user?.name}</h2>

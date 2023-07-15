@@ -7,9 +7,9 @@ import type { Snippet, SnippetVote } from "@prisma/client";
 import { User } from "next-auth";
 import {
   deleteVoteAction,
-  downvoteSnippetAction,
+  downVoteSnippetAction,
   upvoteSnippetAction,
-} from "../_actions/result";
+} from "../_actions/snippet";
 import { toast } from "@/components/ui/use-toast";
 import { catchError, cn } from "@/lib/utils";
 
@@ -35,15 +35,9 @@ export function Voting({ userId, snippetId, usersVote }: VotingProps) {
             startTransition(async () => {
               try {
                 if (usersVote?.type === "UP") {
-                  await deleteVoteAction({
-                    userId,
-                    snippetId,
-                  });
+                  await deleteVoteAction({ snippetId });
                 } else {
-                  await upvoteSnippetAction({
-                    userId,
-                    snippetId,
-                  });
+                  await upvoteSnippetAction({ snippetId });
                   toast({
                     title: "Success.",
                     description:
@@ -72,12 +66,10 @@ export function Voting({ userId, snippetId, usersVote }: VotingProps) {
               try {
                 if (usersVote?.type === "DOWN") {
                   await deleteVoteAction({
-                    userId,
                     snippetId,
                   });
                 } else {
-                  await downvoteSnippetAction({
-                    userId,
+                  await downVoteSnippetAction({
                     snippetId,
                   });
                   toast({

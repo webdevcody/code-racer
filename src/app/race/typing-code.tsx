@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import DisplayedCode from "./displayed-code";
 import type { User } from "next-auth";
 import { Button } from "@/components/ui/button";
-import { saveUserResultAction } from "../_actions/user";
+import { saveUserResultAction } from "../_actions/result";
 import { useRouter } from "next/navigation";
 import RacePositionTracker from "./race-position-tracker";
 import { Snippet } from "@prisma/client";
@@ -28,7 +28,7 @@ function calculateAccuracy(
   numberOfCharacters: number,
   errorsCount: number,
 ): number {
-  return 1 - errorsCount / numberOfCharacters;
+  return (1 - errorsCount / numberOfCharacters) * 100;
 }
 
 interface TypingCodeProps {
@@ -50,38 +50,42 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
   const [counter, setCounter] = useState(1);
   const router = useRouter();
 
-  useEffect(() => {
-    if (startTime && endTime) {
-      const timeTaken: number =
-        (endTime.getTime() - startTime.getTime()) / 1000;
+  useEffect(
+    () => {
+      if (startTime && endTime) {
+        const timeTaken: number =
+          (endTime.getTime() - startTime.getTime()) / 1000;
 
-      if (user)
-        saveUserResultAction({
-          userId: user.id,
-          timeTaken,
-          errors: errors.length,
-          cpm: calculateCPM(code.length, timeTaken),
-          accuracy: calculateAccuracy(code.length, errors.length),
-          snippetId: snippet.id,
-        });
-    }
+        if (user)
+          // are we really mutating backend on an useEffect with 8 dependencies?
+          saveUserResultAction({
+            timeTaken,
+            errors: errors.length,
+            cpm: calculateCPM(code.length, timeTaken),
+            accuracy: calculateAccuracy(code.length, errors.length),
+            snippetId: snippet.id,
+          });
+      }
 
-    if (inputElement.current !== null) {
-      inputElement.current.focus();
-    }
+      if (inputElement.current !== null) {
+        inputElement.current.focus();
+      }
 
-    if (isEnd && endTime && startTime)
-      router.push(`/result?snippetId=${snippet.id}`);
-  }, [
-    endTime,
-    startTime,
-    user,
-    errors.length,
-    isEnd,
-    code.length,
-    router,
-    snippet.id,
-  ]);
+      if (isEnd && endTime && startTime)
+        router.push(`/result?snippetId=${snippet.id}`);
+    },
+    // Brother in christ, this is wild.
+    [
+      endTime,
+      startTime,
+      user,
+      errors.length,
+      isEnd,
+      code.length,
+      router,
+      snippet.id,
+    ],
+  );
 
   const handleChangeEvent = (event: React.ChangeEvent<HTMLInputElement>) => {
     // Set Values
@@ -273,7 +277,12 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
           description="Start typing to get racing"
         />
       </div>
-      <DisplayedCode code={code} errors={errors} userInput={input} isCurrentLineEmpty={(lines[line - 1]?.length ?? -1 ) === 0}/>
+      <DisplayedCode
+        code={code}
+        errors={errors}
+        userInput={input}
+        isCurrentLineEmpty={(lines[line - 1]?.length ?? -1) === 0}
+      />
       <input
         type="text"
         value={input}
