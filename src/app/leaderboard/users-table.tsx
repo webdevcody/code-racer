@@ -16,18 +16,15 @@ import {
 import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
 
-type UserWithAvarage = User & {
-  avarageCpm: string;
-  avarageAccuracy: string;
-} & { results: Result[] };
+type UserWithResults = User & { results: Result[] };
 
 interface UsersTableProps {
-  data: UserWithAvarage[];
+  data: UserWithResults[];
   pageCount: number;
 }
 
 export function UsersTable({ data, pageCount }: UsersTableProps) {
-  const columns = React.useMemo<ColumnDef<UserWithAvarage, unknown>[]>(
+  const columns = React.useMemo<ColumnDef<UserWithResults, unknown>[]>(
     () => [
       {
         accessorFn: (user) => {
@@ -63,7 +60,7 @@ export function UsersTable({ data, pageCount }: UsersTableProps) {
         header: () => {
           return (
             <div className="flex items-center gap-2">
-              <span>Avarage cpm</span>
+              <span>Average cpm</span>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger>
@@ -80,7 +77,7 @@ export function UsersTable({ data, pageCount }: UsersTableProps) {
       },
       {
         accessorKey: "avarageAccuracy",
-        header: "Avarage accuracy",
+        header: "Average accuracy",
         cell: ({ cell }) => {
           const avgAccuracy = cell.getValue() as number;
 
@@ -91,7 +88,7 @@ export function UsersTable({ data, pageCount }: UsersTableProps) {
                 "text-destructive": avgAccuracy < 0.5,
               })}
             >
-              {avgAccuracy}
+              {avgAccuracy}%
             </span>
           );
         },
