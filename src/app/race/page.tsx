@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Users, User } from "lucide-react";
@@ -20,6 +20,11 @@ export default function RacePage() {
   function RacePractice() {
     const [languageSinglePlayer, setLanguageSinglePlayer] = useState("");
     const [error, setError] = useState("");
+
+    function handleSetCodeLanguage(props: SetStateAction<string>) {
+      setLanguageSinglePlayer(props);
+      setError("");
+    }
 
     return (
       <Card className="flex-1">
@@ -56,7 +61,7 @@ export default function RacePage() {
               <LanguageDropDown
                 className={cn("w-fit", error && "border-red-500")}
                 codeLanguage={languageSinglePlayer}
-                setCodeLanguage={setLanguageSinglePlayer}
+                setCodeLanguage={handleSetCodeLanguage}
               />
               <span className="text-red-500">{error}</span>
             </div>
@@ -111,8 +116,8 @@ export default function RacePage() {
     const [languagePrivate, setLanguagePrivate] = useState("");
 
     return (
-      <Card className="flex-1 flex flex-col text-gray-700">
-        <CardHeader className="h-full justify-center">
+      <Card className="text-gray-700">
+        <CardHeader>
           <div className="flex items-center gap-4">
             <Users size={32} />
             <div>
@@ -121,8 +126,7 @@ export default function RacePage() {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="mt-auto">
-          <div className="flex gap-2 items-center">
+        <CardContent className="flex gap-2 items-center">
             <Button
               disabled
               onClick={() => {
@@ -147,7 +151,6 @@ export default function RacePage() {
           codeLanguage={languagePrivate}
           setCodeLanguage={setLanguagePrivate}
         /> */}
-          </div>
         </CardContent>
       </Card>
     );
