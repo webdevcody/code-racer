@@ -177,7 +177,7 @@ export default function AddSnippetForm({}) {
       code: codeSnippet,
     })
       .then((res) => {
-        if (res?.message === "snippet-created-and-achievement-unlocked") {
+        if (res?.data?.message === "snippet-created-and-achievement-unlocked") {
           toast({
             title: "Achievement Unlocked",
             description: "Uploaded First Snippet",

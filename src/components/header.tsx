@@ -16,7 +16,7 @@ export async function Header() {
         </div>
         <MobileNav />
         <nav className="items-center hidden space-x-4 md:flex">
-          <UserDropdown user={user}/>
+          <UserDropdown user={user} />
           <ModeToggle />
         </nav>
       </div>

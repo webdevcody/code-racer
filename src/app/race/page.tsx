@@ -49,7 +49,8 @@ export default function RacePage() {
                 return;
               }
               router.push(
-                `/race/practice${languageSinglePlayer ? "?lang=" : ""
+                `/race/practice${
+                  languageSinglePlayer ? "?lang=" : ""
                 }${encodeURIComponent(languageSinglePlayer)}`, // Make sure it is URL encoded
               );
             }}
@@ -94,8 +95,9 @@ export default function RacePage() {
                 true && "pointer-events-none cursor-not-allowed opacity-30",
               )}
               onClick={(e) => e.preventDefault()}
-              href={`/race/multiplayer${languageMultiplayer ? "?lang=" : ""
-                }${encodeURIComponent(languageMultiplayer)}`} // Make sure it is URL encoded
+              href={`/race/multiplayer${
+                languageMultiplayer ? "?lang=" : ""
+              }${encodeURIComponent(languageMultiplayer)}`} // Make sure it is URL encoded
             >
               Start Racing (Coming Soon)
             </Link>
@@ -126,8 +128,7 @@ export default function RacePage() {
               if (!session) {
                 toast({
                   title: "Unauthorized",
-                  description:
-                    "You need to be logged in to create a racetrack",
+                  description: "You need to be logged in to create a racetrack",
                 });
                 return;
               }
