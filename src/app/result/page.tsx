@@ -6,9 +6,11 @@ import { Icons } from "@/components/icons";
 import Link from "next/link";
 import { FirstRaceBadge } from "./first-race-badge";
 import { getCurrentUser } from "@/lib/session";
-import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Voting } from "./voting";
+import { Badge } from "@/components/ui/badge";
+import { getFirstRaceBadge } from "./loaders";
+import { Achievement, SnippetVote } from "@prisma/client";
 
 const card = [
   { title: "WPM", value: "81 %" },
@@ -26,58 +28,27 @@ export default async function ResultsChart({
   searchParams,
 }: ResultsChartProps) {
   const user = await getCurrentUser();
-  if (!user || !user.id) notFound();
-  const firstRaceBadge = await prisma.$transaction(
-    async (tx) => {
-      const firstRaceAchievement = await tx.achievement.findFirst({
-        where: {
-          name: "First Race",
+
+  let usersVote: SnippetVote | undefined | null;
+  let firstRaceBadge: Achievement | undefined;
+
+  if (user) {
+    firstRaceBadge = await getFirstRaceBadge();
+    usersVote = await prisma.snippetVote.findUnique({
+      where: {
+        userId_snippetId: {
+          userId: user.id,
+          snippetId: searchParams.snippetId,
         },
-      });
-      if (!firstRaceAchievement) {
-        console.error("bedge, where badge?");
-        return null;
-      }
-
-      const userFirstRaceAchievement = await tx.userAchievement.findUnique({
-        where: {
-          userId_achievementId: {
-            userId: user.id,
-            achievementId: firstRaceAchievement.id,
-          },
-        },
-      });
-      if (!userFirstRaceAchievement) {
-        await tx.userAchievement.create({
-          data: {
-            achievementId: firstRaceAchievement.id,
-            userId: user.id,
-          },
-        });
-
-        return firstRaceAchievement.image;
-      }
-      return null;
-    },
-    {
-      timeout: 10_000,
-    },
-  );
-
-  const usersVote = await prisma.snippetVote.findUnique({
-    where: {
-      userId_snippetId: {
-        userId: user.id,
-        snippetId: searchParams.snippetId,
       },
-    },
-  });
+    });
+  }
 
   return (
     <div className="w-auto">
       <div className="flex flex-col justify-center gap-4 mt-5">
-        <FirstRaceBadge image={firstRaceBadge} />
-        <div className="grid grid-cols-2 md:grid-cols-5 mx-auto gap-3 md:gap-6">
+        {firstRaceBadge && <FirstRaceBadge image={firstRaceBadge.image} />}
+        <div className="grid grid-cols-2 gap-3 mx-auto md:grid-cols-5 md:gap-6">
           {card.map((c, idx) => {
             return (
               <Card key={idx}>
@@ -90,7 +61,7 @@ export default async function ResultsChart({
           })}
         </div>
       </div>
-      <div className="p-8 flex flex-col rounded-xl">
+      <div className="flex flex-col p-8 rounded-xl">
         <div className="flex flex-wrap justify-center gap-4">
           <Chart />
         </div>
@@ -100,26 +71,38 @@ export default async function ResultsChart({
         tabIndex={-1}
       >
         <Link className={buttonVariants()} href="/race">
-          <Icons.chevronRight className="h-5 w-5" aria-hidden="true" />
+          <Icons.chevronRight className="w-5 h-5" aria-hidden="true" />
         </Link>
         <Link className={buttonVariants()} href="/race">
-          <Icons.refresh className="h-5 w-5" aria-hidden="true" />
+          <Icons.refresh className="w-5 h-5" aria-hidden="true" />
         </Link>
         <Button>
-          <Icons.picture className="h-5 w-5" aria-hidden="true" />
+          <Icons.picture className="w-5 h-5" aria-hidden="true" />
         </Button>
       </div>
       <div className="my-4">
-        <Voting
-          snippetId={searchParams.snippetId}
-          userId={user.id}
-          usersVote={usersVote ?? undefined}
-        />
+        {user && (
+          <Voting
+            snippetId={searchParams.snippetId}
+            userId={user.id}
+            usersVote={usersVote ?? undefined}
+          />
+        )}
       </div>
       <div className="flex items-center justify-center space-x-2">
-        <span className={buttonVariants()}>tab</span> <span>+</span>
-        <span className={buttonVariants()}>enter</span> <span>-</span>
-        <span>restart game</span>
+        <Badge variant="outline">
+          <Badge variant="secondary" className="mr-2">
+            tab
+          </Badge>
+          <span>+</span>
+          <Badge variant="secondary" className="mx-2">
+            enter
+          </Badge>
+          <span>restart game</span>
+        </Badge>
+
+        {/* <span className={buttonVariants()}>tab</span> <span>+</span>
+        <span className={buttonVariants()}>enter</span> <span>-</span> */}
       </div>
     </div>
   );

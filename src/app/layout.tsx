@@ -1,4 +1,4 @@
-import "./globals.css";
+import "@/styles/globals.css";
 import Header from "@/components/header";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
@@ -42,12 +42,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn("min-h-screen bg-background", inter.className)}>
+      <body className={cn("min-h-screen flex flex-col bg-background", inter.className)}>
         <NextTopLoader showSpinner={false} />
         <ContextProvider>
           <Header />
-          <div className="container h-fit py-2 md:py-24">{children}</div>
-          <Footer />
+          <div className="container py-2 h-fit md:py-18 grow">{children}</div>
+          <Footer className="border-t-2" />
           <Toaster />
           <TailwindIndicator />
         </ContextProvider>

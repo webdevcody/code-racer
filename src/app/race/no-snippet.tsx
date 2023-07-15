@@ -7,8 +7,8 @@ interface NoSnippetProps {
 
 export default function NoSnippet({ message }: NoSnippetProps) {
   return (
-    <div className="flex flex-col gap-7 justify-start items-center">
-      <p className="text-primary text-xl">{message}</p>
+    <div className="flex flex-col items-center justify-start gap-7">
+      <p className="text-xl text-primary">{message}</p>
       <Link href={"/add-snippet"}>
         <Button>Create New Snippet</Button>
       </Link>

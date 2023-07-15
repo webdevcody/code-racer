@@ -1,56 +1,165 @@
-import { getCurrentUser } from "@/lib/session";
+"use client";
+import React, { Dispatch, SetStateAction, useState } from "react";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Users, User } from "lucide-react";
+import Link from "next/link";
+import LanguageDropDown from "../add-snippet/_components/language-dropdown";
+import { createPrivateRaceRoom } from "../_actions/room";
+import { useSession } from "next-auth/react";
+import { useToast } from "@/components/ui/use-toast";
+import { cn } from "@/lib/utils";
+import { Heading } from "@/components/ui/heading";
+import { useRouter } from "next/navigation";
 
-import TypingCode from "./typing-code";
-import { prisma } from "@/lib/prisma";
+export default function RacePage() {
+  const router = useRouter();
+  const { data: session } = useSession();
+  const { toast } = useToast();
 
-import NoSnippet from "./no-snippet";
+  function RacePractice() {
+    const [languageSinglePlayer, setLanguageSinglePlayer] = useState("");
+    const [error, setError] = useState("");
 
-async function getRandomSnippet() {
-  const itemCount = await prisma.snippet.count();
-  const skip = Math.max(0, Math.floor(Math.random() * itemCount));
+    function handleSetCodeLanguage(props: SetStateAction<string>) {
+      setLanguageSinglePlayer(props);
+      setError("");
+    }
 
-  return prisma.snippet
-    .findMany({
-      where: {
-        onReview: false,
-      },
-      take: 1,
-      skip: skip,
-    })
-    .then((results) => (results.length > 0 ? results[0] : undefined));
-}
-
-async function getSearchParamSnippet(snippetId: string | string[]) {
-  if (typeof snippetId === "string") {
-    return await prisma.snippet.findFirst({
-      where: {
-        id: snippetId,
-      },
-    });
+    return (
+      <Card className="flex-1">
+        <CardHeader>
+          <div className="flex items-center gap-4">
+            <div>
+              <User size={32} />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold">Practice</h2>
+              <p>Practice typing with a random snippet from your snippets</p>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              setError("");
+              if (!languageSinglePlayer) {
+                setError("please select a language to practice");
+                return;
+              }
+              router.push(
+                `/race/practice${languageSinglePlayer ? "?lang=" : ""
+                }${encodeURIComponent(languageSinglePlayer)}`, // Make sure it is URL encoded
+              );
+            }}
+            className="flex items-start gap-2"
+          >
+            <Button>Practice</Button>
+            <div className="flex flex-col">
+              <LanguageDropDown
+                className={cn("w-fit", error && "border-red-500")}
+                codeLanguage={languageSinglePlayer}
+                setCodeLanguage={handleSetCodeLanguage}
+              />
+              <span className="text-red-500">{error}</span>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    );
   }
-  return null;
-}
 
-export default async function Race({
-  searchParams,
-}: {
-  searchParams: Record<string, string | string[]>;
-}) {
-  const user = await getCurrentUser();
-  const snippet =
-    (await getSearchParamSnippet(searchParams.snippetId)) ??
-    (await getRandomSnippet());
+  function RaceMultiplayer() {
+    const [languageMultiplayer, setLanguageMultiplayer] = useState("");
 
-  console.log(snippet);
+    return (
+      <Card className="text-gray-700">
+        <CardHeader>
+          <div className="flex items-center gap-4">
+            <div>
+              <Users size={32} />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold">Multiplayer</h2>
+              <p>Race against other people and see who can type the fastest!</p>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-2">
+            <Link
+              className={cn(
+                buttonVariants({ variant: "default" }),
+                true && "pointer-events-none cursor-not-allowed opacity-30",
+              )}
+              onClick={(e) => e.preventDefault()}
+              href={`/race/multiplayer${languageMultiplayer ? "?lang=" : ""
+                }${encodeURIComponent(languageMultiplayer)}`} // Make sure it is URL encoded
+            >
+              Start Racing (Coming Soon)
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  function RaceWithFriends() {
+    const [languagePrivate, setLanguagePrivate] = useState("");
+
+    return (
+      <Card className="text-gray-700">
+        <CardHeader>
+          <div className="flex items-center gap-4">
+            <Users size={32} />
+            <div>
+              <h2 className="text-2xl font-bold">Race With Friends</h2>
+              <p>Create your own racetrack and play with friends</p>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="flex gap-2 items-center">
+          <Button
+            disabled
+            onClick={() => {
+              if (!session) {
+                toast({
+                  title: "Unauthorized",
+                  description:
+                    "You need to be logged in to create a racetrack",
+                });
+                return;
+              }
+
+              createPrivateRaceRoom({
+                userId: session?.user.id,
+              });
+            }}
+          >
+            Create Room (Coming Soon)
+          </Button>
+          {/* <LanguageDropDown
+          className="w-fit"
+          codeLanguage={languagePrivate}
+          setCodeLanguage={setLanguagePrivate}
+        /> */}
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
-    <main className="flex md:min-h-[calc(100vh-11rem)] flex-col items-center justify-between lg:p-24 py-10">
-      {snippet && <TypingCode snippet={snippet} user={user} />}
-      {!snippet && (
-        <NoSnippet
-          message={"Uh Oh, You currently do not have any snippet. Create one?"}
-        />
-      )}
+    <main className="pt-12">
+      <Heading
+        title="Choose a Race Mode"
+        description="Practice your typing skills by yourself, with friends, or with other soy devs online"
+      />
+      <div className="grid grid-cols-1 gap-8 my-8 lg:grid-cols-3">
+        <RacePractice />
+        <RaceMultiplayer />
+        <RaceWithFriends />
+      </div>
     </main>
   );
 }

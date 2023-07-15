@@ -97,7 +97,7 @@ export function UsersTable({ data, pageCount }: UsersTableProps) {
         },
       },
       {
-        accessorFn: ({results}) => {
+        accessorFn: ({ results }) => {
           return results.length;
         },
         header: "Races played",

@@ -13,6 +13,11 @@ enum UserRole {
   USER
 }
 
+enum AchievementType {
+  FIRST_RACE
+  FIRST_SNIPPET
+}
+
 model User {
   id            String            @id @default(cuid())
   createdAt     DateTime          @default(now()) @map("created_at")
@@ -88,25 +93,25 @@ model Result {
 }
 
 model Achievement {
-  id          String            @id @default(cuid())
-  name        String
-  createdAt   DateTime          @default(now()) @map("created_at")
-  updatedAt   DateTime          @updatedAt @map("updated_at")
-  image       String
-  description String?
-  userAchievements      UserAchievement[]
+  type             AchievementType   @id @unique
+  name             String
+  createdAt        DateTime          @default(now()) @map("created_at")
+  updatedAt        DateTime          @updatedAt @map("updated_at")
+  image            String
+  description      String?
+  userAchievements UserAchievement[]
 
   @@map("achievements")
 }
 
 model UserAchievement {
-  userId        String      @map("user_id")
-  achievementId String      @map("achievement_id")
-  unlockedAt    DateTime    @default(now()) @map("unlocked_at")
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  userId          String          @map("user_id")
+  achievementType AchievementType @map("achievement_type")
+  unlockedAt      DateTime        @default(now()) @map("unlocked_at")
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement     Achievement     @relation(fields: [achievementType], references: [type], onDelete: Cascade)
 
-  @@id([userId, achievementId])
+  @@id([userId, achievementType])
   @@map("user_achievements")
 }
 

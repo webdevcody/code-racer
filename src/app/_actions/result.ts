@@ -1,19 +1,22 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import type { Snippet } from "@prisma/client";
-import type { User } from "next-auth";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
+import { zact } from "zact/server";
 
 // when snippets rating hits this number
 // it will no longer be on the race
 // and will be reviewed by admin on the review page
+
+const snippetVoteSchema = z.object({
+  snippetId: z.string(),
+  userId: z.string(),
+});
+
 const SNIPPET_RATING_THRESHOLD = -10;
 
-export async function upvoteSnippetAction(input: {
-  snippetId: Snippet["id"];
-  userId: User["id"];
-}) {
+export const upvoteSnippetAction = zact(snippetVoteSchema)(async (input) => {
   const snippet = await prisma.snippet.findUnique({
     where: {
       id: input.snippetId,
@@ -69,12 +72,9 @@ export async function upvoteSnippetAction(input: {
   });
 
   revalidatePath("/result");
-}
+});
 
-export async function downvoteSnippetAction(input: {
-  snippetId: Snippet["id"];
-  userId: User["id"];
-}) {
+export const downvoteSnippetAction = zact(snippetVoteSchema)(async (input) => {
   const snippet = await prisma.snippet.findUnique({
     where: {
       id: input.snippetId,
@@ -141,12 +141,9 @@ export async function downvoteSnippetAction(input: {
   });
 
   revalidatePath("/result");
-}
+});
 
-export async function deleteVoteAction(input: {
-  snippetId: Snippet["id"];
-  userId: User["id"];
-}) {
+export const deleteVoteAction = zact(snippetVoteSchema)(async (input) => {
   const snippet = await prisma.snippet.findUnique({
     where: {
       id: input.snippetId,
@@ -206,4 +203,4 @@ export async function deleteVoteAction(input: {
   });
 
   revalidatePath("/result");
-}
+});

@@ -4,9 +4,9 @@ import { FormEvent, useRef } from "react";
 import { Controls, EditableInput } from "@/components/ui/editable-input";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { updateUserAction } from "../actions";
+import { updateUserAction } from "../../../_actions/user";
 import { useToast } from "@/components/ui/use-toast";
-import { ValidationError } from "@/lib/exceptions/custom-hooks";
+import { catchError } from "@/lib/utils";
 
 export default function ChangeNameForm({
   displayName,
@@ -16,7 +16,7 @@ export default function ChangeNameForm({
   const router = useRouter();
   const session = useSession();
   const controlsRef = useRef<Controls>({
-    setEdit: (isEdit: boolean) => undefined,
+    setEdit: () => undefined,
   });
   const inputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
@@ -25,18 +25,9 @@ export default function ChangeNameForm({
     e.preventDefault();
     const newName = inputRef.current?.value as string;
 
-    if (!newName) {
-      return toast({
-        title: "Username cannot be an empty string.",
-        description: "Your username cannot be an empty string.",
-        variant: "destructive",
-      });
-    } else if (newName === session.data?.user.name) {
-      return toast({
-        title: "Same username as before.",
-        description: "Oops look like your username is same as it was.",
-        variant: "middle",
-      });
+    if (newName === displayName) {
+      controlsRef.current.setEdit(false);
+      return;
     }
 
     controlsRef.current.setEdit(false);
@@ -52,13 +43,7 @@ export default function ChangeNameForm({
       await session.update({ name: newName });
       router.refresh();
     } catch (err) {
-      const error = err as unknown as ValidationError;
-      const errors = JSON.parse(error.message);
-      return toast({
-        title: error.name,
-        description: `The name field ${errors["name"]}`,
-        variant: "middle",
-      });
+      catchError(err);
     }
   }
 

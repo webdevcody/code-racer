@@ -9,10 +9,9 @@ import {
   deleteVoteAction,
   downvoteSnippetAction,
   upvoteSnippetAction,
-} from "./actions";
+} from "../_actions/result";
 import { toast } from "@/components/ui/use-toast";
-import { cn } from "@/lib/utils";
-import Spinner from "@/components/ui/spinner";
+import { catchError, cn } from "@/lib/utils";
 
 interface VotingProps {
   userId: User["id"];
@@ -25,7 +24,7 @@ export function Voting({ userId, snippetId, usersVote }: VotingProps) {
   const [isPending, startTransition] = React.useTransition();
 
   return (
-    <div className="flex flex-col md:flex-row items-center justify-center gap-2">
+    <div className="flex flex-col items-center justify-center gap-2 md:flex-row">
       <span>How do you feel about the last snippet?</span>
       <div className="flex items-center gap-2">
         <Button
@@ -36,9 +35,15 @@ export function Voting({ userId, snippetId, usersVote }: VotingProps) {
             startTransition(async () => {
               try {
                 if (usersVote?.type === "UP") {
-                  await deleteVoteAction({ userId, snippetId });
+                  await deleteVoteAction({
+                    userId,
+                    snippetId,
+                  });
                 } else {
-                  await upvoteSnippetAction({ userId, snippetId });
+                  await upvoteSnippetAction({
+                    userId,
+                    snippetId,
+                  });
                   toast({
                     title: "Success.",
                     description:
@@ -47,17 +52,7 @@ export function Voting({ userId, snippetId, usersVote }: VotingProps) {
                   });
                 }
               } catch (err) {
-                err instanceof Error
-                  ? toast({
-                      title: "Error",
-                      description: err.message,
-                      variant: "destructive",
-                    })
-                  : toast({
-                      title: "Error",
-                      description: "Something went wrong, please try again.",
-                      variant: "destructive",
-                    });
+                catchError(err);
               }
             });
           }}
@@ -76,9 +71,15 @@ export function Voting({ userId, snippetId, usersVote }: VotingProps) {
             startTransition(async () => {
               try {
                 if (usersVote?.type === "DOWN") {
-                  await deleteVoteAction({ userId, snippetId });
+                  await deleteVoteAction({
+                    userId,
+                    snippetId,
+                  });
                 } else {
-                  await downvoteSnippetAction({ userId, snippetId });
+                  await downvoteSnippetAction({
+                    userId,
+                    snippetId,
+                  });
                   toast({
                     title: "Success.",
                     description:
@@ -87,17 +88,7 @@ export function Voting({ userId, snippetId, usersVote }: VotingProps) {
                   });
                 }
               } catch (err) {
-                err instanceof Error
-                  ? toast({
-                      title: "Error",
-                      description: err.message,
-                      variant: "destructive",
-                    })
-                  : toast({
-                      title: "Error",
-                      description: "Something went wrong, please try again.",
-                      variant: "destructive",
-                    });
+                catchError(err);
               }
             });
           }}

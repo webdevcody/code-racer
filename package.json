@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "predev": "husky install && prisma generate && prisma db push ",
+    "predev": "husky install && prisma generate && prisma db push && npm run seed",
+    "seed": "ts-node prisma/seed.ts",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -23,6 +24,7 @@
     "@radix-ui/react-dropdown-menu": "^2.0.5",
     "@radix-ui/react-hover-card": "^1.0.6",
     "@radix-ui/react-icons": "^1.3.0",
+    "@radix-ui/react-label": "^2.0.2",
     "@radix-ui/react-popover": "^1.0.6",
     "@radix-ui/react-progress": "^1.0.3",
     "@radix-ui/react-scroll-area": "^1.0.4",
@@ -45,11 +47,14 @@
     "react-confetti": "^6.1.0",
     "react-dom": "18.2.0",
     "react-share": "^4.4.1",
+    "react-use": "^17.4.0",
     "recharts": "^2.7.2",
+    "server-only": "^0.0.1",
     "tailwind-merge": "^1.13.2",
     "tailwindcss": "3.3.2",
     "tailwindcss-animate": "^1.0.6",
     "unstyled-table": "^0.0.3-alpha-3",
+    "zact": "^0.0.2",
     "zod": "^3.21.4"
   },
   "devDependencies": {
