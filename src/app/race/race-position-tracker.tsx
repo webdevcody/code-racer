@@ -6,22 +6,22 @@ import Image from "next/image";
 import type { User } from "next-auth";
 
 interface RacePositionProps {
+  codeLength: number;
   inputLength: number;
-  actualSnippetLength: number;
   user?: User;
 }
 
 const GOAL_COMPLETED = 100;
 
 export default function RacePositionTracker({
+  codeLength,
   inputLength,
-  actualSnippetLength,
   user,
 }: RacePositionProps) {
-  const progress = (inputLength / actualSnippetLength) * 100;
+  const progress = (inputLength / codeLength) * 100;
 
   return (
-    <div className="relative flex items-center mb-5">
+    <div className="relative mb-5 flex items-center">
       <ProgressBar>
         <ProgressIndicator progress={progress}>
           {progress !== GOAL_COMPLETED && (
