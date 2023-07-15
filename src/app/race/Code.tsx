@@ -1,33 +1,25 @@
 import { cn } from "@/lib/utils";
-
-interface displayCodeProps {
+interface CodeProps {
   code: string;
   userInput: string;
   errors: number[];
-  isCurrentLineEmpty: boolean;
 }
-
-export default function DisplayedCode({
-  code,
-  errors,
-  userInput,
-  isCurrentLineEmpty = false
-}: displayCodeProps) {
+export default function Code({ code, errors, userInput }: CodeProps) {
   return (
-    <pre className="mb-4 text-primary">
+    <pre className="text-primary mb-4 overflow-auto">
       {code.split("").map((char, index) => (
         <span
           key={index}
           className={cn({
-            "bg-red-500 opacity-100": errors.includes(index),
-            "animate-blink": userInput.length === index,
+            "text-red-500 opacity-100": errors.includes(index),
+            "bg-yellow-200 opacity-80 text-black": userInput.length === index,
             "opacity-100":
               userInput.length !== index && userInput[index] === char,
             "opacity-50":
               userInput.length !== index && userInput[index] !== char,
           })}
         >
-          {isCurrentLineEmpty && userInput.length === index ? " \n" : char}
+          {char}
         </span>
       ))}
     </pre>

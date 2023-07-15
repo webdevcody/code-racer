@@ -18,7 +18,7 @@ import { UserRole } from "@prisma/client";
 
 interface UserDropdownProps {
   user?: User & {
-    role: UserRole
+    role: UserRole;
   };
 }
 
@@ -34,7 +34,7 @@ export function UserDropdown({ user }: UserDropdownProps) {
 
 interface AccountMenuProps {
   user: User & {
-    role: UserRole
+    role: UserRole;
   };
 }
 

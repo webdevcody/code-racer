@@ -2,7 +2,7 @@ import React from "react";
 
 import { prisma } from "@/lib/prisma";
 import { UsersTable } from "./users-table";
-import { Result } from "@prisma/client";
+import { User, Result } from "@prisma/client";
 import { Heading } from "@/components/ui/heading";
 
 interface LeaderboardPageProps {
@@ -11,7 +11,7 @@ interface LeaderboardPageProps {
   };
 }
 
-function calculateUsersAvarage(array: any[], key: string) {
+function calculateUsersAverage(array: any[], key: string) {
   const overall = array.reduce((acc, obj) => {
     return Number(obj[key]) + acc;
   }, 0);
@@ -30,42 +30,60 @@ export default async function LeaderboardPage({
   const skip = typeof page === "string" ? (parseInt(page) - 1) * take : 0;
 
   // Column and order to sort by
-  const [] =
+  const [column, order] =
     typeof sort === "string"
       ? (sort.split(".") as [
-          keyof Result | undefined,
+          keyof User | "Races played" | undefined,
           "asc" | "desc" | undefined,
         ])
       : [];
 
-  const { usersWithAvg: users, totalUsers } = await prisma.$transaction(
-    async () => {
-      const users = await prisma.user.findMany({
+  const { users, totalUsers } = await prisma.$transaction(async () => {
+    let users;
+
+    if (column === "Races played") {
+      users = await prisma.user.findMany({
         take,
         skip,
-        // orderBy: {
-        //   [column ?? ""]: order,
-        // },
+        orderBy: {
+          results: {
+            _count: order,
+          },
+        },
         include: {
           results: true,
         },
+        where: {
+          results: {
+            some: {},
+          },
+        },
       });
+    } else {
+      users = await prisma.user.findMany({
+        take,
+        skip,
+        orderBy: {
+          [column ?? ""]: order,
+        },
+        include: {
+          results: true,
+        },
+        where: {
+          results: {
+            some: {},
+          },
+        },
+      });
+    }
 
-      const totalUsers = await prisma.user.count();
+    const totalUsers = await prisma.user.count();
 
-
-      const usersWithAvg = users.map((user) => ({
-        ...user,
-        avarageCpm: calculateUsersAvarage(user.results, "cpm"),
-        avarageAccuracy: calculateUsersAvarage(user.results, "accuracy"),
-      }));
-
-      return {
-        usersWithAvg,
-        totalUsers,
-      };
-    },
-  );
+    return {
+      users,
+      totalUsers,
+    };
+  });
 
   const pageCount = totalUsers === 0 ? 1 : Math.ceil(totalUsers / take);
 

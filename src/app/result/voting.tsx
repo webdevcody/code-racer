@@ -7,9 +7,9 @@ import type { Snippet, SnippetVote } from "@prisma/client";
 import { User } from "next-auth";
 import {
   deleteVoteAction,
-  downvoteSnippetAction,
+  downVoteSnippetAction,
   upvoteSnippetAction,
-} from "../_actions/result";
+} from "../_actions/snippet";
 import { toast } from "@/components/ui/use-toast";
 import { catchError, cn } from "@/lib/utils";
 
@@ -34,28 +34,22 @@ export function Voting({ userId, snippetId, usersVote }: VotingProps) {
           onClick={() => {
             startTransition(async () => {
               if (userId) {
-                try {
-                  if (usersVote?.type === "UP") {
-                    await deleteVoteAction({
-                      userId,
-                      snippetId,
-                    });
-                  } else {
-                    await upvoteSnippetAction({
-                      userId,
-                      snippetId,
-                    });
-                    toast({
-                      title: "Success.",
-                      description:
-                        "Thanks for your feedback! We will consider it.",
-                      variant: "default",
-                    });
-                  }
-                } catch (err) {
-                  catchError(err);
+              try {
+                if (usersVote?.type === "UP") {
+                  await deleteVoteAction({ snippetId });
+                } else {
+                  await upvoteSnippetAction({ snippetId });
+                  toast({
+                    title: "Success.",
+                    description:
+                      "Thanks for your feedback! We will consider it.",
+                    variant: "default",
+                  });
                 }
-              } else {
+              } catch (err) {
+                catchError(err);
+              }
+             } else {
                 toast({
                   title: "Warning",
                   description: "You should sign in first to vote.",
@@ -78,20 +72,18 @@ export function Voting({ userId, snippetId, usersVote }: VotingProps) {
           onClick={() => {
             startTransition(async () => {
               if (userId) {
-                try {
-                  if (usersVote?.type === "DOWN") {
-                    await deleteVoteAction({
-                      userId,
-                      snippetId,
-                    });
-                  } else {
-                    await downvoteSnippetAction({
-                      userId,
-                      snippetId,
-                    });
-                    toast({
-                      title: "Success.",
-                      description:
+              try {
+                if (usersVote?.type === "DOWN") {
+                  await deleteVoteAction({
+                    snippetId,
+                  });
+                } else {
+                  await downVoteSnippetAction({
+                    snippetId,
+                  });
+                  toast({
+                    title: "Success.",
+                    description:
                       "Thanks for your feedback! We will consider it.",
                       variant: "default",
                     });
