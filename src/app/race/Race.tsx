@@ -5,8 +5,19 @@ import type { User } from "next-auth";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { Snippet } from "@prisma/client";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { calculateAccuracy, calculateCPM, createIndent, calculateRemainder, previousLines } from "./utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  calculateAccuracy,
+  calculateCPM,
+  createIndent,
+  calculateRemainder,
+  previousLines,
+} from "./utils";
 
 import { Heading } from "@/components/ui/heading";
 import { saveUserResultAction } from "../_actions/user";
@@ -25,6 +36,7 @@ export default function Race({ user, snippet }: RaceProps) {
 
   const [counter, setCounter] = useState(0);
   const [line, setLine] = useState(0);
+  const [lineIndex, setLineIndex] = useState(0);
 
   const [errors, setErrors] = useState<number[]>([]);
   const [errorTotal, setErrorTotal] = useState(0);
@@ -70,7 +82,17 @@ export default function Race({ user, snippet }: RaceProps) {
         .filter((index) => index !== -1);
       return newErrors;
     });
-  }, [startTime, endTime, user, errors.length, errorTotal, code.length, snippet.id, input, code]);
+  }, [
+    startTime,
+    endTime,
+    user,
+    errors.length,
+    errorTotal,
+    code.length,
+    snippet.id,
+    input,
+    code,
+  ]);
 
   // Reset Race
   useEffect(() => {
@@ -115,6 +137,11 @@ export default function Race({ user, snippet }: RaceProps) {
       e.preventDefault();
     } else if (e.key === "Control") {
       e.preventDefault();
+    } else if (e.key === "Tab") {
+      e.preventDefault();
+      Tab();
+    } else if (e.key === "CapsLock") {
+      e.preventDefault();
     } else if (e.key === "Escape") {
       e.preventDefault();
     } else {
@@ -123,8 +150,22 @@ export default function Race({ user, snippet }: RaceProps) {
     }
   }
 
+  // Tab
+  function Tab() {
+    // Stop at end of line if not matching
+    if (input.length === code.length) {
+      return;
+    }
+
+    setInput(input + "  "); // add 2
+    // setInput(input + "    "); // add 4
+  }
+
   // Backspace
   function Backspace() {
+    if (input.length == 0) {
+      setLine(0);
+    }
     const ln = lines[line];
     const nextLine = lines[line - 1];
     const indent = createIndent(ln);
@@ -228,9 +269,16 @@ export default function Race({ user, snippet }: RaceProps) {
       onClick={focusOnLoad}
       role="none" // eslint fix - will remove the semantic meaning of an element while still exposing it to assistive technology
     >
-      <RaceTracker codeLength={code.length} inputLength={input.length} user={user} />
+      <RaceTracker
+        codeLength={code.length}
+        inputLength={input.length}
+        user={user}
+      />
       <div className="mb-2 md:mb-4">
-        <Heading title="Type this code" description="Start typing to get racing" />
+        <Heading
+          title="Type this code"
+          description="Start typing to get racing"
+        />
       </div>
       <Code code={code} errors={errors} userInput={input} />
       <input
