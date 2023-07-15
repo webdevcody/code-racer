@@ -11,18 +11,22 @@ interface RacePageSearchParams {
 }
 
 async function getRandomSnippet(lang: string) {
-  const itemCount = await prisma.snippet.count();
+  const itemCount = await prisma.snippet.count({
+    where: {
+      onReview: false,
+      language: lang,
+    },
+  });
   const skip = Math.max(0, Math.floor(Math.random() * itemCount));
-  return prisma.snippet
-    .findMany({
-      where: {
-        onReview: false,
-        language: lang,
-      },
-      take: 1,
-      skip: skip,
-    })
-    .then((results) => (results.length > 0 ? results[0] : undefined));
+  const [snippet] = await prisma.snippet.findMany({
+    where: {
+      onReview: false,
+      language: lang,
+    },
+    take: 1,
+    skip: skip,
+  });
+  return snippet;
 }
 
 async function getSearchParamSnippet(snippetId: string | string[]) {
