@@ -12,7 +12,6 @@ import {
 } from "../_actions/result";
 import { toast } from "@/components/ui/use-toast";
 import { catchError, cn } from "@/lib/utils";
-import Spinner from "@/components/ui/spinner";
 
 interface VotingProps {
   userId: User["id"];

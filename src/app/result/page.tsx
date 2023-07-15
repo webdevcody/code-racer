@@ -6,12 +6,11 @@ import { Icons } from "@/components/icons";
 import Link from "next/link";
 import { FirstRaceBadge } from "./first-race-badge";
 import { getCurrentUser } from "@/lib/session";
-import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Voting } from "./voting";
 import { Badge } from "@/components/ui/badge";
 import { getFirstRaceBadge } from "./loaders";
-import { Achievement, SnippetVote, UserAchievement } from "@prisma/client";
+import { Achievement, SnippetVote } from "@prisma/client";
 
 const card = [
   { title: "WPM", value: "81 %" },

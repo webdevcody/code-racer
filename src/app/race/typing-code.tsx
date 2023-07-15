@@ -14,7 +14,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import Header from "@/components/header";
 import { Heading } from "@/components/ui/heading";
 
 function calculateCPM(
@@ -257,7 +256,7 @@ export default function TypingCode({ user, snippet }: TypingCodeProps) {
 
   return (
     <div
-      className="relative w-full p-4 overflow-x-auto rounded-md  md:w-3/4 lg:p-8 bg-accent"
+      className="relative w-full p-4 overflow-x-auto rounded-md md:w-3/4 lg:p-8 bg-accent"
       onClick={focusOnLoad}
       role="none" // eslint fix - will remove the semantic meaning of an element while still exposing it to assistive technology
     >

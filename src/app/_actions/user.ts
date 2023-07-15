@@ -1,11 +1,8 @@
 "use server";
 
-import { User, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import {
-  UnauthorizedError,
-  ValidationError,
-} from "@/lib/exceptions/custom-hooks";
+import { UnauthorizedError } from "@/lib/exceptions/custom-hooks";
 import { getCurrentUser } from "@/lib/session";
 import { z } from "zod";
 import { zact } from "zact/server";

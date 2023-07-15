@@ -96,11 +96,6 @@ export default function RacePage() {
             >
               Start Racing (Coming Soon)
             </Link>
-            {/* <LanguageDropDown
-          className="w-fit"
-          codeLanguage={languageMultiplayer}
-          setCodeLanguage={setLanguageMultiplayer}
-        /> */}
           </div>
         </CardContent>
       </Card>
