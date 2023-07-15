@@ -1,5 +1,4 @@
 import { cn } from "@/lib/utils";
-import "@/styles/animation.css";
 
 interface displayCodeProps {
   code: string;
@@ -21,7 +20,7 @@ export default function DisplayedCode({
           key={index}
           className={cn({
             "bg-red-500 opacity-100": errors.includes(index),
-            "blink-animation": userInput.length === index,
+            "animate-blink": userInput.length === index,
             "opacity-100":
               userInput.length !== index && userInput[index] === char,
             "opacity-50":

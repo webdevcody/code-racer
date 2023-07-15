@@ -2,10 +2,10 @@
 module.exports = {
   darkMode: ["class"],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
   ],
   theme: {
     container: {
@@ -43,6 +43,10 @@ module.exports = {
         success: {
           DEFAULT: "hsl(var(--success))",
           foreground: "hsl(var(--success-foreground))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning-dark))",
+          200: "hsl(var(--warning-light))",
         },
         muted: {
           DEFAULT: "hsl(var(--muted))",
@@ -86,6 +90,11 @@ module.exports = {
         "dash": {
           "0%": { transform: "translate(2539.6383913420013px, 0)" },
           "100%": { transform: "translate(-2539.6383913420013px, 0)" }
+        },
+        "blink": {
+          "0%": { background: "bg-warning-200", color: "##878c8e" },
+          "50%": { background: "transparent" },
+          "100%": { background: "bg-warning-200", color: "##878c8e" },
         }
       },
       animation: {
@@ -93,7 +102,8 @@ module.exports = {
         "accordion-up": "accordion-up 0.2s ease-out",
         "gear-rotate-left": "gear-rotate-left 5s linear infinite",
         "gear-rotate-right": "gear-rotate-right 5s linear infinite",
-        "dash":"dash linear infinite",
+        "dash": "dash linear infinite",
+        "blink": "blink 1.5s ease infinite"
       },
     },
   },
