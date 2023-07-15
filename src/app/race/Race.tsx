@@ -5,19 +5,8 @@ import type { User } from "next-auth";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { Snippet } from "@prisma/client";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
-  calculateAccuracy,
-  calculateCPM,
-  createIndent,
-  calculateRemainder,
-  previousLines,
-} from "./utils";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { calculateAccuracy, calculateCPM, createIndent, calculateRemainder, previousLines } from "./utils";
 
 import { Heading } from "@/components/ui/heading";
 import { saveUserResultAction } from "../_actions/user";
@@ -47,25 +36,16 @@ export default function Race({ user, snippet }: RaceProps) {
   const lines = code.split("\n");
 
   useEffect(() => {
-    // Debug
-    // console.log(JSON.stringify(input));
-    // console.log(JSON.stringify(code));
-    console.log(input.length);
-    console.log(code.length);
-    // console.log("Index: " + index);
-    // console.log("Line Index: " + lineIndex);
-    // console.log("Line Number: " + line);
-    // console.log(lines[line]);
-
     // Focus element
     if (inputElement.current !== null) {
       inputElement.current.focus();
     }
 
     // Calculate result
-    if (input.length === code.length && input === code) {
+    if (input.length === code.length && input === code && !endTime) {
       setEndTime(new Date());
     }
+
     if (startTime && endTime) {
       const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
 
@@ -79,8 +59,7 @@ export default function Race({ user, snippet }: RaceProps) {
           accuracy: calculateAccuracy(code.length - 1, errorTotal),
           snippetId: snippet.id,
         });
-
-      router.push("/result");
+      router.push(`/result?snippetId=${snippet.id}`);
     }
 
     // Set Errors
@@ -91,18 +70,7 @@ export default function Race({ user, snippet }: RaceProps) {
         .filter((index) => index !== -1);
       return newErrors;
     });
-  }, [
-    endTime,
-    startTime,
-    user,
-    errors.length,
-    errorTotal,
-    code.length,
-    router,
-    snippet.id,
-    input,
-    code,
-  ]);
+  }, [startTime, endTime, user, errors.length, errorTotal, code.length, snippet.id, input, code]);
 
   // Reset Race
   useEffect(() => {
@@ -221,19 +189,19 @@ export default function Race({ user, snippet }: RaceProps) {
     const indent = createIndent(nextLine);
 
     // Stop at end of line if not matching
-    if (input.length - 1 === code.length) {
+    if (input.length === code.length) {
       return;
     }
 
     if (counter == ln.length - 1) {
       setCounter(indent.length);
-      setInput(input + e.key + "\n" + indent);
+      setInput(input + e.key + indent);
       if (line < lines.length - 1) {
         setLine(line + 1);
       }
     } else if (ln.length - 1 == counter - previousLines(lines, line).length) {
       setCounter(indent.length);
-      setInput(input + e.key + "\n" + indent);
+      setInput(input + e.key + indent);
       if (line < lines.length - 1) {
         setLine(line + 1);
       }
@@ -260,16 +228,9 @@ export default function Race({ user, snippet }: RaceProps) {
       onClick={focusOnLoad}
       role="none" // eslint fix - will remove the semantic meaning of an element while still exposing it to assistive technology
     >
-      <RaceTracker
-        codeLength={code.length}
-        inputLength={input.length}
-        user={user}
-      />
+      <RaceTracker codeLength={code.length} inputLength={input.length} user={user} />
       <div className="mb-2 md:mb-4">
-        <Heading
-          title="Type this code"
-          description="Start typing to get racing"
-        />
+        <Heading title="Type this code" description="Start typing to get racing" />
       </div>
       <Code code={code} errors={errors} userInput={input} />
       <input
