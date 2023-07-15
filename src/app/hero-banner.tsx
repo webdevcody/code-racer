@@ -17,7 +17,7 @@ export default function HeroBanner() {
             href={"/race"}
             title="View Profile Picture"
             prefetch
-            className="px-4 py-2 text-sm italic font-medium transition-colors bg-yellow-500 rounded-md md:text-2xl ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:bg-accent hover:bg-accent hover:text-accent-foreground"
+            className="px-4 py-2 text-sm italic font-medium transition-colors bg-warning rounded-md md:text-2xl ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:bg-accent hover:bg-accent hover:text-accent-foreground"
           >
             {"Start Racing"}
           </Link>

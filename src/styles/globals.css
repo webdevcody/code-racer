@@ -34,6 +34,9 @@
     --success: 129, 74%, 45%;
     --success-foreground: 114, 65%, 36%;
 
+    --warning-light: 53, 98.3%, 76.9%;
+    --warning-dark: 45, 93.4%, 47.5%;
+
     --ring: 215 20.2% 65.1%;
 
     --radius: 0.5rem;
@@ -71,6 +74,9 @@
 
     --success: 121, 68%, 44%;
     --success-foreground: 114, 68%, 35%;
+
+    --warning-light: 53, 98.3%, 76.9%;
+    --warning-dark: 45, 93.4%, 47.5%;
 
     --ring: 217.2 32.6% 17.5%;
 

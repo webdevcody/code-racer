@@ -1,17 +1,21 @@
 import { Button } from "@/components/ui/button";
+import { Heading } from "@/components/ui/heading";
+import { snippetLanguages } from "@/config/languages";
 import Link from "next/link";
 
 interface NoSnippetProps {
   message: string;
+  language: string; // Snippet language
 }
 
-export default function NoSnippet({ message }: NoSnippetProps) {
+export default function NoSnippet({ message, language }: NoSnippetProps) {
+  const formattedLanguage = snippetLanguages.find(snippet => snippet.value === language)?.label ?? language;
   return (
-    <div className="flex flex-col items-center justify-start gap-7">
-      <p className="text-xl text-primary">{message}</p>
+    <div className="flex flex-col gap-4 justify-start">
+      <Heading title={`No ${formattedLanguage} snippet found`} description={message}/>
       <Link href={"/add-snippet"}>
         <Button>Create New Snippet</Button>
       </Link>
     </div>
-  );
+  )
 }

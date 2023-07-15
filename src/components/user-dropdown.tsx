@@ -13,37 +13,44 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import Spinner from "./ui/spinner";
+import type { User } from "next-auth";
+import { UserRole } from "@prisma/client";
 
-export function UserDropdown() {
-  const session = useSession();
+interface UserDropdownProps {
+  user?: User & {
+    role: UserRole;
+  };
+}
 
+export function UserDropdown({ user }: UserDropdownProps) {
   return (
     <div className="flex items-center gap-4">
       <div className="flex justify-center">
-        {session.status === "loading" && <Spinner />}
-        {session.status === "unauthenticated" && <LoginButton />}
-        {session.status === "authenticated" && <AccountMenu />}
+        {user ? <AccountMenu user={user} /> : <LoginButton />}
       </div>
     </div>
   );
 }
 
-const AccountMenu = () => {
-  const session = useSession();
+interface AccountMenuProps {
+  user: User & {
+    role: UserRole;
+  };
+}
 
+const AccountMenu = ({ user }: AccountMenuProps) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="flex gap-2 px-4">
           <Image
             className="rounded-full"
-            src={session?.data?.user.image ?? ""}
+            src={user.image ?? ""}
             alt="user avatar"
             height={30}
             width={30}
           />
-          <p className="whitespace-nowrap">{session?.data?.user?.name}</p>
+          <p className="whitespace-nowrap">{user.name}</p>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
@@ -59,7 +66,7 @@ const AccountMenu = () => {
             <span>Profile</span>
           </Link>
         </DropdownMenuItem>
-        {session.data?.user.role === "ADMIN" && (
+        {user.role === "ADMIN" && (
           <DropdownMenuItem asChild>
             <Link href="/review" className="flex items-center gap-1">
               <Icons.review className="w-4 h-4 mr-2" />
