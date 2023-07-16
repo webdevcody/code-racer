@@ -29,7 +29,7 @@ export default function ProgressBar({ title, size = 60, value = 50, totalValue =
                 onMouseEnter={() => setHoverText(fractionText)}
                 onMouseLeave={() => setHoverText(title)}
             >
-                <div className="flex w-full h-full justify-center items-center text-center p-0">
+                <div className="flex w-full h-full text-sm justify-center items-center text-center p-0">
                     {hoverText}
                 </div>
             </div>

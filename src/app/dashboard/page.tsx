@@ -3,11 +3,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { redirect } from "next/navigation";
-import type { Result, Snippet } from "@prisma/client";
-import { RecentRacesTable } from "./components/recentRaces";
 import ProgressBar from "./components/progressBar";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { RecentSnippetsTable } from "./components/recentSnippets";
+import RaceTableServerSide from "./components/raceTableServerSide";
+import SnippetTableServerSide from "./components/snippetTableServerSide";
 
 interface DashboardPageProps {
   searchParams: {
@@ -22,23 +21,6 @@ export default async function DashboardPage({
 
   if (!user) redirect("/");
 
-  const { page, per_page, sort } = searchParams;
-
-  // Number of records to show per page
-  const take = typeof per_page === "string" ? parseInt(per_page) : 5;
-
-  // Number of records to skip
-  const skip = typeof page === "string" ? (parseInt(page) - 1) * take : 0;
-
-  // Column and order to sort by
-  const [column, order] =
-    typeof sort === "string"
-      ? (sort.split(".") as [
-        keyof Result | undefined,
-          "asc" | "desc" | undefined,
-        ])
-      : [];
-
   // List of recent games, total number of recent games, max cpm, max accuracy, avarage cpm, avarage accuracy
   const {
     totalUsers,
@@ -46,32 +28,12 @@ export default async function DashboardPage({
     totalSnippets,
     totalUserGames,
     totalUserSnippets,
-    recentGames,
-    recentSnippets,
     userRank,
   } = await prisma.$transaction(async () => {
+
     const totalUsers = await prisma.user.count();
     const totalGames = await prisma.result.count();
     const totalSnippets = await prisma.snippet.count();
-
-    const recentGames = await prisma.result.findMany({
-      take,
-      skip,
-      where: {
-        userId: user.id,
-      },
-      orderBy: {
-        [column ?? "createdAt"]: order,
-      },
-    });
-
-    const recentSnippets = await prisma.snippet.findMany({
-      take,
-      skip,
-      where: {
-        userId: user.id,
-      }
-    });
 
     const totalUserGames = await prisma.result.count({
       where: {
@@ -93,41 +55,35 @@ export default async function DashboardPage({
       totalSnippets,
       totalUserGames,
       totalUserSnippets,
-      recentGames,
-      recentSnippets,
       userRank,
     };
   });
 
-  const userPageCount = (totalUserGames === 0) ? 1 : Math.ceil(totalUserGames / take);
-
-  const snippetPageCount = (totalUserSnippets === 0) ? 1 : Math.ceil(totalUserSnippets / take);
-
   return (
     <Card className="flex sm:flex-col md:flex-row">
       <CardContent className="flex justify-center">
-        <div className="flex sm:flex-row md:flex-col gap-5 bg-accent my-2 justify-evenly items-center rounded-full">
+        <div className="flex sm:flex-row md:flex-col gap-5 my-2 justify-evenly items-center rounded-full">
           <ProgressBar
             title="Rank"
-            size={140}
+            size={100}
             value={userRank}
             totalValue={totalUsers}
           />
           <ProgressBar
             title="Races"
-            size={100}
+            size={80}
             value={totalUserGames}
             totalValue={totalGames}
           />
           <ProgressBar
             title="Snippets"
-            size={100}
+            size={80}
             value={totalUserSnippets}
             totalValue={totalSnippets}
           />
           <ProgressBar
             title="Coming Soon!"
-            size={100}
+            size={80}
           />
         </div>
       </CardContent>
@@ -138,10 +94,10 @@ export default async function DashboardPage({
             <TabsTrigger value="snippets">Snippets</TabsTrigger>
           </TabsList>
           <TabsContent value="races">
-            <RecentRacesTable data={recentGames} pageCount={userPageCount} />
+            <RaceTableServerSide user={user} searchParams={searchParams} totalUserGames={totalUserGames} />
           </TabsContent>
           <TabsContent value="snippets">
-            <RecentSnippetsTable data={recentSnippets} pageCount={snippetPageCount} />
+            <SnippetTableServerSide user={user} searchParams={searchParams} totalUserSnippets={totalUserSnippets} />
           </TabsContent>
         </Tabs>
       </CardContent>
