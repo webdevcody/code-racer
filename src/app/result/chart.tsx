@@ -10,7 +10,8 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { ParsedRacesResult, ResultChartLineProps } from "@/types/result";
+import { ResultChartLineProps } from "@/types/result";
+import { ParsedRacesResult } from "./loaders";
 
 const dataKeys: ResultChartLineProps[] = [
   { dataKey: "accuracy", stroke: "#0261b9" },
@@ -18,14 +19,18 @@ const dataKeys: ResultChartLineProps[] = [
   { dataKey: "errorCount", stroke: "#f00d0d" },
 ];
 
-export default function Chart({ raceResult }: { raceResult: ParsedRacesResult[] }) {
-  const [opacity, setOpacity] = useState<Partial<Record<keyof ParsedRacesResult, number>>>(
-    {
-      cpm: 1,
-      accuracy: 1,
-      errorCount: 1,
-    },
-  );
+export default function Chart({
+  raceResult,
+}: {
+  raceResult: ParsedRacesResult[];
+}) {
+  const [opacity, setOpacity] = useState<
+    Partial<Record<keyof ParsedRacesResult, number>>
+  >({
+    cpm: 1,
+    accuracy: 1,
+    errorCount: 1,
+  });
 
   const handleMouseEnter = useCallback(
     (o: any) => {
