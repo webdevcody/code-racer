@@ -1,19 +1,31 @@
-import { useRef } from "react";
 import { cn } from "@/lib/utils";
-import Follower from "./follower";
-
 interface CodeProps {
   code: string;
   userInput: string;
+  textIndicatorPosition: number | number[];
   errors: number[];
 }
-export default function Code({ code, errors, userInput }: CodeProps) {
-  const codeContainerRef = useRef<HTMLPreElement>(null);
+export default function Code({
+  code,
+  errors,
+  userInput,
+  textIndicatorPosition,
+}: CodeProps) {
+  function textIndicatorPositionDeterminer(charIndex: number) {
+    if (!Array.isArray(textIndicatorPosition)) {
+      return charIndex === textIndicatorPosition;
+    } else {
+      for (let i = 0; i < textIndicatorPosition.length; i++) {
+        if (charIndex === textIndicatorPosition[i]) {
+          return true;
+        }
+      }
+    }
+  }
 
   return (
     <>
-      <pre ref={codeContainerRef} className="text-primary mb-4 overflow-auto">
-        <Follower codeContainerRef={codeContainerRef} userInput={userInput} />
+      <pre className="text-monochrome mb-4 overflow-auto font-medium">
         {code.split("").map((char, index) => (
           <span
             key={index}
@@ -22,9 +34,14 @@ export default function Code({ code, errors, userInput }: CodeProps) {
                 code[index] !== " " && errors.includes(index),
               "border-red-500 opacity-100":
                 code[index] === " " && errors.includes(index),
-              "opacity-70": userInput.length === index,
+              "bg-yellow-200 opacity-80 text-monochrome":
+                textIndicatorPositionDeterminer(index),
               "opacity-100":
                 userInput.length !== index && userInput[index] === char,
+              // The next character to be typed
+              "opacity-[0.75]": userInput.length === index,
+              "border-monochrome/50":
+                code[index] === " " && userInput.length === index,
               "opacity-50":
                 !errors.includes(index) &&
                 userInput.length !== index &&

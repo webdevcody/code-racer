@@ -29,6 +29,8 @@ function calculateAccuracy(numberOfCharacters: number, errorsCount: number): num
 export default function Race({ user, snippet }: RaceProps) {
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [input, setInput] = useState("");
+  const [shiftKeyPressed, setShiftKeyPressed] = useState(false);
+  const [textIndicatorPosition, setTextIndicatorPosition] = useState<number | number[]>(0);
   const [submittingResults, setSubmittingResults] = useState(false);
   const [totalErrors, setTotalErrors] = useState(0);
   const router = useRouter();
@@ -45,8 +47,6 @@ export default function Race({ user, snippet }: RaceProps) {
 
   async function endRace() {
     if (!startTime) return;
-    setSubmittingResults(true);
-
     const endTime = new Date();
     const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
 
@@ -71,6 +71,13 @@ export default function Race({ user, snippet }: RaceProps) {
     setSubmittingResults(false);
   }
 
+  // Check if race is finished
+  useEffect(() => {
+    if (isRaceFinished) {
+      endRace();
+    }
+  }, [input]);
+
   useEffect(() => {
     const handleRestartKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -89,33 +96,215 @@ export default function Race({ user, snippet }: RaceProps) {
     }
   }
 
-  function handleKeyboardEvent(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (isRaceFinished) return;
-
+  async function handleKeyboardDownEvent(e: React.KeyboardEvent<HTMLInputElement>) {
     if (!startTime) {
       setStartTime(new Date());
     }
 
-    const noopKeys = ["Shift", "Alt", "ArrowUp", "ArrowDown", "ArrowRight", "ArrowLeft", "Control", "Escape", "Meta"];
+    const noopKeys = ["Alt", "ArrowUp", "ArrowDown", "Control", "Escape", "Meta", "CapsLock"];
 
     if (noopKeys.includes(e.key)) {
       e.preventDefault();
-    } else if (e.key === "Backspace") {
-      Backspace();
-    } else if (e.key === "Enter") {
-      Enter();
     } else {
-      Key(e);
+      switch (e.key) {
+        case "Backspace":
+          Backspace();
+          break;
+        case "Enter":
+          Enter();
+          break;
+        case "ArrowLeft":
+          ArrowLeft();
+          break;
+        case "ArrowRight":
+          ArrowRight();
+          break;
+        case "Shift":
+          ShiftKey("keydown");
+          break;
+        default:
+          Key(e);
+          break;
+      }
+    }
+  }
+
+  async function handleKeyboardUpEvent(e: React.KeyboardEvent<HTMLInputElement>) {
+    const noopKeys = [
+      "Alt",
+      "ArrowUp",
+      "ArrowDown",
+      "ArrowLeft",
+      "ArrowRight",
+      "Control",
+      "Escape",
+      "Meta",
+      "CapsLock",
+    ];
+
+    if (noopKeys.includes(e.key)) {
+      e.preventDefault();
+    } else {
+      switch (e.key) {
+        case "Shift":
+          ShiftKey("keyup");
+          break;
+        default:
+          e.preventDefault();
+          break;
+      }
+    }
+  }
+
+  function ShiftKey(typeOfEvent: "keyup" | "keydown") {
+    if (typeOfEvent === "keyup") {
+      setShiftKeyPressed(false);
+    } else {
+      setShiftKeyPressed(true);
+    }
+  }
+
+  function ArrowRight() {
+    if (textIndicatorPosition === input.length) return;
+
+    if (!shiftKeyPressed) {
+      setTextIndicatorPosition((prevTextIndicatorPosition) => {
+        if (typeof prevTextIndicatorPosition === "number") {
+          return prevTextIndicatorPosition + 1;
+        } else {
+          const lastValue = prevTextIndicatorPosition.at(-1) as number;
+          return lastValue + 1;
+        }
+      });
+    }
+
+    if (shiftKeyPressed) {
+      setTextIndicatorPosition((prevTextIndicatorPosition) => {
+        if (typeof prevTextIndicatorPosition === "number") {
+          const array = [prevTextIndicatorPosition + 1, prevTextIndicatorPosition];
+          return array;
+        } else if (prevTextIndicatorPosition.at(-1) !== input.length) {
+          if (prevTextIndicatorPosition.length !== 1) {
+            // Since the array's format is in descending order
+            // we pop it to get rid of the last value, thus
+            // moving the text position forward.
+            const array = [...prevTextIndicatorPosition];
+            array.pop();
+            return array;
+
+            /** Can't find a way to conditionally let it function in
+             *  a specific way (right or left).
+             */
+            // const lastValue = prevTextIndicatorPosition.at(-1) as number;
+            // const array = [lastValue + 1, ...prevTextIndicatorPosition];
+            // return array;
+          } else {
+            return prevTextIndicatorPosition[0] + 1;
+          }
+        } else {
+          return prevTextIndicatorPosition;
+        }
+      });
+    }
+  }
+
+  function ArrowLeft() {
+    if (!shiftKeyPressed) {
+      if (textIndicatorPosition !== 0) {
+        setTextIndicatorPosition((prevTextIndicatorPosition) => {
+          if (typeof prevTextIndicatorPosition === "number") {
+            return prevTextIndicatorPosition - 1;
+          } else {
+            const lastValue = prevTextIndicatorPosition.at(-1) as number;
+            return lastValue !== 0 ? lastValue - 1 : lastValue;
+          }
+        });
+      }
+    }
+
+    if (shiftKeyPressed) {
+      setTextIndicatorPosition((prevTextIndicatorPosition) => {
+        if (typeof prevTextIndicatorPosition === "number") {
+          // if it's still not an array, then convert it to an
+          // array when shift key is being held down. Since
+          // this function will be called when the ArrowLeft key is
+          // pressed/held down.
+          const array = [prevTextIndicatorPosition - 1];
+          return array;
+        } else if (prevTextIndicatorPosition.at(-1) !== 0) {
+          // make a shallow copy of the prevTextIndicatorPosition array.
+          const array = [...prevTextIndicatorPosition];
+          // Get the last value. Add an "as number" to avoid a typescript error
+          // as it is expected to not be undefined everytime.
+          const lastValue = prevTextIndicatorPosition.at(-1) as number;
+          array.push(lastValue - 1);
+          return array;
+        } else {
+          return prevTextIndicatorPosition;
+        }
+      });
     }
   }
 
   // Backspace
   function Backspace() {
-    setInput(input.slice(0, -1));
+    if (textIndicatorPosition === input.length) {
+      setInput((prevInput) => prevInput.slice(0, -1));
+    }
+
+    if (!Array.isArray(textIndicatorPosition) && textIndicatorPosition < input.length) {
+      const inputArray = input.split("");
+      // Filter out the the character to be deleted based on where the current text
+      // indicator is located. Subtract the position by one since we are comparing them
+      // through an array's index.
+      const newArray = inputArray.filter((char, index) => {
+        if (index !== textIndicatorPosition - 1) return char;
+      });
+      setInput(newArray.join(""));
+    }
+
+    if (textIndicatorPosition !== 0) {
+      if (Array.isArray(textIndicatorPosition)) {
+        const inputArray = input.split("");
+
+        // This is a double loop, so open for refactoring.
+        const newArray = inputArray.filter((char, index) => {
+          for (let i = 0; i < textIndicatorPosition.length; i++) {
+            // loop through each position stored in the textIndicatorPosition
+            // array, and check if it's equal to any of the index in the inputArray.
+            if (textIndicatorPosition[i] === index) {
+              return null;
+            }
+          }
+          return char;
+        });
+
+        setInput(newArray.join(""));
+      }
+
+      setTextIndicatorPosition((prevTextIndicatorPosition) => {
+        if (typeof prevTextIndicatorPosition === "number") {
+          return prevTextIndicatorPosition - 1;
+        } else {
+          const lastValue = prevTextIndicatorPosition.at(-1) as number;
+          return lastValue;
+        }
+      });
+    }
   }
 
   // Enter
   function Enter() {
+    if (Array.isArray(textIndicatorPosition)) {
+      // delete the highlighted text first
+      // if the textIndicatorPosition is an array
+      Backspace();
+
+      // remove the comment from the return to see
+      // it move to a new line
+      return;
+    }
+
     let indentLength = 0;
     let newChars = "";
     // indent until the first newline
@@ -135,27 +324,66 @@ export default function Race({ user, snippet }: RaceProps) {
       newChars += " ".repeat(indentLength + 1);
     }
 
-    const newInput = (input + newChars).substring(0, code.length - 1);
-    setInput(newInput);
+    setInput((prevInput) => (prevInput + newChars).substring(0, code.length - 1));
+
+    setTextIndicatorPosition((prevTextIndicatorPosition) => {
+      if (typeof prevTextIndicatorPosition === "number") {
+        return prevTextIndicatorPosition + newChars.length;
+      } else {
+        return prevTextIndicatorPosition;
+      }
+    });
   }
 
   function Key(e: React.KeyboardEvent<HTMLInputElement>) {
-    const newInput = input + e.key;
-
     if (e.key !== code.slice(input.length, input.length + 1)) {
       setTotalErrors(totalErrors + 1);
     }
 
-    setInput(newInput);
+    if (!Array.isArray(textIndicatorPosition)) {
+      if (textIndicatorPosition === input.length) {
+        setInput((prevInput) => prevInput + e.key);
+      }
 
-    if (code === newInput) {
-      endRace();
+      if (textIndicatorPosition < input.length) {
+        const inputArray: string[] = [];
+
+        /**
+         * Loop through each of the input's total length, then
+         * if the current loop we are in is === to the textIndicator's position,
+         * insert the pressed key there and also the current character that
+         * was originally in that position.
+         */
+        for (let i = 0; i < input.length; i++) {
+          if (i === textIndicatorPosition) {
+            inputArray.push(e.key);
+            inputArray.push(input[i]);
+          } else {
+            inputArray.push(input[i]);
+          }
+        }
+        setInput(inputArray.join(""));
+      }
     }
+
+    if (Array.isArray(textIndicatorPosition)) {
+      Backspace();
+      setInput((prevInput) => prevInput + e.key);
+    }
+
+    setTextIndicatorPosition((prevTextIndicatorPosition) => {
+      if (typeof prevTextIndicatorPosition === "number") {
+        return prevTextIndicatorPosition + 1;
+      } else {
+        return prevTextIndicatorPosition;
+      }
+    });
   }
 
   function handleRestart() {
     setStartTime(null);
     setInput("");
+    setTextIndicatorPosition(0);
   }
 
   return (
@@ -169,13 +397,14 @@ export default function Race({ user, snippet }: RaceProps) {
         <div className="mb-2 md:mb-4">
           <Heading title="Type this code" description="Start typing to get racing" />
         </div>
-        <Code code={code} errors={errors} userInput={input} />
+        <Code code={code} errors={errors} userInput={input} textIndicatorPosition={textIndicatorPosition} />
         <input
           type="text"
           // value={input}
           defaultValue={input}
           ref={inputElement}
-          onKeyDown={handleKeyboardEvent}
+          onKeyDown={handleKeyboardDownEvent}
+          onKeyUp={handleKeyboardUpEvent}
           disabled={isRaceFinished}
           className="w-full h-full absolute p-8 inset-y-0 left-0 -z-40 focus:outline outline-blue-500 rounded-md"
           onPaste={(e) => e.preventDefault()}

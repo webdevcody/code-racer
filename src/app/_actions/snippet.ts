@@ -226,7 +226,7 @@ export const addSnippetAction = action(
       },
     });
 
-    const firstSnippetAchievement = await prisma.userAchievement.findFirst({
+    const firstSnippetAchievement = await prisma.achievement.findFirst({
       where: {
         achievementType: "FIRST_SNIPPET",
         userId: user.id,
@@ -234,7 +234,7 @@ export const addSnippetAction = action(
     });
 
     if (!firstSnippetAchievement) {
-      await prisma.userAchievement.create({
+      await prisma.achievement.create({
         data: {
           userId: user.id,
           achievementType: "FIRST_SNIPPET",
