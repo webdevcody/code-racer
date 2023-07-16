@@ -48,6 +48,18 @@ export default function Race({ user, snippet }: RaceProps) {
   const lines = code.split("\n");
 
   useEffect(() => {
+    // Debug
+    console.log(JSON.stringify(input));
+    console.log(JSON.stringify(code));
+    // console.log("Lines: " + lines);
+    // console.log("Line Number: " + line);
+    // console.log("Current Line: " lines[line]);
+    // console.log("Line Index: " + lineIndex);
+    // console.log("Start Time: " + startTime);
+    // console.log("End Time: " + endTime);
+    // console.log("ErrorsTotal: " + errorTotal);
+    // console.log("Errors: " + errors);
+
     // Focus element
     if (inputElement.current !== null) {
       inputElement.current.focus();
