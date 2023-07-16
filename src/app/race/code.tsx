@@ -34,13 +34,13 @@ export default function Code({
                 code[index] !== " " && errors.includes(index),
               "border-red-500 opacity-100":
                 code[index] === " " && errors.includes(index),
-              "bg-yellow-200 opacity-80 text-black":
+              "bg-yellow-200 opacity-80 text-primary":
                 textIndicatorPositionDeterminer(index),
               "opacity-100":
                 userInput.length !== index && userInput[index] === char,
               // The next character to be typed
               "opacity-[0.75]": userInput.length === index,
-              "border-yellow-200/50":
+              "border-primary/50":
                 code[index] === " " && userInput.length === index,
               "opacity-50":
                 !errors.includes(index) &&
