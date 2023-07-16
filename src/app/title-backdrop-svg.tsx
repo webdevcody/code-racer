@@ -50,8 +50,8 @@ const config = {
   dashLengthInit: 0.6,
   strokeWidth: 1,
   speed: 0.5,
-  width: 500,
-  height: 400,
+  width: 750,
+  height: 750,
 };
 
 export default function TitleBackdropSvg() {
