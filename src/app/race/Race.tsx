@@ -49,7 +49,7 @@ export default function Race({ user, snippet }: RaceProps) {
     setSubmittingResults(true);
 
     const endTime = new Date();
-    const timeTaken = endTime.getTime() - startTime.getTime();
+    const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
 
     if (user) {
       await saveUserResultAction({
