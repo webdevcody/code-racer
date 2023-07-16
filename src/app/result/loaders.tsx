@@ -1,6 +1,13 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
+import { redirect } from "next/navigation";
+import { formatDate } from "@/lib/utils";
+import { Result } from "@prisma/client";
+
+export type ParsedRacesResult = Omit<Result, "createdAt"> & {
+  createdAt: string;
+};
 
 export async function getFirstRaceBadge() {
   const user = await getCurrentUser();
@@ -36,4 +43,47 @@ export async function getFirstRaceBadge() {
     });
     return firstRaceAchievement;
   }
+}
+
+export async function getUserResultsForSnippet(
+  snippetId: string,
+  numberOfResults = 7,
+): Promise<ParsedRacesResult[]> {
+  const user = await getCurrentUser();
+  if (!user) {
+    // Fix it when user is not signed in. Issue-272
+    redirect("/auth");
+  }
+
+  const raceResults = await prisma.result.findMany({
+    where: {
+      userId: user.id,
+      snippetId: snippetId,
+    },
+    take: numberOfResults,
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  const parsedRaceResult = raceResults.map((item) => {
+    return { ...item, createdAt: formatDate(item.createdAt) };
+  });
+  return parsedRaceResult.reverse();
+}
+
+export async function getCurrentRaceResult(resultId: string) {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    redirect("/auth");
+  }
+
+  const raceResults = await prisma.result.findUnique({
+    where: {
+      id: resultId,
+    },
+  });
+
+  return raceResults;
 }
