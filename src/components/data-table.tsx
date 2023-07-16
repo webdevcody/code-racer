@@ -105,6 +105,7 @@ export function DataTable<TData, TValue>({
     },
     [searchParams],
   );
+
   return (
     <ShadcnTable
       columns={columns}
@@ -193,9 +194,7 @@ export function DataTable<TData, TValue>({
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="text-sm font-medium">
-                  {`Page ${page} of ${pageCount}`}
-                </div>
+                <div className="text-sm font-medium">{`Page ${page} of ${pageCount}`}</div>
                 <div className="flex items-center space-x-2">
                   <Button
                     variant="outline"

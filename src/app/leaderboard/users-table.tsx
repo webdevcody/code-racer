@@ -56,6 +56,9 @@ export function UsersTable({ data, pageCount }: UsersTableProps) {
         enableSorting: false,
       },
       {
+        accessorFn: (user) => {
+          return user.averageCpm;
+        },
         accessorKey: "averageCpm",
         header: () => {
           return (
@@ -74,8 +77,16 @@ export function UsersTable({ data, pageCount }: UsersTableProps) {
             </div>
           );
         },
+        cell: ({ cell }) => {
+          const averageCpm = cell.getValue() as number;
+
+          return <span>{averageCpm}</span>;
+        },
       },
       {
+        accessorFn: (user) => {
+          return user.averageAccuracy;
+        },
         accessorKey: "averageAccuracy",
         header: "Average accuracy",
         cell: ({ cell }) => {
@@ -88,7 +99,7 @@ export function UsersTable({ data, pageCount }: UsersTableProps) {
                 "text-destructive": avgAccuracy < 0.5,
               })}
             >
-              {avgAccuracy}%
+              {avgAccuracy * 100}%
             </span>
           );
         },

@@ -1,4 +1,3 @@
-import React from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Chart from "./chart";
@@ -8,23 +7,20 @@ import { FirstRaceBadge } from "./first-race-badge";
 import { getCurrentUser } from "@/lib/session";
 import { Voting } from "./voting";
 import { Badge } from "@/components/ui/badge";
-import { getFirstRaceBadge } from "./loaders";
+import {
+  getFirstRaceBadge,
+  getUserResultsForSnippet,
+  getCurrentRaceResult,
+} from "./loaders";
 import { Achievement, SnippetVote } from "@prisma/client";
+import {
+  ParsedRacesResult,
+  ResultsChartProps,
+  ResultCardProps,
+} from "@/types/result";
 import { findUsersVotes } from "../_actions/result";
 import { Heading } from "@/components/ui/heading";
 import { cn } from "@/lib/utils";
-
-const card = [
-  { title: "WPM", value: "81 %" },
-  { title: "Accuracy", value: "90 %" },
-  { title: "Rank", value: "20" },
-  { title: "Miss", value: "21" },
-  { title: "Times", value: "30s" },
-];
-
-interface ResultsChartProps {
-  searchParams: { snippetId: string };
-}
 
 export default async function ResultsChart({
   searchParams,
@@ -47,6 +43,8 @@ export default async function ResultsChart({
 
   let usersVote: SnippetVote | undefined | null;
   let firstRaceBadge: Achievement | undefined | null;
+  let currentRaceResult: ResultCardProps[] = [{} as ResultCardProps];
+  let raceResults: ParsedRacesResult[] = [{} as ParsedRacesResult];
 
   if (user) {
     const badge = await getFirstRaceBadge();
@@ -58,19 +56,24 @@ export default async function ResultsChart({
     });
     usersVote = votes.data;
   }
+  currentRaceResult = await getCurrentRaceResult(searchParams.snippetId);
+  raceResults = await getUserResultsForSnippet(searchParams.snippetId);
 
   return (
     <div className="w-auto">
       <div className="flex flex-col justify-center gap-4 mt-5">
         {firstRaceBadge && <FirstRaceBadge image={firstRaceBadge.image} />}
-        <div className="grid grid-cols-2 gap-3 mx-auto md:grid-cols-5 md:gap-6">
-          {card.map((c, idx) => {
+        <p className="text-primary text-center text-xl">
+          Result for your current Race
+        </p>
+        <div className="grid grid-cols-2 gap-3 mx-auto md:grid-cols-4 md:gap-6">
+          {currentRaceResult.map((c, idx) => {
             return (
               <Card key={idx}>
                 <CardHeader>
-                  <CardTitle className="">{c.title}</CardTitle>
+                  <CardTitle className="text-center">{c.title}</CardTitle>
                 </CardHeader>
-                <CardContent>{c.value}</CardContent>
+                <CardContent className="text-center">{c.value}</CardContent>
               </Card>
             );
           })}
@@ -78,7 +81,10 @@ export default async function ResultsChart({
       </div>
       <div className="flex flex-col p-8 rounded-xl">
         <div className="flex flex-wrap justify-center gap-4">
-          <Chart />
+          <p className="text-primary text-center text-xl">
+            Your progress on this snippet
+          </p>
+          <Chart raceResult={raceResults} />
         </div>
       </div>
       <div

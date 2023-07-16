@@ -12,9 +12,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Heading } from "@/components/ui/heading";
-import { saveUserResultAction } from "../_actions/user";
 import RaceTracker from "./RaceTracker";
 import Code from "./Code";
+import { saveUserResultAction } from "../_actions/result";
 
 interface RaceProps {
   user?: User;

@@ -92,7 +92,7 @@ export default function RacePage() {
             <Link
               className={cn(
                 buttonVariants({ variant: "default" }),
-                true && "pointer-events-none cursor-not-allowed opacity-30",
+                true && "pointer-events-none cursor-not-allowed opacity-40",
               )}
               onClick={(e) => e.preventDefault()}
               href={`/race/multiplayer${
@@ -155,8 +155,9 @@ export default function RacePage() {
       <Heading
         title="Choose a Race Mode"
         description="Practice your typing skills by yourself, with friends, or with other soy devs online"
+        centered
       />
-      <div className="grid grid-cols-1 gap-8 my-8 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-8 my-10 lg:grid-cols-3">
         <RacePractice />
         <RaceMultiplayer />
         <RaceWithFriends />
