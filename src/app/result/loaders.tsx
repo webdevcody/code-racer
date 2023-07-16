@@ -52,15 +52,16 @@ export async function getUserResultsForSnippet(snippetId: string) {
       userId: user.id,
       snippetId: snippetId,
     },
-    take:7,
+    take: 7,
     orderBy: {
-      createdAt: "asc"
-    }
+      createdAt: "desc",
+    },
   });
-  const parsedRaceResult = raceResults.map(item=>{
-    return {...item, createdAt: formatDate(item.createdAt)}
-  })
-  return parsedRaceResult;
+  
+  const parsedRaceResult = raceResults.map((item) => {
+    return { ...item, createdAt: formatDate(item.createdAt) };
+  });
+  return parsedRaceResult.reverse();
 }
 
 export async function getCurrentRaceResult(snippetId: string) {
@@ -75,8 +76,8 @@ export async function getCurrentRaceResult(snippetId: string) {
       snippetId: snippetId,
     },
     orderBy: {
-      createdAt: "desc"
-    }
+      createdAt: "desc",
+    },
   });
 
   const cardObject = [
@@ -84,7 +85,10 @@ export async function getCurrentRaceResult(snippetId: string) {
       title: "CPM",
       value: raceResults?.cpm.toString(),
     },
-    { title: "Accuracy", value: raceResults?.accuracy ? `${Number(raceResults.accuracy)}%` : "0%"},
+    {
+      title: "Accuracy",
+      value: raceResults?.accuracy ? `${Number(raceResults.accuracy)}%` : "0%",
+    },
     {
       title: "Misses",
       value: raceResults?.errorCount?.toString(),
