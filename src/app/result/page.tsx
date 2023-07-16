@@ -5,6 +5,7 @@ import { Icons } from "@/components/icons";
 import Link from "next/link";
 import { FirstRaceBadge } from "./first-race-badge";
 import { getCurrentUser } from "@/lib/session";
+import { prisma } from "@/lib/prisma";
 import { Voting } from "./voting";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -18,7 +19,6 @@ import {
   ResultsChartProps,
   ResultCardProps,
 } from "@/types/result";
-import { findUsersVotes } from "../_actions/result";
 import { Heading } from "@/components/ui/heading";
 import { cn } from "@/lib/utils";
 
@@ -42,19 +42,20 @@ export default async function ResultsChart({
     );
 
   let usersVote: SnippetVote | undefined | null;
-  let firstRaceBadge: Achievement | undefined | null;
+  let firstRaceBadge: Achievement | undefined;
   let currentRaceResult: ResultCardProps[] = [{} as ResultCardProps];
   let raceResults: ParsedRacesResult[] = [{} as ParsedRacesResult];
 
   if (user) {
-    const badge = await getFirstRaceBadge();
-    firstRaceBadge = badge?.data;
-
-    const votes = await findUsersVotes({
-      snippetId: searchParams.snippetId,
-      userId: user.id,
+    firstRaceBadge = await getFirstRaceBadge();
+    usersVote = await prisma.snippetVote.findUnique({
+      where: {
+        userId_snippetId: {
+          userId: user.id,
+          snippetId: searchParams.snippetId,
+        },
+      },
     });
-    usersVote = votes.data;
     currentRaceResult = await getCurrentRaceResult(searchParams.snippetId);
     raceResults = await getUserResultsForSnippet(searchParams.snippetId);
   }

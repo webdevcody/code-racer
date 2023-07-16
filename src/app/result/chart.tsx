@@ -18,18 +18,14 @@ const dataKeys: ResultChartLineProps[] = [
   { dataKey: "errorCount", stroke: "#f00d0d" },
 ];
 
-export default function Chart({
-  raceResult,
-}: {
-  raceResult: ParsedRacesResult[];
-}) {
-  const [opacity, setOpacity] = useState<
-    Partial<Record<keyof ParsedRacesResult, number>>
-  >({
-    cpm: 1,
-    accuracy: 1,
-    errorCount: 1,
-  });
+export default function Chart({ raceResult }: { raceResult: ParsedRacesResult[] }) {
+  const [opacity, setOpacity] = useState<Partial<Record<keyof ParsedRacesResult, number>>>(
+    {
+      cpm: 1,
+      accuracy: 1,
+      errorCount: 1,
+    },
+  );
 
   const handleMouseEnter = useCallback(
     (o: any) => {

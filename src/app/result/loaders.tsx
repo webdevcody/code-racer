@@ -3,7 +3,6 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { redirect } from "next/navigation";
 import { formatDate } from "@/lib/utils";
-import { createAchievement, findAchievement } from "../_actions/achievement";
 
 export async function getFirstRaceBadge() {
   const user = await getCurrentUser();
@@ -12,54 +11,21 @@ export async function getFirstRaceBadge() {
     return undefined;
   }
 
-  const firstRaceBadge = await findAchievement({
-    achievementType: "FIRST_RACE",
-  });
-
-  if (!firstRaceBadge) {
-    await createAchievement({ achievementType: "FIRST_RACE", userId: user.id });
-  }
-
-  return firstRaceBadge;
-}
-
-export async function getUserResultsForSnippet(snippetId: string) {
-  const user = await getCurrentUser();
-  if (!user) {
-    // Fix it when user is not signed in. Issue-272
-    redirect("/auth");
-  }
-
-  const raceResults = await prisma.result.findMany({
+  const firstRaceAchievement = await prisma.achievement.findUnique({
     where: {
-      userId: user.id,
-      snippetId: snippetId,
-    },
-    take: 7,
-    orderBy: {
-      createdAt: "desc",
+      type: "FIRST_RACE",
     },
   });
 
-  const parsedRaceResult = raceResults.map((item) => {
-    return { ...item, createdAt: formatDate(item.createdAt) };
-  });
-  return parsedRaceResult.reverse();
-}
-
-export async function getCurrentRaceResult(snippetId: string) {
-  const user = await getCurrentUser();
-  if (!user) {
-    redirect("/auth");
+  if (!firstRaceAchievement) {
+    throw new Error(
+      "FIRST_RACE achievement was missing from database, please add it",
+    );
   }
 
-  const raceResults = await prisma.result.findFirst({
+  const firstRaceBadge = await prisma.userAchievement.findFirst({
     where: {
-      userId: user.id,
-      snippetId: snippetId,
-    },
-    orderBy: {
-      createdAt: "desc",
+      achievementType: firstRaceAchievement.type,
     },
   });
 
@@ -72,8 +38,6 @@ export async function getCurrentRaceResult(snippetId: string) {
     });
     return firstRaceAchievement;
   }
-
-  return firstRaceBadge;
 }
 
 export async function getUserResultsForSnippet(snippetId: string) {
@@ -93,7 +57,7 @@ export async function getUserResultsForSnippet(snippetId: string) {
       createdAt: "desc",
     },
   });
-
+  
   const parsedRaceResult = raceResults.map((item) => {
     return { ...item, createdAt: formatDate(item.createdAt) };
   });

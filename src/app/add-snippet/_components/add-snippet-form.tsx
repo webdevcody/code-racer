@@ -45,8 +45,8 @@ export default function AddSnippetForm({ lang }: { lang: string }) {
   });
 
   useEffect(() => {
-    form.setValue("codeLanguage", lang);
-  });
+    form.setValue("codeLanguage", lang)
+  })
 
   async function onSubmit(data: FormData) {
     // error handling if prisma upload fails
