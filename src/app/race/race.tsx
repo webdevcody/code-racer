@@ -90,7 +90,6 @@ export default function Race({ user, snippet }: RaceProps) {
       }
     };
     document.addEventListener("keydown", handleRestartKey);
-    focusOnLoad();
     return () => {
       document.removeEventListener("keydown", handleRestartKey);
     };
@@ -201,6 +200,7 @@ export default function Race({ user, snippet }: RaceProps) {
         <input
           type="text"
           // value={input}
+          autoFocus
           defaultValue={input}
           ref={inputElement}
           onKeyDown={handleKeyboardEvent}
