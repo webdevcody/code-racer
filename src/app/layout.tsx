@@ -48,7 +48,7 @@ export default function RootLayout({
           inter.className,
         )}
       >
-        <NextTopLoader showSpinner={false} />
+        <NextTopLoader showSpinner={false} color="#E7B008" />
         <ContextProvider>
           <Header />
           <div className="container py-2 h-fit md:py-18 grow">{children}</div>
