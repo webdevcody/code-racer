@@ -37,8 +37,6 @@ function calculateAccuracy(
 }
 
 export default function Race({ user, snippet }: RaceProps) {
-  const [input, setInput] = useState("");
-
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [input, setInput] = useState("");
   const router = useRouter();
@@ -90,11 +88,17 @@ export default function Race({ user, snippet }: RaceProps) {
     }
   }
 
-  function handleKeyboardEvent(e: React.KeyboardEvent<HTMLInputElement>) {
+  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (isRaceFinished) return;
 
     if (!startTime) {
       setStartTime(new Date());
+    }
+
+    // Unfocus Shift + Tab
+    if (e.shiftKey && e.key === "Tab") {
+      e.currentTarget.blur();
+      return;
     }
 
     const noopKeys = [
@@ -107,6 +111,7 @@ export default function Race({ user, snippet }: RaceProps) {
       "Control",
       "Escape",
       "Meta",
+      "CapsLock",
     ];
 
     if (noopKeys.includes(e.key)) {
@@ -115,38 +120,22 @@ export default function Race({ user, snippet }: RaceProps) {
       Backspace();
     } else if (e.key === "Enter") {
       Enter();
+    } else if (e.key === "Tab") {
+      e.preventDefault();
+      Tab();
     } else {
       Key(e);
     }
   }
 
-  // Tab - Verify
-  // if next 2 characters do not equal newline \n move 2 spaces
-  //    add to input, update errors
-  // if one of the next two characters equals newline \n move to the end of nextline indent
-  //    add to input and index, update errors
   function Tab() {
-    // Stop at end of line if not matching
-    if (input.length === code.length) {
-      return;
-    }
-
-    setInput(input + "  "); // add 2
-    // setInput(input + "    "); // add 4
+    setInput(input + "  ");
   }
 
-  // Backspace - Verify
-  // if line index does not equal current line indent length
-  //     remove 1 from input and index
-  // if line index equals current line indent length move to previous line end
-  //     subtract indent and newline from input and the index
   function Backspace() {
     setInput(input.slice(0, -1));
   }
 
-  // Enter - Verify
-  // if enter move to next line at the end of indent
-  //     add remainder of current line and indent to input and index, update errors
   function Enter() {
     let indentLength = 0;
     let newChars = "";
@@ -210,7 +199,7 @@ export default function Race({ user, snippet }: RaceProps) {
         type="text"
         defaultValue={input}
         ref={inputElement}
-        onKeyDown={handleKeyboardEvent}
+        onKeyDown={handleKeyDown}
         disabled={isRaceFinished}
         className="w-full h-full absolute p-8 inset-y-0 left-0 -z-40 focus:outline outline-blue-500 rounded-md"
         onPaste={(e) => e.preventDefault()}
