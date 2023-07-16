@@ -114,6 +114,7 @@ export default function Race({ user, snippet }: RaceProps) {
       "Control",
       "Escape",
       "Meta",
+      "CapsLock"
     ];
 
     if (noopKeys.includes(e.key)) {
@@ -154,6 +155,7 @@ export default function Race({ user, snippet }: RaceProps) {
       "Control",
       "Escape",
       "Meta",
+      "CapsLock"
     ];
 
     if (noopKeys.includes(e.key)) {
@@ -262,15 +264,6 @@ export default function Race({ user, snippet }: RaceProps) {
       });
     }
   }
-
-  console.log(
-    "input",
-    input,
-    "position",
-    textIndicatorPosition,
-    "shift",
-    shiftKeyPressed,
-  );
 
   // Backspace
   function Backspace() {
