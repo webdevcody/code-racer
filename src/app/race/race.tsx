@@ -10,7 +10,7 @@ import { Heading } from "@/components/ui/heading";
 import RaceTracker from "./race-tracker";
 import Code from "./code";
 import { saveUserResultAction } from "../_actions/result";
-import RaceDetails from "./_components/RaceDetails";
+import RaceDetails from "./_components/race-details";
 
 interface RaceProps {
   user?: User;
