@@ -13,6 +13,10 @@ export const siteConfig = {
         title: "Leaderboard",
         href: "/leaderboard",
       },
+      {
+        title: "Contributors",
+        href: "/contributors",
+      },
     ];
 
     if (isLoggedIn) {
