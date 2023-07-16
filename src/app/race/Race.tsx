@@ -15,6 +15,7 @@ import { Heading } from "@/components/ui/heading";
 import { saveUserResultAction } from "../_actions/user";
 import RaceTracker from "./RaceTracker";
 import Code from "./Code";
+import RaceTimer from "./race-timer";
 
 interface RaceProps {
   user?: User;
@@ -91,10 +92,6 @@ export default function Race({ user, snippet }: RaceProps) {
   function handleKeyboardEvent(e: React.KeyboardEvent<HTMLInputElement>) {
     if (isRaceFinished) return;
 
-    if (!startTime) {
-      setStartTime(new Date());
-    }
-
     const noopKeys = [
       "Shift",
       "Alt",
@@ -109,13 +106,22 @@ export default function Race({ user, snippet }: RaceProps) {
 
     if (noopKeys.includes(e.key)) {
       e.preventDefault();
-    } else if (e.key === "Backspace") {
-      Backspace();
-    } else if (e.key === "Enter") {
-      Enter();
-    } else {
-      Key(e);
     }
+    else {
+      // Start timer if it isn't already running
+      if (!startTime) {
+        setStartTime(new Date());
+      }
+
+      if (e.key === "Backspace") {
+        Backspace();
+      } else if (e.key === "Enter") {
+        Enter();
+      } else {
+        Key(e);
+      }
+    }
+    
   }
 
   // Backspace
@@ -193,7 +199,7 @@ export default function Race({ user, snippet }: RaceProps) {
         className="w-full h-full absolute p-8 inset-y-0 left-0 -z-40 focus:outline outline-blue-500 rounded-md"
         onPaste={(e) => e.preventDefault()}
       />
-      <div className="self-start">
+      <div className="flex flex-row justify-between">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -206,6 +212,7 @@ export default function Race({ user, snippet }: RaceProps) {
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
+        <RaceTimer startTime={startTime} isRaceFinished={isRaceFinished}/>
       </div>
     </div>
   );
