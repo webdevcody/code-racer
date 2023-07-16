@@ -7,7 +7,7 @@ interface RaceDetailsProps {
 export default function RaceDetails({ submittingResults }: RaceDetailsProps) {
   return (
     <div className="w-3/4 my-5">
-      {!submittingResults && (
+      {submittingResults && (
         <div className="flex items-center">
           <Spinner />
           <p className="ml-2">Submitting your results</p>
