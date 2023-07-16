@@ -25,7 +25,7 @@ export default function Code({
 
   return (
     <>
-      <pre className="text-primary mb-4 overflow-auto">
+      <pre className="text-monochrome mb-4 overflow-auto font-medium">
         {code.split("").map((char, index) => (
           <span
             key={index}
@@ -34,13 +34,13 @@ export default function Code({
                 code[index] !== " " && errors.includes(index),
               "border-red-500 opacity-100":
                 code[index] === " " && errors.includes(index),
-              "bg-yellow-200 opacity-80 text-primary":
+              "bg-yellow-200 opacity-80 text-monochrome":
                 textIndicatorPositionDeterminer(index),
               "opacity-100":
                 userInput.length !== index && userInput[index] === char,
               // The next character to be typed
               "opacity-[0.75]": userInput.length === index,
-              "border-primary/50":
+              "border-monochrome/50":
                 code[index] === " " && userInput.length === index,
               "opacity-50":
                 !errors.includes(index) &&
