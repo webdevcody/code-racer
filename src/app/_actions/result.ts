@@ -51,8 +51,8 @@ export const saveUserResultAction = action(
           id: user.id,
         },
         data: {
-          avarageAccuracy: avgValues._avg.accuracy ?? 0,
-          avarageCpm: avgValues._avg.cpm ?? 0,
+          averageAccuracy: avgValues._avg.accuracy ?? 0,
+          averageCpm: avgValues._avg.cpm ?? 0,
         },
       });
     });

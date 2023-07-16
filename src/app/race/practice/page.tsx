@@ -1,9 +1,9 @@
 import { getCurrentUser } from "@/lib/session";
 
-import TypingCode from "../typing-code";
 import { prisma } from "@/lib/prisma";
 
 import NoSnippet from "../no-snippet";
+import Race from "../Race";
 
 interface RacePageSearchParams {
   snippetId: string;
@@ -11,18 +11,22 @@ interface RacePageSearchParams {
 }
 
 async function getRandomSnippet(lang: string) {
-  const itemCount = await prisma.snippet.count();
+  const itemCount = await prisma.snippet.count({
+    where: {
+      onReview: false,
+      language: lang,
+    },
+  });
   const skip = Math.max(0, Math.floor(Math.random() * itemCount));
-  return prisma.snippet
-    .findMany({
-      where: {
-        onReview: false,
-        language: lang,
-      },
-      take: 1,
-      skip: skip,
-    })
-    .then((results) => (results.length > 0 ? results[0] : undefined));
+  const [snippet] = await prisma.snippet.findMany({
+    where: {
+      onReview: false,
+      language: lang,
+    },
+    take: 1,
+    skip: skip,
+  });
+  return snippet;
 }
 
 async function getSearchParamSnippet(snippetId: string | string[]) {
@@ -38,7 +42,9 @@ async function getSearchParamSnippet(snippetId: string | string[]) {
 
 export default async function PracticeRacePage({
   searchParams,
-}: { searchParams: RacePageSearchParams }) {
+}: {
+  searchParams: RacePageSearchParams;
+}) {
   const user = await getCurrentUser();
   const snippet =
     (await getSearchParamSnippet(searchParams.snippetId)) ??
@@ -47,7 +53,7 @@ export default async function PracticeRacePage({
 
   return (
     <main className="flex flex-col items-center justify-between py-10 lg:p-24">
-      {snippet && <TypingCode snippet={snippet} user={user} />}
+      {snippet && <Race snippet={snippet} user={user} />}
       {!snippet && (
         <NoSnippet
           message={"Look like there is no snippet available yet. Create one?"}
