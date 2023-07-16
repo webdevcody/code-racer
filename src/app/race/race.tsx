@@ -90,6 +90,7 @@ export default function Race({ user, snippet }: RaceProps) {
       }
     };
     document.addEventListener("keydown", handleRestartKey);
+    focusOnLoad();
     return () => {
       document.removeEventListener("keydown", handleRestartKey);
     };
@@ -181,7 +182,7 @@ export default function Race({ user, snippet }: RaceProps) {
   return (
     <>
       <div
-        className="w-3/4 lg:p-8 p-4 bg-accent rounded-md relative flex flex-col gap-2"
+        className="relative flex flex-col w-3/4 gap-2 p-4 rounded-md lg:p-8 bg-accent"
         onClick={focusOnLoad}
         role="none" // eslint fix - will remove the semantic meaning of an element while still exposing it to assistive technology
       >
@@ -204,7 +205,7 @@ export default function Race({ user, snippet }: RaceProps) {
           ref={inputElement}
           onKeyDown={handleKeyboardEvent}
           disabled={isRaceFinished}
-          className="w-full h-full absolute p-8 inset-y-0 left-0 -z-40 focus:outline outline-blue-500 rounded-md"
+          className="absolute inset-y-0 left-0 w-full h-full p-8 rounded-md -z-40 focus:outline outline-blue-500"
           onPaste={(e) => e.preventDefault()}
         />
         <div className="self-start">
