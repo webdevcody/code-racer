@@ -3,11 +3,12 @@ import Image from "next/image";
 import { getCurrentUser } from "@/lib/session";
 
 import Achievement from "@/components/achievement";
+import { AddBio } from "@/components/add-bio";
+import { achievements } from "@/config/achievements";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import ChangeNameForm from "./_components/change-name-form";
 import ProfileNav from "./_components/profile-nav";
-import { AddBio } from "@/components/add-bio";
 
 export const metadata = {
   title: "Profile Page",
@@ -18,12 +19,9 @@ export default async function ProfilePage() {
   const photoURL = user?.image as string;
   const displayName = user?.name as string;
   const uid = user?.id as string;
-  const achievements = await prisma.userAchievement.findMany({
+  const userAchievements = await prisma.achievement.findMany({
     where: {
       userId: uid,
-    },
-    include: {
-      achievement: true,
     },
   });
   const totalPoints = 0;
@@ -57,19 +55,25 @@ export default async function ProfilePage() {
           <span className="mt-10">Total Points: {totalPoints}</span>
 
           <h2>Your Achievements</h2>
-          {achievements.length ? (
+          {userAchievements.length ? (
             <ul className="gap-4 w-fit max-w-[292px] flex items-center flex-wrap p-2 rounded-sm">
-              {achievements.map(({ achievement, unlockedAt }) => (
-                <Achievement
-                  key={achievement.type}
-                  achievement={{
-                    name: achievement.name,
-                    description: achievement.description,
-                    unlockedAt,
-                    image: achievement.image,
-                  }}
-                />
-              ))}
+              {userAchievements.map(({ achievementType, unlockedAt }) => {
+                const achievement = achievements.find(
+                  (achievement) => achievement.type === achievementType,
+                );
+                if (!achievement) return null;
+                return (
+                  <Achievement
+                    key={achievement.type}
+                    achievement={{
+                      name: achievement.name,
+                      description: achievement.description,
+                      unlockedAt,
+                      image: achievement.image,
+                    }}
+                  />
+                );
+              })}
             </ul>
           ) : null}
         </article>

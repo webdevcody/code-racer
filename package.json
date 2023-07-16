@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "predev": "husky install && prisma generate && prisma db push && npm run seed",
+    "predev": "husky install && prisma generate && prisma db push",
     "seed": "ts-node prisma/seed.ts",
     "dev": "next dev",
     "build": "next build",
