@@ -40,7 +40,9 @@ export default function Race({ user, snippet }: RaceProps) {
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [input, setInput] = useState("");
   const [shiftKeyPressed, setShiftKeyPressed] = useState(false);
-  const [textIndicatorPosition, setTextIndicatorPosition] = useState<number | number[]>(0);
+  const [textIndicatorPosition, setTextIndicatorPosition] = useState<
+    number | number[]
+  >(0);
 
   const router = useRouter();
   const inputElement = useRef<HTMLInputElement | null>(null);
@@ -98,8 +100,9 @@ export default function Race({ user, snippet }: RaceProps) {
     }
   }
 
-  async function handleKeyboardDownEvent(e: React.KeyboardEvent<HTMLInputElement>) {
-
+  async function handleKeyboardDownEvent(
+    e: React.KeyboardEvent<HTMLInputElement>,
+  ) {
     if (!startTime) {
       setStartTime(new Date());
     }
@@ -135,12 +138,13 @@ export default function Race({ user, snippet }: RaceProps) {
         default:
           Key(e);
           break;
-      };
-    };
+      }
+    }
   }
 
-  async function handleKeyboardUpEvent(e: React.KeyboardEvent<HTMLInputElement>) {
-
+  async function handleKeyboardUpEvent(
+    e: React.KeyboardEvent<HTMLInputElement>,
+  ) {
     const noopKeys = [
       "Alt",
       "ArrowUp",
@@ -164,7 +168,7 @@ export default function Race({ user, snippet }: RaceProps) {
           break;
       }
     }
-  };
+  }
 
   function ShiftKey(typeOfEvent: "keyup" | "keydown") {
     if (typeOfEvent === "keyup") {
@@ -172,7 +176,7 @@ export default function Race({ user, snippet }: RaceProps) {
     } else {
       setShiftKeyPressed(true);
     }
-  };
+  }
 
   function ArrowRight() {
     if (textIndicatorPosition === input.length) return;
@@ -191,7 +195,10 @@ export default function Race({ user, snippet }: RaceProps) {
     if (shiftKeyPressed) {
       setTextIndicatorPosition((prevTextIndicatorPosition) => {
         if (typeof prevTextIndicatorPosition === "number") {
-          const array = [prevTextIndicatorPosition + 1, prevTextIndicatorPosition];
+          const array = [
+            prevTextIndicatorPosition + 1,
+            prevTextIndicatorPosition,
+          ];
           return array;
         } else if (prevTextIndicatorPosition.at(-1) !== input.length) {
           if (prevTextIndicatorPosition.length !== 1) {
@@ -209,14 +216,14 @@ export default function Race({ user, snippet }: RaceProps) {
             // const array = [lastValue + 1, ...prevTextIndicatorPosition];
             // return array;
           } else {
-            return (prevTextIndicatorPosition[0] + 1);
+            return prevTextIndicatorPosition[0] + 1;
           }
         } else {
           return prevTextIndicatorPosition;
-        };
+        }
       });
     }
-  };
+  }
 
   function ArrowLeft() {
     if (!shiftKeyPressed) {
@@ -226,9 +233,7 @@ export default function Race({ user, snippet }: RaceProps) {
             return prevTextIndicatorPosition - 1;
           } else {
             const lastValue = prevTextIndicatorPosition.at(-1) as number;
-            return lastValue !== 0
-              ? lastValue - 1
-              : lastValue;
+            return lastValue !== 0 ? lastValue - 1 : lastValue;
           }
         });
       }
@@ -253,20 +258,30 @@ export default function Race({ user, snippet }: RaceProps) {
           return array;
         } else {
           return prevTextIndicatorPosition;
-        };
+        }
       });
-    };
-  };
+    }
+  }
 
-  console.log("input", input, "position", textIndicatorPosition, "shift", shiftKeyPressed);
+  console.log(
+    "input",
+    input,
+    "position",
+    textIndicatorPosition,
+    "shift",
+    shiftKeyPressed,
+  );
 
   // Backspace
   function Backspace() {
     if (textIndicatorPosition === input.length) {
-      setInput((prevInput) => (prevInput.slice(0, -1)));
+      setInput((prevInput) => prevInput.slice(0, -1));
     }
 
-    if (!Array.isArray(textIndicatorPosition) && textIndicatorPosition < input.length) {
+    if (
+      !Array.isArray(textIndicatorPosition) &&
+      textIndicatorPosition < input.length
+    ) {
       const inputArray = input.split("");
       // Filter out the the character to be deleted based on where the current text
       // indicator is located. Subtract the position by one since we are comparing them
@@ -275,7 +290,7 @@ export default function Race({ user, snippet }: RaceProps) {
         if (index !== textIndicatorPosition - 1) return char;
       });
       setInput(newArray.join(""));
-    };
+    }
 
     if (textIndicatorPosition !== 0) {
       if (Array.isArray(textIndicatorPosition)) {
@@ -289,7 +304,7 @@ export default function Race({ user, snippet }: RaceProps) {
             if (textIndicatorPosition[i] === index) {
               return null;
             }
-          };
+          }
           return char;
         });
 
@@ -305,11 +320,10 @@ export default function Race({ user, snippet }: RaceProps) {
         }
       });
     }
-  };
+  }
 
   // Enter
   function Enter() {
-
     if (Array.isArray(textIndicatorPosition)) {
       // delete the highlighted text first
       // if the textIndicatorPosition is an array
@@ -342,7 +356,9 @@ export default function Race({ user, snippet }: RaceProps) {
       newChars += " ".repeat(indentLength + 1);
     }
 
-    setInput((prevInput) => ((prevInput + newChars).substring(0, code.length - 1)));
+    setInput((prevInput) =>
+      (prevInput + newChars).substring(0, code.length - 1),
+    );
 
     setTextIndicatorPosition((prevTextIndicatorPosition) => {
       if (typeof prevTextIndicatorPosition === "number") {
@@ -354,10 +370,9 @@ export default function Race({ user, snippet }: RaceProps) {
   }
 
   function Key(e: React.KeyboardEvent<HTMLInputElement>) {
-
     if (!Array.isArray(textIndicatorPosition)) {
       if (textIndicatorPosition === input.length) {
-        setInput((prevInput) => (prevInput + e.key));
+        setInput((prevInput) => prevInput + e.key);
       }
 
       if (textIndicatorPosition < input.length) {
@@ -393,7 +408,6 @@ export default function Race({ user, snippet }: RaceProps) {
         return prevTextIndicatorPosition;
       }
     });
-
   }
 
   function handleRestart() {
@@ -419,7 +433,12 @@ export default function Race({ user, snippet }: RaceProps) {
           description="Start typing to get racing"
         />
       </div>
-      <Code code={code} errors={errors} userInput={input} textIndicatorPosition={textIndicatorPosition} />
+      <Code
+        code={code}
+        errors={errors}
+        userInput={input}
+        textIndicatorPosition={textIndicatorPosition}
+      />
       <input
         type="text"
         // value={input}

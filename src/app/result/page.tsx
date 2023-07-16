@@ -54,7 +54,7 @@ export default async function ResultsChart({
 
     const votes = await findUsersVotes({
       snippetId: searchParams.snippetId,
-      userId: user.id
+      userId: user.id,
     });
     usersVote = votes.data;
   }

@@ -11,7 +11,7 @@ export async function getFirstRaceBadge() {
   }
 
   const firstRaceBadge = await findAchievement({
-    achievementType: "FIRST_RACE"
+    achievementType: "FIRST_RACE",
   });
 
   if (!firstRaceBadge) {

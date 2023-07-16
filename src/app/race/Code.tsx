@@ -5,8 +5,12 @@ interface CodeProps {
   textIndicatorPosition: number | number[];
   errors: number[];
 }
-export default function Code({ code, errors, userInput, textIndicatorPosition }: CodeProps) {
-
+export default function Code({
+  code,
+  errors,
+  userInput,
+  textIndicatorPosition,
+}: CodeProps) {
   function textIndicatorPositionDeterminer(charIndex: number) {
     if (!Array.isArray(textIndicatorPosition)) {
       return charIndex === textIndicatorPosition;
@@ -15,9 +19,9 @@ export default function Code({ code, errors, userInput, textIndicatorPosition }:
         if (charIndex === textIndicatorPosition[i]) {
           return true;
         }
-      };
+      }
     }
-  };
+  }
 
   return (
     <>
@@ -30,7 +34,8 @@ export default function Code({ code, errors, userInput, textIndicatorPosition }:
                 code[index] !== " " && errors.includes(index),
               "border-red-500 opacity-100":
                 code[index] === " " && errors.includes(index),
-              "bg-yellow-200 opacity-80 text-black": textIndicatorPositionDeterminer(index),
+              "bg-yellow-200 opacity-80 text-black":
+                textIndicatorPositionDeterminer(index),
               "opacity-100":
                 userInput.length !== index && userInput[index] === char,
               // The next character to be typed

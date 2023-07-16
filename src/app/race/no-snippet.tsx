@@ -18,9 +18,13 @@ export default function NoSnippet({ message, language }: NoSnippetProps) {
         title={`No ${formattedLanguage} snippet found`}
         description={message}
       />
-      <Link href={`/add-snippet?lang=${language ? encodeURIComponent(language) : ""}`}>
+      <Link
+        href={`/add-snippet?lang=${
+          language ? encodeURIComponent(language) : ""
+        }`}
+      >
         <Button>Create New Snippet</Button>
       </Link>
-    </div >
+    </div>
   );
 }

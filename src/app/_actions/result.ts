@@ -70,10 +70,10 @@ export const findUsersVotes = action(
       where: {
         userId_snippetId: {
           userId,
-          snippetId
-        }
-      }
-    })
+          snippetId,
+        },
+      },
+    });
     return votes;
-  }
+  },
 );
