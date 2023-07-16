@@ -55,9 +55,9 @@ export default async function ResultsChart({
       userId: user.id,
     });
     usersVote = votes.data;
+    currentRaceResult = await getCurrentRaceResult(searchParams.snippetId);
+    raceResults = await getUserResultsForSnippet(searchParams.snippetId);
   }
-  currentRaceResult = await getCurrentRaceResult(searchParams.snippetId);
-  raceResults = await getUserResultsForSnippet(searchParams.snippetId);
 
   return (
     <div className="w-auto">
