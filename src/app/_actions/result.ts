@@ -20,8 +20,6 @@ export const saveUserResultAction = action(
   }),
 
   async (input, { prisma, user }) => {
-    console.log(input, 123);
-
     if (!user) throw new UnauthorizedError();
 
     prisma.$transaction(async (tx) => {
@@ -45,7 +43,6 @@ export const saveUserResultAction = action(
           cpm: true,
         },
       });
-      console.log(avgValues);
 
       await tx.user.update({
         where: {
