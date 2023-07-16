@@ -1,8 +1,4 @@
-import { Result } from "@prisma/client";
-
-export type ParsedRacesResult = Omit<Result, "createdAt"> & {
-  createdAt: string;
-};
+import { ParsedRacesResult } from "@/app/result/loaders";
 
 export type ResultChartLineProps = {
   dataKey: keyof ParsedRacesResult;

@@ -15,6 +15,7 @@ import { Heading } from "@/components/ui/heading";
 import RaceTracker from "./race-tracker";
 import Code from "./code";
 import { saveUserResultAction } from "../_actions/result";
+import RaceDetails from "./_components/race-details";
 
 interface RaceProps {
   user?: User;
@@ -23,7 +24,7 @@ interface RaceProps {
 
 function calculateCPM(
   numberOfCharacters: number,
-  secondsTaken: number,
+  secondsTaken: number
 ): number {
   const minutesTaken = secondsTaken / 60;
   return Math.round(numberOfCharacters / minutesTaken);
@@ -31,7 +32,7 @@ function calculateCPM(
 
 function calculateAccuracy(
   numberOfCharacters: number,
-  errorsCount: number,
+  errorsCount: number
 ): number {
   return 1 - errorsCount / numberOfCharacters;
 }
@@ -43,6 +44,7 @@ export default function Race({ user, snippet }: RaceProps) {
   const [textIndicatorPosition, setTextIndicatorPosition] = useState<
     number | number[]
   >(0);
+  const [submittingResults, setSubmittingResults] = useState(false);
 
   const router = useRouter();
   const inputElement = useRef<HTMLInputElement | null>(null);
@@ -64,15 +66,24 @@ export default function Race({ user, snippet }: RaceProps) {
     const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
 
     if (user) {
-      await saveUserResultAction({
+      const result = await saveUserResultAction({
         timeTaken,
         errors: errorTotal,
         cpm: calculateCPM(code.length - 1, timeTaken),
         accuracy: calculateAccuracy(code.length - 1, errorTotal),
         snippetId: snippet.id,
       });
+
+      if (!result.data) {
+        return router.refresh();
+      }
+
+      router.push(`/result?resultId=${result.data.id}`);
+    } else {
+      router.push(`/result`);
     }
-    router.push(`/result?snippetId=${snippet.id}`);
+
+    setSubmittingResults(false);
   }
 
   // Check if race is finished
@@ -331,8 +342,11 @@ export default function Race({ user, snippet }: RaceProps) {
     let newChars = "";
     // indent until the first newline
     while (
+      
       indentLength + input.length < code.length &&
+     
       code[indentLength + input.length] !== "\n"
+    
     ) {
       indentLength++;
     }
@@ -410,53 +424,52 @@ export default function Race({ user, snippet }: RaceProps) {
   }
 
   return (
-    <div
-      className="w-3/4 lg:p-8 p-4 bg-accent rounded-md relative flex flex-col gap-2"
-      onClick={focusOnLoad}
-      role="none" // eslint fix - will remove the semantic meaning of an element while still exposing it to assistive technology
-    >
-      <RaceTracker
-        codeLength={code.length}
-        inputLength={input.length}
-        user={user}
-      />
-      <div className="mb-2 md:mb-4">
-        <Heading
-          title="Type this code"
-          description="Start typing to get racing"
+    <>
+      <div
+        className="w-3/4 lg:p-8 p-4 bg-accent rounded-md relative flex flex-col gap-2"
+        onClick={focusOnLoad}
+        role="none" // eslint fix - will remove the semantic meaning of an element while still exposing it to assistive technology
+      >
+        <RaceTracker
+          codeLength={code.length}
+          inputLength={input.length}
+          user={user}
         />
+        <div className="mb-2 md:mb-4">
+          <Heading
+            title="Type this code"
+            description="Start typing to get racing"
+          />
+        </div>
+        <Code code={code} errors={errors} userInput={input} textIndicatorPosition={textIndicatorPosition} />
+        <input
+          type="text"
+          // value={input}
+          defaultValue={input}
+          ref={inputElement}
+          onKeyDown={handleKeyboardDownEvent}
+          onKeyUp={handleKeyboardUpEvent}
+          disabled={isRaceFinished}
+          className="w-full h-full absolute p-8 inset-y-0 left-0 -z-40 focus:outline outline-blue-500 rounded-md"
+          onPaste={(e) => e.preventDefault()}
+        />
+        <div className="self-start">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" onClick={handleRestart}>
+                  Restart (ESC)
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Press Esc to reset</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
       </div>
-      <Code
-        code={code}
-        errors={errors}
-        userInput={input}
-        textIndicatorPosition={textIndicatorPosition}
-      />
-      <input
-        type="text"
-        // value={input}
-        defaultValue={input}
-        ref={inputElement}
-        onKeyDown={handleKeyboardDownEvent}
-        onKeyUp={handleKeyboardUpEvent}
-        disabled={isRaceFinished}
-        className="w-full h-full absolute p-8 inset-y-0 left-0 -z-40 focus:outline outline-blue-500 rounded-md"
-        onPaste={(e) => e.preventDefault()}
-      />
-      <div className="self-start">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="outline" onClick={handleRestart}>
-                Restart (ESC)
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Press Esc to reset</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
-    </div>
+
+      <RaceDetails submittingResults={submittingResults} />
+    </>
   );
 }
