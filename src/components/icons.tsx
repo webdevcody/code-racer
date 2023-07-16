@@ -28,13 +28,19 @@ import Image from "next/image";
 export type Icon = LucideIcon;
 
 export const Icons = {
-  // FIX: until we have an svg
-  logo: () => (
+  // TODO: replace me with an svg of the logo
+  logo: ({
+    width,
+    height,
+  }: {
+    width: number | `${number}`;
+    height: number | `${number}`;
+  }) => (
     <Image
       unoptimized
       src="/static/logo.png"
-      width={30}
-      height={30}
+      width={width}
+      height={height}
       alt="Code Racer Logo"
     />
   ),

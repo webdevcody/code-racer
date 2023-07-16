@@ -52,7 +52,7 @@ export default function RootLayout({
         <ContextProvider>
           <Header />
           <div className="container py-2 h-fit md:py-18 grow">{children}</div>
-          <Footer className="border-t-2" />
+          <Footer />
           <Toaster />
           <TailwindIndicator />
         </ContextProvider>

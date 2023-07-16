@@ -13,7 +13,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Icons } from "@/components/icons";
-import { formatDate } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 
 interface RecentRacesTableProps {
@@ -32,7 +32,7 @@ export function RecentRacesTable({ data, pageCount }: RecentRacesTableProps) {
           const snippetId = cell.getValue() as string;
           return (
             <Link
-              className={buttonVariants({ variant: "default" })}
+              className={cn(buttonVariants(), "whitespace-nowrap")}
               href={`/race?snippetId=${snippetId}`}
             >
               Re-race
@@ -40,16 +40,6 @@ export function RecentRacesTable({ data, pageCount }: RecentRacesTableProps) {
           );
         },
       },
-      {
-        accessorKey: "id",
-        header: "Result Id",
-        enableSorting: false,
-        cell: ({ cell }) => {
-          const id = cell.getValue() as string;
-          return id.slice(0, 4) + "..." + id.slice(id.length - 4);
-        },
-      },
-
       {
         accessorKey: "errorCount",
         header: "Errors",
