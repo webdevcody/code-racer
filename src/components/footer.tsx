@@ -1,41 +1,35 @@
 import * as React from "react";
-import { cn } from "@/lib/utils";
 import Link from "next/link";
-import Image from "next/image";
+import { siteConfig } from "@/config/site";
+import { Icons } from "./icons";
 
-export function Footer({ className }: React.HTMLAttributes<HTMLElement>) {
+export function Footer() {
   return (
-    <footer className={cn(className)}>
-      <div className="container flex flex-col items-center justify-center gap-4 py-8 md:h-24 md:flex-row md:py-0">
+    <footer className="border-t-2 border-primary">
+      <div className="container flex flex-col items-center justify-center gap-4 py-5 md:h-16 md:flex-row md:py-0">
         <div className="flex flex-col items-center gap-4 md:flex-row md:gap-2 md:px-0">
           <Link href="/">
-            <Image
-              unoptimized
-              src="/static/logo.png"
-              width={36}
-              height={36}
-              alt="Code Racer Logo"
-            />
+            <Icons.logo width={36} height={36} />
           </Link>
           <p className="text-sm leading-loose text-center md:text-left">
             Built by{" "}
-            <a
-              href="https://twitter.com/webdevcody"
+            <Link
+              href={siteConfig.links.codyTwitter}
               target="_blank"
               rel="noreferrer"
               className="font-medium underline underline-offset-4"
             >
               Cody
-            </a>{" "}
+            </Link>{" "}
             & his community. The source code is available on{" "}
-            <a
-              href="https://github.com/webdevcody/code-racer"
+            <Link
+              href={siteConfig.links.github}
               target="_blank"
               rel="noreferrer"
               className="font-medium underline underline-offset-4"
             >
               GitHub
-            </a>
+            </Link>
             .
           </p>
         </div>
