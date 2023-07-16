@@ -8,6 +8,7 @@ interface RaceTableServerSideProps {
     user: User;
     searchParams: {
         [key: string]: string | string[] | undefined;
+        tableType: string;
     };
     totalUserGames: number;
 }
@@ -17,6 +18,16 @@ export default async function RaceTableServerSide({
     searchParams,
     totalUserGames,
 }: RaceTableServerSideProps) {
+    const { tableType } = searchParams;
+
+    if (tableType != "race") {
+        searchParams = {
+            page: "1",
+            per_page: "5",
+            sort: "createdAt.asc",
+            tableType: "race",
+        }
+    };
 
     const { page, per_page, sort } = searchParams;
 

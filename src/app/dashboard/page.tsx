@@ -1,16 +1,22 @@
 import React from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { redirect } from "next/navigation";
-import ProgressBar from "./components/progressBar";
+
+import { Card, CardContent } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+
+import StackCard from "./components/stackbox";
 import RaceTableServerSide from "./components/raceTableServerSide";
 import SnippetTableServerSide from "./components/snippetTableServerSide";
+
+import { Crown, FileCode2, Swords } from "lucide-react";
 
 interface DashboardPageProps {
   searchParams: {
     [key: string]: string | string[] | undefined;
+    tableType: string;
   };
 }
 
@@ -21,7 +27,7 @@ export default async function DashboardPage({
 
   if (!user) redirect("/");
 
-  // List of recent games, total number of recent games, max cpm, max accuracy, avarage cpm, avarage accuracy
+  // List of all the data we need to fetch
   const {
     totalUsers,
     totalGames,
@@ -60,36 +66,20 @@ export default async function DashboardPage({
   });
 
   return (
-    <Card className="flex sm:flex-col md:flex-row">
-      <CardContent className="flex justify-center">
-        <div className="flex sm:flex-row md:flex-col gap-5 my-2 justify-evenly items-center rounded-full">
-          <ProgressBar
-            title="Rank"
-            size={100}
-            value={userRank}
-            totalValue={totalUsers}
-          />
-          <ProgressBar
-            title="Races"
-            size={80}
-            value={totalUserGames}
-            totalValue={totalGames}
-          />
-          <ProgressBar
-            title="Snippets"
-            size={80}
-            value={totalUserSnippets}
-            totalValue={totalSnippets}
-          />
-          <ProgressBar
-            title="Coming Soon!"
-            size={80}
-          />
-        </div>
+    <Card className="flex flex-col">
+      <CardContent className="flex justify-center items-center">
+        <ScrollArea className="flex flex-col sm:h-[150px] md:h-fit justify-center items-center">
+          <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 justify-evenly items-center">
+            <StackCard title="Rank" subtitle="Your rank" icon={<Crown />} size={80} value={userRank} totalValue={totalUsers} />
+            <StackCard title="Races" subtitle="Races participated" icon={<Swords />} size={80} value={totalUserGames} totalValue={totalGames} />
+            <StackCard title="Snippets" subtitle="Snippets created" icon={<FileCode2 />} size={80} value={totalUserSnippets} totalValue={totalSnippets} />
+            <StackCard title="Coming Soon!" subtitle="Coming Soon!" size={80} />
+          </div>
+        </ScrollArea>
       </CardContent>
       <CardContent className="flex flex-col justify-start mt-3 w-full">
-        <Tabs defaultValue="races" className="w-full">
-          <TabsList className="grid w-[300px] grid-cols-2">
+        <Tabs defaultValue="races" className="sm:w-fit md:w-full h-full">
+          <TabsList className="grid md:w-[300px] grid-cols-2">
             <TabsTrigger value="races">Races</TabsTrigger>
             <TabsTrigger value="snippets">Snippets</TabsTrigger>
           </TabsList>
@@ -104,54 +94,3 @@ export default async function DashboardPage({
     </Card>
   );
 }
-
-
-// const maxCpm = (
-    //   await prisma.result.findFirst({
-    //     where: {
-    //       userId: user.id,
-    //     },
-    //     orderBy: {
-    //       cpm: "desc",
-    //     },
-    //   })
-    // )?.cpm;
-
-    // const maxAccuracy = (
-    //   await prisma.result.findFirst({
-    //     where: {
-    //       userId: user.id,
-    //     },
-    //     orderBy: {
-    //       accuracy: "desc",
-    //     },
-    //   })
-    // )?.accuracy;
-
-    // const aggregations = await prisma.result.aggregate({
-    //   _avg: {
-    //     accuracy: true,
-    //     cpm: true,
-    //   },
-    //   where: {
-    //     userId: user.id,
-    //   },
-    // });
-
-
-{/* <div className="text-center ">
-  <Heading title="Dashboard" description="Find your stats" />
-
-  <div className="w-full mt-5">
-    <PerformanceComparison recentGames={recentGames} />
-  </div>
-  <div className="grid grid-cols-1 pb-5 mt-5 md:grid-cols-2">
-    <Card className="px-3 md:mr-4">
-      <RecentRacesTable data={recentGames} pageCount={pageCount} />
-    </Card>
-  </div>
-  <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-    <AccuracyChart recentGames={recentGames} />
-    <CpmChart recentGames={recentGames} />
-  </div>
-</div> */}

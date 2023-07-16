@@ -8,6 +8,7 @@ interface SnippetTableServerSideProps {
     user: User;
     searchParams: {
         [key: string]: string | string[] | undefined;
+        tableType: string;
     };
     totalUserSnippets: number;
 }
@@ -17,6 +18,17 @@ export default async function SnippetTableServerSide({
     searchParams,
     totalUserSnippets,
 }: SnippetTableServerSideProps) {
+    const { tableType } = searchParams;
+    console.log("tableType: ", tableType);
+
+    if (tableType != "snippets") {
+        searchParams = {
+            page: "1",
+            per_page: "5",
+            sort: "language.asc",
+            tableType: "snippets",
+        };
+    };
 
     const { page, per_page, sort } = searchParams;
 
