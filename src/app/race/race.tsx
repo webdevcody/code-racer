@@ -10,8 +10,8 @@ import { calculateAccuracy, calculateCPM, createIndent, calculateRemainder, prev
 
 import { Heading } from "@/components/ui/heading";
 import { saveUserResultAction } from "../_actions/user";
-import RaceTracker from "./RaceTracker";
-import Code from "./Code";
+import RaceTracker from "./race-tracker";
+import Code from "./code";
 
 interface RaceProps {
   user?: User;
