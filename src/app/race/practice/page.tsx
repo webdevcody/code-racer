@@ -3,7 +3,7 @@ import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 
 import NoSnippet from "../no-snippet";
-import Race from "../Race";
+import Race from "../race";
 
 interface RacePageSearchParams {
   snippetId: string;
