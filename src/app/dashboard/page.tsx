@@ -1,14 +1,13 @@
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import CpmChart from "./cpmChart";
+import { Card, CardContent } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { redirect } from "next/navigation";
 import type { Result } from "@prisma/client";
-import AccuracyChart from "./accuracyChart";
-import { RecentRacesTable } from "./recentRaces";
-import PerformanceComparison from "./performanceComparison";
-import { Heading } from "@/components/ui/heading";
+import { RecentRacesTable } from "./components/recentRaces";
+import ProgressBar from "./components/progressBar";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { RecentSnippetsTable } from "./components/recentSnippets";
 
 interface DashboardPageProps {
   searchParams: {
@@ -42,13 +41,19 @@ export default async function DashboardPage({
 
   // List of recent games, total number of recent games, max cpm, max accuracy, avarage cpm, avarage accuracy
   const {
+    totalUsers,
+    totalGames,
+    totalSnippets,
+    totalUserGames,
+    totalUserSnippets,
     recentGames,
-    totalRecentGames,
-    maxCpm,
-    maxAccuracy,
-    avarageCpm,
-    avarageAccuracy,
+    recentSnippets,
+    userRank,
   } = await prisma.$transaction(async () => {
+    const totalUsers = await prisma.user.count();
+    const totalGames = await prisma.result.count();
+    const totalSnippets = await prisma.snippet.count();
+
     const recentGames = await prisma.result.findMany({
       take,
       skip,
@@ -60,62 +65,122 @@ export default async function DashboardPage({
       },
     });
 
-    const totalRecentGames = await prisma.result.count({
+    const recentSnippets = await prisma.snippet.findMany({
+      take,
+      skip,
+      where: {
+        userId: user.id,
+      }
+    });
+
+    const totalUserGames = await prisma.result.count({
       where: {
         userId: user.id,
       },
     });
 
-    const maxCpm = (
-      await prisma.result.findFirst({
-        where: {
-          userId: user.id,
-        },
-        orderBy: {
-          cpm: "desc",
-        },
-      })
-    )?.cpm;
-
-    const maxAccuracy = (
-      await prisma.result.findFirst({
-        where: {
-          userId: user.id,
-        },
-        orderBy: {
-          accuracy: "desc",
-        },
-      })
-    )?.accuracy;
-
-    const aggregations = await prisma.result.aggregate({
-      _avg: {
-        accuracy: true,
-        cpm: true,
-      },
+    const totalUserSnippets = await prisma.snippet.count({
       where: {
         userId: user.id,
       },
     });
+
+    const userRank = 1;
 
     return {
+      totalUsers,
+      totalGames,
+      totalSnippets,
+      totalUserGames,
+      totalUserSnippets,
       recentGames,
-      totalRecentGames,
-      maxCpm,
-      maxAccuracy,
-      avarageCpm: aggregations._avg.cpm,
-      avarageAccuracy: aggregations._avg.accuracy,
+      recentSnippets,
+      userRank,
     };
   });
 
-  const pageCount = (totalRecentGames === 0) ? 1 : Math.ceil(totalRecentGames / take);
+  const userPageCount = (totalUserGames === 0) ? 1 : Math.ceil(totalUserGames / take);
+
+  const snippetPageCount = (totalUserSnippets === 0) ? 1 : Math.ceil(totalUserSnippets / take);
 
   return (
-    <>
-
-    </>
+    <Card className="flex">
+      <CardContent className="flex justify-center">
+        <div className="flex flex-col gap-5 bg-accent py-2 justify-evenly items-center w-full rounded-full">
+          <ProgressBar
+            title="Rank"
+            size={140}
+            value={userRank}
+            totalValue={totalUsers}
+          />
+          <ProgressBar
+            title="Races"
+            size={100}
+            value={totalUserGames}
+            totalValue={totalGames}
+          />
+          <ProgressBar
+            title="Snippets"
+            size={100}
+            value={totalUserSnippets}
+            totalValue={totalSnippets}
+          />
+          <ProgressBar
+            title="Coming Soon!"
+            size={100}
+          />
+        </div>
+      </CardContent>
+      <CardContent className="flex flex-col w-full justify-center items-center">
+        <Tabs defaultValue="races" className="w-full">
+          <TabsList className="grid w-1/2 grid-cols-2">
+            <TabsTrigger value="races">Races</TabsTrigger>
+            <TabsTrigger value="snippets">Snippets</TabsTrigger>
+          </TabsList>
+          <TabsContent value="races">
+            <RecentRacesTable data={recentGames} pageCount={userPageCount} />
+          </TabsContent>
+          <TabsContent value="snippets">
+            <RecentSnippetsTable data={recentSnippets} pageCount={snippetPageCount} />
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
   );
 }
+
+
+// const maxCpm = (
+    //   await prisma.result.findFirst({
+    //     where: {
+    //       userId: user.id,
+    //     },
+    //     orderBy: {
+    //       cpm: "desc",
+    //     },
+    //   })
+    // )?.cpm;
+
+    // const maxAccuracy = (
+    //   await prisma.result.findFirst({
+    //     where: {
+    //       userId: user.id,
+    //     },
+    //     orderBy: {
+    //       accuracy: "desc",
+    //     },
+    //   })
+    // )?.accuracy;
+
+    // const aggregations = await prisma.result.aggregate({
+    //   _avg: {
+    //     accuracy: true,
+    //     cpm: true,
+    //   },
+    //   where: {
+    //     userId: user.id,
+    //   },
+    // });
 
 
 {/* <div className="text-center ">

@@ -3,7 +3,7 @@
 import React from "react";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  ComposedChart,
+  LineChart,
   Line,
   XAxis,
   YAxis,
@@ -12,37 +12,38 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { Result } from "@prisma/client";
 
-interface CpmChartProps {
-  recentGames: any;
+interface AccuracyChartProps {
+  recentGames: Result[];
 }
 
-const CpmChart: React.FC<CpmChartProps> = ({ recentGames }) => {
+const AccuracyChart: React.FC<AccuracyChartProps> = ({ recentGames }) => {
   return (
     <Card className="h-[400px]">
       <CardHeader>
-        <CardTitle className="m-2 text-center">Characters per minute</CardTitle>
+        <CardTitle className="m-2 text-center">Accuracy</CardTitle>
       </CardHeader>
       <ResponsiveContainer height="100%">
-        <ComposedChart
+        <LineChart
           data={recentGames}
           margin={{ right: 25, left: 25, bottom: 100 }}
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="gameNumber" />
-          <YAxis dataKey="cpm" />
+          <YAxis dataKey="accuracy" />
           <Tooltip />
           <Legend />
           <Line
             type="monotone"
-            dataKey="cpm"
-            stroke="#0da2ff"
+            dataKey="accuracy"
+            stroke="#82ca9d"
             activeDot={{ r: 6 }}
           />
-        </ComposedChart>
+        </LineChart>
       </ResponsiveContainer>
     </Card>
   );
 };
 
-export default CpmChart;
+export default AccuracyChart;
