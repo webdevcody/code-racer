@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { action } from "@/lib/actions";
 import { Prisma } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 
 // when snippets rating hits this number
 // it will no longer be on the race
@@ -57,4 +58,22 @@ export const saveUserResultAction = action(
       });
     });
   },
+);
+
+export const findUsersVotes = action(
+  z.object({
+    snippetId: z.string(),
+    userId: z.string(),
+  }),
+  async ({ snippetId, userId }) => {
+    const votes = await prisma.snippetVote.findUnique({
+      where: {
+        userId_snippetId: {
+          userId,
+          snippetId
+        }
+      }
+    })
+    return votes;
+  }
 );

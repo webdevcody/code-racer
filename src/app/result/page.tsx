@@ -6,11 +6,11 @@ import { Icons } from "@/components/icons";
 import Link from "next/link";
 import { FirstRaceBadge } from "./first-race-badge";
 import { getCurrentUser } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
 import { Voting } from "./voting";
 import { Badge } from "@/components/ui/badge";
 import { getFirstRaceBadge } from "./loaders";
 import { Achievement, SnippetVote } from "@prisma/client";
+import { findUsersVotes } from "../_actions/result";
 
 const card = [
   { title: "WPM", value: "81 %" },
@@ -30,18 +30,17 @@ export default async function ResultsChart({
   const user = await getCurrentUser();
 
   let usersVote: SnippetVote | undefined | null;
-  let firstRaceBadge: Achievement | undefined;
+  let firstRaceBadge: Achievement | undefined | null;
 
   if (user) {
-    firstRaceBadge = await getFirstRaceBadge();
-    usersVote = await prisma.snippetVote.findUnique({
-      where: {
-        userId_snippetId: {
-          userId: user.id,
-          snippetId: searchParams.snippetId,
-        },
-      },
+    const badge = await getFirstRaceBadge();
+    firstRaceBadge = badge?.data;
+
+    const votes = await findUsersVotes({
+      snippetId: searchParams.snippetId,
+      userId: user.id
     });
+    usersVote = votes.data;
   }
 
   return (

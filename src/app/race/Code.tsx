@@ -2,10 +2,23 @@ import { cn } from "@/lib/utils";
 interface CodeProps {
   code: string;
   userInput: string;
-  textPosition: number;
+  textIndicatorPosition: number | number[];
   errors: number[];
 }
-export default function Code({ code, errors, userInput, textPosition }: CodeProps) {
+export default function Code({ code, errors, userInput, textIndicatorPosition }: CodeProps) {
+
+  function textIndicatorPositionDeterminer(charIndex: number) {
+    if (!Array.isArray(textIndicatorPosition)) {
+      return charIndex === textIndicatorPosition;
+    } else {
+      for (let i = 0; i < textIndicatorPosition.length; i++) {
+        if (charIndex === textIndicatorPosition[i]) {
+          return true;
+        }
+      };
+    }
+  };
+
   return (
     <>
       <pre className="text-primary mb-4 overflow-auto">
@@ -17,10 +30,14 @@ export default function Code({ code, errors, userInput, textPosition }: CodeProp
                 code[index] !== " " && errors.includes(index),
               "border-red-500 opacity-100":
                 code[index] === " " && errors.includes(index),
-              "bg-yellow-200 opacity-80 text-black": userInput.length === index,
+              "bg-yellow-200 opacity-80 text-black": textIndicatorPositionDeterminer(index),
               "opacity-100":
                 userInput.length !== index && userInput[index] === char,
-              "opacity-50":
+              // The next character to be typed
+              "opacity-50": userInput.length === index,
+              "border-monochrome/50":
+                code[index] === " " && userInput.length === index,
+              "opacity-[0.25]":
                 !errors.includes(index) &&
                 userInput.length !== index &&
                 userInput[index] !== char,

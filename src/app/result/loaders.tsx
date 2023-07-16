@@ -1,6 +1,7 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
+import { createAchievement, findAchievement } from "../_actions/achievement";
 
 export async function getFirstRaceBadge() {
   const user = await getCurrentUser();
@@ -9,31 +10,13 @@ export async function getFirstRaceBadge() {
     return undefined;
   }
 
-  const firstRaceAchievement = await prisma.achievement.findUnique({
-    where: {
-      type: "FIRST_RACE",
-    },
-  });
-
-  if (!firstRaceAchievement) {
-    throw new Error(
-      "FIRST_RACE achievement was missing from database, please add it",
-    );
-  }
-
-  const firstRaceBadge = await prisma.userAchievement.findFirst({
-    where: {
-      achievementType: firstRaceAchievement.type,
-    },
+  const firstRaceBadge = await findAchievement({
+    achievementType: "FIRST_RACE"
   });
 
   if (!firstRaceBadge) {
-    await prisma.userAchievement.create({
-      data: {
-        achievementType: firstRaceAchievement.type,
-        userId: user.id,
-      },
-    });
-    return firstRaceAchievement;
+    await createAchievement({ achievementType: "FIRST_RACE", userId: user.id });
   }
+
+  return firstRaceBadge;
 }
