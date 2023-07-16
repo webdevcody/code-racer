@@ -212,7 +212,7 @@ export default function Race({ user, snippet }: RaceProps) {
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        <RaceTimer startTime={startTime} isRaceFinished={isRaceFinished}/>
+        <RaceTimer toggle={!!startTime && !isRaceFinished}  hidden={!startTime || isRaceFinished}/>
       </div>
     </div>
   );
