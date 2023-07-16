@@ -14,7 +14,7 @@ export interface StackProps {
 export default function StackCard({ title, icon, subtitle, size, value, totalValue }: StackProps) {
     return (
         <Card className="flex p-5 justify-center rounded-xl border-primary">
-            <div className="flex w-full justify-between">
+            <div className="flex flex-col sm:flex-row w-full justify-between">
                 <div className="flex flex-col justify-start">
                     <div className="flex gap-2">
                         <>{icon}</>

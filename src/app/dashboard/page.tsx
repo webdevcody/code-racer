@@ -16,7 +16,6 @@ import { Crown, FileCode2, Swords } from "lucide-react";
 interface DashboardPageProps {
   searchParams: {
     [key: string]: string | string[] | undefined;
-    tableType: string;
   };
 }
 
@@ -66,9 +65,9 @@ export default async function DashboardPage({
   });
 
   return (
-<Card className="flex flex-col">
+    <Card className="flex flex-col">
       <CardContent className="flex justify-center items-center">
-        <ScrollArea className="flex flex-col sm:h-[150px] md:h-fit justify-center items-center">
+        <ScrollArea className="flex flex-col h-[150px] md:h-fit justify-center items-center bg-accent p-2 md:p-0">
           <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 justify-evenly items-center">
             <StackCard title="Rank" subtitle="Your rank" icon={<Crown />} size={80} value={userRank} totalValue={totalUsers} />
             <StackCard title="Races" subtitle="Races participated" icon={<Swords />} size={80} value={totalUserGames} totalValue={totalGames} />
@@ -79,7 +78,7 @@ export default async function DashboardPage({
       </CardContent>
       <CardContent className="flex flex-col justify-start mt-3 w-full">
         <Tabs defaultValue="races" className="sm:w-fit md:w-full h-full">
-          <TabsList className="grid md:w-[300px] grid-cols-2">
+          <TabsList className="grid sm:w-[150px] md:w-[300px] grid-cols-2">
             <TabsTrigger value="races">Races</TabsTrigger>
             <TabsTrigger value="snippets">Snippets</TabsTrigger>
           </TabsList>
@@ -87,7 +86,7 @@ export default async function DashboardPage({
             <RaceTableServerSide user={user} searchParams={searchParams} totalUserGames={totalUserGames} />
           </TabsContent>
           <TabsContent value="snippets">
-            <SnippetTableServerSide user={user} searchParams={searchParams} totalUserSnippets={totalUserSnippets} />
+            <SnippetTableServerSide user={user} />
           </TabsContent>
         </Tabs>
       </CardContent>

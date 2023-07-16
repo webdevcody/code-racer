@@ -1,66 +1,25 @@
 import React from "react"
 import { prisma } from "@/lib/prisma";
-import { RecentSnippetsTable } from "./recentSnippets";
-import { Snippet } from "@prisma/client";
+import { SnippetsHist } from "./snippetHist";
 import { User } from "next-auth";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 interface SnippetTableServerSideProps {
     user: User;
-    searchParams: {
-        [key: string]: string | string[] | undefined;
-        tableType: string;
-    };
-    totalUserSnippets: number;
 }
 
 export default async function SnippetTableServerSide({
     user,
-    searchParams,
-    totalUserSnippets,
 }: SnippetTableServerSideProps) {
-    const { tableType } = searchParams;
-    console.log("tableType: ", tableType);
-
-    if (tableType != "snippets") {
-        searchParams = {
-            page: "1",
-            per_page: "5",
-            sort: "language.asc",
-            tableType: "snippets",
-        };
-    };
-
-    const { page, per_page, sort } = searchParams;
-
-    // Number of records to show per page
-    const take = typeof per_page === "string" ? parseInt(per_page) : 5;
-
-    // Number of records to skip
-    const skip = typeof page === "string" ? (parseInt(page) - 1) * take : 0;
-
-    // Column and order to sort by
-    const [column, order] = (typeof sort === "string")
-        ?
-        (
-            sort.split(".") as [keyof Snippet | undefined, "asc" | "desc" | undefined,]
-        )
-        :
-        [];
-
     const recentSnippets = await prisma.snippet.findMany({
-        take,
-        skip,
         where: {
             userId: user.id,
         },
-        orderBy: {
-            [column ?? "id"]: order,
-        },
     });
 
-    const snippetPageCount = (totalUserSnippets === 0) ? 1 : Math.ceil(totalUserSnippets / take);
-
     return (
-        <RecentSnippetsTable data={recentSnippets} pageCount={snippetPageCount} />
+        <div className="pt-10">
+            <SnippetsHist data={recentSnippets} />
+        </div>
     )
 }
