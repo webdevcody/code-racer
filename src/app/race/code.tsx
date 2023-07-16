@@ -25,7 +25,7 @@ export default function Code({
 
   return (
     <>
-      <pre className="text-warning mb-4 overflow-auto">
+      <pre className="text-primary mb-4 overflow-auto">
         {code.split("").map((char, index) => (
           <span
             key={index}
