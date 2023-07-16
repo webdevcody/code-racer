@@ -88,7 +88,7 @@ export function UsersTable({ data, pageCount }: UsersTableProps) {
                 "text-destructive": avgAccuracy < 0.5,
               })}
             >
-              {avgAccuracy * 100}%
+              {avgAccuracy}%
             </span>
           );
         },

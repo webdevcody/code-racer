@@ -17,9 +17,7 @@ interface DashboardPageProps {
   };
 }
 
-export default async function DashboardPage({
-  searchParams,
-}: DashboardPageProps) {
+export default async function DashboardPage({ searchParams }: DashboardPageProps) {
   const user = await getCurrentUser();
 
   if (!user) redirect("/");
@@ -34,83 +32,72 @@ export default async function DashboardPage({
 
   // Column and order to sort by
   const [column, order] =
-    typeof sort === "string"
-      ? (sort.split(".") as [
-          keyof Result | undefined,
-          "asc" | "desc" | undefined,
-        ])
-      : [];
+    typeof sort === "string" ? (sort.split(".") as [keyof Result | undefined, "asc" | "desc" | undefined]) : [];
 
   // List of recent games.
-  const {
-    recentGames,
-    totalRecentGames,
-    maxCpm,
-    maxAccuracy,
-    avarageCpm,
-    avarageAccuracy,
-  } = await prisma.$transaction(async () => {
-    const recentGames = await prisma.result.findMany({
-      take,
-      skip,
-      where: {
-        userId: user.id,
-      },
-      orderBy: {
-        [column ?? "createdAt"]: order,
-      },
-    });
-
-    const totalRecentGames = await prisma.result.count({
-      where: {
-        userId: user.id,
-      },
-    });
-
-    const maxCpm = (
-      await prisma.result.findFirst({
+  const { recentGames, totalRecentGames, maxCpm, maxAccuracy, avarageCpm, avarageAccuracy } = await prisma.$transaction(
+    async () => {
+      const recentGames = await prisma.result.findMany({
+        take,
+        skip,
         where: {
           userId: user.id,
         },
         orderBy: {
-          cpm: "desc",
+          [column ?? "createdAt"]: order,
         },
-      })
-    )?.cpm;
+      });
 
-    const maxAccuracy = (
-      await prisma.result.findFirst({
+      const totalRecentGames = await prisma.result.count({
         where: {
           userId: user.id,
         },
-        orderBy: {
-          accuracy: "desc",
+      });
+
+      const maxCpm = (
+        await prisma.result.findFirst({
+          where: {
+            userId: user.id,
+          },
+          orderBy: {
+            cpm: "desc",
+          },
+        })
+      )?.cpm;
+
+      const maxAccuracy = (
+        await prisma.result.findFirst({
+          where: {
+            userId: user.id,
+          },
+          orderBy: {
+            accuracy: "desc",
+          },
+        })
+      )?.accuracy;
+
+      const aggregations = await prisma.result.aggregate({
+        _avg: {
+          accuracy: true,
+          cpm: true,
         },
-      })
-    )?.accuracy;
+        where: {
+          userId: user.id,
+        },
+      });
 
-    const aggregations = await prisma.result.aggregate({
-      _avg: {
-        accuracy: true,
-        cpm: true,
-      },
-      where: {
-        userId: user.id,
-      },
-    });
+      return {
+        recentGames,
+        totalRecentGames,
+        maxCpm,
+        maxAccuracy,
+        avarageCpm: aggregations._avg.cpm,
+        avarageAccuracy: aggregations._avg.accuracy,
+      };
+    }
+  );
 
-    return {
-      recentGames,
-      totalRecentGames,
-      maxCpm,
-      maxAccuracy,
-      avarageCpm: aggregations._avg.cpm,
-      avarageAccuracy: aggregations._avg.accuracy,
-    };
-  });
-
-  const pageCount =
-    totalRecentGames === 0 ? 1 : Math.ceil(totalRecentGames / take);
+  const pageCount = totalRecentGames === 0 ? 1 : Math.ceil(totalRecentGames / take);
 
   return (
     <div className="text-center py-12">
@@ -153,7 +140,7 @@ export default async function DashboardPage({
               <CardHeader>
                 <CardTitle className="text-xl">Highest accuracy</CardTitle>
               </CardHeader>
-              <CardContent>{Number(maxAccuracy) * 100}%</CardContent>
+              <CardContent>{Number(maxAccuracy)}</CardContent>
             </Card>
 
             <Card className="w-fill max-sm:mb-1">
@@ -166,9 +153,7 @@ export default async function DashboardPage({
               <CardHeader>
                 <CardTitle className="text-xl">Average accuracy</CardTitle>
               </CardHeader>
-              <CardContent>
-                {Number(avarageAccuracy?.toFixed(2)) * 100}%
-              </CardContent>
+              <CardContent>{Number(avarageAccuracy?.toFixed(2))}%</CardContent>
             </Card>
           </div>
         </Card>
