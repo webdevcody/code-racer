@@ -11,14 +11,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  calculateAccuracy,
-  calculateCPM,
-  createIndent,
-  calculateRemainder,
-  previousLines,
-} from "./utils";
-
 import { Heading } from "@/components/ui/heading";
 import { saveUserResultAction } from "../_actions/user";
 import RaceTracker from "./RaceTracker";
@@ -29,86 +21,57 @@ interface RaceProps {
   snippet: Snippet;
 }
 
+function calculateCPM(
+  numberOfCharacters: number,
+  secondsTaken: number,
+): number {
+  const minutesTaken = secondsTaken / 60;
+  return Math.round(numberOfCharacters / minutesTaken);
+}
+
+function calculateAccuracy(
+  numberOfCharacters: number,
+  errorsCount: number,
+): number {
+  return 1 - errorsCount / numberOfCharacters;
+}
+
 export default function Race({ user, snippet }: RaceProps) {
   const [input, setInput] = useState("");
 
   const [startTime, setStartTime] = useState<Date | null>(null);
-  const [endTime, setEndTime] = useState<Date | null>(null);
-
-  const [counter, setCounter] = useState(0);
-  const [line, setLine] = useState(0);
-  const [lineIndex, setLineIndex] = useState(0);
-
-  const [errors, setErrors] = useState<number[]>([]);
-  const [errorTotal, setErrorTotal] = useState(0);
-
+  const [input, setInput] = useState("");
   const router = useRouter();
-
-  const code = snippet.code.trimEnd(); // remove trailing "\n"
-  const lines = code.split("\n");
-
   const inputElement = useRef<HTMLInputElement | null>(null);
+  const code = snippet.code.trimEnd();
 
-  useEffect(() => {
-    // Debug
-    console.log(JSON.stringify(input));
-    console.log(JSON.stringify(code));
-    // console.log("Lines: " + lines);
-    // console.log("Line Number: " + line);
-    // console.log("Current Line: " lines[line]);
-    // console.log("Line Index: " + lineIndex);
-    // console.log("Start Time: " + startTime);
-    // console.log("End Time: " + endTime);
-    // console.log("ErrorsTotal: " + errorTotal);
-    // console.log("Errors: " + errors);
+  const currentText = code.substring(0, input.length);
+  const errors = input
+    .split("")
+    .map((char, index) => (char !== currentText[index] ? index : -1))
+    .filter((index) => index !== -1);
 
-    // Focus element
-    if (inputElement.current !== null) {
-      inputElement.current.focus();
+  const errorTotal = errors.length;
+
+  const isRaceFinished = input === code;
+
+  async function endRace() {
+    if (!startTime) return;
+    const endTime = new Date();
+    const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
+
+    if (user) {
+      await saveUserResultAction({
+        timeTaken,
+        errors: errorTotal,
+        cpm: calculateCPM(code.length - 1, timeTaken),
+        accuracy: calculateAccuracy(code.length - 1, errorTotal),
+        snippetId: snippet.id,
+      });
     }
+    router.push(`/result?snippetId=${snippet.id}`);
+  }
 
-    // Calculate result
-    if (input.length === code.length && input === code && !endTime) {
-      setEndTime(new Date());
-    }
-
-    if (startTime && endTime) {
-      const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
-
-      // If logged in
-      if (user)
-        saveUserResultAction({
-          timeTaken,
-          // errors: errorTotal,
-          errors: errors.length,
-          cpm: calculateCPM(code.length - 1, timeTaken),
-          accuracy: calculateAccuracy(code.length - 1, errorTotal),
-          snippetId: snippet.id,
-        });
-      router.push(`/result?snippetId=${snippet.id}`);
-    }
-
-    // Set Errors
-    setErrors(() => {
-      const currentText = code.substring(0, input.length);
-      const newErrors = Array.from(input)
-        .map((char, index) => (char !== currentText[index] ? index : -1))
-        .filter((index) => index !== -1);
-      return newErrors;
-    });
-  }, [
-    startTime,
-    endTime,
-    user,
-    errors.length,
-    errorTotal,
-    code.length,
-    snippet.id,
-    input,
-    code,
-  ]);
-
-  // Reset Race
   useEffect(() => {
     const handleRestartKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -116,51 +79,44 @@ export default function Race({ user, snippet }: RaceProps) {
       }
     };
     document.addEventListener("keydown", handleRestartKey);
+    return () => {
+      document.removeEventListener("keydown", handleRestartKey);
+    };
   }, []);
 
-  // Focus On Load
   function focusOnLoad() {
     if (inputElement.current !== null) {
-      inputElement.current.focus();
+      inputElement.current?.focus();
     }
   }
 
-  // Key Events - Enabled / Disable / Support Func
   function handleKeyboardEvent(e: React.KeyboardEvent<HTMLInputElement>) {
-    setStartTime(new Date());
+    if (isRaceFinished) return;
 
-    if (e.key === "Backspace") {
+    if (!startTime) {
+      setStartTime(new Date());
+    }
+
+    const noopKeys = [
+      "Shift",
+      "Alt",
+      "ArrowUp",
+      "ArrowDown",
+      "ArrowRight",
+      "ArrowLeft",
+      "Control",
+      "Escape",
+      "Meta",
+    ];
+
+    if (noopKeys.includes(e.key)) {
+      e.preventDefault();
+    } else if (e.key === "Backspace") {
       Backspace();
     } else if (e.key === "Enter") {
       Enter();
-    } else if (e.key === "Shift") {
-      e.preventDefault();
-    } else if (e.key === "Alt") {
-      e.preventDefault();
-    } else if (e.key === "ArrowUp") {
-      // plug in arrow keys here
-      e.preventDefault();
-    } else if (e.key === "ArrowDown") {
-      // plug in arrow keys here
-      e.preventDefault();
-    } else if (e.key === "ArrowRight") {
-      // plug in arrow keys here
-      e.preventDefault();
-    } else if (e.key === "ArrowLeft") {
-      // plug in arrow keys here
-      e.preventDefault();
-    } else if (e.key === "Control") {
-      e.preventDefault();
-    } else if (e.key === "Tab") {
-      e.preventDefault();
-      Tab();
-    } else if (e.key === "CapsLock") {
-      e.preventDefault();
-    } else if (e.key === "Escape") {
-      e.preventDefault();
     } else {
       Key(e);
-      // Check Errors here
     }
   }
 
@@ -185,117 +141,56 @@ export default function Race({ user, snippet }: RaceProps) {
   // if line index equals current line indent length move to previous line end
   //     subtract indent and newline from input and the index
   function Backspace() {
-    if (input.length == 0) {
-      setLine(0);
-    }
-    const ln = lines[line];
-    const nextLine = lines[line - 1];
-    const indent = createIndent(ln);
-    const array = input.split("");
-
-    if (array.lastIndexOf("\n") == input.length - 1) {
-      setInput(input.slice(0, -2));
-
-      if (line != 0) {
-        setLine(line - 1);
-      }
-      if (counter != 0) {
-        setCounter(indent.length - ln.length);
-      }
-    } else if (array.lastIndexOf("\n") == input.length - indent.length - 1) {
-      setInput(input.slice(0, -2 - indent.length));
-
-      if (line != 0) {
-        setLine(line - 1);
-      }
-      setCounter(nextLine.length - 1);
-    } else {
-      setInput(input.slice(0, -1));
-      if (counter != 0) {
-        setCounter(counter - 1);
-      }
-    }
+    setInput(input.slice(0, -1));
   }
 
   // Enter - Verify
   // if enter move to next line at the end of indent
   //     add remainder of current line and indent to input and index, update errors
   function Enter() {
-    // Stop at end of line if not matching
-    if (input.length - 1 === code.length) {
-      return;
+    let indentLength = 0;
+    let newChars = "";
+    // indent until the first newline
+    while (
+      indentLength + input.length < code.length &&
+      code[indentLength + input.length] !== "\n"
+    ) {
+      indentLength++;
+    }
+    newChars += " ".repeat(indentLength) + "\n";
+    // indent all whitespace
+    indentLength = 0;
+    while (
+      indentLength + newChars.length + input.length + 1 < code.length &&
+      code[indentLength + newChars.length + input.length + 1] === " "
+    ) {
+      indentLength++;
+    }
+    if (indentLength > 0) {
+      newChars += " ".repeat(indentLength + 1);
     }
 
-    // Check Bounds
-    if (line < lines.length) {
-      const ln = lines[line];
-      const nextLine = lines[line + 1];
-      const remainder = calculateRemainder(counter, ln);
-      const indent = createIndent(nextLine);
-
-      if (line < lines.length - 1) {
-        setInput(input + remainder + indent);
-        setLine(line + 1);
-      }
-
-      setCounter(indent.length);
-      setErrors(() => {
-        const currentText = code.slice(0, (input + remainder + indent).length);
-        const newErrors = Array.from(input + remainder + indent)
-          .map((char, index) => (char !== currentText[index] ? index : -1))
-          .filter((index) => index !== -1);
-        return newErrors;
-      });
-    }
+    const newInput = (input + newChars).substring(0, code.length - 1);
+    setInput(newInput);
   }
 
-  // Key Event - Verify
-  // if current line index does not equal new line move 1
-  //    add to input and index, update errors
-  // if current line index equals newline \n move to next line end of indent
-  //    add newline and indent to input and index, update errors
   function Key(e: React.KeyboardEvent<HTMLInputElement>) {
-    const ln = lines[line];
-    const nextLine = lines[line + 1];
-    const indent = createIndent(nextLine);
+    const newInput = input + e.key;
+    setInput(newInput);
 
-    // Stop at end of line if not matching
-    if (input.length === code.length) {
-      return;
-    }
-
-    if (counter == ln.length - 1) {
-      setCounter(indent.length);
-      setInput(input + e.key + indent);
-      if (line < lines.length - 1) {
-        setLine(line + 1);
-      }
-    } else if (counter - previousLines(lines, line).length == ln.length - 1) {
-      setCounter(indent.length);
-      setInput(input + e.key + indent);
-      if (line < lines.length - 1) {
-        setLine(line + 1);
-      }
-    } else {
-      setInput(input + e.key);
-      setCounter(counter + 1);
+    if (code === newInput) {
+      endRace();
     }
   }
 
-  // Reset Race Values
   function handleRestart() {
     setStartTime(null);
-    setEndTime(null);
     setInput("");
-    setLine(0);
-    setCounter(0);
-    setErrorTotal(0);
-    setErrors([]);
   }
 
   return (
     <div
-      className="w-3/4 lg:p-8 p-4 bg-accent rounded-md relative"
+      className="w-3/4 lg:p-8 p-4 bg-accent rounded-md relative flex flex-col gap-2"
       onClick={focusOnLoad}
       role="none" // eslint fix - will remove the semantic meaning of an element while still exposing it to assistive technology
     >
@@ -316,20 +211,24 @@ export default function Race({ user, snippet }: RaceProps) {
         defaultValue={input}
         ref={inputElement}
         onKeyDown={handleKeyboardEvent}
-        disabled={endTime !== null}
+        disabled={isRaceFinished}
         className="w-full h-full absolute p-8 inset-y-0 left-0 -z-40 focus:outline outline-blue-500 rounded-md"
         onPaste={(e) => e.preventDefault()}
       />
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button onClick={handleRestart}>Restart</Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Press Esc to reset</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <div className="self-start">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="outline" onClick={handleRestart}>
+                Restart (ESC)
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Press Esc to reset</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
     </div>
   );
 }
