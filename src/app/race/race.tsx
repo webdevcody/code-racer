@@ -111,9 +111,7 @@ export default function Race({ user, snippet }: RaceProps) {
     }
   }
 
-  async function handleKeyboardDownEvent(
-    e: React.KeyboardEvent<HTMLInputElement>,
-  ) {
+  function handleKeyboardDownEvent(e: React.KeyboardEvent<HTMLInputElement>) {
     if (!startTime) {
       setStartTime(new Date());
     }
@@ -132,6 +130,7 @@ export default function Race({ user, snippet }: RaceProps) {
       "Escape",
       "Meta",
       "CapsLock",
+      "Shift",
     ];
 
     if (noopKeys.includes(e.key)) {
@@ -150,50 +149,14 @@ export default function Race({ user, snippet }: RaceProps) {
         case "ArrowRight":
           ArrowRight();
           break;
-        case "Shift":
-          ShiftKey("keydown");
+        case "Tab":
+          e.preventDefault();
+          Tab();
           break;
         default:
           Key(e);
           break;
       }
-    }
-  }
-
-  async function handleKeyboardUpEvent(
-    e: React.KeyboardEvent<HTMLInputElement>,
-  ) {
-    const noopKeys = [
-      "Alt",
-      "ArrowUp",
-      "ArrowDown",
-      "ArrowLeft",
-      "ArrowRight",
-      "Control",
-      "Escape",
-      "Meta",
-      "CapsLock",
-    ];
-
-    if (noopKeys.includes(e.key)) {
-      e.preventDefault();
-    } else {
-      switch (e.key) {
-        case "Shift":
-          ShiftKey("keyup");
-          break;
-        default:
-          e.preventDefault();
-          break;
-      }
-    }
-  }
-
-  function ShiftKey(typeOfEvent: "keyup" | "keydown") {
-    if (typeOfEvent === "keyup") {
-      setShiftKeyPressed(false);
-    } else {
-      setShiftKeyPressed(true);
     }
   }
 
@@ -283,7 +246,15 @@ export default function Race({ user, snippet }: RaceProps) {
   }
 
   function Tab() {
-    setInput(input + "  ");
+    // setInput(input + "  ");
+    setInput((prevInput) => prevInput + "  ");
+    setTextIndicatorPosition((prevTextIndicatorPosition) => {
+      if (typeof prevTextIndicatorPosition === "number") {
+        return prevTextIndicatorPosition + 2;
+      } else {
+        return prevTextIndicatorPosition;
+      }
+    });
   }
 
   function Backspace() {
@@ -454,11 +425,9 @@ export default function Race({ user, snippet }: RaceProps) {
         />
         <input
           type="text"
-          // value={input}
           defaultValue={input}
           ref={inputElement}
           onKeyDown={handleKeyboardDownEvent}
-          onKeyUp={handleKeyboardUpEvent}
           disabled={isRaceFinished}
           className="w-full h-full absolute p-8 inset-y-0 left-0 -z-40 focus:outline outline-blue-500 rounded-md"
           onPaste={(e) => e.preventDefault()}
