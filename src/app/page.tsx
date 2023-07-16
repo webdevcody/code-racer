@@ -3,7 +3,7 @@ import BannerSvg from "./banner-svg";
 
 export default async function Home() {
   return (
-    <main className="w-full">
+    <main className="w-full grow flex items-center justify-center">
       <div className="flex flex-col items-center justify-between md:flex-row w-full">
         <HeroBanner />
         <BannerSvg
