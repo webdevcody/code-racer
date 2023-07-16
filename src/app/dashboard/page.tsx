@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { redirect } from "next/navigation";
-import type { Result } from "@prisma/client";
+import type { Result, Snippet } from "@prisma/client";
 import { RecentRacesTable } from "./components/recentRaces";
 import ProgressBar from "./components/progressBar";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -34,7 +34,7 @@ export default async function DashboardPage({
   const [column, order] =
     typeof sort === "string"
       ? (sort.split(".") as [
-          keyof Result | undefined,
+        keyof Result | undefined,
           "asc" | "desc" | undefined,
         ])
       : [];
@@ -104,9 +104,9 @@ export default async function DashboardPage({
   const snippetPageCount = (totalUserSnippets === 0) ? 1 : Math.ceil(totalUserSnippets / take);
 
   return (
-    <Card className="flex">
+    <Card className="flex sm:flex-col md:flex-row">
       <CardContent className="flex justify-center">
-        <div className="flex flex-col gap-5 bg-accent py-2 justify-evenly items-center w-full rounded-full">
+        <div className="flex sm:flex-row md:flex-col gap-5 bg-accent my-2 justify-evenly items-center rounded-full">
           <ProgressBar
             title="Rank"
             size={140}
@@ -131,9 +131,9 @@ export default async function DashboardPage({
           />
         </div>
       </CardContent>
-      <CardContent className="flex flex-col w-full justify-center items-center">
+      <CardContent className="flex flex-col justify-start mt-3 w-full">
         <Tabs defaultValue="races" className="w-full">
-          <TabsList className="grid w-1/2 grid-cols-2">
+          <TabsList className="grid w-[300px] grid-cols-2">
             <TabsTrigger value="races">Races</TabsTrigger>
             <TabsTrigger value="snippets">Snippets</TabsTrigger>
           </TabsList>
