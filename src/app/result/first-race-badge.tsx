@@ -22,7 +22,6 @@ export function FirstRaceBadge({ image }: { image: string }) {
           </div>
           <div className="flex items-center gap-8">
             <Image src={image} width={65} height={65} alt="First Race Badge" />
-
             <span>Congrats on completing your first race! </span>
           </div>
         </div>
