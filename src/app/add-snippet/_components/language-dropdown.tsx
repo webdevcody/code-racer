@@ -25,7 +25,7 @@ const LanguageDropDown = ({
   className,
 }: {
   codeLanguage: string;
-  setCodeLanguage: React.Dispatch<React.SetStateAction<string>>;
+  setCodeLanguage: (event: string) => void;
   className?: string;
 }) => {
   const [open, setOpen] = React.useState(false);
