@@ -77,7 +77,13 @@ export default async function LeaderboardPage({
       });
     }
 
-    const totalUsers = await prisma.user.count();
+    const totalUsers = await prisma.user.count({
+      where: {
+        results: {
+          some: {},
+        },
+      },
+    });
 
     return {
       users,
