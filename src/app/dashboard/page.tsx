@@ -113,8 +113,7 @@ export default async function DashboardPage({
     totalRecentGames === 0 ? 1 : Math.ceil(totalRecentGames / take);
 
   return (
-    <div className="text-center ">
-      {/* <h1 className="m-6 mb-4 text-4xl font-bold text-center">Dashboard</h1> */}
+    <div className="text-center py-12">
       <Heading title="Dashboard" description="Find your stats" />
       <div className="w-full mt-5">
         <Tabs defaultValue="cpm" className="w-full">
@@ -131,7 +130,7 @@ export default async function DashboardPage({
         </Tabs>
       </div>
       <div className="grid grid-cols-1 pb-5 mt-5 md:grid-cols-2">
-        <Card className="px-3 md:mr-4">
+        <Card className="p-3 md:mr-4">
           <CardHeader>
             <CardTitle className="m-2 text-center">Recent Races</CardTitle>
           </CardHeader>
@@ -139,33 +138,33 @@ export default async function DashboardPage({
           <RecentRacesTable data={recentGames} pageCount={pageCount} />
         </Card>
 
-        <Card className="px-3 mt-5 md:mt-0 md:ml-4">
+        <Card className="p-3 mt-5 md:mt-0 md:ml-4">
           <CardHeader>
             <CardTitle className="m-2 text-center">Statistics</CardTitle>
           </CardHeader>
           <div className="grid grid-cols-1 md:grid-cols-2">
             <Card className="mb-1 w-fill">
               <CardHeader>
-                <CardTitle className="">Highest Cpm</CardTitle>
+                <CardTitle className="text-xl">Highest Cpm</CardTitle>
               </CardHeader>
               <CardContent>{maxCpm} Cpm</CardContent>
             </Card>
             <Card className="mb-1 w-fill md:ml-2">
               <CardHeader>
-                <CardTitle className="">Highest accuracy</CardTitle>
+                <CardTitle className="text-xl">Highest accuracy</CardTitle>
               </CardHeader>
               <CardContent>{Number(maxAccuracy) * 100}%</CardContent>
             </Card>
 
             <Card className="w-fill max-sm:mb-1">
               <CardHeader>
-                <CardTitle className="">Average Cpm</CardTitle>
+                <CardTitle className="text-xl">Average Cpm</CardTitle>
               </CardHeader>
               <CardContent>{avarageCpm?.toFixed(2)} Cpm</CardContent>
             </Card>
             <Card className="w-fill max-sm:mb-1 md:ml-2">
               <CardHeader>
-                <CardTitle className="">Average accuracy</CardTitle>
+                <CardTitle className="text-xl">Average accuracy</CardTitle>
               </CardHeader>
               <CardContent>
                 {Number(avarageAccuracy?.toFixed(2)) * 100}%

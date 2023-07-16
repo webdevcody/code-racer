@@ -18,6 +18,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { addSnippetAction } from "../../_actions/snippet";
 import LanguageDropDown from "./language-dropdown";
+import { useEffect } from "react";
 
 const formDataSchema = z.object({
   codeLanguage: z
@@ -34,7 +35,7 @@ const formDataSchema = z.object({
 
 type FormData = z.infer<typeof formDataSchema>;
 
-export default function AddSnippetForm({}) {
+export default function AddSnippetForm({ lang }: { lang: string }) {
   const { toast } = useToast();
   const confettiCtx = useConfettiContext();
 
@@ -42,6 +43,10 @@ export default function AddSnippetForm({}) {
     resolver: zodResolver(formDataSchema),
     mode: "onSubmit",
   });
+
+  useEffect(() => {
+    form.setValue("codeLanguage", lang)
+  })
 
   async function onSubmit(data: FormData) {
     // error handling if prisma upload fails

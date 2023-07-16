@@ -1,6 +1,8 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
+import { redirect } from "next/navigation";
+import { formatDate } from "@/lib/utils";
 
 export async function getFirstRaceBadge() {
   const user = await getCurrentUser();
@@ -36,4 +38,66 @@ export async function getFirstRaceBadge() {
     });
     return firstRaceAchievement;
   }
+}
+
+export async function getUserResultsForSnippet(snippetId: string) {
+  const user = await getCurrentUser();
+  if (!user) {
+    // Fix it when user is not signed in. Issue-272
+    redirect("/auth");
+  }
+
+  const raceResults = await prisma.result.findMany({
+    where: {
+      userId: user.id,
+      snippetId: snippetId,
+    },
+    take: 7,
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+  
+  const parsedRaceResult = raceResults.map((item) => {
+    return { ...item, createdAt: formatDate(item.createdAt) };
+  });
+  return parsedRaceResult.reverse();
+}
+
+export async function getCurrentRaceResult(snippetId: string) {
+  const user = await getCurrentUser();
+  if (!user) {
+    redirect("/auth");
+  }
+
+  const raceResults = await prisma.result.findFirst({
+    where: {
+      userId: user.id,
+      snippetId: snippetId,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  const cardObject = [
+    {
+      title: "CPM",
+      value: raceResults?.cpm.toString(),
+    },
+    {
+      title: "Accuracy",
+      value: raceResults?.accuracy ? `${Number(raceResults.accuracy)}%` : "0%",
+    },
+    {
+      title: "Misses",
+      value: raceResults?.errorCount?.toString(),
+    },
+    {
+      title: "Time Taken",
+      value: `${raceResults?.takenTime}s`,
+    },
+  ];
+
+  return cardObject;
 }
