@@ -5,40 +5,31 @@ import type { User } from "next-auth";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { Snippet } from "@prisma/client";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Heading } from "@/components/ui/heading";
-import { saveUserResultAction } from "../_actions/user";
 import RaceTracker from "./RaceTracker";
 import Code from "./Code";
+import { saveUserResultAction } from "../_actions/result";
+import RaceDetails from "./_components/RaceDetails";
 
 interface RaceProps {
   user?: User;
   snippet: Snippet;
 }
 
-function calculateCPM(
-  numberOfCharacters: number,
-  secondsTaken: number,
-): number {
+function calculateCPM(numberOfCharacters: number, secondsTaken: number): number {
   const minutesTaken = secondsTaken / 60;
   return Math.round(numberOfCharacters / minutesTaken);
 }
 
-function calculateAccuracy(
-  numberOfCharacters: number,
-  errorsCount: number,
-): number {
+function calculateAccuracy(numberOfCharacters: number, errorsCount: number): number {
   return 1 - errorsCount / numberOfCharacters;
 }
 
 export default function Race({ user, snippet }: RaceProps) {
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [input, setInput] = useState("");
+  const [submittingResults, setSubmittingResults] = useState(false);
   const router = useRouter();
   const inputElement = useRef<HTMLInputElement | null>(null);
   const code = snippet.code.trimEnd();
@@ -55,6 +46,8 @@ export default function Race({ user, snippet }: RaceProps) {
 
   async function endRace() {
     if (!startTime) return;
+    setSubmittingResults(true);
+
     const endTime = new Date();
     const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
 
@@ -67,7 +60,9 @@ export default function Race({ user, snippet }: RaceProps) {
         snippetId: snippet.id,
       });
     }
+
     router.push(`/result?snippetId=${snippet.id}`);
+    setSubmittingResults(false);
   }
 
   useEffect(() => {
@@ -95,17 +90,7 @@ export default function Race({ user, snippet }: RaceProps) {
       setStartTime(new Date());
     }
 
-    const noopKeys = [
-      "Shift",
-      "Alt",
-      "ArrowUp",
-      "ArrowDown",
-      "ArrowRight",
-      "ArrowLeft",
-      "Control",
-      "Escape",
-      "Meta",
-    ];
+    const noopKeys = ["Shift", "Alt", "ArrowUp", "ArrowDown", "ArrowRight", "ArrowLeft", "Control", "Escape", "Meta"];
 
     if (noopKeys.includes(e.key)) {
       e.preventDefault();
@@ -128,10 +113,7 @@ export default function Race({ user, snippet }: RaceProps) {
     let indentLength = 0;
     let newChars = "";
     // indent until the first newline
-    while (
-      indentLength + input.length < code.length &&
-      code[indentLength + input.length] !== "\n"
-    ) {
+    while (indentLength + input.length < code.length && code[indentLength + input.length] !== "\n") {
       indentLength++;
     }
     newChars += " ".repeat(indentLength) + "\n";
@@ -166,47 +148,44 @@ export default function Race({ user, snippet }: RaceProps) {
   }
 
   return (
-    <div
-      className="w-3/4 lg:p-8 p-4 bg-accent rounded-md relative flex flex-col gap-2"
-      onClick={focusOnLoad}
-      role="none" // eslint fix - will remove the semantic meaning of an element while still exposing it to assistive technology
-    >
-      <RaceTracker
-        codeLength={code.length}
-        inputLength={input.length}
-        user={user}
-      />
-      <div className="mb-2 md:mb-4">
-        <Heading
-          title="Type this code"
-          description="Start typing to get racing"
+    <>
+      <div
+        className="w-3/4 lg:p-8 p-4 bg-accent rounded-md relative flex flex-col gap-2"
+        onClick={focusOnLoad}
+        role="none" // eslint fix - will remove the semantic meaning of an element while still exposing it to assistive technology
+      >
+        <RaceTracker codeLength={code.length} inputLength={input.length} user={user} />
+        <div className="mb-2 md:mb-4">
+          <Heading title="Type this code" description="Start typing to get racing" />
+        </div>
+        <Code code={code} errors={errors} userInput={input} />
+        <input
+          type="text"
+          // value={input}
+          defaultValue={input}
+          ref={inputElement}
+          onKeyDown={handleKeyboardEvent}
+          disabled={isRaceFinished}
+          className="w-full h-full absolute p-8 inset-y-0 left-0 -z-40 focus:outline outline-blue-500 rounded-md"
+          onPaste={(e) => e.preventDefault()}
         />
+        <div className="self-start">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" onClick={handleRestart}>
+                  Restart (ESC)
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Press Esc to reset</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
       </div>
-      <Code code={code} errors={errors} userInput={input} />
-      <input
-        type="text"
-        // value={input}
-        defaultValue={input}
-        ref={inputElement}
-        onKeyDown={handleKeyboardEvent}
-        disabled={isRaceFinished}
-        className="w-full h-full absolute p-8 inset-y-0 left-0 -z-40 focus:outline outline-blue-500 rounded-md"
-        onPaste={(e) => e.preventDefault()}
-      />
-      <div className="self-start">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="outline" onClick={handleRestart}>
-                Restart (ESC)
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Press Esc to reset</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
-    </div>
+
+      <RaceDetails submittingResults={submittingResults} />
+    </>
   );
 }

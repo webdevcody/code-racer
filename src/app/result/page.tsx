@@ -19,11 +19,28 @@ import {
   ResultsChartProps,
   ResultCardProps,
 } from "@/types/result";
+import { Heading } from "@/components/ui/heading";
+import { cn } from "@/lib/utils";
+
 
 export default async function ResultsChart({
   searchParams,
 }: ResultsChartProps) {
   const user = await getCurrentUser();
+  const snippetId = searchParams.snippetId;
+
+  if (!snippetId)
+    return (
+      <div className="flex flex-col items-center justify-center gap-10 mt-20">
+        <Heading title="Oops, Something went wrong" />
+        <Link
+          className={cn(buttonVariants(), "whitespace-nowrap")}
+          href="/race"
+        >
+          Go back
+        </Link>
+      </div>
+    );
 
   let usersVote: SnippetVote | undefined | null;
   let firstRaceBadge: Achievement | undefined;
