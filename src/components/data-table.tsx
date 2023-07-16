@@ -1,30 +1,13 @@
 "use client";
 
 import * as React from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Table as ShadcnTable,
-  type ColumnDef,
-  type PaginationState,
-} from "unstyled-table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table as ShadcnTable, type ColumnDef, type PaginationState } from "unstyled-table";
 import { Skeleton } from "./ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/icons";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
 interface ColumnSort {
   id: string;
@@ -43,12 +26,7 @@ interface DataTableProps<TData, TValue> {
   };
 }
 
-export function DataTable<TData, TValue>({
-  columns,
-  data,
-  pageCount,
-  defaultSorting,
-}: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({ columns, data, pageCount, defaultSorting }: DataTableProps<TData, TValue>) {
   const [isPending, startTransition] = React.useTransition();
 
   const router = useRouter();
@@ -63,11 +41,7 @@ export function DataTable<TData, TValue>({
   const [sorting, setSorting] = React.useState<SortingState>([
     {
       id: column ?? defaultSorting?.prop,
-      desc: order
-        ? order === "desc"
-        : defaultSorting?.val
-        ? defaultSorting.val === "desc"
-        : true,
+      desc: order ? order === "desc" : defaultSorting?.val ? defaultSorting.val === "desc" : true,
     },
   ]);
 
@@ -75,10 +49,8 @@ export function DataTable<TData, TValue>({
     router.push(
       `${pathname}?${createQueryString({
         page,
-        sort: sorting[0]?.id
-          ? `${sorting[0]?.id}.${sorting[0]?.desc ? "desc" : "asc"}`
-          : null,
-      })}`,
+        sort: sorting[0]?.id ? `${sorting[0]?.id}.${sorting[0]?.desc ? "desc" : "asc"}` : null,
+      })}`
     );
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -103,8 +75,9 @@ export function DataTable<TData, TValue>({
 
       return newSearchParams.toString();
     },
-    [searchParams],
+    [searchParams]
   );
+
   return (
     <ShadcnTable
       columns={columns}
@@ -125,35 +98,26 @@ export function DataTable<TData, TValue>({
         },
         header: ({ children }) => <TableHeader>{children}</TableHeader>,
         headerRow: ({ children }) => <TableRow>{children}</TableRow>,
-        headerCell: ({ children }) => (
-          <TableHead className="whitespace-nowrap">{children}</TableHead>
-        ),
+        headerCell: ({ children }) => <TableHead className="whitespace-nowrap">{children}</TableHead>,
         body: ({ children }) => (
           <TableBody>
             {data.length ? (
               children
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
+                <TableCell colSpan={columns.length} className="h-24 text-center">
                   No results.
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         ),
-        bodyRow: ({ children }) => (
-          <TableRow className="table-row">{children}</TableRow>
-        ),
+        bodyRow: ({ children }) => <TableRow className="table-row">{children}</TableRow>,
         // here in children we get our data that we defined in columns
         // by specifying values in accessorKey / or if we made our
         // custom cell by specifying cell function
         bodyCell: ({ children }) => (
-          <TableCell className="body-cell">
-            {isPending ? <Skeleton className="w-20 h-6" /> : children}
-          </TableCell>
+          <TableCell className="body-cell">{isPending ? <Skeleton className="w-20 h-6" /> : children}</TableCell>
         ),
         // filter inputs for columns
         // we can also specify them in our
@@ -175,7 +139,7 @@ export function DataTable<TData, TValue>({
                             page: 1,
                             per_page: value,
                             sort,
-                          })}`,
+                          })}`
                         );
                       });
                     }}
@@ -193,9 +157,7 @@ export function DataTable<TData, TValue>({
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="text-sm font-medium">
-                  {`Page ${page} of ${pageCount}`}
-                </div>
+                <div className="text-sm font-medium">{`Page ${page} of ${pageCount}`}</div>
                 <div className="flex items-center space-x-2">
                   <Button
                     variant="outline"
@@ -208,16 +170,13 @@ export function DataTable<TData, TValue>({
                             page: 1,
                             per_page,
                             sort,
-                          })}`,
+                          })}`
                         );
                       });
                     }}
                     disabled={Number(page) === 1 || isPending}
                   >
-                    <Icons.chevronsLeft
-                      className="w-5 h-5"
-                      aria-hidden="true"
-                    />
+                    <Icons.chevronsLeft className="w-5 h-5" aria-hidden="true" />
                     <span className="sr-only">First page</span>
                   </Button>
                   <Button
@@ -231,7 +190,7 @@ export function DataTable<TData, TValue>({
                             page: Number(page) - 1,
                             per_page,
                             sort,
-                          })}`,
+                          })}`
                         );
                       });
                     }}
@@ -251,16 +210,13 @@ export function DataTable<TData, TValue>({
                             page: Number(page) + 1,
                             per_page,
                             sort,
-                          })}`,
+                          })}`
                         );
                       });
                     }}
                     disabled={Number(page) >= (pageCount ?? 1) || isPending}
                   >
-                    <Icons.chevronRight
-                      className="w-5 h-5"
-                      aria-hidden="true"
-                    />
+                    <Icons.chevronRight className="w-5 h-5" aria-hidden="true" />
                     <span className="sr-only">Next page</span>
                   </Button>
                   <Button
@@ -273,15 +229,12 @@ export function DataTable<TData, TValue>({
                           page: pageCount ?? 1,
                           per_page,
                           sort,
-                        })}`,
+                        })}`
                       );
                     }}
                     disabled={Number(page) >= (pageCount ?? 1) || isPending}
                   >
-                    <Icons.chevronsRight
-                      className="w-5 h-5"
-                      aria-hidden="true"
-                    />
+                    <Icons.chevronsRight className="w-5 h-5" aria-hidden="true" />
                     <span className="sr-only">Last page</span>
                   </Button>
                 </div>

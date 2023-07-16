@@ -5,8 +5,8 @@ import { Icons } from "./icons";
 
 export function Footer() {
   return (
-    <footer className="border-t-2 border-warning">
-      <div className="container flex flex-col items-center justify-center gap-4 py-8 md:h-24 md:flex-row md:py-0">
+    <footer className="border-t-2 border-primary">
+      <div className="container flex flex-col items-center justify-center gap-4 py-5 md:h-16 md:flex-row md:py-0">
         <div className="flex flex-col items-center gap-4 md:flex-row md:gap-2 md:px-0">
           <Link href="/">
             <Icons.logo width={36} height={36} />

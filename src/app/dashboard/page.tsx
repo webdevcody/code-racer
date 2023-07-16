@@ -66,7 +66,7 @@ export default async function DashboardPage({
   });
 
   return (
-    <Card className="flex flex-col">
+<Card className="flex flex-col">
       <CardContent className="flex justify-center items-center">
         <ScrollArea className="flex flex-col sm:h-[150px] md:h-fit justify-center items-center">
           <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 justify-evenly items-center">

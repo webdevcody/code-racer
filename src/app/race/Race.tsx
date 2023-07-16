@@ -5,16 +5,11 @@ import type { User } from "next-auth";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { Snippet } from "@prisma/client";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Heading } from "@/components/ui/heading";
-import { saveUserResultAction } from "../_actions/user";
 import RaceTracker from "./RaceTracker";
 import Code from "./Code";
+import { saveUserResultAction } from "../_actions/result";
 import RaceDetails from "./_components/RaceDetails";
 
 interface RaceProps {
@@ -22,18 +17,12 @@ interface RaceProps {
   snippet: Snippet;
 }
 
-function calculateCPM(
-  numberOfCharacters: number,
-  secondsTaken: number,
-): number {
+function calculateCPM(numberOfCharacters: number, secondsTaken: number): number {
   const minutesTaken = secondsTaken / 60;
   return Math.round(numberOfCharacters / minutesTaken);
 }
 
-function calculateAccuracy(
-  numberOfCharacters: number,
-  errorsCount: number,
-): number {
+function calculateAccuracy(numberOfCharacters: number, errorsCount: number): number {
   return 1 - errorsCount / numberOfCharacters;
 }
 
@@ -101,17 +90,7 @@ export default function Race({ user, snippet }: RaceProps) {
       setStartTime(new Date());
     }
 
-    const noopKeys = [
-      "Shift",
-      "Alt",
-      "ArrowUp",
-      "ArrowDown",
-      "ArrowRight",
-      "ArrowLeft",
-      "Control",
-      "Escape",
-      "Meta",
-    ];
+    const noopKeys = ["Shift", "Alt", "ArrowUp", "ArrowDown", "ArrowRight", "ArrowLeft", "Control", "Escape", "Meta"];
 
     if (noopKeys.includes(e.key)) {
       e.preventDefault();
@@ -134,10 +113,7 @@ export default function Race({ user, snippet }: RaceProps) {
     let indentLength = 0;
     let newChars = "";
     // indent until the first newline
-    while (
-      indentLength + input.length < code.length &&
-      code[indentLength + input.length] !== "\n"
-    ) {
+    while (indentLength + input.length < code.length && code[indentLength + input.length] !== "\n") {
       indentLength++;
     }
     newChars += " ".repeat(indentLength) + "\n";
@@ -178,16 +154,9 @@ export default function Race({ user, snippet }: RaceProps) {
         onClick={focusOnLoad}
         role="none" // eslint fix - will remove the semantic meaning of an element while still exposing it to assistive technology
       >
-        <RaceTracker
-          codeLength={code.length}
-          inputLength={input.length}
-          user={user}
-        />
+        <RaceTracker codeLength={code.length} inputLength={input.length} user={user} />
         <div className="mb-2 md:mb-4">
-          <Heading
-            title="Type this code"
-            description="Start typing to get racing"
-          />
+          <Heading title="Type this code" description="Start typing to get racing" />
         </div>
         <Code code={code} errors={errors} userInput={input} />
         <input
