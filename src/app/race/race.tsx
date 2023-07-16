@@ -91,6 +91,7 @@ export default function Race({ user, snippet }: RaceProps) {
     if (isRaceFinished) {
       endRace();
     }
+    focusOnLoad();
   }, [input]);
 
   useEffect(() => {
@@ -121,13 +122,17 @@ export default function Race({ user, snippet }: RaceProps) {
       e.currentTarget.blur();
       return;
     }
+    // Reload Control + r
+    if (e.ctrlKey && e.key === "r") {
+      e.preventDefault;
+      return;
+    }
 
     const noopKeys = [
       "Alt",
       "ArrowUp",
       "ArrowDown",
       "Control",
-      "Escape",
       "Meta",
       "CapsLock",
       "Shift",
@@ -246,11 +251,13 @@ export default function Race({ user, snippet }: RaceProps) {
   }
 
   function Tab() {
-    // setInput(input + "  ");
-    setInput((prevInput) => prevInput + "  ");
+    const nextTabStop = 4 - (input.length % 4);
+    const tabSpace = " ".repeat(nextTabStop);
+
+    setInput((prevInput) => prevInput + tabSpace);
     setTextIndicatorPosition((prevTextIndicatorPosition) => {
       if (typeof prevTextIndicatorPosition === "number") {
-        return prevTextIndicatorPosition + 2;
+        return prevTextIndicatorPosition + tabSpace.length;
       } else {
         return prevTextIndicatorPosition;
       }
@@ -258,6 +265,7 @@ export default function Race({ user, snippet }: RaceProps) {
   }
 
   function Backspace() {
+    // if (column != 0) setColumn(column - 1);
     if (textIndicatorPosition === input.length) {
       setInput((prevInput) => prevInput.slice(0, -1));
     }
@@ -353,6 +361,8 @@ export default function Race({ user, snippet }: RaceProps) {
   }
 
   function Key(e: React.KeyboardEvent<HTMLInputElement>) {
+    // if (column != 0) setColumn(column + 1);
+
     if (!Array.isArray(textIndicatorPosition)) {
       if (textIndicatorPosition === input.length) {
         setInput((prevInput) => prevInput + e.key);
@@ -397,6 +407,8 @@ export default function Race({ user, snippet }: RaceProps) {
     setStartTime(null);
     setInput("");
     setTextIndicatorPosition(0);
+    setNextTabStop(0);
+    setColumn(0);
   }
 
   return (
