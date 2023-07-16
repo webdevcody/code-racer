@@ -11,9 +11,9 @@ body:
 
         Please answer the following questions before submitting an issue.
 
-        - [ ] I am running the latest version
-        - [ ] I checked the documentation and found no answer
-        - [ ] I checked to make sure that this issue has not already been filed
+        - [x] I am running the latest version
+        - [x] I checked the documentation and found no answer
+        - [x] I checked to make sure that this issue has not already been filed
 
   - type: textarea
     id: summary
