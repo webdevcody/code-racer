@@ -84,7 +84,7 @@ export function SnippetsHist({ data }: RecentSnippetsTableProps) {
                     type="category"
                     dataKey="language"
                     interval={0}
-                    tick={{ fontSize: 0 }}
+                    tick={{ fontSize: 18 }}
                 />
                 <YAxis
                     type="number"

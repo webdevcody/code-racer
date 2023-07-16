@@ -2,7 +2,6 @@ import React from "react"
 import { prisma } from "@/lib/prisma";
 import { SnippetsHist } from "./snippetHist";
 import { User } from "next-auth";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 interface SnippetTableServerSideProps {
     user: User;
