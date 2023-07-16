@@ -110,8 +110,8 @@ model Snippet {
 
   code     String
   language String
-  User     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId   String   @map("user_id")
+  User     User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String?  @map("user_id")
   onReview Boolean  @default(false) @map("on_review")
   rating   Int      @default(0)
   Result   Result[]
