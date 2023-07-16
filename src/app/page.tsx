@@ -32,15 +32,15 @@ async function getGitHubStars(): Promise<string | null> {
 export default async function Home() {
   const stars = await getGitHubStars();
   return (
-    <main>
-      <div className="flex flex-col items-center justify-between md:flex-row">
+    <main className="w-full grow h-fit flex flex-col justify-center min-h-[85vh]">
+      <div className="flex flex-col items-center justify-between md:flex-row w-full mt-auto">
         <HeroBanner />
         <BannerSvg
           gearRightClass={"origin-[50%_50%] animate-gear-rotate-left"}
           gearLeftClass={"origin-[50%_50%] animate-gear-rotate-right"}
         />
       </div>
-      <div className="mx-auto flex max-w-[58rem] flex-col items-center justify-center gap-4 text-center mt-10">
+      <div className="mt-auto mb-5 justify-self-end mx-auto flex max-w-[58rem] flex-col items-center justify-center gap-4 text-center">
         {stars && (
           <a
             href={siteConfig.links.github}
@@ -66,9 +66,7 @@ export default async function Home() {
             </div>
           </a>
         )}
-        <h1 className="text-base capitalize xl:text-xl">
-          Proudly Open source. MIT license.
-        </h1>
+        <p>Proudly Open Source. MIT License.</p>
       </div>
     </main>
   );

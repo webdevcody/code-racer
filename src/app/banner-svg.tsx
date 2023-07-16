@@ -5,11 +5,11 @@ export type BannerSvg = {
 
 export default function BannerSvg(props: BannerSvg) {
   return (
-    <div>
+    <div className="flex justify-center md:justify-end items-center w-full md:w-2/5">
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="500"
-        height="500"
+        width="550"
+        height="550"
         viewBox="0 0 500 500"
         fill="none"
         className="max-lg:w-[350px] max-lg:h-[350px]"
