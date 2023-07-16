@@ -34,22 +34,22 @@ export function Voting({ userId, snippetId, usersVote }: VotingProps) {
           onClick={() => {
             startTransition(async () => {
               if (userId) {
-              try {
-                if (usersVote?.type === "UP") {
-                  await deleteVoteAction({ snippetId });
-                } else {
-                  await upvoteSnippetAction({ snippetId });
-                  toast({
-                    title: "Success.",
-                    description:
-                      "Thanks for your feedback! We will consider it.",
-                    variant: "default",
-                  });
+                try {
+                  if (usersVote?.type === "UP") {
+                    await deleteVoteAction({ snippetId });
+                  } else {
+                    await upvoteSnippetAction({ snippetId });
+                    toast({
+                      title: "Success.",
+                      description:
+                        "Thanks for your feedback! We will consider it.",
+                      variant: "default",
+                    });
+                  }
+                } catch (err) {
+                  catchError(err);
                 }
-              } catch (err) {
-                catchError(err);
-              }
-             } else {
+              } else {
                 toast({
                   title: "Warning",
                   description: "You should sign in first to vote.",
@@ -72,19 +72,19 @@ export function Voting({ userId, snippetId, usersVote }: VotingProps) {
           onClick={() => {
             startTransition(async () => {
               if (userId) {
-              try {
-                if (usersVote?.type === "DOWN") {
-                  await deleteVoteAction({
-                    snippetId,
-                  });
-                } else {
-                  await downVoteSnippetAction({
-                    snippetId,
-                  });
-                  toast({
-                    title: "Success.",
-                    description:
-                      "Thanks for your feedback! We will consider it.",
+                try {
+                  if (usersVote?.type === "DOWN") {
+                    await deleteVoteAction({
+                      snippetId,
+                    });
+                  } else {
+                    await downVoteSnippetAction({
+                      snippetId,
+                    });
+                    toast({
+                      title: "Success.",
+                      description:
+                        "Thanks for your feedback! We will consider it.",
                       variant: "default",
                     });
                   }

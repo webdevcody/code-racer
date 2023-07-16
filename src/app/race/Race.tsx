@@ -15,6 +15,7 @@ import { Heading } from "@/components/ui/heading";
 import { saveUserResultAction } from "../_actions/user";
 import RaceTracker from "./RaceTracker";
 import Code from "./Code";
+import RaceDetails from "./_components/RaceDetails";
 
 interface RaceProps {
   user?: User;
@@ -39,6 +40,7 @@ function calculateAccuracy(
 export default function Race({ user, snippet }: RaceProps) {
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [input, setInput] = useState("");
+  const [submittingResults, setSubmittingResults] = useState(false);
   const router = useRouter();
   const inputElement = useRef<HTMLInputElement | null>(null);
   const code = snippet.code.trimEnd();
@@ -55,6 +57,8 @@ export default function Race({ user, snippet }: RaceProps) {
 
   async function endRace() {
     if (!startTime) return;
+    setSubmittingResults(true);
+
     const endTime = new Date();
     const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
 
@@ -67,7 +71,9 @@ export default function Race({ user, snippet }: RaceProps) {
         snippetId: snippet.id,
       });
     }
+
     router.push(`/result?snippetId=${snippet.id}`);
+    setSubmittingResults(false);
   }
 
   useEffect(() => {
@@ -166,47 +172,51 @@ export default function Race({ user, snippet }: RaceProps) {
   }
 
   return (
-    <div
-      className="w-3/4 lg:p-8 p-4 bg-accent rounded-md relative flex flex-col gap-2"
-      onClick={focusOnLoad}
-      role="none" // eslint fix - will remove the semantic meaning of an element while still exposing it to assistive technology
-    >
-      <RaceTracker
-        codeLength={code.length}
-        inputLength={input.length}
-        user={user}
-      />
-      <div className="mb-2 md:mb-4">
-        <Heading
-          title="Type this code"
-          description="Start typing to get racing"
+    <>
+      <div
+        className="w-3/4 lg:p-8 p-4 bg-accent rounded-md relative flex flex-col gap-2"
+        onClick={focusOnLoad}
+        role="none" // eslint fix - will remove the semantic meaning of an element while still exposing it to assistive technology
+      >
+        <RaceTracker
+          codeLength={code.length}
+          inputLength={input.length}
+          user={user}
         />
+        <div className="mb-2 md:mb-4">
+          <Heading
+            title="Type this code"
+            description="Start typing to get racing"
+          />
+        </div>
+        <Code code={code} errors={errors} userInput={input} />
+        <input
+          type="text"
+          // value={input}
+          defaultValue={input}
+          ref={inputElement}
+          onKeyDown={handleKeyboardEvent}
+          disabled={isRaceFinished}
+          className="w-full h-full absolute p-8 inset-y-0 left-0 -z-40 focus:outline outline-blue-500 rounded-md"
+          onPaste={(e) => e.preventDefault()}
+        />
+        <div className="self-start">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" onClick={handleRestart}>
+                  Restart (ESC)
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Press Esc to reset</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
       </div>
-      <Code code={code} errors={errors} userInput={input} />
-      <input
-        type="text"
-        // value={input}
-        defaultValue={input}
-        ref={inputElement}
-        onKeyDown={handleKeyboardEvent}
-        disabled={isRaceFinished}
-        className="w-full h-full absolute p-8 inset-y-0 left-0 -z-40 focus:outline outline-blue-500 rounded-md"
-        onPaste={(e) => e.preventDefault()}
-      />
-      <div className="self-start">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="outline" onClick={handleRestart}>
-                Restart (ESC)
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Press Esc to reset</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
-    </div>
+
+      <RaceDetails submittingResults={submittingResults} />
+    </>
   );
 }

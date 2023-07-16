@@ -11,6 +11,8 @@ import { Voting } from "./voting";
 import { Badge } from "@/components/ui/badge";
 import { getFirstRaceBadge } from "./loaders";
 import { Achievement, SnippetVote } from "@prisma/client";
+import { Heading } from "@/components/ui/heading";
+import { cn } from "@/lib/utils";
 
 const card = [
   { title: "WPM", value: "81 %" },
@@ -28,6 +30,20 @@ export default async function ResultsChart({
   searchParams,
 }: ResultsChartProps) {
   const user = await getCurrentUser();
+  const snippetId = searchParams.snippetId;
+
+  if (!snippetId)
+    return (
+      <div className="flex flex-col items-center justify-center gap-10 mt-20">
+        <Heading title="Oops, Something went wrong" />
+        <Link
+          className={cn(buttonVariants(), "whitespace-nowrap")}
+          href="/race"
+        >
+          Go back
+        </Link>
+      </div>
+    );
 
   let usersVote: SnippetVote | undefined | null;
   let firstRaceBadge: Achievement | undefined;
