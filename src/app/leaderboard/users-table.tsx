@@ -7,12 +7,7 @@ import { type ColumnDef } from "unstyled-table";
 import Image from "next/image";
 import Link from "next/link";
 import { DataTable } from "@/components/data-table";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
 
@@ -41,13 +36,7 @@ export function UsersTable({ data, pageCount }: UsersTableProps) {
           return (
             <Link href={`${userInfo.id}`}>
               <div className="flex items-center gap-2">
-                <Image
-                  className="rounded-full"
-                  src={userInfo.image ?? ""}
-                  alt="user avatar"
-                  height={30}
-                  width={30}
-                />
+                <Image className="rounded-full" src={userInfo.image ?? ""} alt="user avatar" height={30} width={30} />
                 <span>{userInfo.name}</span>
               </div>
             </Link>
@@ -56,6 +45,9 @@ export function UsersTable({ data, pageCount }: UsersTableProps) {
         enableSorting: false,
       },
       {
+        accessorFn: (user) => {
+          return user.averageCpm;
+        },
         accessorKey: "averageCpm",
         header: () => {
           return (
@@ -74,8 +66,16 @@ export function UsersTable({ data, pageCount }: UsersTableProps) {
             </div>
           );
         },
+        cell: ({ cell }) => {
+          const averageCpm = cell.getValue() as number;
+
+          return <span>{averageCpm}</span>;
+        },
       },
       {
+        accessorFn: (user) => {
+          return user.averageAccuracy;
+        },
         accessorKey: "averageAccuracy",
         header: "Average accuracy",
         cell: ({ cell }) => {
@@ -88,7 +88,7 @@ export function UsersTable({ data, pageCount }: UsersTableProps) {
                 "text-destructive": avgAccuracy < 0.5,
               })}
             >
-              {avgAccuracy}%
+              {avgAccuracy * 100}%
             </span>
           );
         },
@@ -100,7 +100,7 @@ export function UsersTable({ data, pageCount }: UsersTableProps) {
         header: "Races played",
       },
     ],
-    [],
+    []
   );
 
   return (

@@ -1,15 +1,9 @@
-export function calculateCPM(
-  numberOfCharacters: number,
-  secondsTaken: number,
-): number {
+export function calculateCPM(numberOfCharacters: number, secondsTaken: number): number {
   const minutesTaken = secondsTaken / 60;
   return Math.round(numberOfCharacters / minutesTaken);
 }
 
-export function calculateAccuracy(
-  numberOfCharacters: number,
-  errorsCount: number,
-): number {
+export function calculateAccuracy(numberOfCharacters: number, errorsCount: number): number {
   return 1 - errorsCount / numberOfCharacters;
 }
 

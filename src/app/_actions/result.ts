@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { action } from "@/lib/actions";
 import { Prisma } from "@prisma/client";
+import { UnauthorizedError } from "@/lib/exceptions/custom-hooks";
 
 // when snippets rating hits this number
 // it will no longer be on the race
@@ -13,16 +14,15 @@ export const saveUserResultAction = action(
   z.object({
     timeTaken: z.union([z.string(), z.number()]),
     errors: z.number().nullable(),
-    cpm: z.number().min(0).max(9999, {
-      message: "Cpm is too high. Please, turn off the python bot.",
-    }),
+    cpm: z.number(),
     accuracy: z.number().min(0).max(100),
     snippetId: z.string(),
   }),
+
   async (input, { prisma, user }) => {
-    if (!user) {
-      throw new Error("Not allowed.");
-    }
+    console.log(input, 123);
+
+    if (!user) throw new UnauthorizedError();
 
     prisma.$transaction(async (tx) => {
       await tx.result.create({
@@ -45,16 +45,17 @@ export const saveUserResultAction = action(
           cpm: true,
         },
       });
+      console.log(avgValues);
 
       await tx.user.update({
         where: {
           id: user.id,
         },
         data: {
-          averageAccuracy: avgValues._avg.accuracy ?? 0,
-          averageCpm: avgValues._avg.cpm ?? 0,
+          averageAccuracy: Number(avgValues._avg.accuracy?.toFixed(2)) ?? 0,
+          averageCpm: Number(avgValues._avg.cpm?.toFixed(2)) ?? 0,
         },
       });
     });
-  },
+  }
 );

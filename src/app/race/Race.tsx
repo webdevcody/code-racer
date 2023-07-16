@@ -9,9 +9,9 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { calculateAccuracy, calculateCPM, createIndent, calculateRemainder, previousLines } from "./utils";
 
 import { Heading } from "@/components/ui/heading";
-import { saveUserResultAction } from "../_actions/user";
 import RaceTracker from "./RaceTracker";
 import Code from "./Code";
+import { saveUserResultAction } from "../_actions/result";
 
 interface RaceProps {
   user?: User;
@@ -47,7 +47,7 @@ export default function Race({ user, snippet }: RaceProps) {
     }
 
     if (startTime && endTime) {
-      const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
+      const timeTaken = endTime.getTime() - startTime.getTime();
 
       // If logged in
       if (user)
