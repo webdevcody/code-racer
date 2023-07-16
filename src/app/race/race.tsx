@@ -7,8 +7,8 @@ import { useRouter } from "next/navigation";
 import { Snippet } from "@prisma/client";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Heading } from "@/components/ui/heading";
-import RaceTracker from "./RaceTracker";
-import Code from "./Code";
+import RaceTracker from "./race-tracker";
+import Code from "./code";
 import { saveUserResultAction } from "../_actions/result";
 import RaceDetails from "./_components/RaceDetails";
 
