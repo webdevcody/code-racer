@@ -24,7 +24,7 @@ interface RaceProps {
 
 function calculateCPM(
   numberOfCharacters: number,
-  secondsTaken: number
+  secondsTaken: number,
 ): number {
   const minutesTaken = secondsTaken / 60;
   return Math.round(numberOfCharacters / minutesTaken);
@@ -32,7 +32,7 @@ function calculateCPM(
 
 function calculateAccuracy(
   numberOfCharacters: number,
-  errorsCount: number
+  errorsCount: number,
 ): number {
   return 1 - errorsCount / numberOfCharacters;
 }
@@ -111,11 +111,15 @@ export default function Race({ user, snippet }: RaceProps) {
     }
   }
 
-  async function handleKeyboardDownEvent(
-    e: React.KeyboardEvent<HTMLInputElement>,
-  ) {
+  function handleKeyboardDownEvent(e: React.KeyboardEvent<HTMLInputElement>) {
     if (!startTime) {
       setStartTime(new Date());
+    }
+
+    // Unfocus Shift + Tab
+    if (e.shiftKey && e.key === "Tab") {
+      e.currentTarget.blur();
+      return;
     }
 
     const noopKeys = [
@@ -125,7 +129,8 @@ export default function Race({ user, snippet }: RaceProps) {
       "Control",
       "Escape",
       "Meta",
-      "CapsLock"
+      "CapsLock",
+      "Shift",
     ];
 
     if (noopKeys.includes(e.key)) {
@@ -144,50 +149,14 @@ export default function Race({ user, snippet }: RaceProps) {
         case "ArrowRight":
           ArrowRight();
           break;
-        case "Shift":
-          ShiftKey("keydown");
+        case "Tab":
+          e.preventDefault();
+          Tab();
           break;
         default:
           Key(e);
           break;
       }
-    }
-  }
-
-  async function handleKeyboardUpEvent(
-    e: React.KeyboardEvent<HTMLInputElement>,
-  ) {
-    const noopKeys = [
-      "Alt",
-      "ArrowUp",
-      "ArrowDown",
-      "ArrowLeft",
-      "ArrowRight",
-      "Control",
-      "Escape",
-      "Meta",
-      "CapsLock"
-    ];
-
-    if (noopKeys.includes(e.key)) {
-      e.preventDefault();
-    } else {
-      switch (e.key) {
-        case "Shift":
-          ShiftKey("keyup");
-          break;
-        default:
-          e.preventDefault();
-          break;
-      }
-    }
-  }
-
-  function ShiftKey(typeOfEvent: "keyup" | "keydown") {
-    if (typeOfEvent === "keyup") {
-      setShiftKeyPressed(false);
-    } else {
-      setShiftKeyPressed(true);
     }
   }
 
@@ -276,7 +245,18 @@ export default function Race({ user, snippet }: RaceProps) {
     }
   }
 
-  // Backspace
+  function Tab() {
+    // setInput(input + "  ");
+    setInput((prevInput) => prevInput + "  ");
+    setTextIndicatorPosition((prevTextIndicatorPosition) => {
+      if (typeof prevTextIndicatorPosition === "number") {
+        return prevTextIndicatorPosition + 2;
+      } else {
+        return prevTextIndicatorPosition;
+      }
+    });
+  }
+
   function Backspace() {
     if (textIndicatorPosition === input.length) {
       setInput((prevInput) => prevInput.slice(0, -1));
@@ -326,7 +306,6 @@ export default function Race({ user, snippet }: RaceProps) {
     }
   }
 
-  // Enter
   function Enter() {
     if (Array.isArray(textIndicatorPosition)) {
       // delete the highlighted text first
@@ -342,11 +321,8 @@ export default function Race({ user, snippet }: RaceProps) {
     let newChars = "";
     // indent until the first newline
     while (
-      
       indentLength + input.length < code.length &&
-     
       code[indentLength + input.length] !== "\n"
-    
     ) {
       indentLength++;
     }
@@ -441,16 +417,17 @@ export default function Race({ user, snippet }: RaceProps) {
             description="Start typing to get racing"
           />
         </div>
-        <Code code={code} errors={errors} userInput={input} textIndicatorPosition={textIndicatorPosition} />
+        <Code
+          code={code}
+          errors={errors}
+          userInput={input}
+          textIndicatorPosition={textIndicatorPosition}
+        />
         <input
           type="text"
-          // value={input}
-          // eslint-disable-next-line
-          autoFocus
           defaultValue={input}
           ref={inputElement}
           onKeyDown={handleKeyboardDownEvent}
-          onKeyUp={handleKeyboardUpEvent}
           disabled={isRaceFinished}
           className="absolute inset-y-0 left-0 w-full h-full p-8 rounded-md -z-40 focus:outline outline-blue-500"
           onPaste={(e) => e.preventDefault()}
