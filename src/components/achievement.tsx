@@ -1,4 +1,4 @@
-import { Achievement } from "@prisma/client";
+import { Achievement } from "@/types/achievement";
 import Image from "next/image";
 import { Icons } from "./icons";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
