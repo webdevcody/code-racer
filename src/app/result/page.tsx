@@ -22,7 +22,6 @@ import {
 import { Heading } from "@/components/ui/heading";
 import { cn } from "@/lib/utils";
 
-
 export default async function ResultsChart({
   searchParams,
 }: ResultsChartProps) {
@@ -57,15 +56,17 @@ export default async function ResultsChart({
         },
       },
     });
+    currentRaceResult = await getCurrentRaceResult(searchParams.snippetId);
+    raceResults = await getUserResultsForSnippet(searchParams.snippetId);
   }
-  currentRaceResult = await getCurrentRaceResult(searchParams.snippetId);
-  raceResults = await getUserResultsForSnippet(searchParams.snippetId);
 
   return (
     <div className="w-auto">
       <div className="flex flex-col justify-center gap-4 mt-5">
         {firstRaceBadge && <FirstRaceBadge image={firstRaceBadge.image} />}
-        <p className="text-primary text-center text-xl">Result for your current Race</p>
+        <p className="text-primary text-center text-xl">
+          Result for your current Race
+        </p>
         <div className="grid grid-cols-2 gap-3 mx-auto md:grid-cols-4 md:gap-6">
           {currentRaceResult.map((c, idx) => {
             return (
@@ -81,7 +82,9 @@ export default async function ResultsChart({
       </div>
       <div className="flex flex-col p-8 rounded-xl">
         <div className="flex flex-wrap justify-center gap-4">
-          <p className="text-primary text-center text-xl">Your progress on this snippet</p>
+          <p className="text-primary text-center text-xl">
+            Your progress on this snippet
+          </p>
           <Chart raceResult={raceResults} />
         </div>
       </div>
