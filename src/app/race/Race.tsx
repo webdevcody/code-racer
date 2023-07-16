@@ -30,9 +30,10 @@ interface RaceProps {
 }
 
 export default function Race({ user, snippet }: RaceProps) {
+  const [input, setInput] = useState("");
+
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [endTime, setEndTime] = useState<Date | null>(null);
-  const [input, setInput] = useState("");
 
   const [counter, setCounter] = useState(0);
   const [line, setLine] = useState(0);
@@ -43,9 +44,10 @@ export default function Race({ user, snippet }: RaceProps) {
 
   const router = useRouter();
 
-  const inputElement = useRef<HTMLInputElement | null>(null);
   const code = snippet.code.trimEnd(); // remove trailing "\n"
   const lines = code.split("\n");
+
+  const inputElement = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     // Debug
@@ -162,7 +164,11 @@ export default function Race({ user, snippet }: RaceProps) {
     }
   }
 
-  // Tab
+  // Tab - Verify
+  // if next 2 characters do not equal newline \n move 2 spaces
+  //    add to input, update errors
+  // if one of the next two characters equals newline \n move to the end of nextline indent
+  //    add to input and index, update errors
   function Tab() {
     // Stop at end of line if not matching
     if (input.length === code.length) {
@@ -173,7 +179,11 @@ export default function Race({ user, snippet }: RaceProps) {
     // setInput(input + "    "); // add 4
   }
 
-  // Backspace
+  // Backspace - Verify
+  // if line index does not equal current line indent length
+  //     remove 1 from input and index
+  // if line index equals current line indent length move to previous line end
+  //     subtract indent and newline from input and the index
   function Backspace() {
     if (input.length == 0) {
       setLine(0);
@@ -185,6 +195,7 @@ export default function Race({ user, snippet }: RaceProps) {
 
     if (array.lastIndexOf("\n") == input.length - 1) {
       setInput(input.slice(0, -2));
+
       if (line != 0) {
         setLine(line - 1);
       }
@@ -193,26 +204,29 @@ export default function Race({ user, snippet }: RaceProps) {
       }
     } else if (array.lastIndexOf("\n") == input.length - indent.length - 1) {
       setInput(input.slice(0, -2 - indent.length));
+
       if (line != 0) {
         setLine(line - 1);
       }
       setCounter(nextLine.length - 1);
     } else {
       setInput(input.slice(0, -1));
-
       if (counter != 0) {
         setCounter(counter - 1);
       }
     }
   }
 
-  // Enter
+  // Enter - Verify
+  // if enter move to next line at the end of indent
+  //     add remainder of current line and indent to input and index, update errors
   function Enter() {
     // Stop at end of line if not matching
     if (input.length - 1 === code.length) {
       return;
     }
 
+    // Check Bounds
     if (line < lines.length) {
       const ln = lines[line];
       const nextLine = lines[line + 1];
@@ -235,7 +249,11 @@ export default function Race({ user, snippet }: RaceProps) {
     }
   }
 
-  // Default
+  // Key Event - Verify
+  // if current line index does not equal new line move 1
+  //    add to input and index, update errors
+  // if current line index equals newline \n move to next line end of indent
+  //    add newline and indent to input and index, update errors
   function Key(e: React.KeyboardEvent<HTMLInputElement>) {
     const ln = lines[line];
     const nextLine = lines[line + 1];
@@ -252,7 +270,7 @@ export default function Race({ user, snippet }: RaceProps) {
       if (line < lines.length - 1) {
         setLine(line + 1);
       }
-    } else if (ln.length - 1 == counter - previousLines(lines, line).length) {
+    } else if (counter - previousLines(lines, line).length == ln.length - 1) {
       setCounter(indent.length);
       setInput(input + e.key + indent);
       if (line < lines.length - 1) {
@@ -295,7 +313,6 @@ export default function Race({ user, snippet }: RaceProps) {
       <Code code={code} errors={errors} userInput={input} />
       <input
         type="text"
-        // value={input}
         defaultValue={input}
         ref={inputElement}
         onKeyDown={handleKeyboardEvent}
