@@ -5,7 +5,12 @@ import type { User } from "next-auth";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { Snippet } from "@prisma/client";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Heading } from "@/components/ui/heading";
 import RaceTracker from "./race-tracker";
 import Code from "./code";
@@ -17,12 +22,18 @@ interface RaceProps {
   snippet: Snippet;
 }
 
-function calculateCPM(numberOfCharacters: number, secondsTaken: number): number {
+function calculateCPM(
+  numberOfCharacters: number,
+  secondsTaken: number,
+): number {
   const minutesTaken = secondsTaken / 60;
   return Math.round(numberOfCharacters / minutesTaken);
 }
 
-function calculateAccuracy(numberOfCharacters: number, errorsCount: number): number {
+function calculateAccuracy(
+  numberOfCharacters: number,
+  errorsCount: number,
+): number {
   return (1 - errorsCount / numberOfCharacters) * 100;
 }
 
@@ -30,7 +41,9 @@ export default function Race({ user, snippet }: RaceProps) {
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [input, setInput] = useState("");
   const [shiftKeyPressed, setShiftKeyPressed] = useState(false);
-  const [textIndicatorPosition, setTextIndicatorPosition] = useState<number | number[]>(0);
+  const [textIndicatorPosition, setTextIndicatorPosition] = useState<
+    number | number[]
+  >(0);
   const [submittingResults, setSubmittingResults] = useState(false);
   const [totalErrors, setTotalErrors] = useState(0);
   const router = useRouter();
@@ -96,12 +109,27 @@ export default function Race({ user, snippet }: RaceProps) {
     }
   }
 
-  async function handleKeyboardDownEvent(e: React.KeyboardEvent<HTMLInputElement>) {
+  function handleKeyboardDownEvent(e: React.KeyboardEvent<HTMLInputElement>) {
     if (!startTime) {
       setStartTime(new Date());
     }
 
-    const noopKeys = ["Alt", "ArrowUp", "ArrowDown", "Control", "Escape", "Meta", "CapsLock"];
+    // Unfocus Shift + Tab
+    if (e.shiftKey && e.key === "Tab") {
+      e.currentTarget.blur();
+      return;
+    }
+
+    const noopKeys = [
+      "Alt",
+      "ArrowUp",
+      "ArrowDown",
+      "Control",
+      "Escape",
+      "Meta",
+      "CapsLock",
+      "Shift",
+    ];
 
     if (noopKeys.includes(e.key)) {
       e.preventDefault();
@@ -119,48 +147,14 @@ export default function Race({ user, snippet }: RaceProps) {
         case "ArrowRight":
           ArrowRight();
           break;
-        case "Shift":
-          ShiftKey("keydown");
+        case "Tab":
+          e.preventDefault();
+          Tab();
           break;
         default:
           Key(e);
           break;
       }
-    }
-  }
-
-  async function handleKeyboardUpEvent(e: React.KeyboardEvent<HTMLInputElement>) {
-    const noopKeys = [
-      "Alt",
-      "ArrowUp",
-      "ArrowDown",
-      "ArrowLeft",
-      "ArrowRight",
-      "Control",
-      "Escape",
-      "Meta",
-      "CapsLock",
-    ];
-
-    if (noopKeys.includes(e.key)) {
-      e.preventDefault();
-    } else {
-      switch (e.key) {
-        case "Shift":
-          ShiftKey("keyup");
-          break;
-        default:
-          e.preventDefault();
-          break;
-      }
-    }
-  }
-
-  function ShiftKey(typeOfEvent: "keyup" | "keydown") {
-    if (typeOfEvent === "keyup") {
-      setShiftKeyPressed(false);
-    } else {
-      setShiftKeyPressed(true);
     }
   }
 
@@ -181,7 +175,10 @@ export default function Race({ user, snippet }: RaceProps) {
     if (shiftKeyPressed) {
       setTextIndicatorPosition((prevTextIndicatorPosition) => {
         if (typeof prevTextIndicatorPosition === "number") {
-          const array = [prevTextIndicatorPosition + 1, prevTextIndicatorPosition];
+          const array = [
+            prevTextIndicatorPosition + 1,
+            prevTextIndicatorPosition,
+          ];
           return array;
         } else if (prevTextIndicatorPosition.at(-1) !== input.length) {
           if (prevTextIndicatorPosition.length !== 1) {
@@ -246,13 +243,27 @@ export default function Race({ user, snippet }: RaceProps) {
     }
   }
 
-  // Backspace
+  function Tab() {
+    // setInput(input + "  ");
+    setInput((prevInput) => prevInput + "  ");
+    setTextIndicatorPosition((prevTextIndicatorPosition) => {
+      if (typeof prevTextIndicatorPosition === "number") {
+        return prevTextIndicatorPosition + 2;
+      } else {
+        return prevTextIndicatorPosition;
+      }
+    });
+  }
+
   function Backspace() {
     if (textIndicatorPosition === input.length) {
       setInput((prevInput) => prevInput.slice(0, -1));
     }
 
-    if (!Array.isArray(textIndicatorPosition) && textIndicatorPosition < input.length) {
+    if (
+      !Array.isArray(textIndicatorPosition) &&
+      textIndicatorPosition < input.length
+    ) {
       const inputArray = input.split("");
       // Filter out the the character to be deleted based on where the current text
       // indicator is located. Subtract the position by one since we are comparing them
@@ -293,7 +304,6 @@ export default function Race({ user, snippet }: RaceProps) {
     }
   }
 
-  // Enter
   function Enter() {
     if (Array.isArray(textIndicatorPosition)) {
       // delete the highlighted text first
@@ -308,7 +318,10 @@ export default function Race({ user, snippet }: RaceProps) {
     let indentLength = 0;
     let newChars = "";
     // indent until the first newline
-    while (indentLength + input.length < code.length && code[indentLength + input.length] !== "\n") {
+    while (
+      indentLength + input.length < code.length &&
+      code[indentLength + input.length] !== "\n"
+    ) {
       indentLength++;
     }
     newChars += " ".repeat(indentLength) + "\n";
@@ -324,7 +337,9 @@ export default function Race({ user, snippet }: RaceProps) {
       newChars += " ".repeat(indentLength + 1);
     }
 
-    setInput((prevInput) => (prevInput + newChars).substring(0, code.length - 1));
+    setInput((prevInput) =>
+      (prevInput + newChars).substring(0, code.length - 1),
+    );
 
     setTextIndicatorPosition((prevTextIndicatorPosition) => {
       if (typeof prevTextIndicatorPosition === "number") {
@@ -389,24 +404,34 @@ export default function Race({ user, snippet }: RaceProps) {
   return (
     <>
       <div
-        className="w-3/4 lg:p-8 p-4 bg-accent rounded-md relative flex flex-col gap-2"
+        className="relative flex flex-col w-3/4 gap-2 p-4 rounded-md lg:p-8 bg-accent"
         onClick={focusOnLoad}
         role="none" // eslint fix - will remove the semantic meaning of an element while still exposing it to assistive technology
       >
-        <RaceTracker codeLength={code.length} inputLength={input.length} user={user} />
+        <RaceTracker
+          codeLength={code.length}
+          inputLength={input.length}
+          user={user}
+        />
         <div className="mb-2 md:mb-4">
-          <Heading title="Type this code" description="Start typing to get racing" />
+          <Heading
+            title="Type this code"
+            description="Start typing to get racing"
+          />
         </div>
-        <Code code={code} errors={errors} userInput={input} textIndicatorPosition={textIndicatorPosition} />
+        <Code
+          code={code}
+          errors={errors}
+          userInput={input}
+          textIndicatorPosition={textIndicatorPosition}
+        />
         <input
           type="text"
-          // value={input}
           defaultValue={input}
           ref={inputElement}
           onKeyDown={handleKeyboardDownEvent}
-          onKeyUp={handleKeyboardUpEvent}
           disabled={isRaceFinished}
-          className="w-full h-full absolute p-8 inset-y-0 left-0 -z-40 focus:outline outline-blue-500 rounded-md"
+          className="absolute inset-y-0 left-0 w-full h-full p-8 rounded-md -z-40 focus:outline outline-blue-500"
           onPaste={(e) => e.preventDefault()}
         />
         <div className="self-start">

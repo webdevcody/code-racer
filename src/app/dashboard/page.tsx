@@ -1,15 +1,18 @@
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import CpmChart from "./cpm-chart";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { redirect } from "next/navigation";
-import type { Result } from "@prisma/client";
-import AccuracyChart from "./accuracy-chart";
-import { RecentRacesTable } from "./recent-races-table";
-import PerformanceComparison from "./performance-comparison";
-import { Heading } from "@/components/ui/heading";
+
+import { Card, CardContent } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+
+import StackCard from "./components/stackbox";
+import RaceTableServerSide from "./components/raceTableServerSide";
+import SnippetTableServerSide from "./components/snippetTableServerSide";
+
+import { Crown, FileCode2, Swords } from "lucide-react";
+import { get } from "http";
 
 interface DashboardPageProps {
   searchParams: {
@@ -17,151 +20,101 @@ interface DashboardPageProps {
   };
 }
 
-export default async function DashboardPage({ searchParams }: DashboardPageProps) {
+export default async function DashboardPage({
+  searchParams,
+}: DashboardPageProps) {
   const user = await getCurrentUser();
 
   if (!user) redirect("/");
 
-  const { page, per_page, sort } = searchParams;
+  // List of all the data we need to fetch
+  const {
+    totalUsers,
+    totalGames,
+    totalSnippets,
+    totalUserGames,
+    totalUserSnippets,
+    userRank,
+  } = await prisma.$transaction(async () => {
+    const totalUsers = await prisma.user.count();
+    const totalGames = await prisma.result.count();
+    const totalSnippets = await prisma.snippet.count();
 
-  // Number of records to show per page
-  const take = typeof per_page === "string" ? parseInt(per_page) : 5;
+    const totalUserGames = await prisma.result.count({
+      where: {
+        userId: user.id,
+      },
+    });
 
-  // Number of records to skip
-  const skip = typeof page === "string" ? (parseInt(page) - 1) * take : 0;
+    const totalUserSnippets = await prisma.snippet.count({
+      where: {
+        userId: user.id,
+      },
+    });
 
-  // Column and order to sort by
-  const [column, order] =
-    typeof sort === "string" ? (sort.split(".") as [keyof Result | undefined, "asc" | "desc" | undefined]) : [];
+    const userRank = 1;
 
-  // List of recent games.
-  const { recentGames, totalRecentGames, maxCpm, maxAccuracy, avarageCpm, avarageAccuracy } = await prisma.$transaction(
-    async () => {
-      const recentGames = await prisma.result.findMany({
-        take,
-        skip,
-        where: {
-          userId: user.id,
-        },
-        orderBy: {
-          [column ?? "createdAt"]: order,
-        },
-      });
-
-      const totalRecentGames = await prisma.result.count({
-        where: {
-          userId: user.id,
-        },
-      });
-
-      const maxCpm = (
-        await prisma.result.findFirst({
-          where: {
-            userId: user.id,
-          },
-          orderBy: {
-            cpm: "desc",
-          },
-        })
-      )?.cpm;
-
-      const maxAccuracy = (
-        await prisma.result.findFirst({
-          where: {
-            userId: user.id,
-          },
-          orderBy: {
-            accuracy: "desc",
-          },
-        })
-      )?.accuracy;
-
-      const aggregations = await prisma.result.aggregate({
-        _avg: {
-          accuracy: true,
-          cpm: true,
-        },
-        where: {
-          userId: user.id,
-        },
-      });
-
-      return {
-        recentGames,
-        totalRecentGames,
-        maxCpm,
-        maxAccuracy,
-        avarageCpm: aggregations._avg.cpm,
-        avarageAccuracy: aggregations._avg.accuracy,
-      };
-    }
-  );
-
-  const pageCount = totalRecentGames === 0 ? 1 : Math.ceil(totalRecentGames / take);
+    return {
+      totalUsers,
+      totalGames,
+      totalSnippets,
+      totalUserGames,
+      totalUserSnippets,
+      userRank,
+    };
+  });
 
   return (
-    <div className="text-center py-12">
-      <Heading title="Dashboard" description="Find your stats" />
-      <div className="w-full mt-5">
-        <Tabs defaultValue="cpm" className="w-full">
-          <TabsList>
-            <TabsTrigger value="cpm">Cpm</TabsTrigger>
-            <TabsTrigger value="accuracy">Accuracy</TabsTrigger>
+    <Card className="flex flex-col">
+      <CardContent className="flex justify-center items-center">
+        <ScrollArea className="flex flex-col h-[150px] md:h-fit justify-center items-center bg-accent p-2 md:p-0">
+          <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 justify-evenly items-center">
+            <StackCard
+              title="Rank"
+              subtitle="Your rank"
+              icon={<Crown />}
+              size={80}
+              value={userRank}
+              totalValue={totalUsers}
+            />
+            <StackCard
+              title="Races"
+              subtitle="Races participated"
+              icon={<Swords />}
+              size={80}
+              value={totalUserGames}
+              totalValue={totalGames}
+            />
+            <StackCard
+              title="Snippets"
+              subtitle="Snippets created"
+              icon={<FileCode2 />}
+              size={80}
+              value={totalUserSnippets}
+              totalValue={totalSnippets}
+            />
+            <StackCard title="Coming Soon!" subtitle="Coming Soon!" size={80} />
+          </div>
+        </ScrollArea>
+      </CardContent>
+      <CardContent className="flex flex-col justify-start mt-3 w-full">
+        <Tabs defaultValue="races" className="sm:w-fit md:w-full h-full">
+          <TabsList className="grid sm:w-[150px] md:w-[300px] grid-cols-2">
+            <TabsTrigger value="races">Races</TabsTrigger>
+            <TabsTrigger value="snippets">Snippets</TabsTrigger>
           </TabsList>
-          <TabsContent value="cpm">
-            <PerformanceComparison obj="cpm" usersData={recentGames} />
+          <TabsContent value="races">
+            <RaceTableServerSide
+              user={user}
+              searchParams={searchParams}
+              totalUserGames={totalUserGames}
+            />
           </TabsContent>
-          <TabsContent value="accuracy">
-            <PerformanceComparison obj="accuracy" usersData={recentGames} />
+          <TabsContent value="snippets">
+            <SnippetTableServerSide user={user} />
           </TabsContent>
         </Tabs>
-      </div>
-      <div className="grid grid-cols-1 pb-5 mt-5 md:grid-cols-2">
-        <Card className="p-3 md:mr-4">
-          <CardHeader>
-            <CardTitle className="m-2 text-center">Recent Races</CardTitle>
-          </CardHeader>
-          {/* recent-races-table w-full max-[600px]:text-sm border-b-2 */}
-          <RecentRacesTable data={recentGames} pageCount={pageCount} />
-        </Card>
-
-        <Card className="p-3 mt-5 md:mt-0 md:ml-4">
-          <CardHeader>
-            <CardTitle className="m-2 text-center">Statistics</CardTitle>
-          </CardHeader>
-          <div className="grid grid-cols-1 md:grid-cols-2">
-            <Card className="mb-1 w-fill">
-              <CardHeader>
-                <CardTitle className="text-xl">Highest Cpm</CardTitle>
-              </CardHeader>
-              <CardContent>{maxCpm} Cpm</CardContent>
-            </Card>
-            <Card className="mb-1 w-fill md:ml-2">
-              <CardHeader>
-                <CardTitle className="text-xl">Highest accuracy</CardTitle>
-              </CardHeader>
-              <CardContent>{Number(maxAccuracy)}</CardContent>
-            </Card>
-
-            <Card className="w-fill max-sm:mb-1">
-              <CardHeader>
-                <CardTitle className="text-xl">Average Cpm</CardTitle>
-              </CardHeader>
-              <CardContent>{avarageCpm?.toFixed(2)} Cpm</CardContent>
-            </Card>
-            <Card className="w-fill max-sm:mb-1 md:ml-2">
-              <CardHeader>
-                <CardTitle className="text-xl">Average accuracy</CardTitle>
-              </CardHeader>
-              <CardContent>{Number(avarageAccuracy?.toFixed(2))}%</CardContent>
-            </Card>
-          </div>
-        </Card>
-      </div>
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-        <AccuracyChart recentGames={recentGames} />
-        <CpmChart recentGames={recentGames} />
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
