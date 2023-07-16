@@ -33,12 +33,13 @@ export function Voting({ userId, snippetId, usersVote }: VotingProps) {
           disabled={isPending}
           onClick={() => {
             startTransition(async () => {
-              if (!userId)
+              if (!userId) {
                 toast({
                   title: "Warning",
                   description: "You should sign in first to vote.",
                   variant: "middle",
                 });
+              }
               try {
                 if (usersVote?.type === "UP") {
                   await deleteVoteAction({ snippetId });
@@ -69,12 +70,13 @@ export function Voting({ userId, snippetId, usersVote }: VotingProps) {
           disabled={isPending}
           onClick={() => {
             startTransition(async () => {
-              if (!userId)
+              if (!userId) {
                 toast({
                   title: "Warning",
                   description: "You should sign in first to vote.",
                   variant: "middle",
                 });
+              }
               try {
                 if (usersVote?.type === "DOWN") {
                   await deleteVoteAction({

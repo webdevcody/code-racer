@@ -2,7 +2,15 @@
 import { Heading } from "@/components/ui/heading";
 import AddSnippetForm from "./_components/add-snippet-form";
 
-export default function AddSnippet() {
+interface AddSnippetPageSearchParams {
+  lang: string;
+}
+export default function AddSnippet({
+  searchParams,
+}: {
+  searchParams: AddSnippetPageSearchParams;
+}) {
+  const language = searchParams.lang;
   return (
     <div className="py-16">
       <section className="max-w-xl mx-auto">
@@ -11,7 +19,7 @@ export default function AddSnippet() {
           title="Add Your Snippet"
           description="Add Your Snippet to get started"
         />
-        <AddSnippetForm />
+        <AddSnippetForm lang={language} />
       </section>
     </div>
   );
