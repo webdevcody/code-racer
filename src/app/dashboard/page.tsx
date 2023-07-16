@@ -1,14 +1,13 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import CpmChart from "./cpm-chart";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import CpmChart from "./cpmChart";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { redirect } from "next/navigation";
 import type { Result } from "@prisma/client";
-import AccuracyChart from "./accuracy-chart";
-import { RecentRacesTable } from "./recent-races-table";
-import PerformanceComparison from "./performance-comparison";
+import AccuracyChart from "./accuracyChart";
+import { RecentRacesTable } from "./recentRaces";
+import PerformanceComparison from "./performanceComparison";
 import { Heading } from "@/components/ui/heading";
 
 interface DashboardPageProps {
@@ -41,7 +40,7 @@ export default async function DashboardPage({
         ])
       : [];
 
-  // List of recent games.
+  // List of recent games, total number of recent games, max cpm, max accuracy, avarage cpm, avarage accuracy
   const {
     recentGames,
     totalRecentGames,
@@ -109,75 +108,29 @@ export default async function DashboardPage({
     };
   });
 
-  const pageCount =
-    totalRecentGames === 0 ? 1 : Math.ceil(totalRecentGames / take);
+  const pageCount = (totalRecentGames === 0) ? 1 : Math.ceil(totalRecentGames / take);
 
   return (
-    <div className="text-center ">
-      {/* <h1 className="m-6 mb-4 text-4xl font-bold text-center">Dashboard</h1> */}
-      <Heading title="Dashboard" description="Find your stats" />
-      <div className="w-full mt-5">
-        <Tabs defaultValue="cpm" className="w-full">
-          <TabsList>
-            <TabsTrigger value="cpm">Cpm</TabsTrigger>
-            <TabsTrigger value="accuracy">Accuracy</TabsTrigger>
-          </TabsList>
-          <TabsContent value="cpm">
-            <PerformanceComparison obj="cpm" usersData={recentGames} />
-          </TabsContent>
-          <TabsContent value="accuracy">
-            <PerformanceComparison obj="accuracy" usersData={recentGames} />
-          </TabsContent>
-        </Tabs>
-      </div>
-      <div className="grid grid-cols-1 pb-5 mt-5 md:grid-cols-2">
-        <Card className="px-3 md:mr-4">
-          <CardHeader>
-            <CardTitle className="m-2 text-center">Recent Races</CardTitle>
-          </CardHeader>
-          {/* recent-races-table w-full max-[600px]:text-sm border-b-2 */}
-          <RecentRacesTable data={recentGames} pageCount={pageCount} />
-        </Card>
+    <>
 
-        <Card className="px-3 mt-5 md:mt-0 md:ml-4">
-          <CardHeader>
-            <CardTitle className="m-2 text-center">Statistics</CardTitle>
-          </CardHeader>
-          <div className="grid grid-cols-1 md:grid-cols-2">
-            <Card className="mb-1 w-fill">
-              <CardHeader>
-                <CardTitle className="">Highest Cpm</CardTitle>
-              </CardHeader>
-              <CardContent>{maxCpm} Cpm</CardContent>
-            </Card>
-            <Card className="mb-1 w-fill md:ml-2">
-              <CardHeader>
-                <CardTitle className="">Highest accuracy</CardTitle>
-              </CardHeader>
-              <CardContent>{Number(maxAccuracy) * 100}%</CardContent>
-            </Card>
-
-            <Card className="w-fill max-sm:mb-1">
-              <CardHeader>
-                <CardTitle className="">Average Cpm</CardTitle>
-              </CardHeader>
-              <CardContent>{avarageCpm?.toFixed(2)} Cpm</CardContent>
-            </Card>
-            <Card className="w-fill max-sm:mb-1 md:ml-2">
-              <CardHeader>
-                <CardTitle className="">Average accuracy</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {Number(avarageAccuracy?.toFixed(2)) * 100}%
-              </CardContent>
-            </Card>
-          </div>
-        </Card>
-      </div>
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-        <AccuracyChart recentGames={recentGames} />
-        <CpmChart recentGames={recentGames} />
-      </div>
-    </div>
+    </>
   );
 }
+
+
+{/* <div className="text-center ">
+  <Heading title="Dashboard" description="Find your stats" />
+
+  <div className="w-full mt-5">
+    <PerformanceComparison recentGames={recentGames} />
+  </div>
+  <div className="grid grid-cols-1 pb-5 mt-5 md:grid-cols-2">
+    <Card className="px-3 md:mr-4">
+      <RecentRacesTable data={recentGames} pageCount={pageCount} />
+    </Card>
+  </div>
+  <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+    <AccuracyChart recentGames={recentGames} />
+    <CpmChart recentGames={recentGames} />
+  </div>
+</div> */}
