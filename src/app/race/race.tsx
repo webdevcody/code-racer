@@ -265,7 +265,6 @@ export default function Race({ user, snippet }: RaceProps) {
   }
 
   function Backspace() {
-    // if (column != 0) setColumn(column - 1);
     if (textIndicatorPosition === input.length) {
       setInput((prevInput) => prevInput.slice(0, -1));
     }
@@ -361,8 +360,6 @@ export default function Race({ user, snippet }: RaceProps) {
   }
 
   function Key(e: React.KeyboardEvent<HTMLInputElement>) {
-    // if (column != 0) setColumn(column + 1);
-
     if (!Array.isArray(textIndicatorPosition)) {
       if (textIndicatorPosition === input.length) {
         setInput((prevInput) => prevInput + e.key);
@@ -407,8 +404,6 @@ export default function Race({ user, snippet }: RaceProps) {
     setStartTime(null);
     setInput("");
     setTextIndicatorPosition(0);
-    setNextTabStop(0);
-    setColumn(0);
   }
 
   return (
