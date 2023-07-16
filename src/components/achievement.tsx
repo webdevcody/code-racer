@@ -19,10 +19,10 @@ const Achievement = ({ achievement }: AchievementProps) => {
           tabIndex={0}
         >
           <Image
-            className="object-fill w-6 h-6"
+            className="object-fill w-20 h-20"
             src={achievement.image}
-            width={24}
-            height={24}
+            width={80}
+            height={80}
             alt={`Achievement: ${achievement.name}`}
           />
         </HoverCardTrigger>

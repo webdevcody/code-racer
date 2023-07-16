@@ -22,8 +22,8 @@ export const saveUserResultAction = action(
   async (input, { prisma, user }) => {
     if (!user) throw new UnauthorizedError();
 
-    prisma.$transaction(async (tx) => {
-      await tx.result.create({
+    return await prisma.$transaction(async (tx) => {
+      const result = await tx.result.create({
         data: {
           userId: user.id,
           takenTime: input.timeTaken.toString(),
@@ -53,6 +53,8 @@ export const saveUserResultAction = action(
           averageCpm: avgValues._avg.cpm ?? 0,
         },
       });
+
+      return result;
     });
   }
 );

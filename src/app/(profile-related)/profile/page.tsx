@@ -30,7 +30,7 @@ export default async function ProfilePage() {
 
   return (
     <main className="py-8 grid place-items-center h-[clamp(40rem,82.5dvh,50rem)]">
-      <div className="overflow-hidden relative w-[95%] max-w-[22.5rem] h-[32.5rem] rounded-2xl border-2 border-solid border-secondary-foreground">
+      <div className="relative w-[95%] max-w-[22.5rem] rounded-2xl border-2 border-solid border-secondary-foreground">
         <article className="flex flex-col items-center gap-2 p-2">
           <ProfileNav displayName={displayName} />
           <div className="pt-2 pb-1">
@@ -55,8 +55,10 @@ export default async function ProfilePage() {
           <ChangeNameForm displayName={displayName} />
           <AddBio />
           <span className="mt-10">Total Points: {totalPoints}</span>
+
+          <h2>Your Achievements</h2>
           {achievements.length ? (
-            <ul className="w-fit max-w-[292px] flex items-center flex-wrap gap-1 p-2 border-border rounded-sm bg-primary-foreground">
+            <ul className="gap-4 w-fit max-w-[292px] flex items-center flex-wrap p-2 rounded-sm">
               {achievements.map(({ achievement, unlockedAt }) => (
                 <Achievement
                   key={achievement.type}
