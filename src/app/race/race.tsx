@@ -434,7 +434,8 @@ export default function Race({
           onPaste={(e) => e.preventDefault()}
         />
 
-        <div className="flex justify-between">
+        <div className="flex justify-between items-center">
+          {showRaceTimer && <RaceTimer />}
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -447,7 +448,6 @@ export default function Race({
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          {showRaceTimer && <RaceTimer />}
         </div>
       </div>
 
