@@ -7,6 +7,7 @@ import { getRandomSnippet } from "../(play)/loaders";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "@/components/ui/use-toast";
 import { Icons } from "@/components/icons";
+import { downVoteSnippetAction } from "@/app/_actions/snippet";
 
 export function ReportButton({
   userId,
@@ -31,6 +32,7 @@ export function ReportButton({
       variant="destructive"
       onClick={() => {
         startTransition(async () => {
+          await downVoteSnippetAction({ snippetId });
           const snippet = await getRandomSnippet({
             language: language,
             reportedSnippets: [...prevReportedSnippets, snippetId],

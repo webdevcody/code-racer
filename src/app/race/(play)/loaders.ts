@@ -8,9 +8,6 @@ export async function getRandomSnippet(input: {
   language: string;
   reportedSnippets?: string[];
 }) {
-  if (input.reportedSnippets) {
-    await downVoteSnippetAction({ snippetId: input.reportedSnippets[0] });
-  }
 
   const itemCount = await prisma.snippet.count({
     where: {
