@@ -17,7 +17,7 @@ export const metadata = {
 
 export default async function ProfilePage() {
   const user = await getCurrentUser();
-  if (!user) notFound()
+  if (!user) notFound();
 
   // stuff that can be undefined or null
   const photoURL = user.image ?? "/placeholder-image.jpg";
@@ -32,10 +32,10 @@ export default async function ProfilePage() {
   // get bio, can be null
   const userData = await prisma.user.findUnique({
     where: {
-      id: user.id
-    }
-  })
-  if (!userData) notFound()
+      id: user.id,
+    },
+  });
+  if (!userData) notFound();
 
   const totalPoints = 0;
 

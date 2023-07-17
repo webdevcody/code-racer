@@ -37,8 +37,9 @@ export const siteConfig = {
   api: {
     github: {
       accessToken: process.env.GITHUB_ACCESS_TOKEN,
-      githubContributors: "https://api.github.com/repos/webdevcody/code-racer/contributors",
+      githubContributors:
+        "https://api.github.com/repos/webdevcody/code-racer/contributors",
       githubStars: "https://api.github.com/repos/webdevcody/code-racer",
-    }
+    },
   },
 };

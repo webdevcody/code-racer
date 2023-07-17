@@ -43,7 +43,7 @@ export default function ChangeNameForm({
   const { toast } = useToast();
 
   async function onSubmit(data: UpdateUser) {
-    setIsEditing(false)
+    setIsEditing(false);
     try {
       await updateUserAction({ name: data.name });
       toast({
@@ -85,7 +85,11 @@ export default function ChangeNameForm({
                       >
                         Cancel
                       </Button>
-                      <Button disabled={field.value === displayName} type="submit" className="w-full">
+                      <Button
+                        disabled={field.value === displayName}
+                        type="submit"
+                        className="w-full"
+                      >
                         Save
                       </Button>
                     </div>
