@@ -43,17 +43,15 @@ export default function ChangeNameForm({
   const { toast } = useToast();
 
   async function onSubmit(data: UpdateUser) {
+    setIsEditing(false)
     try {
       await updateUserAction({ name: data.name });
-
       toast({
         title: "Username successfully updated.",
         description: "Your username has been successfully updated.",
         variant: "default",
       });
-
       await session.update({ name: data.name });
-
       router.refresh();
     } catch (error) {
       catchError(error);
@@ -74,7 +72,7 @@ export default function ChangeNameForm({
               <FormControl>
                 <>
                   <Input
-                    className="text-2xl font-bold hover:border-dashed border hover:border-white"
+                    className="h-fit text-2xl text-center font-bold border-2 hover:border-dashed hover:border-primary"
                     onFocus={() => setIsEditing(true)}
                     {...field}
                   />
@@ -87,8 +85,8 @@ export default function ChangeNameForm({
                       >
                         Cancel
                       </Button>
-                      <Button type="submit" className="w-full">
-                        Submit
+                      <Button disabled={field.value === displayName} type="submit" className="w-full">
+                        Save
                       </Button>
                     </div>
                   )}
