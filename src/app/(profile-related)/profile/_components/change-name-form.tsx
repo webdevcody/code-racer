@@ -64,7 +64,7 @@ export default function ChangeNameForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="w-[75%] text-center mb-4"
+        className="w-[75%] text-center mb-4 mx-auto"
       >
         <FormField
           control={form.control}
@@ -74,7 +74,7 @@ export default function ChangeNameForm({
               <FormControl>
                 <>
                   <Input
-                    className="text-2xl font-bold hover:border-dashed border hover:border-white"
+                    className="text-2xl text-center font-bold hover:border-dashed border hover:border-white"
                     onFocus={() => setIsEditing(true)}
                     {...field}
                   />
