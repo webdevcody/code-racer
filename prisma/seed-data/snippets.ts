@@ -67,7 +67,7 @@ echo "Hello, World!";
   },
   {
     code: `console.log("Hello, World!");`,
-    language: "typeScript",
+    language: "typescript",
   },
 ];
 
