@@ -50,10 +50,7 @@ export function Bio({ bio }: BioProps) {
               defaultValue={bio ?? ""}
               placeholder="Add your bio"
               id="bio"
-              onChange={(e) => {
-                setOptimisticBio(e.currentTarget.value);
-                console.log(optimisticBio);
-              }}
+              onChange={(e) => setOptimisticBio(e.currentTarget.value)}
             />
           </div>
           <DialogFooter>

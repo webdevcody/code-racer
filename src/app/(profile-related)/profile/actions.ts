@@ -36,7 +36,6 @@ export async function updateBio(fd: FormData) {
       });
     }
   } catch (err) {
-    // if (err instanceof ZodError) toast({description: "Bio cannot be longer tha 128 characters"})
     catchError(err);
   }
   revalidatePath("/profile");
