@@ -150,10 +150,10 @@ export default function Race({
           Enter();
           break;
         case "ArrowLeft":
-          ArrowLeft();
+          // ArrowLeft(e);
           break;
         case "ArrowRight":
-          ArrowRight();
+          // ArrowRight(e);
           break;
         case "Tab":
           e.preventDefault();
@@ -166,10 +166,10 @@ export default function Race({
     }
   }
 
-  function ArrowRight() {
+  function ArrowRight(e: React.KeyboardEvent<HTMLInputElement>) {
     if (textIndicatorPosition === input.length) return;
 
-    if (!shiftKeyPressed) {
+    if (!e.shiftKey) {
       setTextIndicatorPosition((prevTextIndicatorPosition) => {
         if (typeof prevTextIndicatorPosition === "number") {
           return prevTextIndicatorPosition + 1;
@@ -180,7 +180,7 @@ export default function Race({
       });
     }
 
-    if (shiftKeyPressed) {
+    if (e.shiftKey && e.key === "ArrowRight") {
       setTextIndicatorPosition((prevTextIndicatorPosition) => {
         if (typeof prevTextIndicatorPosition === "number") {
           const array = [
@@ -213,7 +213,7 @@ export default function Race({
     }
   }
 
-  function ArrowLeft() {
+  function ArrowLeft(e: React.KeyboardEvent<HTMLInputElement>) {
     if (!shiftKeyPressed) {
       if (textIndicatorPosition !== 0) {
         setTextIndicatorPosition((prevTextIndicatorPosition) => {
@@ -227,7 +227,7 @@ export default function Race({
       }
     }
 
-    if (shiftKeyPressed) {
+    if (e.shiftKey && e.key === "ArrowLeft") {
       setTextIndicatorPosition((prevTextIndicatorPosition) => {
         if (typeof prevTextIndicatorPosition === "number") {
           // if it's still not an array, then convert it to an
@@ -255,7 +255,7 @@ export default function Race({
     const nextTabStop = 4 - (input.length % 4);
     const tabSpace = " ".repeat(nextTabStop);
 
-    setInput((prevInput) => prevInput + tabSpace);
+    setInput(input + tabSpace);
     setTextIndicatorPosition((prevTextIndicatorPosition) => {
       if (typeof prevTextIndicatorPosition === "number") {
         return prevTextIndicatorPosition + tabSpace.length;
@@ -337,7 +337,8 @@ export default function Race({
       newChars += " ".repeat(indentLength);
     }
 
-    setInput(input + newChars);
+    setInput((input) => input + newChars);
+    // setInput(input + newChars);
 
     setTextIndicatorPosition((prevTextIndicatorPosition) => {
       if (typeof prevTextIndicatorPosition === "number") {
