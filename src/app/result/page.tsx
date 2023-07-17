@@ -1,6 +1,6 @@
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Chart from "./chart";
+import Chart, { CurrentChart } from "./chart";
 import { Icons } from "@/components/icons";
 import Link from "next/link";
 import { FirstRaceBadge } from "./first-race-badge";
@@ -17,6 +17,7 @@ import {
 import { Heading } from "@/components/ui/heading";
 import { cn } from "@/lib/utils";
 import { User } from "next-auth";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 async function AuthenticatedPage({
   resultId,
@@ -54,6 +55,7 @@ async function AuthenticatedPage({
   const firstRaceBadge = await getFirstRaceBadge();
   let raceResults: ParsedRacesResult[] = [];
   let cardObjects = [] as { title: string; value: string | undefined }[];
+  const RaceTimeStamp = [];
 
   if (!currentRaceResult) {
     throw new Error("race result not found");
@@ -104,11 +106,22 @@ async function AuthenticatedPage({
         </div>
       </div>
       <div className="flex flex-col p-8 rounded-xl">
-        <div className="flex flex-wrap justify-center gap-4">
-          <p className="text-primary text-center text-xl">
+        <div className="flex flex-wrap justify-center gap-4 w-full">
+          {/* <p className="text-primary text-center text-xl">
             Your progress on this snippet
-          </p>
-          <Chart raceResult={raceResults} />
+          </p> */}
+          <Tabs defaultValue="Current" className="w-full">
+            <TabsList>
+              <TabsTrigger value="Current">Current</TabsTrigger>
+              <TabsTrigger value="History">History</TabsTrigger>
+            </TabsList>
+            <TabsContent value="Current">
+              <CurrentChart />
+            </TabsContent>
+            <TabsContent value="History">
+              <Chart raceResult={raceResults} />
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
       <div

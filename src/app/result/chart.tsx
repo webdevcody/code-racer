@@ -1,5 +1,6 @@
 "use client";
-import React, { useState, useCallback } from "react";
+
+import React, { useState, useCallback, useEffect } from "react";
 import {
   LineChart,
   Line,
@@ -9,9 +10,14 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  TooltipProps,
 } from "recharts";
 import { ResultChartLineProps } from "@/types/result";
 import { ParsedRacesResult } from "./loaders";
+import {
+  NameType,
+  ValueType,
+} from "recharts/types/component/DefaultTooltipContent";
 
 const dataKeys: ResultChartLineProps[] = [
   { dataKey: "accuracy", stroke: "#0261b9" },
@@ -83,4 +89,54 @@ export default function Chart({
       </ResponsiveContainer>
     </div>
   );
+}
+
+function renderTooltip(props: TooltipProps<ValueType, NameType>) {
+  const { active, payload } = props;
+
+  if (active && payload && payload.length) {
+    const data = payload[0] && payload[0].payload;
+
+    return (
+      <div className="p-5 m-0 border-2 rounded-lg bg-accent border-primary text-primary">
+        <p>{data.word}</p>
+        <p>
+          <span>Time : </span>
+          {data.time}
+        </p>
+      </div>
+    );
+  }
+}
+
+export function CurrentChart() {
+  const [raceTimeStamp, setRaceTimeStamp] = useState<any[]>([]);
+
+  useEffect(() => {
+    const getData = () => {
+      return JSON.parse(localStorage.getItem("raceTimeStamp") || "[]");
+    }
+
+    const data = getData();
+    return setRaceTimeStamp(data)
+  }, [])
+
+  return (
+    <div style={{ width: "100%", height: 300 }} className="mx-auto ">
+      <ResponsiveContainer>
+        <LineChart data={raceTimeStamp} margin={{ right: 25, top: 10 }}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="word" />
+          <YAxis />
+          <Line
+            type="monotone"
+            dataKey="time"
+            stroke="hsl(var(--primary))"
+            activeDot={{ r: 8 }}
+          />
+          <Tooltip content={renderTooltip} />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  )
 }

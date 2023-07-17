@@ -59,11 +59,18 @@ export default function Race({
 
   const isRaceFinished = input === code;
   const showRaceTimer = !!startTime && !isRaceFinished;
+  const [currentWord, setCurrentWord] = useState("");
+  const [raceTimeStamp, setRaceTimeStamp] = useState<any[]>([]);
 
   async function endRace() {
     if (!startTime) return;
     const endTime = new Date();
     const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
+
+    localStorage.setItem("raceTimeStamp", JSON.stringify([...raceTimeStamp, {
+      word: currentWord,
+      time: Date.now(),
+    }]))
 
     if (user) {
       const result = await saveUserResultAction({
@@ -351,6 +358,21 @@ export default function Race({
   function Key(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key !== code.slice(input.length, input.length + 1)) {
       setTotalErrors(totalErrors + 1);
+    }
+
+    if (e.key === " " && e.key === code.slice(input.length, input.length + 1)) {
+      setRaceTimeStamp((prev) => [
+        ...prev,
+        {
+          word: currentWord,
+          time: Date.now(),
+        }
+      ]);
+      setCurrentWord("");
+    }
+
+    if (e.key === code.slice(input.length, input.length + 1)) {
+      setCurrentWord((prev) => prev + e.key);
     }
 
     if (!Array.isArray(textIndicatorPosition)) {
