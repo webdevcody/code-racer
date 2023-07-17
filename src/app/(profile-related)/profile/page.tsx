@@ -37,7 +37,6 @@ export default async function ProfilePage() {
       id: user.id,
     },
   });
-  const bio = userData.bio;
   if (!userData) notFound();
 
   const totalPoints = 0;
@@ -70,7 +69,7 @@ export default async function ProfilePage() {
               <ChangeNameForm displayName={displayName} />
             </div>
             <div className="flex items-center justify-center gap-5">
-              <Bio bio={bio} />
+              <Bio bio={userData.bio} />
               <span>Total Points: {totalPoints}</span>
             </div>
             <div className="flex items-center justify-center gap-5 mt-10">
