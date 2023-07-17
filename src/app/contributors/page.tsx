@@ -9,8 +9,8 @@ async function getContributors(): Promise<GitHubUser[] | []> {
   try {
     const response = await fetch(url, {
       headers: {
-        "Authorization": "Bearer " + siteConfig.api.github.accessToken
-      }
+        Authorization: "Bearer " + siteConfig.api.github.accessToken,
+      },
     });
 
     if (!response.ok) {
@@ -34,9 +34,9 @@ export default async function ContributorsPage() {
         description="All the project contributors"
       />
       <br />
-      <ul className="mt-3 list-none grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+      <ul className="grid gap-8 mt-3 list-none md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {contributors.map((contributor) => (
-          <Contributor key={contributor.id} contributor={contributor}/>
+          <Contributor key={contributor.id} contributor={contributor} />
         ))}
       </ul>
     </div>
