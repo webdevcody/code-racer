@@ -94,12 +94,13 @@ export default function TitleBackdropSvg() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width={width}
-      height={config.height}
-      viewBox={`0 0 ${width} ${config.height}`}
+      // width={width}
+      // height={config.height}
+      // viewBox={`0 0 ${width} ${config.height}`}
+      className="absolute h-full w-full left-0 top-0 z-[-1]"
       fill="none"
     >
-      <g id="dashContainer" className="[&>*]:animate-dash">
+      <g id="dashContainer" className="[&>*]:animate-dash md:translate-y-[15%]">
         {lines.map((item, index) => (
           <line
             key={index}
