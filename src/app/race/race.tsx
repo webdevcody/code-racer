@@ -18,11 +18,6 @@ import { saveUserResultAction } from "../_actions/result";
 import RaceDetails from "./_components/race-details";
 import RaceTimer from "./race-timer";
 
-interface RaceProps {
-  user?: User;
-  snippet: Snippet;
-}
-
 function calculateCPM(
   numberOfCharacters: number,
   secondsTaken: number,
@@ -38,7 +33,13 @@ function calculateAccuracy(
   return (1 - errorsCount / numberOfCharacters) * 100;
 }
 
-export default function Race({ user, snippet }: RaceProps) {
+export default function Race({
+  user,
+  snippet,
+}: {
+  user?: User;
+  snippet: Snippet;
+}) {
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [input, setInput] = useState("");
   const [shiftKeyPressed, setShiftKeyPressed] = useState(false);

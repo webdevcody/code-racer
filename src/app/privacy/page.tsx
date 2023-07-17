@@ -1,10 +1,7 @@
 import { Heading } from "@/components/ui/heading";
 import { Subheading } from "@/components/ui/sub-heading";
-import { FC } from "react";
 
-interface PrivacyPageProps {}
-
-const PrivacyPage: FC<PrivacyPageProps> = ({}) => {
+function PrivacyPage({}) {
   return (
     <>
       <Heading
@@ -14,6 +11,6 @@ const PrivacyPage: FC<PrivacyPageProps> = ({}) => {
       <Subheading title="Policy" description="" />
     </>
   );
-};
+}
 
 export default PrivacyPage;

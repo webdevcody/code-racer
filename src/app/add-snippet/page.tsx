@@ -2,13 +2,12 @@
 import { Heading } from "@/components/ui/heading";
 import AddSnippetForm from "./_components/add-snippet-form";
 
-interface AddSnippetPageSearchParams {
-  lang: string;
-}
 export default function AddSnippet({
   searchParams,
 }: {
-  searchParams: AddSnippetPageSearchParams;
+  searchParams: {
+    lang: string;
+  };
 }) {
   const language = searchParams.lang;
   return (

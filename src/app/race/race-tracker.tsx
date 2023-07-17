@@ -1,21 +1,16 @@
-import {
-  ProgressBar,
-  ProgressIndicator,
-} from "@/components/ui/progress-bar";
+import { ProgressBar, ProgressIndicator } from "@/components/ui/progress-bar";
 import Image from "next/image";
 import type { User } from "next-auth";
-
-interface RaceTrackerProps {
-  codeLength: number;
-  inputLength: number;
-  user?: User;
-}
 
 export default function RaceTracker({
   codeLength,
   inputLength,
   user,
-}: RaceTrackerProps) {
+}: {
+  codeLength: number;
+  inputLength: number;
+  user?: User;
+}) {
   const progress = (Math.min(inputLength, codeLength) / codeLength) * 100;
 
   return (

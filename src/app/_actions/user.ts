@@ -27,28 +27,34 @@ export const saveUserResultAction = action(
         snippetId: input.snippetId,
       },
     });
-  }
+  },
 );
 
-export const updateUserAction = action(z.object({ name: z.string() }), async (input, { user, prisma }) => {
-  if (!user) throw new UnauthorizedError();
+export const updateUserAction = action(
+  z.object({ name: z.string() }),
+  async (input, { user, prisma }) => {
+    if (!user) throw new UnauthorizedError();
 
-  await prisma.user.update({
-    where: {
-      id: user.id,
-    },
-    data: {
-      name: input.name,
-    },
-  });
-});
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        name: input.name,
+      },
+    });
+  },
+);
 
-export const deleteUserAction = action(z.object({}), async (_, { user, prisma }) => {
-  if (!user) throw new UnauthorizedError();
+export const deleteUserAction = action(
+  z.object({}),
+  async (_, { user, prisma }) => {
+    if (!user) throw new UnauthorizedError();
 
-  await prisma.user.delete({
-    where: {
-      id: user.id,
-    },
-  });
-});
+    await prisma.user.delete({
+      where: {
+        id: user.id,
+      },
+    });
+  },
+);

@@ -116,7 +116,11 @@ function BubbleChart({
   );
 }
 
-export default function PerformanceComparison({ recentGames }: { recentGames: Result[] }) {
+export default function PerformanceComparison({
+  recentGames,
+}: {
+  recentGames: Result[];
+}) {
   return (
     <Tabs defaultValue="cpm" className="w-full">
       <TabsList>
@@ -130,5 +134,5 @@ export default function PerformanceComparison({ recentGames }: { recentGames: Re
         <BubbleChart obj="accuracy" usersData={recentGames} />
       </TabsContent>
     </Tabs>
-  )
+  );
 }

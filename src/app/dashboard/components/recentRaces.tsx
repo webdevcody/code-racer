@@ -16,12 +16,13 @@ import { Icons } from "@/components/icons";
 import { cn, formatDate } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 
-interface RecentRacesTableProps {
+export function RecentRacesTable({
+  data,
+  pageCount,
+}: {
   data: Result[];
   pageCount: number;
-}
-
-export function RecentRacesTable({ data, pageCount }: RecentRacesTableProps) {
+}) {
   const columns = React.useMemo<ColumnDef<Result, unknown>[]>(
     () => [
       {
@@ -33,9 +34,9 @@ export function RecentRacesTable({ data, pageCount }: RecentRacesTableProps) {
           return (
             <Link
               className={cn(buttonVariants(), "whitespace-nowrap")}
-              href={`/race?snippetId=${snippetId}`}
+              href={`/race/practice?snippetId=${snippetId}`}
             >
-              Re-race
+              Practice
             </Link>
           );
         },

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Users } from "lucide-react";
@@ -30,8 +30,9 @@ export default function MultiplayerRace() {
               true && "pointer-events-none cursor-not-allowed opacity-40",
             )}
             onClick={(e) => e.preventDefault()}
-            href={`/race/multiplayer${languageMultiplayer ? "?lang=" : ""
-              }${encodeURIComponent(languageMultiplayer)}`} // Make sure it is URL encoded
+            href={`/race/multiplayer${
+              languageMultiplayer ? "?lang=" : ""
+            }${encodeURIComponent(languageMultiplayer)}`} // Make sure it is URL encoded
           >
             Start Racing (Coming Soon)
           </Link>

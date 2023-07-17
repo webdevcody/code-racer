@@ -1,13 +1,13 @@
 import { Heading } from "@/components/ui/heading";
 import { prisma } from "@/lib/prisma";
 
-interface PageProps {
+const page = async ({
+  params,
+}: {
   params: {
     userId: string;
   };
-}
-
-const page = async ({ params }: PageProps) => {
+}) => {
   const { userId } = params;
   const user = await prisma.user.findFirst({
     where: { id: userId },

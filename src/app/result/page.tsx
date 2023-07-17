@@ -88,7 +88,7 @@ async function AuthenticatedPage({
         <Heading
           centered
           title="Your Race Results"
-          description="You did great! Checkout your race results below"
+          description="You did great! View your race results below"
         />
         <div className="grid grid-cols-2 gap-3 mx-auto md:grid-cols-4 md:gap-6">
           {cardObjects.map((c, idx) => {
@@ -115,15 +115,16 @@ async function AuthenticatedPage({
         className="flex flex-wrap items-center justify-center gap-4 p-2"
         tabIndex={-1}
       >
-        <Link className={buttonVariants()} href="/race">
-          <Icons.chevronRight className="w-5 h-5" aria-hidden="true" />
+        <Link
+          title="Retry"
+          className={cn(buttonVariants(), "gap-2")}
+          href={`/race/practice?snippetId=${currentRaceResult.snippetId}`}
+        >
+          <Icons.refresh className="w-5 h-5" aria-hidden="true" /> Retry
         </Link>
-        <Link className={buttonVariants()} href="/race">
-          <Icons.refresh className="w-5 h-5" aria-hidden="true" />
+        <Link title="New Race" className={buttonVariants()} href="/race">
+          <Icons.chevronRight className="w-5 h-5" aria-hidden="true" /> New Race
         </Link>
-        <Button>
-          <Icons.picture className="w-5 h-5" aria-hidden="true" />
-        </Button>
       </div>
       <div className="my-4">
         {currentRaceResult && (

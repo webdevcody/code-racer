@@ -3,13 +3,13 @@ import Image from "next/image";
 import { Icons } from "./icons";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
 
-interface AchievementProps {
+const Achievement = ({
+  achievement,
+}: {
   achievement: Pick<Achievement, "image" | "name" | "description"> & {
     unlockedAt: Date;
   };
-}
-
-const Achievement = ({ achievement }: AchievementProps) => {
+}) => {
   return (
     <div>
       <HoverCard openDelay={100}>

@@ -15,13 +15,13 @@ import { useSession } from "next-auth/react";
 import type { User } from "next-auth";
 import { UserRole } from "@prisma/client";
 
-interface MobileNavProps {
+export function MobileNav({
+  user,
+}: {
   user?: User & {
     role: UserRole;
   };
-}
-
-export function MobileNav({ user }: MobileNavProps) {
+}) {
   const [open, setOpen] = useState(false);
   const isLoggedIn = !!useSession().data;
 

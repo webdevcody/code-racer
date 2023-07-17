@@ -1,16 +1,16 @@
 import { cn } from "@/lib/utils";
-interface CodeProps {
-  code: string;
-  userInput: string;
-  textIndicatorPosition: number | number[];
-  errors: number[];
-}
+
 export default function Code({
   code,
   errors,
   userInput,
   textIndicatorPosition,
-}: CodeProps) {
+}: {
+  code: string;
+  userInput: string;
+  textIndicatorPosition: number | number[];
+  errors: number[];
+}) {
   function textIndicatorPositionDeterminer(charIndex: number) {
     if (!Array.isArray(textIndicatorPosition)) {
       return charIndex === textIndicatorPosition;

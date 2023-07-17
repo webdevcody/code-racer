@@ -16,13 +16,13 @@ import {
 import type { User } from "next-auth";
 import { UserRole } from "@prisma/client";
 
-interface UserDropdownProps {
+export function UserDropdown({
+  user,
+}: {
   user?: User & {
     role: UserRole;
   };
-}
-
-export function UserDropdown({ user }: UserDropdownProps) {
+}) {
   return (
     <div className="flex items-center gap-4">
       <div className="flex justify-center">
@@ -32,13 +32,13 @@ export function UserDropdown({ user }: UserDropdownProps) {
   );
 }
 
-interface AccountMenuProps {
+const AccountMenu = ({
+  user,
+}: {
   user: User & {
     role: UserRole;
   };
-}
-
-const AccountMenu = ({ user }: AccountMenuProps) => {
+}) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

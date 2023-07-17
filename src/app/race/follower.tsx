@@ -1,14 +1,12 @@
 import { useEffect, useMemo, useRef } from "react";
 
-interface FollowersProps {
-  codeContainerRef: React.RefObject<HTMLPreElement>;
-  userInput: string;
-}
-
 export default function Follower({
   codeContainerRef,
   userInput,
-}: FollowersProps) {
+}: {
+  codeContainerRef: React.RefObject<HTMLPreElement>;
+  userInput: string;
+}) {
   const followerRef = useRef<HTMLDivElement>(null);
 
   // Every time the user types, update the follower

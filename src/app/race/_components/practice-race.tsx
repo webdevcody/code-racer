@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { User } from "lucide-react";
@@ -10,7 +10,6 @@ import LanguageDropDown from "@/app/add-snippet/_components/language-dropdown";
 export default function PracticeRace() {
   const [languageSinglePlayer, setLanguageSinglePlayer] = useState("");
   const [error, setError] = useState("");
-
 
   const router = useRouter();
 
@@ -42,7 +41,8 @@ export default function PracticeRace() {
               return;
             }
             router.push(
-              `/race/practice${languageSinglePlayer ? "?lang=" : ""
+              `/race/practice${
+                languageSinglePlayer ? "?lang=" : ""
               }${encodeURIComponent(languageSinglePlayer)}`, // Make sure it is URL encoded
             );
           }}

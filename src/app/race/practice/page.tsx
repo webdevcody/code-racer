@@ -5,11 +5,6 @@ import { prisma } from "@/lib/prisma";
 import NoSnippet from "../no-snippet";
 import Race from "../race";
 
-interface RacePageSearchParams {
-  snippetId: string;
-  lang: string;
-}
-
 async function getRandomSnippet(lang: string) {
   const itemCount = await prisma.snippet.count({
     where: {
@@ -43,7 +38,10 @@ async function getSearchParamSnippet(snippetId: string | string[]) {
 export default async function PracticeRacePage({
   searchParams,
 }: {
-  searchParams: RacePageSearchParams;
+  searchParams: {
+    snippetId: string;
+    lang: string;
+  };
 }) {
   const user = await getCurrentUser();
   const snippet =

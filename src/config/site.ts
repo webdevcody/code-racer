@@ -13,10 +13,6 @@ export const siteConfig = {
         title: "Leaderboard",
         href: "/leaderboard",
       },
-      {
-        title: "Contributors",
-        href: "/contributors",
-      },
     ];
 
     if (isLoggedIn) {
@@ -26,6 +22,11 @@ export const siteConfig = {
       });
     }
 
+    items.push({
+      title: "Contributors",
+      href: "/contributors",
+    });
+
     return items;
   },
 
@@ -34,6 +35,7 @@ export const siteConfig = {
     codyTwitter: "https://twitter.com/webdevcody",
   },
   api: {
-    githubContributors: "https://api.github.com/repos/webdevcody/code-racer/contributors",
-  }
+    githubContributors:
+      "https://api.github.com/repos/webdevcody/code-racer/contributors",
+  },
 };

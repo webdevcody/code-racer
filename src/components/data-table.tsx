@@ -33,7 +33,12 @@ interface ColumnSort {
 
 type SortingState = ColumnSort[];
 
-interface DataTableProps<TData, TValue> {
+export function DataTable<TData, TValue>({
+  columns,
+  data,
+  pageCount,
+  defaultSorting,
+}: {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   pageCount: number;
@@ -41,14 +46,7 @@ interface DataTableProps<TData, TValue> {
     prop: string;
     val: "asc" | "desc";
   };
-}
-
-export function DataTable<TData, TValue>({
-  columns,
-  data,
-  pageCount,
-  defaultSorting,
-}: DataTableProps<TData, TValue>) {
+}) {
   const [isPending, startTransition] = React.useTransition();
 
   const router = useRouter();
