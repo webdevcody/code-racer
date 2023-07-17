@@ -17,6 +17,7 @@ import Code from "./code";
 import { saveUserResultAction } from "../_actions/result";
 import RaceDetails from "./_components/race-details";
 import RaceTimer from "./race-timer";
+import { Logger } from "@/lib/logger";
 
 function calculateCPM(
   numberOfCharacters: number,
@@ -113,8 +114,7 @@ export default function Race({
   }
 
   function handleKeyboardDownEvent(e: React.KeyboardEvent<HTMLInputElement>) {
-    console.log(e.key);
-    console.log("hit");
+    Logger.Info("handleKeyboardDownEvent", e.key)
     if (!startTime) {
       setStartTime(new Date());
     }

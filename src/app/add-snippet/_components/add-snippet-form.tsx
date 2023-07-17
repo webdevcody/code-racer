@@ -18,6 +18,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { addSnippetAction } from "../../_actions/snippet";
 import LanguageDropDown from "./language-dropdown";
+import { Logger } from "@/lib/logger";
 
 const formDataSchema = z.object({
   codeLanguage: z
@@ -90,7 +91,7 @@ export default function AddSnippetForm({ lang }: { lang: string }) {
 
       form.reset();
     } catch (err: any) {
-      console.log(err);
+      Logger.Error("AddSnippetForm", err);
       toast({
         title: "Error!",
         description: "Something went wrong!" + err.message,

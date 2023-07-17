@@ -7,6 +7,7 @@ import {
   acquitSnippetAction,
   deleteSnippetAction,
 } from "@/app/_actions/snippet";
+import { Logger } from "@/lib/logger";
 
 export function ReviewButtons({ snippetId }: { snippetId: Snippet["id"] }) {
   const [isAcquitting, setIsAcquitting] = React.useState(false);
@@ -21,7 +22,7 @@ export function ReviewButtons({ snippetId }: { snippetId: Snippet["id"] }) {
           try {
             await acquitSnippetAction({ id: snippetId });
           } catch (err) {
-            console.log(err);
+            Logger.Error("ReviewButttonsAcquit", err);
           } finally {
             setIsAcquitting(false);
           }
@@ -37,7 +38,7 @@ export function ReviewButtons({ snippetId }: { snippetId: Snippet["id"] }) {
           try {
             await deleteSnippetAction({ id: snippetId });
           } catch (err) {
-            console.log(err);
+            Logger.Error("ReviewButttonsDelete", err);
           } finally {
             setIsDeleting(false);
           }
