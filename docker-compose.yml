@@ -5,7 +5,7 @@ services:
     restart: always
     container_name: code-racer-postgres
     ports:
-      - 5432:5432
+      - ${POSTGRES_EXPOSED_PORT}:5432
     environment:
       POSTGRES_PASSWORD: example
       PGDATA: /data/postgres
