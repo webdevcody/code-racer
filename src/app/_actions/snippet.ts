@@ -10,7 +10,7 @@ const snippetVoteSchema = z.object({
   snippetId: z.string(),
 });
 
-const SNIPPET_RATING_THRESHOLD = -10;
+const SNIPPET_RATING_THRESHOLD = -1;
 
 export const upvoteSnippetAction = action(
   snippetVoteSchema,
