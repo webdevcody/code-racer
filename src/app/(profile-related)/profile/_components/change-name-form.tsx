@@ -4,14 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import { catchError } from "@/lib/utils";
+import { catchError} from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { updateUserAction } from "../../../_actions/user";
+import { useState } from "react";
+import { updateUserAction } from "@/app/_actions/user";
+import { Icons } from "@/components/icons";
 
 const updateUserSchema = z.object({
   name: z
@@ -38,7 +39,7 @@ export default function ChangeNameForm({
     },
   });
 
-  const [isEditing, setIsEditing] = React.useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const { toast } = useToast();
 
@@ -62,7 +63,7 @@ export default function ChangeNameForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="w-[75%] text-center mb-4 mx-auto"
+        className="w-[75%] text-center mx-auto"
       >
         <FormField
           control={form.control}
@@ -71,28 +72,32 @@ export default function ChangeNameForm({
             <FormItem>
               <FormControl>
                 <>
-                  <Input
-                    className="h-fit text-2xl text-center font-bold border-2 hover:border-dashed hover:border-primary"
-                    onFocus={() => setIsEditing(true)}
-                    {...field}
-                  />
+                      <Input
+                        className="text-2xl text-center font-bold border-2 hover:border-dashed hover:border-primary"
+                        onFocus={() => setIsEditing(true)}
+                        {...field}
+                      />
                   {isEditing && (
-                    <div className="flex items-center gap-2">
-                      <Button
-                        type="reset"
-                        className="w-full"
-                        onClick={() => setIsEditing(false)}
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        disabled={field.value === displayName}
-                        type="submit"
-                        className="w-full"
-                      >
-                        Save
-                      </Button>
-                    </div>
+                    <>
+                      <div className="flex items-center justify-center gap-2">
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          type="reset"
+                          onClick={() => setIsEditing(false)}
+                        >
+                          <Icons.cross className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="success"
+                          disabled={field.value === displayName || field.value === ""}
+                          type="submit"
+                        >
+                          <Icons.check className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </>
                   )}
                 </>
               </FormControl>

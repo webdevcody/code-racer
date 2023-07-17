@@ -29,11 +29,11 @@ export function MobileNav({
     <div className="md:hidden">
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
-          <Button className="w-12 h-12 p-0" onClick={() => setOpen(!open)}>
+          <Button className="w-10 h-10 p-0" onClick={() => setOpen(!open)}>
             {open ? (
-              <Icons.mobileNavOpen className="h-[2rem] w-[2rem]" />
+              <Icons.mobileNavOpen className="text-background h-[2rem] w-[2rem]" />
             ) : (
-              <Icons.mobileNavClosed className="h-[2rem] w-[2rem]" />
+              <Icons.mobileNavClosed className="text-background h-[2rem] w-[2rem]" />
             )}
           </Button>
         </SheetTrigger>

@@ -1,4 +1,4 @@
-import { GitHubLogoIcon, MoonIcon, SunIcon } from "@radix-ui/react-icons";
+import { CheckIcon, Cross2Icon, GitHubLogoIcon, MoonIcon, SunIcon } from "@radix-ui/react-icons";
 import {
   BarChart,
   ChevronDownSquareIcon,
@@ -67,4 +67,6 @@ export const Icons = {
   thumbsUp: ThumbsUp,
   thumbsDown: ThumbsDown,
   spinner: Loader2,
+  cross: Cross2Icon,
+  check: CheckIcon,
 };
