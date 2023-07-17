@@ -60,18 +60,18 @@ export default async function ContributorsPage() {
             className="flex gap-2 bg-background p-1 border-primary border-2 rounded-full"
           >
             <Image
-              className="rounded-full"
+              className="self-center rounded-full"
               src={contributor.avatar_url}
               alt={contributor.login}
-              width={45}
-              height={45}
+              width={50}
+              height={50}
             />
-            <div className="flex flex-col sm:flex-row w-full sm:justify-evenly md:justify-center">
-              <a href={contributor.html_url} className="self-center text-ellipsis overflow-hidden">
+            <div className="flex flex-col sm:flex-row w-full justify-start sm:justify-evenly">
+              <a href={contributor.html_url} className="sm:self-center text-ellipsis overflow-hidden">
               {contributor.login}
             </a>
-            <span className="self-center font-thin">-</span>
-              <span className="self-center object-none font-thin text-xl">
+              <span className="sm:self-center font-thin">-</span>
+              <span className="sm:self-center font-thin text-xl">
               {contributor.contributions} contributions
             </span>
             </div>
