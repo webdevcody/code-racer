@@ -62,7 +62,7 @@ export default function ChangeNameForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="w-[75%] text-center mb-4"
+        className="w-[75%] text-center mb-4 mx-auto"
       >
         <FormField
           control={form.control}

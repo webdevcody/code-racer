@@ -10,6 +10,8 @@ import ChangeNameForm from "./_components/change-name-form";
 import ProfileNav from "./_components/profile-nav";
 import { Bio } from "./_components/bio";
 import { notFound } from "next/navigation";
+import { Heading } from "@/components/ui/heading";
+import LogoutBtn from "./_components/logout-button";
 
 export const metadata = {
   title: "Profile Page",
@@ -35,62 +37,79 @@ export default async function ProfilePage() {
       id: user.id,
     },
   });
+  const bio = userData.bio;
   if (!userData) notFound();
 
   const totalPoints = 0;
 
   return (
-    <main className="py-8 grid place-items-center h-[clamp(40rem,82.5dvh,50rem)]">
-      <div className="relative w-[95%] max-w-[22.5rem] rounded-2xl border-2 border-solid border-secondary-foreground">
-        <article className="flex flex-col items-center gap-2 p-2">
-          <ProfileNav displayName={displayName} />
-          <div className="pt-2 pb-1">
-            <Link
-              href={`/view-photo?photoURL=${photoURL}`}
-              title="View Profile Picture"
-              prefetch
-              className="shadow-lg shadow-monochrome-with-bg-opacity bg-opacity-50 opacity-90 inline-block overflow-hidden w-36 h-36 rounded-full relative before:absolute before:content-[''] before:inset-0 before:w-full before:h-full before:z-10 hover:before:bg-monochrome-with-bg-opacity before:bg-opacity-10 hover:before:backdrop-blur-[1.5px] before:rounded-full"
-            >
-              <Image
-                src={photoURL}
-                alt="Profile Picture"
-                width={200}
-                height={200}
-                loading="eager"
-                fetchPriority="high"
-                priority
-                className="object-cover w-full h-full"
-              />
-            </Link>
+    <main>
+      <article className="md:h-[calc(100vh-56px)]">
+        <section className="md:flex h-full w-full gap-5">
+          <div className="md:w-1/3 w-full md:border-r md:border-b-0 border-b py-5">
+            <div>
+              <Link
+                href={`/view-photo?photoURL=${photoURL}`}
+                title="View Profile Picture"
+                prefetch
+                className="rounded-full w-40 mx-auto block"
+              >
+                <Image
+                  src={photoURL}
+                  alt="Profile Picture"
+                  width={200}
+                  height={200}
+                  loading="eager"
+                  fetchPriority="high"
+                  priority
+                  className="object-cover w-full h-full rounded-full"
+                />
+              </Link>
+            </div>
+            <div className="mt-5">
+              <ChangeNameForm displayName={displayName} />
+            </div>
+            <div className="flex items-center justify-center gap-5">
+              <Bio bio={bio} />
+              <span>Total Points: {totalPoints}</span>
+            </div>
+            <div className="flex items-center justify-center gap-5 mt-10">
+              <ProfileNav displayName={displayName} />
+              <LogoutBtn />
+            </div>
           </div>
-          <ChangeNameForm displayName={displayName} />
-          <Bio bio={userData.bio} />
-          <span className="mt-5">Total Points: {totalPoints}</span>
-
-          <h2>Your Achievements</h2>
-          {userAchievements.length ? (
-            <ul className="gap-4 w-fit max-w-[292px] flex items-center flex-wrap p-2 rounded-sm">
-              {userAchievements.map(({ achievementType, unlockedAt }) => {
-                const achievement = achievements.find(
-                  (achievement) => achievement.type === achievementType,
-                );
-                if (!achievement) return null;
-                return (
-                  <Achievement
-                    key={achievement.type}
-                    achievement={{
-                      name: achievement.name,
-                      description: achievement.description,
-                      unlockedAt,
-                      image: achievement.image,
-                    }}
-                  />
-                );
-              })}
-            </ul>
-          ) : null}
-        </article>
-      </div>
+          <div className="flex-1 md:h-full md:overflow-y-auto">
+            {userAchievements.length ? (
+              <>
+                <div className="py-5">
+                  <Heading title="Achievements" centered />
+                </div>
+                <ul className="flex flex-wrap p-5">
+                  {userAchievements.map(({ achievementType, unlockedAt }) => {
+                    const achievement = achievements.find(
+                      (achievement) => achievement.type === achievementType,
+                    );
+                    if (!achievement) return null;
+                    return (
+                      <Achievement
+                        key={achievement.type}
+                        achievement={{
+                          name: achievement.name,
+                          description: achievement.description,
+                          unlockedAt,
+                          image: achievement.image,
+                        }}
+                      />
+                    );
+                  })}
+                </ul>
+              </>
+            ) : (
+              <p className="p-5">You Don&apos;t Have Achievements</p>
+            )}
+          </div>
+        </section>
+      </article>
     </main>
   );
 }
