@@ -5,7 +5,7 @@ import { siteConfig } from "@/config/site";
 async function getGitHubStars(): Promise<string | null> {
   try {
     const response = await fetch(
-      "https://api.github.com/repos/webdevcody/code-racer",
+      siteConfig.api.github.githubStars,
       {
         headers: {
           Accept: "application/vnd.github+json",
