@@ -23,6 +23,16 @@ export default function Code({
     }
   }
 
+  function verifyErrors(errors: number[]) {
+    if (errors.length > 0) {
+      return (
+        <span className="text-red-500">
+          You must fix all errors before you can finish the race!
+        </span>
+      );
+    }
+  }
+
   return (
     <>
       <pre className="text-monochrome mb-4 overflow-auto font-medium">
@@ -52,11 +62,7 @@ export default function Code({
           </span>
         ))}
       </pre>
-      {errors.length > 0 && (
-        <span className="text-red-500">
-          You must fix all errors before you can finish the race!
-        </span>
-      )}
+      {verifyErrors(errors)}
     </>
   );
 }
