@@ -150,10 +150,10 @@ export default function Race({
           Enter();
           break;
         case "ArrowLeft":
-          // ArrowLeft(e);
+          ArrowLeft(e);
           break;
         case "ArrowRight":
-          // ArrowRight(e);
+          ArrowRight(e);
           break;
         case "Tab":
           e.preventDefault();
@@ -214,7 +214,7 @@ export default function Race({
   }
 
   function ArrowLeft(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (!shiftKeyPressed) {
+    if (!e.shiftKey) {
       if (textIndicatorPosition !== 0) {
         setTextIndicatorPosition((prevTextIndicatorPosition) => {
           if (typeof prevTextIndicatorPosition === "number") {
