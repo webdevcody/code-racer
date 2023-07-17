@@ -33,4 +33,7 @@ export const siteConfig = {
     github: "https://github.com/webdevcody/code-racer",
     codyTwitter: "https://twitter.com/webdevcody",
   },
+  api: {
+    githubContributors: "https://api.github.com/repos/webdevcody/code-racer/contributors",
+  }
 };
