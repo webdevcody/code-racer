@@ -19,6 +19,7 @@ import * as z from "zod";
 import { addSnippetAction } from "../../_actions/snippet";
 import LanguageDropDown from "./language-dropdown";
 import { Logger } from "@/lib/logger";
+import { catchError } from "@/lib/utils";
 
 const formDataSchema = z.object({
   codeLanguage: z
@@ -90,16 +91,9 @@ export default function AddSnippetForm({ lang }: { lang: string }) {
       });
 
       form.reset();
-    } catch (err: any) {
+    } catch (err) {
       Logger.Error("AddSnippetForm", err);
-      toast({
-        title: "Error!",
-        description: "Something went wrong!" + err.message,
-        duration: 5000,
-        style: {
-          background: "hsl(var(--destructive))",
-        },
-      });
+      catchError(err);
     }
   }
 

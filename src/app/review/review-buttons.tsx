@@ -36,7 +36,7 @@ export function ReviewButtons({ snippetId }: { snippetId: Snippet["id"] }) {
         onClick={async () => {
           setIsDeleting(true);
           try {
-            await deleteSnippetAction({ id: snippetId });
+            await deleteSnippetAction({ id: snippetId, path: "/review" });
           } catch (err) {
             Logger.Error("ReviewButttonsDelete", err);
           } finally {

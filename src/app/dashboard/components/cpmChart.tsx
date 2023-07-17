@@ -16,10 +16,7 @@ import { Result } from "@prisma/client";
 
 function CpmChart({ recentGames }: { recentGames: Result[] }) {
   return (
-    <Card className="h-[400px]">
-      <CardHeader>
-        <CardTitle className="m-2 text-center">Characters per minute</CardTitle>
-      </CardHeader>
+    <div className="h-[500px]">
       <ResponsiveContainer height="100%">
         <ComposedChart
           data={recentGames}
@@ -38,7 +35,7 @@ function CpmChart({ recentGames }: { recentGames: Result[] }) {
           />
         </ComposedChart>
       </ResponsiveContainer>
-    </Card>
+    </div>
   );
 }
 
