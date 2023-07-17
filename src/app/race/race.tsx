@@ -42,7 +42,6 @@ export default function Race({
 }) {
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [input, setInput] = useState("");
-  const [shiftKeyPressed, setShiftKeyPressed] = useState(false);
   const [textIndicatorPosition, setTextIndicatorPosition] = useState<
     number | number[]
   >(0);
@@ -183,29 +182,13 @@ export default function Race({
     if (e.shiftKey && e.key === "ArrowRight") {
       setTextIndicatorPosition((prevTextIndicatorPosition) => {
         if (typeof prevTextIndicatorPosition === "number") {
-          const array = [
-            prevTextIndicatorPosition + 1,
-            prevTextIndicatorPosition,
-          ];
+          const array = [prevTextIndicatorPosition + 1];
           return array;
-        } else if (prevTextIndicatorPosition.at(-1) !== input.length) {
-          if (prevTextIndicatorPosition.length !== 1) {
-            // Since the array's format is in descending order
-            // we pop it to get rid of the last value, thus
-            // moving the text position forward.
-            const array = [...prevTextIndicatorPosition];
-            array.pop();
-            return array;
-
-            /** Can't find a way to conditionally let it function in
-             *  a specific way (right or left).
-             */
-            // const lastValue = prevTextIndicatorPosition.at(-1) as number;
-            // const array = [lastValue + 1, ...prevTextIndicatorPosition];
-            // return array;
-          } else {
-            return prevTextIndicatorPosition[0] + 1;
-          }
+        } else if (prevTextIndicatorPosition.at(1) !== 1) {
+          const array = [...prevTextIndicatorPosition];
+          const lastValue = prevTextIndicatorPosition.at(-1) as number;
+          array.push(lastValue + 1);
+          return array;
         } else {
           return prevTextIndicatorPosition;
         }
@@ -337,8 +320,7 @@ export default function Race({
       newChars += " ".repeat(indentLength);
     }
 
-    setInput((input) => input + newChars);
-    // setInput(input + newChars);
+    setInput(input + newChars);
 
     setTextIndicatorPosition((prevTextIndicatorPosition) => {
       if (typeof prevTextIndicatorPosition === "number") {
@@ -382,7 +364,7 @@ export default function Race({
 
     if (Array.isArray(textIndicatorPosition)) {
       Backspace();
-      setInput((prevInput) => prevInput + e.key);
+      setInput(input + e.key);
     }
 
     setTextIndicatorPosition((prevTextIndicatorPosition) => {
