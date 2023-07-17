@@ -47,13 +47,13 @@ getContributors();
 export default async function ContributorsPage() {
   const contributors = await getContributors();
   return (
-    <div className="pt-12">
+    <div className="pt-12 pb-12">
       <Heading
         title="Contributors"
         description="All the project contributors"
       />
       <br />
-      <ul className="mt-3 list-none grid gap-4">
+      <ul className="mt-3 list-none grid gap-8 md:grid-cols-2 xl:grid-cols-3">
         {contributors.map((contributor) => (
           <li
             key={contributor.id}
