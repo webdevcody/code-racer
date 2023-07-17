@@ -36,6 +36,10 @@ export const upvoteSnippetAction = action(
       },
     });
 
+    if (previousVote?.type === "UP") {
+      throw new Error("You already upvoted this snippet.");
+    }
+
     await prisma.$transaction(async (tx) => {
       await tx.snippetVote.upsert({
         where: {
@@ -98,6 +102,10 @@ export const downVoteSnippetAction = action(
         },
       },
     });
+
+    if (previousVote?.type === "DOWN") {
+      throw new Error("You already downvoted this snippet.");
+    }
 
     await prisma.$transaction(async (tx) => {
       await tx.snippetVote.upsert({

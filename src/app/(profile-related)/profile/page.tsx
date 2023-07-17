@@ -101,10 +101,22 @@ export default async function ProfilePage() {
               </ul>
             </>
           ) : (
-            <p className="flex items-center justify-center">
-              You don&apos;t have achievements, yet!
-            </p>
-          )}
+              <div className="flex flex-col items-center justify-center w-full md:pt-[12vh]">
+                <p className="p-5 text-2xl font-bold">
+                  Sorry currently you have no achievements.
+                  <Link href="/race" className="underline">
+                    Race
+                  </Link>{" "}
+                  to earn some{" "}
+                </p>
+                <Image
+                  src="/images/achievement_page.svg"
+                  width={500}
+                  height={500}
+                  alt="image"
+                />
+              </div>
+            )}
         </section>
       </article>
     </main>

@@ -1,36 +1,21 @@
 import { getCurrentUser } from "@/lib/session";
 
 import { prisma } from "@/lib/prisma";
+import { getRandomSnippet } from "../loaders";
 
-import NoSnippet from "../no-snippet";
-import Race from "../race";
-
-async function getRandomSnippet(lang: string) {
-  const itemCount = await prisma.snippet.count({
-    where: {
-      onReview: false,
-      language: lang,
-    },
-  });
-  const skip = Math.max(0, Math.floor(Math.random() * itemCount));
-  const [snippet] = await prisma.snippet.findMany({
-    where: {
-      onReview: false,
-      language: lang,
-    },
-    take: 1,
-    skip: skip,
-  });
-  return snippet;
-}
+import NoSnippet from "../../no-snippet";
+import Race from "../../race";
+import { ReportButton } from "../../_components/report-button";
 
 async function getSearchParamSnippet(snippetId: string | string[]) {
   if (typeof snippetId === "string") {
-    return await prisma.snippet.findFirst({
+    const snippet = await prisma.snippet.findFirst({
       where: {
         id: snippetId,
       },
     });
+
+    return snippet
   }
   return null;
 }
@@ -46,12 +31,23 @@ export default async function PracticeRacePage({
   const user = await getCurrentUser();
   const snippet =
     (await getSearchParamSnippet(searchParams.snippetId)) ??
-    (await getRandomSnippet(searchParams.lang));
+    (await getRandomSnippet({ language: searchParams.lang }));
   const language = searchParams.lang;
 
   return (
     <main className="flex flex-col items-center justify-between py-10 lg:p-24">
-      {snippet && <Race snippet={snippet} user={user} />}
+      {snippet && (
+        <div className="flex flex-col w-3/4 gap-2">
+          <Race snippet={snippet} user={user} />
+          {user && (
+            <ReportButton
+              snippetId={snippet.id}
+              userId={user.id}
+              language={language}
+            />
+          )}
+        </div>
+      )}
       {!snippet && (
         <NoSnippet
           message={"Looks like there is no snippet available yet. Create one?"}
