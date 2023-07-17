@@ -9,7 +9,7 @@ async function getGitHubStars(): Promise<string | null> {
       {
         headers: {
           Accept: "application/vnd.github+json",
-          Authorization: `Bearer ${process.env.GITHUB_ACCESS_TOKEN}`,
+          Authorization: `Bearer ${siteConfig.api.github.accessToken}`,
         },
         next: {
           revalidate: 60,
