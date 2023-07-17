@@ -314,16 +314,6 @@ export default function Race({ user, snippet }: RaceProps) {
   }
 
   function Enter() {
-    if (Array.isArray(textIndicatorPosition)) {
-      // delete the highlighted text first
-      // if the textIndicatorPosition is an array
-      Backspace();
-
-      // remove the comment from the return to see
-      // it move to a new line
-      return;
-    }
-
     let indentLength = 0;
     let newChars = "";
     // indent until the first newline
@@ -338,17 +328,15 @@ export default function Race({ user, snippet }: RaceProps) {
     indentLength = 0;
     while (
       indentLength + newChars.length + input.length + 1 < code.length &&
-      code[indentLength + newChars.length + input.length + 1] === " "
+      code[indentLength + newChars.length + input.length] === " "
     ) {
       indentLength++;
     }
-    if (indentLength > 0) {
-      newChars += " ".repeat(indentLength + 1);
+    if (indentLength >= 0) {
+      newChars += " ".repeat(indentLength);
     }
 
-    setInput((prevInput) =>
-      (prevInput + newChars).substring(0, code.length - 1),
-    );
+    setInput(input + newChars);
 
     setTextIndicatorPosition((prevTextIndicatorPosition) => {
       if (typeof prevTextIndicatorPosition === "number") {
