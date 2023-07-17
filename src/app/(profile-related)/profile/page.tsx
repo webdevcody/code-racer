@@ -3,12 +3,13 @@ import Image from "next/image";
 import { getCurrentUser } from "@/lib/session";
 
 import Achievement from "@/components/achievement";
-import { AddBio } from "@/components/add-bio";
 import { achievements } from "@/config/achievements";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import ChangeNameForm from "./_components/change-name-form";
 import ProfileNav from "./_components/profile-nav";
+import { Bio } from "./_components/bio";
+import { notFound } from "next/navigation";
 
 export const metadata = {
   title: "Profile Page",
@@ -16,14 +17,26 @@ export const metadata = {
 
 export default async function ProfilePage() {
   const user = await getCurrentUser();
-  const photoURL = user?.image as string;
-  const displayName = user?.name as string;
-  const uid = user?.id as string;
+  if (!user) notFound()
+
+  // stuff that can be undefined or null
+  const photoURL = user.image ?? "/placeholder-image.jpg";
+  const displayName = user.name ?? "Display Name";
+
   const userAchievements = await prisma.achievement.findMany({
     where: {
-      userId: uid,
+      userId: user.id,
     },
   });
+
+  // get bio, can be null
+  const userData = await prisma.user.findUnique({
+    where: {
+      id: user.id
+    }
+  })
+  if (!userData) notFound()
+
   const totalPoints = 0;
 
   return (
@@ -39,7 +52,7 @@ export default async function ProfilePage() {
               className="shadow-lg shadow-monochrome-with-bg-opacity bg-opacity-50 opacity-90 inline-block overflow-hidden w-36 h-36 rounded-full relative before:absolute before:content-[''] before:inset-0 before:w-full before:h-full before:z-10 hover:before:bg-monochrome-with-bg-opacity before:bg-opacity-10 hover:before:backdrop-blur-[1.5px] before:rounded-full"
             >
               <Image
-                src={photoURL ?? "/placeholder-image.jpg"}
+                src={photoURL}
                 alt="Profile Picture"
                 width={200}
                 height={200}
@@ -51,8 +64,8 @@ export default async function ProfilePage() {
             </Link>
           </div>
           <ChangeNameForm displayName={displayName} />
-          <AddBio />
-          <span className="mt-10">Total Points: {totalPoints}</span>
+          <Bio bio={userData.bio} />
+          <span className="mt-5">Total Points: {totalPoints}</span>
 
           <h2>Your Achievements</h2>
           {userAchievements.length ? (
