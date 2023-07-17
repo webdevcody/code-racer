@@ -1,34 +1,17 @@
 import { Heading } from "@/components/ui/heading";
 import { siteConfig } from "@/config/site";
-import Image from "next/image";
-
-interface GitHubUser {
-  login: string;
-  id: number;
-  node_id: string;
-  avatar_url: string;
-  gravatar_id: string;
-  url: string;
-  html_url: string;
-  followers_url: string;
-  following_url: string;
-  gists_url: string;
-  starred_url: string;
-  subscriptions_url: string;
-  organizations_url: string;
-  repos_url: string;
-  events_url: string;
-  received_events_url: string;
-  type: string;
-  site_admin: boolean;
-  contributions: number;
-}
+import Contributor from "./contributor";
+import { GitHubUser } from "./contributor";
 
 async function getContributors(): Promise<GitHubUser[] | []> {
-  const url = siteConfig.api.githubContributors;
+  const url = siteConfig.api.github.githubContributors;
 
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      headers: {
+        "Authorization": "Bearer " + siteConfig.api.github.accessToken
+      }
+    });
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -42,8 +25,6 @@ async function getContributors(): Promise<GitHubUser[] | []> {
   }
 }
 
-getContributors();
-
 export default async function ContributorsPage() {
   const contributors = await getContributors();
   return (
@@ -55,27 +36,7 @@ export default async function ContributorsPage() {
       <br />
       <ul className="mt-3 list-none grid gap-8 md:grid-cols-2 xl:grid-cols-3">
         {contributors.map((contributor) => (
-          <li
-            key={contributor.id}
-            className="flex gap-2 bg-background p-1 border-primary border-2 rounded-full"
-          >
-            <Image
-              className="self-center rounded-full"
-              src={contributor.avatar_url}
-              alt={contributor.login}
-              width={50}
-              height={50}
-            />
-            <div className="flex flex-col sm:flex-row w-full justify-start sm:justify-evenly">
-              <a href={contributor.html_url} className="sm:self-center text-ellipsis overflow-hidden">
-              {contributor.login}
-            </a>
-              <span className="sm:self-center font-thin">-</span>
-              <span className="sm:self-center font-thin text-xl">
-              {contributor.contributions} contributions
-            </span>
-            </div>
-          </li>
+          <Contributor key={contributor.id} contributor={contributor}/>
         ))}
       </ul>
     </div>
