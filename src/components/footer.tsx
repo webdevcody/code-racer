@@ -34,6 +34,11 @@ export function Footer() {
           </p>
         </div>
       </div>
+      <div className="text-center mb-2">
+        <Link href={"/privacy"} className="text-xs font-medium">
+          Privacy Policy
+        </Link>
+      </div>
     </footer>
   );
 }
