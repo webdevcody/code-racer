@@ -36,7 +36,6 @@ export default async function DashboardPage({
     totalUserSnippets,
     userRank,
   } = await prisma.$transaction(async () => {
-
     const totalUsers = await prisma.user.count();
     const totalGames = await prisma.result.count();
     const totalSnippets = await prisma.snippet.count();
@@ -70,9 +69,30 @@ export default async function DashboardPage({
       <CardContent className="flex justify-center items-center">
         <ScrollArea className="flex flex-col h-[150px] md:h-fit justify-center items-center bg-accent p-2 md:p-0">
           <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 justify-evenly items-center">
-            <StackCard title="Rank" subtitle="Your rank" icon={<Crown />} size={80} value={userRank} totalValue={totalUsers} />
-            <StackCard title="Races" subtitle="Races participated" icon={<Swords />} size={80} value={totalUserGames} totalValue={totalGames} />
-            <StackCard title="Snippets" subtitle="Snippets created" icon={<FileCode2 />} size={80} value={totalUserSnippets} totalValue={totalSnippets} />
+            <StackCard
+              title="Rank"
+              subtitle="Your rank"
+              icon={<Crown />}
+              size={80}
+              value={userRank}
+              totalValue={totalUsers}
+            />
+            <StackCard
+              title="Races"
+              subtitle="Races participated"
+              icon={<Swords />}
+              size={80}
+              value={totalUserGames}
+              totalValue={totalGames}
+            />
+            <StackCard
+              title="Snippets"
+              subtitle="Snippets created"
+              icon={<FileCode2 />}
+              size={80}
+              value={totalUserSnippets}
+              totalValue={totalSnippets}
+            />
             <StackCard title="Coming Soon!" subtitle="Coming Soon!" size={80} />
           </div>
         </ScrollArea>
@@ -84,7 +104,11 @@ export default async function DashboardPage({
             <TabsTrigger value="snippets">Snippets</TabsTrigger>
           </TabsList>
           <TabsContent value="races">
-            <RaceTableServerSide user={user} searchParams={searchParams} totalUserGames={totalUserGames} />
+            <RaceTableServerSide
+              user={user}
+              searchParams={searchParams}
+              totalUserGames={totalUserGames}
+            />
           </TabsContent>
           <TabsContent value="snippets">
             <SnippetTableServerSide user={user} />

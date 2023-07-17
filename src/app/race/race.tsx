@@ -34,7 +34,7 @@ function calculateAccuracy(
   numberOfCharacters: number,
   errorsCount: number,
 ): number {
-  return 1 - errorsCount / numberOfCharacters;
+  return (1 - errorsCount / numberOfCharacters) * 100;
 }
 
 export default function Race({ user, snippet }: RaceProps) {
@@ -45,7 +45,7 @@ export default function Race({ user, snippet }: RaceProps) {
     number | number[]
   >(0);
   const [submittingResults, setSubmittingResults] = useState(false);
-
+  const [totalErrors, setTotalErrors] = useState(0);
   const router = useRouter();
   const inputElement = useRef<HTMLInputElement | null>(null);
   const code = snippet.code.trimEnd();
@@ -55,8 +55,6 @@ export default function Race({ user, snippet }: RaceProps) {
     .split("")
     .map((char, index) => (char !== currentText[index] ? index : -1))
     .filter((index) => index !== -1);
-
-  const errorTotal = errors.length;
 
   const isRaceFinished = input === code;
 
@@ -68,9 +66,9 @@ export default function Race({ user, snippet }: RaceProps) {
     if (user) {
       const result = await saveUserResultAction({
         timeTaken,
-        errors: errorTotal,
+        errors: totalErrors,
         cpm: calculateCPM(code.length - 1, timeTaken),
-        accuracy: calculateAccuracy(code.length - 1, errorTotal),
+        accuracy: calculateAccuracy(code.length - 1, totalErrors),
         snippetId: snippet.id,
       });
 
@@ -353,6 +351,10 @@ export default function Race({ user, snippet }: RaceProps) {
   }
 
   function Key(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key !== code.slice(input.length, input.length + 1)) {
+      setTotalErrors(totalErrors + 1);
+    }
+
     if (!Array.isArray(textIndicatorPosition)) {
       if (textIndicatorPosition === input.length) {
         setInput((prevInput) => prevInput + e.key);
