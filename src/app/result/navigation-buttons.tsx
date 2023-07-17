@@ -11,11 +11,7 @@ import {
 } from "@/components/ui/tooltip";
 import * as React from "react";
 
-interface NavigationButtonsProps {
-  onReview?: boolean;
-}
-
-const NavigationButtons: React.FC<NavigationButtonsProps> = ({ onReview }) => {
+function NavigationButtons({ onReview }: { onReview?: boolean }) {
   const router = useRouter();
 
   const handlerChangePage = () => {
@@ -50,6 +46,6 @@ const NavigationButtons: React.FC<NavigationButtonsProps> = ({ onReview }) => {
       </Button>
     </div>
   );
-};
+}
 
 export default NavigationButtons;

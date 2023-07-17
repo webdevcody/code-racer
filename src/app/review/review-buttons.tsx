@@ -8,11 +8,7 @@ import {
   deleteSnippetAction,
 } from "@/app/_actions/snippet";
 
-interface ReviewButtonsProps {
-  snippetId: Snippet["id"];
-}
-
-export function ReviewButtons({ snippetId }: ReviewButtonsProps) {
+export function ReviewButtons({ snippetId }: { snippetId: Snippet["id"] }) {
   const [isAcquitting, setIsAcquitting] = React.useState(false);
   const [isDeleting, setIsDeleting] = React.useState(false);
 

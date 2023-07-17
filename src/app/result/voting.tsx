@@ -13,13 +13,15 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import { catchError, cn } from "@/lib/utils";
 
-interface VotingProps {
+export function Voting({
+  userId,
+  snippetId,
+  usersVote,
+}: {
   userId?: User["id"];
   snippetId: Snippet["id"];
   usersVote?: SnippetVote;
-}
-
-export function Voting({ userId, snippetId, usersVote }: VotingProps) {
+}) {
   // To prevent blocking UI
   const [isPending, startTransition] = React.useTransition();
 

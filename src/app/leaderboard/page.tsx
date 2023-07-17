@@ -2,25 +2,16 @@ import React from "react";
 
 import { prisma } from "@/lib/prisma";
 import { UsersTable } from "./users-table";
-import { User, Result } from "@prisma/client";
+import { User } from "@prisma/client";
 import { Heading } from "@/components/ui/heading";
-
-interface LeaderboardPageProps {
-  searchParams: {
-    [key: string]: string | string[] | undefined;
-  };
-}
-
-function calculateUsersAverage(array: any[], key: string) {
-  const overall = array.reduce((acc, obj) => {
-    return Number(obj[key]) + acc;
-  }, 0);
-  return (overall / array.length).toFixed(2);
-}
 
 export default async function LeaderboardPage({
   searchParams,
-}: LeaderboardPageProps) {
+}: {
+  searchParams: {
+    [key: string]: string | string[] | undefined;
+  };
+}) {
   const { page, per_page, sort } = searchParams;
 
   // Number of records to show per page

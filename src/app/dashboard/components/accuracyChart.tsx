@@ -14,11 +14,7 @@ import {
 } from "recharts";
 import { Result } from "@prisma/client";
 
-interface AccuracyChartProps {
-  recentGames: Result[];
-}
-
-const AccuracyChart: React.FC<AccuracyChartProps> = ({ recentGames }) => {
+function AccuracyChart({ recentGames }: { recentGames: Result[] }) {
   return (
     <Card className="h-[400px]">
       <CardHeader>
@@ -44,6 +40,6 @@ const AccuracyChart: React.FC<AccuracyChartProps> = ({ recentGames }) => {
       </ResponsiveContainer>
     </Card>
   );
-};
+}
 
 export default AccuracyChart;

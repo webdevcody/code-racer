@@ -3,12 +3,13 @@ import { Heading } from "@/components/ui/heading";
 import { snippetLanguages } from "@/config/languages";
 import Link from "next/link";
 
-interface NoSnippetProps {
+export default function NoSnippet({
+  message,
+  language,
+}: {
   message: string;
-  language: string; // Snippet language
-}
-
-export default function NoSnippet({ message, language }: NoSnippetProps) {
+  language: string;
+}) {
   const formattedLanguage =
     snippetLanguages.find((snippet) => snippet.value === language)?.label ??
     language;
@@ -18,9 +19,13 @@ export default function NoSnippet({ message, language }: NoSnippetProps) {
         title={`No ${formattedLanguage} snippet found`}
         description={message}
       />
-      <Link href={`/add-snippet?lang=${language ? encodeURIComponent(language) : ""}`}>
+      <Link
+        href={`/add-snippet?lang=${
+          language ? encodeURIComponent(language) : ""
+        }`}
+      >
         <Button>Create New Snippet</Button>
       </Link>
-    </div >
+    </div>
   );
 }

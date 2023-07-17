@@ -7,11 +7,7 @@ import { cn } from "@/lib/utils";
 import { Icons } from "@/components/icons";
 import { buttonVariants } from "./ui/button";
 
-interface MainNavProps {
-  items?: NavItem[];
-}
-
-export function MainNav({ items }: MainNavProps) {
+export function MainNav({ items }: { items?: NavItem[] }) {
   return (
     <div className="flex gap-6 md:gap-10">
       <Link href="/" className="flex items-center space-x-2">

@@ -7,18 +7,24 @@ import { type ColumnDef } from "unstyled-table";
 import Image from "next/image";
 import Link from "next/link";
 import { DataTable } from "@/components/data-table";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
 
 type UserWithResults = User & { results: Result[] };
 
-interface UsersTableProps {
+export function UsersTable({
+  data,
+  pageCount,
+}: {
   data: UserWithResults[];
   pageCount: number;
-}
-
-export function UsersTable({ data, pageCount }: UsersTableProps) {
+}) {
   const columns = React.useMemo<ColumnDef<UserWithResults, unknown>[]>(
     () => [
       {
@@ -36,7 +42,13 @@ export function UsersTable({ data, pageCount }: UsersTableProps) {
           return (
             <Link href={`${userInfo.id}`}>
               <div className="flex items-center gap-2">
-                <Image className="rounded-full" src={userInfo.image ?? ""} alt="user avatar" height={30} width={30} />
+                <Image
+                  className="rounded-full"
+                  src={userInfo.image ?? ""}
+                  alt="user avatar"
+                  height={30}
+                  width={30}
+                />
                 <span>{userInfo.name}</span>
               </div>
             </Link>
@@ -100,7 +112,7 @@ export function UsersTable({ data, pageCount }: UsersTableProps) {
         header: "Races played",
       },
     ],
-    []
+    [],
   );
 
   return (
