@@ -113,6 +113,8 @@ export default function Race({
   }
 
   function handleKeyboardDownEvent(e: React.KeyboardEvent<HTMLInputElement>) {
+    console.log(e.key);
+    console.log("hit");
     if (!startTime) {
       setStartTime(new Date());
     }
@@ -128,6 +130,11 @@ export default function Race({
       return;
     }
 
+    // Catch Alt Gr - Please confirm I am unable to test this
+    if (e.ctrlKey && e.altKey) {
+      e.preventDefault();
+    }
+
     const noopKeys = [
       "Alt",
       "ArrowUp",
@@ -136,6 +143,16 @@ export default function Race({
       "Meta",
       "CapsLock",
       "Shift",
+      "altGraphKey", // - Please confirm I am unable to test this
+      "AltGraph", // - Please confirm I am unable to test this
+      "ContextMenu",
+      "Insert",
+      "Delete",
+      "PageUp",
+      "PageDown",
+      "Home",
+      "OS",
+      "NumLock",
     ];
 
     if (noopKeys.includes(e.key)) {
