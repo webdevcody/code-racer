@@ -39,6 +39,8 @@ export const siteConfig = {
       accessToken: process.env.GITHUB_ACCESS_TOKEN,
       githubContributors: "https://api.github.com/repos/webdevcody/code-racer/contributors",
       githubStars: "https://api.github.com/repos/webdevcody/code-racer",
+      githubWeeklyActivity: "https://api.github.com/repos/webdevcody/code-racer/stats/code_frequency",
+      cacheRevalidationInterval: 60
     }
   },
 };

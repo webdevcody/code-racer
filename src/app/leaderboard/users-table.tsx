@@ -6,7 +6,7 @@ import type { Result, User } from "@prisma/client";
 import { type ColumnDef } from "unstyled-table";
 import Image from "next/image";
 import Link from "next/link";
-import { DataTable } from "@/components/data-table";
+import { DataTable } from "@/components/data-table/data-table";
 import {
   Tooltip,
   TooltipContent,

@@ -10,7 +10,7 @@ const snippetVoteSchema = z.object({
   snippetId: z.string(),
 });
 
-const SNIPPET_RATING_THRESHOLD = -10;
+const SNIPPET_RATING_THRESHOLD = -1;
 
 export const upvoteSnippetAction = action(
   snippetVoteSchema,
@@ -35,6 +35,10 @@ export const upvoteSnippetAction = action(
         },
       },
     });
+
+    if (previousVote?.type === "UP") {
+      throw new Error("You already upvoted this snippet.");
+    }
 
     await prisma.$transaction(async (tx) => {
       await tx.snippetVote.upsert({
@@ -98,6 +102,10 @@ export const downVoteSnippetAction = action(
         },
       },
     });
+
+    if (previousVote?.type === "DOWN") {
+      throw new Error("You already downvoted this snippet.");
+    }
 
     await prisma.$transaction(async (tx) => {
       await tx.snippetVote.upsert({
@@ -280,9 +288,16 @@ export const acquitSnippetAction = action(
 export const deleteSnippetAction = action(
   z.object({
     id: z.string(),
+    path: z.string(),
   }),
-  async ({ id }, { prisma, user }) => {
-    if (user?.role !== "ADMIN") {
+  async ({ id, path }, { prisma, user }) => {
+    const snippet = await prisma.snippet.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (user?.role !== "ADMIN" && snippet?.userId !== user?.id) {
       throw new UnauthorizedError();
     }
 
@@ -296,6 +311,6 @@ export const deleteSnippetAction = action(
     // create a counter for user's bad
     // snippets (that was deleted)
 
-    revalidatePath("/review");
+    revalidatePath(path);
   },
 );
