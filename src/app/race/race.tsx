@@ -89,6 +89,7 @@ export default function Race({ user, snippet }: RaceProps) {
     if (isRaceFinished) {
       endRace();
     }
+    focusOnLoad();
   }, [input]);
 
   useEffect(() => {
@@ -119,13 +120,17 @@ export default function Race({ user, snippet }: RaceProps) {
       e.currentTarget.blur();
       return;
     }
+    // Reload Control + r
+    if (e.ctrlKey && e.key === "r") {
+      e.preventDefault;
+      return;
+    }
 
     const noopKeys = [
       "Alt",
       "ArrowUp",
       "ArrowDown",
       "Control",
-      "Escape",
       "Meta",
       "CapsLock",
       "Shift",
@@ -244,11 +249,13 @@ export default function Race({ user, snippet }: RaceProps) {
   }
 
   function Tab() {
-    // setInput(input + "  ");
-    setInput((prevInput) => prevInput + "  ");
+    const nextTabStop = 4 - (input.length % 4);
+    const tabSpace = " ".repeat(nextTabStop);
+
+    setInput((prevInput) => prevInput + tabSpace);
     setTextIndicatorPosition((prevTextIndicatorPosition) => {
       if (typeof prevTextIndicatorPosition === "number") {
-        return prevTextIndicatorPosition + 2;
+        return prevTextIndicatorPosition + tabSpace.length;
       } else {
         return prevTextIndicatorPosition;
       }
