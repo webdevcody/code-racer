@@ -3,11 +3,12 @@ import Image from "next/image";
 import { getCurrentUser } from "@/lib/session";
 
 import Achievement from "@/components/achievement";
+import { AddBio } from "@/components/add-bio";
+import { achievements } from "@/config/achievements";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import ChangeNameForm from "./_components/change-name-form";
 import ProfileNav from "./_components/profile-nav";
-import { AddBio } from "@/components/add-bio";
 
 export const metadata = {
   title: "Profile Page",
@@ -18,19 +19,16 @@ export default async function ProfilePage() {
   const photoURL = user?.image as string;
   const displayName = user?.name as string;
   const uid = user?.id as string;
-  const achievements = await prisma.userAchievement.findMany({
+  const userAchievements = await prisma.achievement.findMany({
     where: {
       userId: uid,
-    },
-    include: {
-      achievement: true,
     },
   });
   const totalPoints = 0;
 
   return (
     <main className="py-8 grid place-items-center h-[clamp(40rem,82.5dvh,50rem)]">
-      <div className="overflow-hidden relative w-[95%] max-w-[22.5rem] h-[32.5rem] rounded-2xl border-2 border-solid border-secondary-foreground">
+      <div className="relative w-[95%] max-w-[22.5rem] rounded-2xl border-2 border-solid border-secondary-foreground">
         <article className="flex flex-col items-center gap-2 p-2">
           <ProfileNav displayName={displayName} />
           <div className="pt-2 pb-1">
@@ -55,19 +53,27 @@ export default async function ProfilePage() {
           <ChangeNameForm displayName={displayName} />
           <AddBio />
           <span className="mt-10">Total Points: {totalPoints}</span>
-          {achievements.length ? (
-            <ul className="w-fit max-w-[292px] flex items-center flex-wrap gap-1 p-2 border-border rounded-sm bg-primary-foreground">
-              {achievements.map(({ achievement, unlockedAt }) => (
-                <Achievement
-                  key={achievement.type}
-                  achievement={{
-                    name: achievement.name,
-                    description: achievement.description,
-                    unlockedAt,
-                    image: achievement.image,
-                  }}
-                />
-              ))}
+
+          <h2>Your Achievements</h2>
+          {userAchievements.length ? (
+            <ul className="gap-4 w-fit max-w-[292px] flex items-center flex-wrap p-2 rounded-sm">
+              {userAchievements.map(({ achievementType, unlockedAt }) => {
+                const achievement = achievements.find(
+                  (achievement) => achievement.type === achievementType,
+                );
+                if (!achievement) return null;
+                return (
+                  <Achievement
+                    key={achievement.type}
+                    achievement={{
+                      name: achievement.name,
+                      description: achievement.description,
+                      unlockedAt,
+                      image: achievement.image,
+                    }}
+                  />
+                );
+              })}
             </ul>
           ) : null}
         </article>

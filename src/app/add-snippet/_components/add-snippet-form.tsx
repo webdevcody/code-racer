@@ -34,76 +34,72 @@ const formDataSchema = z.object({
 
 type FormData = z.infer<typeof formDataSchema>;
 
-export default function AddSnippetForm({}) {
+export default function AddSnippetForm({ lang }: { lang: string }) {
   const { toast } = useToast();
   const confettiCtx = useConfettiContext();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formDataSchema),
     mode: "onSubmit",
+    defaultValues: {
+      codeLanguage: lang,
+      codeSnippet: "",
+    },
   });
 
   async function onSubmit(data: FormData) {
-    // error handling if prisma upload fails
-    await addSnippetAction({
-      language: data.codeLanguage,
-      code: data.codeSnippet,
-    })
-      .then((res) => {
-        if (res.validationError) {
-          toast({
-            title: "Error!",
-            description:
-              "Something went wrong! " +
-              (res.validationError.code ?? "") +
-              "\n" +
-              (res.validationError.language ?? ""),
-            duration: 5000,
-            style: {
-              background: "hsl(var(--destructive))",
-            },
-          });
-          return;
-        }
+    try {
+      const res = await addSnippetAction({
+        language: data.codeLanguage,
+        code: data.codeSnippet,
+      });
 
-        if (res?.data?.message === "snippet-created-and-achievement-unlocked") {
-          toast({
-            title: "Achievement Unlocked",
-            description: "Uploaded First Snippet",
-          });
-          confettiCtx.showConfetti();
-        }
-
-        toast({
-          title: "Success!",
-          description: "Snippet added successfully",
-          duration: 5000,
-          variant: "middle",
-          action: (
-            <Link
-              href="/race"
-              className={buttonVariants({ variant: "outline" })}
-            >
-              Click to Race
-            </Link>
-          ),
-        });
-        // this is bugged, idk why it doesn't reset the textarea
-        // TODO: fix this
-        // form.reset();
-      })
-      .catch((err) => {
+      if (res.validationError) {
         toast({
           title: "Error!",
-          description: "Something went wrong!" + err.message,
+          description: `Something went wrong! ${
+            res.validationError.code ?? ""
+          }\n${res.validationError.language ?? ""}`,
           duration: 5000,
           style: {
             background: "hsl(var(--destructive))",
           },
         });
+        return;
+      }
+
+      if (res?.data?.message === "snippet-created-and-achievement-unlocked") {
+        toast({
+          title: "Achievement Unlocked",
+          description: "Uploaded First Snippet",
+        });
+        confettiCtx.showConfetti();
+      }
+
+      toast({
+        title: "Success!",
+        description: "Snippet added successfully",
+        duration: 5000,
+        variant: "middle",
+        action: (
+          <Link href="/race" className={buttonVariants({ variant: "outline" })}>
+            Click to Race
+          </Link>
+        ),
       });
-    // console.log("language: ", codeLanguage);
-    // console.log("snippet: ", codeSnippet);
+
+      form.reset();
+    } catch (err: any) {
+      console.log(err);
+      toast({
+        title: "Error!",
+        description: "Something went wrong!" + err.message,
+        duration: 5000,
+        style: {
+          background: "hsl(var(--destructive))",
+        },
+      });
+    }
   }
 
   return (
@@ -121,8 +117,6 @@ export default function AddSnippetForm({}) {
               <FormControl>
                 <LanguageDropDown
                   codeLanguage={field.value}
-                  // TODO: Refactor this component's props.
-                  //@ts-expect-error type mismatch
                   setCodeLanguage={field.onChange}
                 />
               </FormControl>

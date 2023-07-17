@@ -1,4 +1,3 @@
-import React from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Chart from "./chart";
@@ -9,53 +8,96 @@ import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { Voting } from "./voting";
 import { Badge } from "@/components/ui/badge";
-import { getFirstRaceBadge } from "./loaders";
-import { Achievement, SnippetVote } from "@prisma/client";
+import {
+  getFirstRaceBadge,
+  getUserResultsForSnippet,
+  getCurrentRaceResult,
+  ParsedRacesResult,
+} from "./loaders";
+import { Heading } from "@/components/ui/heading";
+import { cn } from "@/lib/utils";
+import { User } from "next-auth";
 
-const card = [
-  { title: "WPM", value: "81 %" },
-  { title: "Accuracy", value: "90 %" },
-  { title: "Rank", value: "20" },
-  { title: "Miss", value: "21" },
-  { title: "Times", value: "30s" },
-];
+async function AuthenticatedPage({
+  resultId,
+  user,
+}: {
+  resultId: string;
+  user: User;
+}) {
+  if (!resultId)
+    return (
+      <div className="flex flex-col items-center justify-center gap-10 mt-20">
+        <Heading title="Oops, Something went wrong" />
+        <Link
+          className={cn(buttonVariants(), "whitespace-nowrap")}
+          href="/race"
+        >
+          Go back
+        </Link>
+      </div>
+    );
+  const currentRaceResult = await getCurrentRaceResult(resultId);
 
-interface ResultsChartProps {
-  searchParams: { snippetId: string };
-}
-
-export default async function ResultsChart({
-  searchParams,
-}: ResultsChartProps) {
-  const user = await getCurrentUser();
-
-  let usersVote: SnippetVote | undefined | null;
-  let firstRaceBadge: Achievement | undefined;
-
-  if (user) {
-    firstRaceBadge = await getFirstRaceBadge();
-    usersVote = await prisma.snippetVote.findUnique({
-      where: {
-        userId_snippetId: {
-          userId: user.id,
-          snippetId: searchParams.snippetId,
-        },
-      },
-    });
+  if (!currentRaceResult) {
+    throw new Error("no result found with this id");
   }
+
+  const usersVote = await prisma.snippetVote.findUnique({
+    where: {
+      userId_snippetId: {
+        userId: user.id,
+        snippetId: currentRaceResult.snippetId,
+      },
+    },
+  });
+  const firstRaceBadge = await getFirstRaceBadge();
+  let raceResults: ParsedRacesResult[] = [];
+  let cardObjects = [] as { title: string; value: string | undefined }[];
+
+  if (!currentRaceResult) {
+    throw new Error("race result not found");
+  }
+
+  raceResults = await getUserResultsForSnippet(currentRaceResult.snippetId);
+  cardObjects = [
+    {
+      title: "CPM",
+      value: currentRaceResult?.cpm.toString(),
+    },
+    {
+      title: "Accuracy",
+      value: currentRaceResult?.accuracy
+        ? `${Number(currentRaceResult.accuracy)}%`
+        : "0%",
+    },
+    {
+      title: "Misses",
+      value: currentRaceResult?.errorCount?.toString(),
+    },
+    {
+      title: "Time Taken",
+      value: `${currentRaceResult?.takenTime}s`,
+    },
+  ];
 
   return (
     <div className="w-auto">
       <div className="flex flex-col justify-center gap-4 mt-5">
         {firstRaceBadge && <FirstRaceBadge image={firstRaceBadge.image} />}
-        <div className="grid grid-cols-2 gap-3 mx-auto md:grid-cols-5 md:gap-6">
-          {card.map((c, idx) => {
+        <Heading
+          centered
+          title="Your Race Results"
+          description="You did great! Checkout your race results below"
+        />
+        <div className="grid grid-cols-2 gap-3 mx-auto md:grid-cols-4 md:gap-6">
+          {cardObjects.map((c, idx) => {
             return (
               <Card key={idx}>
                 <CardHeader>
-                  <CardTitle className="">{c.title}</CardTitle>
+                  <CardTitle className="text-center">{c.title}</CardTitle>
                 </CardHeader>
-                <CardContent>{c.value}</CardContent>
+                <CardContent className="text-center">{c.value}</CardContent>
               </Card>
             );
           })}
@@ -63,7 +105,10 @@ export default async function ResultsChart({
       </div>
       <div className="flex flex-col p-8 rounded-xl">
         <div className="flex flex-wrap justify-center gap-4">
-          <Chart />
+          <p className="text-primary text-center text-xl">
+            Your progress on this snippet
+          </p>
+          <Chart raceResult={raceResults} />
         </div>
       </div>
       <div
@@ -81,11 +126,13 @@ export default async function ResultsChart({
         </Button>
       </div>
       <div className="my-4">
-        <Voting
-          snippetId={searchParams.snippetId}
-          userId={user?.id ?? undefined}
-          usersVote={usersVote ?? undefined}
-        />
+        {currentRaceResult && (
+          <Voting
+            snippetId={currentRaceResult.snippetId}
+            userId={user?.id ?? undefined}
+            usersVote={usersVote ?? undefined}
+          />
+        )}
       </div>
       <div className="flex items-center justify-center space-x-2">
         <Badge variant="outline">
@@ -103,5 +150,23 @@ export default async function ResultsChart({
         <span className={buttonVariants()}>enter</span> <span>-</span> */}
       </div>
     </div>
+  );
+}
+
+function UnauthenticatedPage() {
+  return <>TODO: Results are not implmemented for unauthenticated users yet</>;
+}
+
+export default async function ResultPage({
+  searchParams,
+}: {
+  searchParams: { resultId: string };
+}) {
+  const user = await getCurrentUser();
+
+  return user ? (
+    <AuthenticatedPage user={user} resultId={searchParams.resultId} />
+  ) : (
+    <UnauthenticatedPage />
   );
 }

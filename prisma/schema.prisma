@@ -19,16 +19,16 @@ enum AchievementType {
 }
 
 model User {
-  id            String            @id @default(cuid())
-  createdAt     DateTime          @default(now()) @map("created_at")
+  id            String        @id @default(cuid())
+  createdAt     DateTime      @default(now()) @map("created_at")
   name          String?
-  email         String?           @unique
-  emailVerified DateTime?         @map("email_verified")
+  email         String?       @unique
+  emailVerified DateTime?     @map("email_verified")
   image         String?
   accounts      Account[]
   sessions      Session[]
   results       Result[]
-  achievements  UserAchievement[]
+  achievements  Achievement[]
 
   averageAccuracy Decimal @default(0) @db.Decimal(5, 2)
   averageCpm      Decimal @default(0) @db.Decimal(6, 2)
@@ -96,26 +96,13 @@ model Result {
 }
 
 model Achievement {
-  type             AchievementType   @id @unique
-  name             String
-  createdAt        DateTime          @default(now()) @map("created_at")
-  updatedAt        DateTime          @updatedAt @map("updated_at")
-  image            String
-  description      String?
-  userAchievements UserAchievement[]
-
-  @@map("achievements")
-}
-
-model UserAchievement {
   userId          String          @map("user_id")
   achievementType AchievementType @map("achievement_type")
   unlockedAt      DateTime        @default(now()) @map("unlocked_at")
   user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  achievement     Achievement     @relation(fields: [achievementType], references: [type], onDelete: Cascade)
 
   @@id([userId, achievementType])
-  @@map("user_achievements")
+  @@map("achievements")
 }
 
 model Snippet {
@@ -123,8 +110,8 @@ model Snippet {
 
   code     String
   language String
-  User     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId   String   @map("user_id")
+  User     User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String?  @map("user_id")
   onReview Boolean  @default(false) @map("on_review")
   rating   Int      @default(0)
   Result   Result[]

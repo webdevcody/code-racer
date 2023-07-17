@@ -1,5 +1,6 @@
 "use client";
 
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Result } from "@prisma/client";
 import React from "react";
 import {
@@ -52,7 +53,7 @@ const renderTooltip = (
   }
 };
 
-export default function PerformanceComparison({
+function BubbleChart({
   usersData,
   obj,
 }: {
@@ -113,4 +114,21 @@ export default function PerformanceComparison({
       </ScatterChart>
     </ResponsiveContainer>
   );
+}
+
+export default function PerformanceComparison({ recentGames }: { recentGames: Result[] }) {
+  return (
+    <Tabs defaultValue="cpm" className="w-full">
+      <TabsList>
+        <TabsTrigger value="cpm">Cpm</TabsTrigger>
+        <TabsTrigger value="accuracy">Accuracy</TabsTrigger>
+      </TabsList>
+      <TabsContent value="cpm">
+        <BubbleChart obj="cpm" usersData={recentGames} />
+      </TabsContent>
+      <TabsContent value="accuracy">
+        <BubbleChart obj="accuracy" usersData={recentGames} />
+      </TabsContent>
+    </Tabs>
+  )
 }

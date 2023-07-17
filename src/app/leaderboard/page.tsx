@@ -77,7 +77,13 @@ export default async function LeaderboardPage({
       });
     }
 
-    const totalUsers = await prisma.user.count();
+    const totalUsers = await prisma.user.count({
+      where: {
+        results: {
+          some: {},
+        },
+      },
+    });
 
     return {
       users,
@@ -88,8 +94,7 @@ export default async function LeaderboardPage({
   const pageCount = totalUsers === 0 ? 1 : Math.ceil(totalUsers / take);
 
   return (
-    <div>
-      {/* <h1 className="my-4 text-3xl text-foreground">Leaderboard.</h1> */}
+    <div className="pt-12">
       <Heading title="Leaderboard" description="Find your competition" />
       <UsersTable data={users} pageCount={pageCount} />
     </div>

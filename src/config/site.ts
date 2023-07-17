@@ -13,6 +13,10 @@ export const siteConfig = {
         title: "Leaderboard",
         href: "/leaderboard",
       },
+      {
+        title: "Contributors",
+        href: "/contributors",
+      },
     ];
 
     if (isLoggedIn) {
@@ -27,5 +31,9 @@ export const siteConfig = {
 
   links: {
     github: "https://github.com/webdevcody/code-racer",
+    codyTwitter: "https://twitter.com/webdevcody",
   },
+  api: {
+    githubContributors: "https://api.github.com/repos/webdevcody/code-racer/contributors",
+  }
 };

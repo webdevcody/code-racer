@@ -1,4 +1,4 @@
-import { Achievement } from "@prisma/client";
+import { Achievement } from "@/types/achievement";
 import Image from "next/image";
 import { Icons } from "./icons";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
@@ -19,10 +19,10 @@ const Achievement = ({ achievement }: AchievementProps) => {
           tabIndex={0}
         >
           <Image
-            className="object-fill w-6 h-6"
+            className="object-fill w-20 h-20"
             src={achievement.image}
-            width={24}
-            height={24}
+            width={80}
+            height={80}
             alt={`Achievement: ${achievement.name}`}
           />
         </HoverCardTrigger>

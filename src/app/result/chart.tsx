@@ -1,8 +1,4 @@
 "use client";
-
-// import "./styles.css";
-"use client";
-
 import React, { useState, useCallback } from "react";
 import {
   LineChart,
@@ -14,57 +10,26 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { ResultChartLineProps } from "@/types/result";
+import { ParsedRacesResult } from "./loaders";
 
-const data = [
-  {
-    name: "Page A",
-    wpm: 4000,
-    accuracy: 2400,
-    error: 2400,
-  },
-  {
-    name: "Page B",
-    wpm: 3000,
-    accuracy: 1398,
-    error: 2210,
-  },
-  {
-    name: "Page C",
-    wpm: 2000,
-    accuracy: 9800,
-    error: 2290,
-  },
-  {
-    name: "Page D",
-    wpm: 2780,
-    accuracy: 3908,
-    error: 2000,
-  },
-  {
-    name: "Page E",
-    wpm: 1890,
-    accuracy: 4800,
-    error: 2181,
-  },
-  {
-    name: "Page F",
-    wpm: 2390,
-    accuracy: 3800,
-    error: 2500,
-  },
-  {
-    name: "Page G",
-    wpm: 3490,
-    accuracy: 4300,
-    error: 2100,
-  },
+const dataKeys: ResultChartLineProps[] = [
+  { dataKey: "accuracy", stroke: "#0261b9" },
+  { dataKey: "cpm", stroke: "#0ee2c6" },
+  { dataKey: "errorCount", stroke: "#f00d0d" },
 ];
 
-export default function Chart() {
-  const [opacity, setOpacity] = useState({
-    wpm: 1,
+export default function Chart({
+  raceResult,
+}: {
+  raceResult: ParsedRacesResult[];
+}) {
+  const [opacity, setOpacity] = useState<
+    Partial<Record<keyof ParsedRacesResult, number>>
+  >({
+    cpm: 1,
     accuracy: 1,
-    error: 1,
+    errorCount: 1,
   });
 
   const handleMouseEnter = useCallback(
@@ -73,7 +38,7 @@ export default function Chart() {
 
       setOpacity({ ...opacity, [dataKey]: 0.5 });
     },
-    [opacity, setOpacity],
+    [opacity],
   );
 
   const handleMouseLeave = useCallback(
@@ -81,14 +46,14 @@ export default function Chart() {
       const { dataKey } = o;
       setOpacity({ ...opacity, [dataKey]: 1 });
     },
-    [opacity, setOpacity],
+    [opacity],
   );
 
   return (
     <div style={{ width: "100%", height: 300 }} className="mx-auto ">
       <ResponsiveContainer>
         <LineChart
-          data={data}
+          data={raceResult}
           margin={{
             top: 5,
             right: 30,
@@ -97,32 +62,23 @@ export default function Chart() {
           }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
+          <XAxis dataKey="createdAt" />
           <YAxis />
           <Tooltip />
           <Legend
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           />
-          <Line
-            type="monotone"
-            dataKey="accuracy"
-            strokeOpacity={opacity.accuracy}
-            stroke="#0261b9"
-            activeDot={{ r: 8 }}
-          />
-          <Line
-            type="monotone"
-            dataKey="wpm"
-            strokeOpacity={opacity.wpm}
-            stroke="#0ee2c6"
-          />
-          <Line
-            type="monotone"
-            dataKey="error"
-            strokeOpacity={opacity.wpm}
-            stroke="#f00d0d"
-          />
+          {dataKeys.map(({ dataKey, stroke }) => (
+            <Line
+              key={dataKey}
+              type="monotone"
+              dataKey={dataKey}
+              strokeOpacity={opacity[dataKey]}
+              stroke={stroke}
+              activeDot={{ r: 8 }}
+            />
+          ))}
         </LineChart>
       </ResponsiveContainer>
     </div>
