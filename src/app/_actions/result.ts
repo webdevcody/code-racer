@@ -56,5 +56,5 @@ export const saveUserResultAction = action(
 
       return result;
     });
-  }
+  },
 );

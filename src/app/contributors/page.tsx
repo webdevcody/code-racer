@@ -48,15 +48,31 @@ export default async function ContributorsPage() {
   const contributors = await getContributors();
   return (
     <div className="pt-12">
-      <Heading title="Contributors" description="All the project contributors" />
+      <Heading
+        title="Contributors"
+        description="All the project contributors"
+      />
       <br />
       <ul className="mt-3 list-none grid gap-4">
         {contributors.map((contributor) => (
-          <li key={contributor.id} className="flex gap-4 bg-black p-1 rounded-full">
-            <Image className="rounded-full" src={contributor.avatar_url} alt={contributor.login} width={45} height={45} />
-            <a href={contributor.html_url} className=" self-center">{contributor.login}</a>
+          <li
+            key={contributor.id}
+            className="flex gap-4 bg-black p-1 rounded-full"
+          >
+            <Image
+              className="rounded-full"
+              src={contributor.avatar_url}
+              alt={contributor.login}
+              width={45}
+              height={45}
+            />
+            <a href={contributor.html_url} className=" self-center">
+              {contributor.login}
+            </a>
             <span className="self-center font-thin">-</span>
-            <span className="self-center font-thin text-xl">{contributor.contributions} contributions</span>
+            <span className="self-center font-thin text-xl">
+              {contributor.contributions} contributions
+            </span>
           </li>
         ))}
       </ul>
