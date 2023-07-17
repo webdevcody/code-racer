@@ -6,7 +6,7 @@ import type { Result, User } from "@prisma/client";
 import { type ColumnDef } from "unstyled-table";
 import Image from "next/image";
 import Link from "next/link";
-import { DataTable } from "@/components/data-table";
+import { DataTable } from "@/components/data-table/data-table";
 import {
   Tooltip,
   TooltipContent,
@@ -18,12 +18,13 @@ import { cn } from "@/lib/utils";
 
 type UserWithResults = User & { results: Result[] };
 
-interface UsersTableProps {
+export function UsersTable({
+  data,
+  pageCount,
+}: {
   data: UserWithResults[];
   pageCount: number;
-}
-
-export function UsersTable({ data, pageCount }: UsersTableProps) {
+}) {
   const columns = React.useMemo<ColumnDef<UserWithResults, unknown>[]>(
     () => [
       {
@@ -56,6 +57,9 @@ export function UsersTable({ data, pageCount }: UsersTableProps) {
         enableSorting: false,
       },
       {
+        accessorFn: (user) => {
+          return user.averageCpm;
+        },
         accessorKey: "averageCpm",
         header: () => {
           return (
@@ -74,8 +78,16 @@ export function UsersTable({ data, pageCount }: UsersTableProps) {
             </div>
           );
         },
+        cell: ({ cell }) => {
+          const averageCpm = cell.getValue() as number;
+
+          return <span>{averageCpm}</span>;
+        },
       },
       {
+        accessorFn: (user) => {
+          return user.averageAccuracy;
+        },
         accessorKey: "averageAccuracy",
         header: "Average accuracy",
         cell: ({ cell }) => {

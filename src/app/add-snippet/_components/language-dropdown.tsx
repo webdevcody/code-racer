@@ -25,7 +25,7 @@ const LanguageDropDown = ({
   className,
 }: {
   codeLanguage: string;
-  setCodeLanguage: React.Dispatch<React.SetStateAction<string>>;
+  setCodeLanguage: (event: string) => void;
   className?: string;
 }) => {
   const [open, setOpen] = React.useState(false);
@@ -47,11 +47,11 @@ const LanguageDropDown = ({
           <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0 ">
+      <PopoverContent className="w-full p-0 h-44">
         <Command>
           <CommandInput placeholder="Search a Language..." />
           <CommandEmpty>No language found.</CommandEmpty>
-          <CommandGroup>
+          <CommandGroup className="overflow-y-auto">
             {snippetLanguages.map((language) => (
               <CommandItem
                 key={language.value}

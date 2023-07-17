@@ -10,11 +10,20 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Table as ShadcnTable,
   type ColumnDef,
   type PaginationState,
 } from "unstyled-table";
-import { Skeleton } from "./ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/icons";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -24,7 +33,9 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
+} from "@/components/ui/select";
+import { DataTableFilterableColumn, DataTableSearchableColumn } from "./types";
+import { DataTableToolbar } from "./data-table-toolbar";
 
 interface ColumnSort {
   id: string;
@@ -33,7 +44,16 @@ interface ColumnSort {
 
 type SortingState = ColumnSort[];
 
-interface DataTableProps<TData, TValue> {
+export function DataTable<TData, TValue>({
+  columns,
+  data,
+  pageCount,
+  defaultSorting,
+  filterableColumns = [],
+  searchableColumns = [],
+  newRowLink,
+  deleteRowsAction,
+}: {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   pageCount: number;
@@ -41,14 +61,11 @@ interface DataTableProps<TData, TValue> {
     prop: string;
     val: "asc" | "desc";
   };
-}
-
-export function DataTable<TData, TValue>({
-  columns,
-  data,
-  pageCount,
-  defaultSorting,
-}: DataTableProps<TData, TValue>) {
+  filterableColumns?: DataTableFilterableColumn<TData>[];
+  searchableColumns?: DataTableSearchableColumn<TData>[];
+  newRowLink?: string;
+  deleteRowsAction?: React.MouseEventHandler<HTMLButtonElement>;
+}) {
   const [isPending, startTransition] = React.useTransition();
 
   const router = useRouter();
@@ -105,6 +122,7 @@ export function DataTable<TData, TValue>({
     },
     [searchParams],
   );
+
   return (
     <ShadcnTable
       columns={columns}
@@ -116,10 +134,19 @@ export function DataTable<TData, TValue>({
       setSorting={setSorting}
       setPagination={setPagination}
       renders={{
-        table: ({ children }) => {
+        table: ({ children, tableInstance }) => {
           return (
-            <div className="mt-8 mb-4 border rounded-md">
-              <Table>{children}</Table>
+            <div className="w-full space-y-4 p-1">
+              <DataTableToolbar
+                table={tableInstance}
+                filterableColumns={filterableColumns}
+                searchableColumns={searchableColumns}
+                newRowLink={newRowLink}
+                deleteRowsAction={deleteRowsAction}
+              />
+              <div className="rounded-md border">
+                <Table>{children}</Table>
+              </div>
             </div>
           );
         },
@@ -193,9 +220,7 @@ export function DataTable<TData, TValue>({
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="text-sm font-medium">
-                  {`Page ${page} of ${pageCount}`}
-                </div>
+                <div className="text-sm font-medium">{`Page ${page} of ${pageCount}`}</div>
                 <div className="flex items-center space-x-2">
                   <Button
                     variant="outline"

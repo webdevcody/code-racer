@@ -12,17 +12,11 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { Result } from "@prisma/client";
 
-interface CpmChartProps {
-  recentGames: any;
-}
-
-const CpmChart: React.FC<CpmChartProps> = ({ recentGames }) => {
+function CpmChart({ recentGames }: { recentGames: Result[] }) {
   return (
-    <Card className="h-[400px]">
-      <CardHeader>
-        <CardTitle className="m-2 text-center">Characters per minute</CardTitle>
-      </CardHeader>
+    <div className="h-[500px]">
       <ResponsiveContainer height="100%">
         <ComposedChart
           data={recentGames}
@@ -41,8 +35,8 @@ const CpmChart: React.FC<CpmChartProps> = ({ recentGames }) => {
           />
         </ComposedChart>
       </ResponsiveContainer>
-    </Card>
+    </div>
   );
-};
+}
 
 export default CpmChart;

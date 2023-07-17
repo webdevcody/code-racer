@@ -11,6 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: "Install Dependencies"
+        run: npm i
+      - name: "Update Database"
+        run: DATABASE_URL=${{ secrets.DATABASE_URL }} npx prisma db push
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
       - name: Pull Vercel Environment Information

@@ -12,17 +12,11 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { Result } from "@prisma/client";
 
-interface AccuracyChartProps {
-  recentGames: any;
-}
-
-const AccuracyChart: React.FC<AccuracyChartProps> = ({ recentGames }) => {
+function AccuracyChart({ recentGames }: { recentGames: Result[] }) {
   return (
-    <Card className="h-[400px]">
-      <CardHeader>
-        <CardTitle className="m-2 text-center">Accuracy</CardTitle>
-      </CardHeader>
+    <div className="h-[500px]">
       <ResponsiveContainer height="100%">
         <LineChart
           data={recentGames}
@@ -41,8 +35,8 @@ const AccuracyChart: React.FC<AccuracyChartProps> = ({ recentGames }) => {
           />
         </LineChart>
       </ResponsiveContainer>
-    </Card>
+    </div>
   );
-};
+}
 
 export default AccuracyChart;

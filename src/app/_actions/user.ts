@@ -13,8 +13,10 @@ export const saveUserResultAction = action(
     accuracy: z.number().min(0).max(1),
     snippetId: z.string(),
   }),
+
   async (input, { prisma, user }) => {
     if (!user) throw new UnauthorizedError();
+
     await prisma.result.create({
       data: {
         userId: user.id,

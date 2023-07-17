@@ -8,11 +8,7 @@ import {
   deleteSnippetAction,
 } from "@/app/_actions/snippet";
 
-interface ReviewButtonsProps {
-  snippetId: Snippet["id"];
-}
-
-export function ReviewButtons({ snippetId }: ReviewButtonsProps) {
+export function ReviewButtons({ snippetId }: { snippetId: Snippet["id"] }) {
   const [isAcquitting, setIsAcquitting] = React.useState(false);
   const [isDeleting, setIsDeleting] = React.useState(false);
 
@@ -39,7 +35,7 @@ export function ReviewButtons({ snippetId }: ReviewButtonsProps) {
         onClick={async () => {
           setIsDeleting(true);
           try {
-            await deleteSnippetAction({ id: snippetId });
+            await deleteSnippetAction({ id: snippetId, path: "/review" });
           } catch (err) {
             console.log(err);
           } finally {

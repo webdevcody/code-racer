@@ -8,15 +8,13 @@ import { signOut } from "next-auth/react";
 import { AlertTriangle } from "lucide-react";
 import { catchError } from "@/lib/utils";
 
-interface DeleteConfirmationProps {
-  setWillDelete: React.Dispatch<React.SetStateAction<boolean>>;
-  displayName: string;
-}
-
 export default function DeleteConfirmation({
   setWillDelete,
   displayName,
-}: DeleteConfirmationProps) {
+}: {
+  setWillDelete: React.Dispatch<React.SetStateAction<boolean>>;
+  displayName: string;
+}) {
   const [isLoading, setIsLoading] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const divRef = useRef<HTMLDivElement>(null);

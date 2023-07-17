@@ -1,25 +1,25 @@
 import { PrismaClient } from "@prisma/client";
+import snippets from "./seed-data/snippets";
+
 const prisma = new PrismaClient();
 
 async function main() {
-  await prisma.achievement.upsert({
-    where: { type: "FIRST_RACE" },
-    update: {},
-    create: {
-      type: "FIRST_RACE",
-      image: "/static/first.png",
-      name: "First Race",
-    },
-  });
-
-  await prisma.achievement.upsert({
-    where: { type: "FIRST_SNIPPET" },
-    update: {},
-    create: {
-      type: "FIRST_SNIPPET",
-      image: "/static/first.png",
-      name: "First Snippet",
-    },
-  });
+  for (const { code, language } of snippets) {
+    await prisma.snippet.upsert({
+      where: {
+        id: `seed-${language}`,
+      },
+      update: {
+        code,
+        language,
+      },
+      create: {
+        id: `seed-${language}`,
+        code,
+        language,
+      },
+    });
+  }
 }
+
 main();

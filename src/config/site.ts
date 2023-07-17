@@ -22,10 +22,23 @@ export const siteConfig = {
       });
     }
 
+    items.push({
+      title: "Contributors",
+      href: "/contributors",
+    });
+
     return items;
   },
 
   links: {
     github: "https://github.com/webdevcody/code-racer",
+    codyTwitter: "https://twitter.com/webdevcody",
+  },
+  api: {
+    github: {
+      accessToken: process.env.GITHUB_ACCESS_TOKEN,
+      githubContributors: "https://api.github.com/repos/webdevcody/code-racer/contributors",
+      githubStars: "https://api.github.com/repos/webdevcody/code-racer",
+    }
   },
 };

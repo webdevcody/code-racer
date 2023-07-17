@@ -1,7 +1,7 @@
 import "@/styles/globals.css";
 import Header from "@/components/header";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Bruno_Ace_SC } from "next/font/google";
 import NextTopLoader from "nextjs-toploader";
 import { Footer } from "@/components/footer";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
@@ -11,6 +11,13 @@ import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
 
 const inter = Inter({ subsets: ["latin"] });
+
+export const bruno_ace_sc = Bruno_Ace_SC({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-bruno-ace-sc",
+  display: "swap",
+});
 
 const domain = process.env.NEXT_PUBLIC_DOMAIN;
 
@@ -46,13 +53,14 @@ export default function RootLayout({
         className={cn(
           "min-h-screen flex flex-col bg-background",
           inter.className,
+          bruno_ace_sc.variable,
         )}
       >
-        <NextTopLoader showSpinner={false} />
+        <NextTopLoader showSpinner={false} color="#E7B008" />
         <ContextProvider>
           <Header />
           <div className="container py-2 h-fit md:py-18 grow">{children}</div>
-          <Footer className="border-t-2" />
+          <Footer />
           <Toaster />
           <TailwindIndicator />
         </ContextProvider>
