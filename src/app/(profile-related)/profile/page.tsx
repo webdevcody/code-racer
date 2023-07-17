@@ -31,14 +31,14 @@ export default async function ProfilePage() {
   return (
     <main>
       <article className="md:h-[calc(100vh-56px)]">
-        <section className="md:flex h-full w-full gap-5">
-          <div className="md:w-1/3 w-full md:border-r md:border-b-0 border-b py-5">
+        <section className="w-full h-full gap-5 md:flex">
+          <div className="w-full py-5 border-b md:w-1/3 md:border-r md:border-b-0 md:pt-[20vh]">
             <div>
               <Link
                 href={`/view-photo?photoURL=${photoURL}`}
                 title="View Profile Picture"
                 prefetch
-                className="rounded-full w-40 mx-auto block"
+                className="block w-40 mx-auto rounded-full"
               >
                 <Image
                   src={photoURL ?? "/placeholder-image.jpg"}
@@ -91,7 +91,21 @@ export default async function ProfilePage() {
                 </ul>
               </>
             ) : (
-              <p className="p-5">You Don&apos;t Have Achievements</p>
+              <div className="flex flex-col items-center justify-center w-full md:pt-[12vh]">
+                <p className="p-5 text-2xl font-bold">
+                  Sorry currently you have no achievements.
+                  <Link href="/race" className="underline">
+                    Race
+                  </Link>{" "}
+                  to earn some{" "}
+                </p>
+                <Image
+                  src="/images/achiebement_page.svg"
+                  width={500}
+                  height={500}
+                  alt="image"
+                />
+              </div>
             )}
           </div>
         </section>
