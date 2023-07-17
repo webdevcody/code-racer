@@ -34,9 +34,9 @@ export function RecentRacesTable({
           return (
             <Link
               className={cn(buttonVariants(), "whitespace-nowrap")}
-              href={`/race?snippetId=${snippetId}`}
+              href={`/race/practice?snippetId=${snippetId}`}
             >
-              Re-race
+              Practice
             </Link>
           );
         },

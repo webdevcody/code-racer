@@ -13,10 +13,6 @@ export const siteConfig = {
         title: "Leaderboard",
         href: "/leaderboard",
       },
-      {
-        title: "Contributors",
-        href: "/contributors",
-      },
     ];
 
     if (isLoggedIn) {
@@ -25,6 +21,11 @@ export const siteConfig = {
         href: "/add-snippet",
       });
     }
+
+    items.push({
+      title: "Contributors",
+      href: "/contributors",
+    });
 
     return items;
   },

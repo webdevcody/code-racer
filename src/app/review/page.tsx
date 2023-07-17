@@ -17,16 +17,20 @@ export default async function ReviewPage() {
   return (
     <div className="container flex flex-col items-center max-w-2xl p-4 space-y-4">
       <h1 className="text-4xl">Review page </h1>
-      {downvotedSnippets.map((s) => (
-        <div
-          className="flex flex-col w-full max-w-sm gap-4 p-4 border rounded border-border"
-          key={s.id}
-        >
-          <code className="text-muted-foreground">{s.code}</code>
-          <span className="text-sm">Total characters: {s.code.length}</span>
-          <ReviewButtons snippetId={s.id} />
-        </div>
-      ))}
+      {downvotedSnippets.length === 0 ? (
+        <div>No downvoted snippets to review</div>
+      ) : (
+        downvotedSnippets.map((s) => (
+          <div
+            className="flex flex-col w-full max-w-sm gap-4 p-4 border rounded border-border"
+            key={s.id}
+          >
+            <code className="text-muted-foreground">{s.code}</code>
+            <span className="text-sm">Total characters: {s.code.length}</span>
+            <ReviewButtons snippetId={s.id} />
+          </div>
+        ))
+      )}
     </div>
   );
 }

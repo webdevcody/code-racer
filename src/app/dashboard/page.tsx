@@ -91,7 +91,7 @@ export default async function DashboardPage({
             <TabsTrigger value="races">Races</TabsTrigger>
             <TabsTrigger value="cpm">CPM</TabsTrigger>
             <TabsTrigger value="accuracy">Accuracy</TabsTrigger>
-            <TabsTrigger value="snippets">Snippets</TabsTrigger>
+            <TabsTrigger value="snippets">Snippets Submitted</TabsTrigger>
           </TabsList>
 
           <TabsContent value="races">
