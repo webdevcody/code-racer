@@ -18,12 +18,12 @@ export default function ProfileNav({ displayName }: { displayName: string }) {
 
   return (
     <>
-      <div className="flex justify-end w-full">
+      <div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="w-8 h-8 px-0">
+            <Button variant="ghost" className="gap-2">
               <Icons.settings />
-              <span className="sr-only">Toggle theme</span>
+              Setting
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">

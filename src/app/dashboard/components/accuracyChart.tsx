@@ -16,10 +16,7 @@ import { Result } from "@prisma/client";
 
 function AccuracyChart({ recentGames }: { recentGames: Result[] }) {
   return (
-    <Card className="h-[400px]">
-      <CardHeader>
-        <CardTitle className="m-2 text-center">Accuracy</CardTitle>
-      </CardHeader>
+    <div className="h-[500px]">
       <ResponsiveContainer height="100%">
         <LineChart
           data={recentGames}
@@ -38,7 +35,7 @@ function AccuracyChart({ recentGames }: { recentGames: Result[] }) {
           />
         </LineChart>
       </ResponsiveContainer>
-    </Card>
+    </div>
   );
 }
 

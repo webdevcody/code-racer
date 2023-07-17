@@ -280,9 +280,16 @@ export const acquitSnippetAction = action(
 export const deleteSnippetAction = action(
   z.object({
     id: z.string(),
+    path: z.string(),
   }),
-  async ({ id }, { prisma, user }) => {
-    if (user?.role !== "ADMIN") {
+  async ({ id, path }, { prisma, user }) => {
+    const snippet = await prisma.snippet.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (user?.role !== "ADMIN" && snippet?.userId !== user?.id) {
       throw new UnauthorizedError();
     }
 
@@ -296,6 +303,6 @@ export const deleteSnippetAction = action(
     // create a counter for user's bad
     // snippets (that was deleted)
 
-    revalidatePath("/review");
+    revalidatePath(path);
   },
 );
