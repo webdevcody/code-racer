@@ -39,7 +39,7 @@ export default function Contributor({ contributor }: ContributorProps) {
                 src={contributor.avatar_url}
                 alt={contributor.login}
               />
-              <AvatarFallback className="text-primary bg-background font-bold">{abbreviatedName}</AvatarFallback>
+              <AvatarFallback className="text-primary bg-secondary font-bold">{abbreviatedName}</AvatarFallback>
             </Avatar>
           </div>
           <div className="flex flex-col ml-4">
