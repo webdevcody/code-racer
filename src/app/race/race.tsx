@@ -435,19 +435,23 @@ export default function Race({
         />
 
         <div className="flex justify-between items-center">
-          {showRaceTimer && <RaceTimer />}
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" onClick={handleRestart}>
-                  Restart (ESC)
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Press Esc to reset</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          {showRaceTimer && (
+            <>
+              <RaceTimer />
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="outline" onClick={handleRestart}>
+                      Restart (ESC)
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Press Esc to reset</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </>
+          )}
         </div>
       </div>
 
