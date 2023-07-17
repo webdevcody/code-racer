@@ -28,9 +28,11 @@ export function Bio({ bio }: BioProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button disabled={pending} 
+        <Button
+          disabled={pending}
           className="h-fit mx-auto text-center font-bold border-2 hover:border-dashed hover:border-primary hover:bg-background"
-          variant="outline">
+          variant="outline"
+        >
           {optimisticBio && optimisticBio.length ? optimisticBio : "No bio yet"}
         </Button>
       </DialogTrigger>

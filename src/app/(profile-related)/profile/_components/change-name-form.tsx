@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import { catchError} from "@/lib/utils";
+import { catchError } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -72,11 +72,11 @@ export default function ChangeNameForm({
             <FormItem>
               <FormControl>
                 <>
-                      <Input
-                        className="text-2xl text-center font-bold border-2 hover:border-dashed hover:border-primary"
-                        onFocus={() => setIsEditing(true)}
-                        {...field}
-                      />
+                  <Input
+                    className="text-2xl text-center font-bold border-2 hover:border-dashed hover:border-primary"
+                    onFocus={() => setIsEditing(true)}
+                    {...field}
+                  />
                   {isEditing && (
                     <>
                       <div className="flex items-center justify-center gap-2">
@@ -91,7 +91,9 @@ export default function ChangeNameForm({
                         <Button
                           size="sm"
                           variant="success"
-                          disabled={field.value === displayName || field.value === ""}
+                          disabled={
+                            field.value === displayName || field.value === ""
+                          }
                           type="submit"
                         >
                           <Icons.check className="h-4 w-4" />

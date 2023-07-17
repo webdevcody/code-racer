@@ -65,7 +65,9 @@ export default async function ProfilePage() {
             </Link>
             <ChangeNameForm displayName={displayName} />
             <Bio bio={userData.bio} />
-            <span className="whitespace-nowrap">Total Points: {totalPoints}</span>
+            <span className="whitespace-nowrap">
+              Total Points: {totalPoints}
+            </span>
           </div>
           <div className="flex items-center justify-center gap-5 mt-5">
             <ProfileNav displayName={displayName} />
@@ -73,9 +75,9 @@ export default async function ProfilePage() {
           </div>
         </section>
         <section className="lg:col-span-2 2xl:col-span-3 mb-6">
-              <div className="py-5">
-                <Heading title="Achievements" centered />
-              </div>
+          <div className="py-5">
+            <Heading title="Achievements" centered />
+          </div>
           {userAchievements.length ? (
             <>
               <ul className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4">
@@ -99,8 +101,10 @@ export default async function ProfilePage() {
               </ul>
             </>
           ) : (
-              <p className="flex items-center justify-center">You don&apos;t have achievements, yet!</p>
-            )}
+            <p className="flex items-center justify-center">
+              You don&apos;t have achievements, yet!
+            </p>
+          )}
         </section>
       </article>
     </main>

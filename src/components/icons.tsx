@@ -1,4 +1,10 @@
-import { CheckIcon, Cross2Icon, GitHubLogoIcon, MoonIcon, SunIcon } from "@radix-ui/react-icons";
+import {
+  CheckIcon,
+  Cross2Icon,
+  GitHubLogoIcon,
+  MoonIcon,
+  SunIcon,
+} from "@radix-ui/react-icons";
 import {
   BarChart,
   ChevronDownSquareIcon,
