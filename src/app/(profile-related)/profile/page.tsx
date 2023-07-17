@@ -100,7 +100,7 @@ export default async function ProfilePage() {
                   to earn some{" "}
                 </p>
                 <Image
-                  src="/images/achiebement_page.svg"
+                  src="/images/achievement_page.svg"
                   width={500}
                   height={500}
                   alt="image"
