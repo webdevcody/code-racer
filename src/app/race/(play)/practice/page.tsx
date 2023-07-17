@@ -15,8 +15,6 @@ async function getSearchParamSnippet(snippetId: string | string[]) {
       },
     });
 
-    console.log(snippet);
-
     return snippet
   }
   return null;
@@ -31,7 +29,7 @@ export default async function PracticeRacePage({
   };
 }) {
   const user = await getCurrentUser();
-  let snippet =
+  const snippet =
     (await getSearchParamSnippet(searchParams.snippetId)) ??
     (await getRandomSnippet({ language: searchParams.lang }));
   const language = searchParams.lang;

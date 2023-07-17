@@ -403,7 +403,7 @@ export default function Race({
   return (
     <>
       <div
-        className="relative flex flex-col w-3/4 gap-2 p-4 rounded-md lg:p-8 bg-accent"
+        className="relative flex flex-col w-full gap-2 p-4 rounded-md lg:p-8 bg-accent"
         onClick={focusOnLoad}
         role="none" // eslint fix - will remove the semantic meaning of an element while still exposing it to assistive technology
       >
