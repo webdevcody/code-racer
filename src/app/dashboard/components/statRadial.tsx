@@ -1,15 +1,12 @@
-export default function ProgressBar({
+export default function StatRadial({
   size = 60,
   value = 50,
-  totalValue = 100,
 }: {
   size?: number;
   value?: number;
-  totalValue?: number;
 }) {
-  const progress = value / totalValue;
-  const angle = progress * 360;
-  const fractionText = `${value} / ${totalValue}`;
+  const angle = 360;
+  const fractionText = `${value}`;
 
   const backgroundColor = "hsl(var(--accent))";
   const progressColor = "hsl(var(--warning-dark))";
