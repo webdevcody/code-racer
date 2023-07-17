@@ -419,6 +419,7 @@ export default function Race({
     setStartTime(null);
     setInput("");
     setTextIndicatorPosition(0);
+    setTotalErrors(0);
   }
 
   return (
