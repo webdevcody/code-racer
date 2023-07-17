@@ -57,7 +57,7 @@ export default async function ContributorsPage() {
         {contributors.map((contributor) => (
           <li
             key={contributor.id}
-            className="flex gap-4 bg-black p-1 rounded-full"
+            className="flex gap-2 bg-background p-1 border-primary border-2 rounded-full"
           >
             <Image
               className="rounded-full"
@@ -66,13 +66,15 @@ export default async function ContributorsPage() {
               width={45}
               height={45}
             />
-            <a href={contributor.html_url} className=" self-center">
+            <div className="flex flex-col sm:flex-row w-full sm:justify-evenly md:justify-center">
+              <a href={contributor.html_url} className="self-center text-ellipsis overflow-hidden">
               {contributor.login}
             </a>
             <span className="self-center font-thin">-</span>
-            <span className="self-center font-thin text-xl">
+              <span className="self-center object-none font-thin text-xl">
               {contributor.contributions} contributions
             </span>
+            </div>
           </li>
         ))}
       </ul>
