@@ -400,6 +400,10 @@ export default function Race({
         }
       });
     }
+
+    if (raceTimeStamp.length > 0 && errors.length == 0) {
+      setRaceTimeStamp((prev) => prev.slice(0, -1));
+    }
   }
 
   function Enter() {
@@ -441,7 +445,7 @@ export default function Race({
       setTotalErrors(totalErrors + 1);
     }
 
-    if (e.key === code[input.length]) {
+    if (e.key === code[input.length] && errors.length === 0 && e.key !== " ") {
       const currTime = Date.now();
       const timeTaken = startTime ? ((currTime - startTime.getTime()) / 1000) : 0;
       setRaceTimeStamp((prev) => [

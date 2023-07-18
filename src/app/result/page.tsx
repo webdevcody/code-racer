@@ -52,6 +52,11 @@ async function AuthenticatedPage({
       },
     },
   });
+  const currentSnippet = await prisma.snippet.findUnique({
+    where: {
+      id: currentRaceResult.snippetId,
+    },
+  });
   const firstRaceBadge = await getFirstRaceBadge();
   let raceResults: ParsedRacesResult[] = [];
   let cardObjects = [] as { title: string; value: string | undefined }[];
@@ -113,7 +118,7 @@ async function AuthenticatedPage({
             <TabsContent value="Current">
               {/* works even for unauthorized user */}
               <span className="text-2xl mx-auto text-primary flex-wrap sm:hidden">View in Larger Screen to Unlock Exciting Features!</span>
-              <CurrentChart />
+            <CurrentChart code={currentSnippet?.code} />
             </TabsContent>
             <TabsContent value="History">
               <Chart raceResult={raceResults} />
