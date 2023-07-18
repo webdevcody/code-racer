@@ -8,4 +8,3 @@ export const bruno_ace_sc = Bruno_Ace_SC({
   variable: "--font-bruno-ace-sc",
   display: "swap",
 });
-
