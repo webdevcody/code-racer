@@ -17,6 +17,7 @@ import Code from "./code";
 import { saveUserResultAction } from "../_actions/result";
 import RaceDetails from "./_components/race-details";
 import RaceTimer from "./race-timer";
+import { ReportButton } from "./_components/report-button";
 
 function calculateCPM(
   numberOfCharacters: number,
@@ -33,6 +34,13 @@ function calculateAccuracy(
   return (1 - errorsCount / numberOfCharacters) * 100;
 }
 
+interface raceTimeStampProps {
+  char: string;
+  accuracy: number;
+  cpm: number;
+  time: number;
+}
+
 export default function Race({
   user,
   snippet,
@@ -47,6 +55,8 @@ export default function Race({
   >(0);
   const [submittingResults, setSubmittingResults] = useState(false);
   const [totalErrors, setTotalErrors] = useState(0);
+  const [currentLineNumber, setCurrentLineNumber] = useState(0);
+  const [currentCharPosition, setCurrentCharPosition] = useState(0);
   const router = useRouter();
   const inputElement = useRef<HTMLInputElement | null>(null);
   const code = snippet.code.trimEnd();
@@ -59,11 +69,26 @@ export default function Race({
 
   const isRaceFinished = input === code;
   const showRaceTimer = !!startTime && !isRaceFinished;
+  const [currentChar, setCurrentChar] = useState("");
+  const [raceTimeStamp, setRaceTimeStamp] = useState<raceTimeStampProps[]>([]);
 
   async function endRace() {
     if (!startTime) return;
     const endTime = new Date();
     const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
+
+    localStorage.setItem(
+      "raceTimeStamp",
+      JSON.stringify([
+        ...raceTimeStamp,
+        {
+          char: currentChar,
+          accuracy: calculateAccuracy(input.length, totalErrors),
+          cpm: calculateCPM(input.length, timeTaken),
+          time: Date.now(),
+        },
+      ]),
+    );
 
     if (user) {
       const result = await saveUserResultAction({
@@ -92,6 +117,11 @@ export default function Race({
       endRace();
     }
     focusOnLoad();
+
+    // Calculate the current line and cursor position in that line
+    const lines = input.split("\n");
+    setCurrentLineNumber(lines.length);
+    setCurrentCharPosition(lines[lines.length - 1].length);
   }, [input]);
 
   useEffect(() => {
@@ -113,12 +143,6 @@ export default function Race({
   }
 
   function handleKeyboardDownEvent(e: React.KeyboardEvent<HTMLInputElement>) {
-    console.log(e.key);
-    console.log("hit");
-    if (!startTime) {
-      setStartTime(new Date());
-    }
-
     // Unfocus Shift + Tab
     if (e.shiftKey && e.key === "Tab") {
       e.currentTarget.blur();
@@ -164,6 +188,9 @@ export default function Race({
           break;
         case "Enter":
           Enter();
+          if (!startTime) {
+            setStartTime(new Date());
+          }
           break;
         case "ArrowLeft":
           ArrowLeft(e);
@@ -174,12 +201,21 @@ export default function Race({
         case "Tab":
           e.preventDefault();
           Tab();
+          if (!startTime) {
+            setStartTime(new Date());
+          }
           break;
         default:
           Key(e);
+          if (!startTime) {
+            setStartTime(new Date());
+          }
           break;
       }
     }
+    const lines = input.split("\n");
+    setCurrentLineNumber(lines.length);
+    setCurrentCharPosition(lines[lines.length - 1].length);
   }
 
   function ArrowRight(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -194,6 +230,22 @@ export default function Race({
           return lastValue + 1;
         }
       });
+    }
+
+    if (e.ctrlKey && e.key === "ArrowRight") {
+      if (textIndicatorPosition === input.length) {
+        return;
+      }
+      let i = textIndicatorPosition as number;
+      while (i < input.length) {
+        if (typeof textIndicatorPosition === "number") {
+          if (code.charAt(i + 1) !== " " && code.charAt(i) === " ") {
+            setTextIndicatorPosition(i + 1);
+            break;
+          }
+        }
+        i++;
+      }
     }
 
     if (e.shiftKey && e.key === "ArrowRight") {
@@ -227,6 +279,21 @@ export default function Race({
       }
     }
 
+    if (e.ctrlKey && e.key === "ArrowLeft") {
+      let n = 0;
+      let i = textIndicatorPosition as number;
+      while (i > 0) {
+        if (typeof textIndicatorPosition === "number") {
+          if (code.charAt(i - 1) !== " " && code.charAt(i) === " ") {
+            n = textIndicatorPosition - i;
+            setTextIndicatorPosition(textIndicatorPosition - n - 1);
+            break;
+          }
+        }
+        i--;
+      }
+    }
+
     if (e.shiftKey && e.key === "ArrowLeft") {
       setTextIndicatorPosition((prevTextIndicatorPosition) => {
         if (typeof prevTextIndicatorPosition === "number") {
@@ -252,17 +319,49 @@ export default function Race({
   }
 
   function Tab() {
-    const nextTabStop = 4 - (input.length % 4);
-    const tabSpace = " ".repeat(nextTabStop);
-
-    setInput(input + tabSpace);
-    setTextIndicatorPosition((prevTextIndicatorPosition) => {
-      if (typeof prevTextIndicatorPosition === "number") {
-        return prevTextIndicatorPosition + tabSpace.length;
-      } else {
-        return prevTextIndicatorPosition;
+    if (code.slice(input.length, input.length + 4).includes("\n")) {
+      let indentLength = 0;
+      let newChars = "";
+      while (
+        indentLength + input.length < code.length &&
+        code[indentLength + input.length] !== "\n"
+      ) {
+        indentLength++;
       }
-    });
+      newChars += " ".repeat(indentLength) + "\n";
+      indentLength = 0;
+      while (
+        indentLength + newChars.length + input.length + 1 < code.length &&
+        code[indentLength + newChars.length + input.length] === " "
+      ) {
+        indentLength++;
+      }
+      if (indentLength >= 0) {
+        newChars += " ".repeat(indentLength);
+      }
+      setInput(input + newChars);
+      setTextIndicatorPosition((prevTextIndicatorPosition) => {
+        if (typeof prevTextIndicatorPosition === "number") {
+          return prevTextIndicatorPosition + newChars.length;
+        } else {
+          return prevTextIndicatorPosition;
+        }
+      });
+    } else {
+      let tabSpace = "";
+      const counter = currentCharPosition;
+      const nextTabStop = 4 - (counter % 4);
+      tabSpace = " ".repeat(nextTabStop);
+
+      setInput(input + tabSpace);
+      setTextIndicatorPosition((prevTextIndicatorPosition) => {
+        if (typeof prevTextIndicatorPosition === "number") {
+          return prevTextIndicatorPosition + tabSpace.length;
+        } else {
+          return prevTextIndicatorPosition;
+        }
+      });
+    }
   }
 
   function Backspace() {
@@ -353,6 +452,21 @@ export default function Race({
       setTotalErrors(totalErrors + 1);
     }
 
+    if (e.key === code[input.length]) {
+      const currTime = Date.now();
+      const timeTaken = startTime ? (currTime - startTime.getTime()) / 1000 : 0;
+      setRaceTimeStamp((prev) => [
+        ...prev,
+        {
+          char: e.key,
+          accuracy: calculateAccuracy(input.length, totalErrors),
+          cpm: calculateCPM(input.length, timeTaken),
+          time: currTime,
+        },
+      ]);
+      setCurrentChar("");
+    }
+
     if (!Array.isArray(textIndicatorPosition)) {
       if (textIndicatorPosition === input.length) {
         setInput((prevInput) => prevInput + e.key);
@@ -403,7 +517,7 @@ export default function Race({
   return (
     <>
       <div
-        className="relative flex flex-col w-3/4 gap-2 p-4 rounded-md lg:p-8 bg-accent"
+        className="relative flex flex-col gap-2 p-4 rounded-md lg:p-8 bg-accent w-3/4 mx-auto"
         onClick={focusOnLoad}
         role="none" // eslint fix - will remove the semantic meaning of an element while still exposing it to assistive technology
       >
@@ -412,17 +526,27 @@ export default function Race({
           inputLength={input.length}
           user={user}
         />
-        <div className="mb-2 md:mb-4">
+        <div className="mb-2 md:mb-4 flex justify-between">
           <Heading
             title="Type this code"
             description="Start typing to get racing"
           />
+          {user && (
+            <ReportButton
+              snippetId={snippet.id}
+              // userId={user.id}
+              language={snippet.language}
+            />
+          )}
         </div>
         <Code
           code={code}
           errors={errors}
           userInput={input}
+          currentLineNumber={currentLineNumber}
+          currentCharPosition={currentCharPosition}
           textIndicatorPosition={textIndicatorPosition}
+          totalErrors={totalErrors}
         />
         <input
           type="text"
@@ -434,20 +558,24 @@ export default function Race({
           onPaste={(e) => e.preventDefault()}
         />
 
-        <div className="flex justify-between">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" onClick={handleRestart}>
-                  Restart (ESC)
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Press Esc to reset</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          {showRaceTimer && <RaceTimer />}
+        <div className="flex justify-between items-center">
+          {showRaceTimer && (
+            <>
+              <RaceTimer />
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="outline" onClick={handleRestart}>
+                      Restart (ESC)
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Press Esc to reset</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </>
+          )}
         </div>
       </div>
 

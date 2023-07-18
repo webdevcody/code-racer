@@ -28,7 +28,7 @@ interface ContributorProps {
 }
 
 export default function Contributor({ contributor }: ContributorProps) {
-  const abbreviatedName = contributor?.login.toUpperCase().slice(0,2) ?? "Co";
+  const abbreviatedName = contributor?.login.toUpperCase().slice(0, 2) ?? "Co";
   return (
     <li key={contributor.id} className="flex gap-4 p-1 rounded-full">
       <Card className="w-full">
@@ -39,7 +39,9 @@ export default function Contributor({ contributor }: ContributorProps) {
                 src={contributor.avatar_url}
                 alt={contributor.login}
               />
-              <AvatarFallback className="text-primary bg-secondary font-bold">{abbreviatedName}</AvatarFallback>
+              <AvatarFallback className="text-primary bg-secondary font-bold">
+                {abbreviatedName}
+              </AvatarFallback>
             </Avatar>
           </div>
           <div className="flex flex-col ml-4">

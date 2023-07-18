@@ -4,13 +4,13 @@ import { useState } from "react";
 import { Button, buttonVariants } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { ScrollArea } from "./ui/scroll-area";
-import { cn } from "@/lib/utils";
+import { isActiveRoute, cn } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
 import { UserDropdown } from "./user-dropdown";
 import { Icons } from "./icons";
 import Link, { LinkProps } from "next/link";
 import { ModeToggle } from "./mode-toggle";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import type { User } from "next-auth";
 import { UserRole } from "@prisma/client";
@@ -24,16 +24,17 @@ export function MobileNav({
 }) {
   const [open, setOpen] = useState(false);
   const isLoggedIn = !!useSession().data;
+  const currentPathName = usePathname();
 
   return (
     <div className="md:hidden">
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
-          <Button className="w-12 h-12 p-0" onClick={() => setOpen(!open)}>
+          <Button className="w-10 h-10 p-0" onClick={() => setOpen(!open)}>
             {open ? (
-              <Icons.mobileNavOpen className="h-[2rem] w-[2rem]" />
+              <Icons.mobileNavOpen className="text-background h-[2rem] w-[2rem]" />
             ) : (
-              <Icons.mobileNavClosed className="h-[2rem] w-[2rem]" />
+              <Icons.mobileNavClosed className="text-background h-[2rem] w-[2rem]" />
             )}
           </Button>
         </SheetTrigger>
@@ -47,6 +48,7 @@ export function MobileNav({
                     className={cn(
                       buttonVariants({ size: "lg" }),
                       "text-xl w-full",
+                      isActiveRoute(currentPathName, item.href) && "bg-background border-2 border-primary"
                     )}
                     href={item.href}
                     key={item.href}

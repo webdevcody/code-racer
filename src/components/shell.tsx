@@ -23,7 +23,7 @@ export default function Shell({
         "grid items-center md:gap-8 pb-8 pt-6 md:py-8",
         layout === "default" && "container",
         layout === "auth" && "container max-w-lg",
-        className
+        className,
       )}
       {...props}
     >
