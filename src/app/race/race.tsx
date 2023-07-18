@@ -77,12 +77,18 @@ export default function Race({
     const endTime = new Date();
     const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
 
-    localStorage.setItem("raceTimeStamp", JSON.stringify([...raceTimeStamp, {
-      char: currentChar,
-      accuracy: calculateAccuracy(input.length, totalErrors),
-      cpm: calculateCPM(input.length, timeTaken),
-      time: Date.now(),
-    }]))
+    localStorage.setItem(
+      "raceTimeStamp",
+      JSON.stringify([
+        ...raceTimeStamp,
+        {
+          char: currentChar,
+          accuracy: calculateAccuracy(input.length, totalErrors),
+          cpm: calculateCPM(input.length, timeTaken),
+          time: Date.now(),
+        },
+      ]),
+    );
 
     if (user) {
       const result = await saveUserResultAction({
@@ -181,10 +187,10 @@ export default function Race({
           Backspace();
           break;
         case "Enter":
+          Enter();
           if (!startTime) {
             setStartTime(new Date());
           }
-          Enter();
           break;
         case "ArrowLeft":
           ArrowLeft(e);
@@ -194,10 +200,10 @@ export default function Race({
           break;
         case "Tab":
           e.preventDefault();
+          Tab();
           if (!startTime) {
             setStartTime(new Date());
           }
-          Tab();
           break;
         default:
           Key(e);
@@ -448,7 +454,7 @@ export default function Race({
 
     if (e.key === code[input.length]) {
       const currTime = Date.now();
-      const timeTaken = startTime ? ((currTime - startTime.getTime()) / 1000) : 0;
+      const timeTaken = startTime ? (currTime - startTime.getTime()) / 1000 : 0;
       setRaceTimeStamp((prev) => [
         ...prev,
         {
@@ -456,7 +462,7 @@ export default function Race({
           accuracy: calculateAccuracy(input.length, totalErrors),
           cpm: calculateCPM(input.length, timeTaken),
           time: currTime,
-        }
+        },
       ]);
       setCurrentChar("");
     }
