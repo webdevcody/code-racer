@@ -300,7 +300,7 @@ export default function Race({
       }
 
       let tabSpace = "";
-      const counter = input.length - n;
+      const counter = currentCharPosition;
       const nextTabStop = 4 - (counter % 4);
       tabSpace = " ".repeat(nextTabStop);
 
