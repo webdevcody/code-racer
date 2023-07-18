@@ -1,6 +1,6 @@
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Chart from "./chart";
+import Chart, { CurrentChart } from "./chart";
 import { Icons } from "@/components/icons";
 import Link from "next/link";
 import { FirstRaceBadge } from "./first-race-badge";
@@ -17,6 +17,7 @@ import {
 import { Heading } from "@/components/ui/heading";
 import { cn } from "@/lib/utils";
 import { User } from "next-auth";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 async function AuthenticatedPage({
   resultId,
@@ -103,17 +104,29 @@ async function AuthenticatedPage({
           })}
         </div>
       </div>
-      <div className="flex flex-col p-8 rounded-xl">
-        <div className="flex flex-wrap justify-center gap-4">
-          <p className="text-primary text-center text-xl">
+      <div className="flex flex-col p-8 rounded-xl border-2 border-white">
+        <div className="flex flex-wrap justify-center gap-4 w-full">
+          {/* <p className="text-primary text-center text-xl">
             Your progress on this snippet
-          </p>
-          <Chart raceResult={raceResults} />
+          </p> */}
+          <Tabs defaultValue="Current" className="w-full">
+            <TabsList>
+              <TabsTrigger value="Current">Current</TabsTrigger>
+              <TabsTrigger value="History">History</TabsTrigger>
+            </TabsList>
+            <TabsContent value="Current">
+              {/* works even for unauthorized user */}
+              <span className="text-2xl mx-auto text-primary flex-wrap sm:hidden">View in Larger Screen to Unlock Exciting Features!</span>
+              <CurrentChart />
+            </TabsContent>
+            <TabsContent value="History">
+              <Chart raceResult={raceResults} />
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
       <div
         className="flex flex-wrap items-center justify-center gap-4 p-2"
-        tabIndex={-1}
       >
         <Link
           title="Retry"
