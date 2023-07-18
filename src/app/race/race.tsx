@@ -427,11 +427,7 @@ export default function Race({
             description="Start typing to get racing"
           />
           {user && (
-            <ReportButton
-              snippetId={snippet.id}
-              userId={user.id}
-              language={snippet.language}
-            />
+            <ReportButton snippetId={snippet.id} language={snippet.language} />
           )}
         </div>
         <Code
