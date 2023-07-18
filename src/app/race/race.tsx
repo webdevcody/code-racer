@@ -261,17 +261,49 @@ export default function Race({
   }
 
   function Tab() {
-    const nextTabStop = 4 - (input.length % 4);
-    const tabSpace = " ".repeat(nextTabStop);
-
-    setInput(input + tabSpace);
-    setTextIndicatorPosition((prevTextIndicatorPosition) => {
-      if (typeof prevTextIndicatorPosition === "number") {
-        return prevTextIndicatorPosition + tabSpace.length;
-      } else {
-        return prevTextIndicatorPosition;
+    if (code.slice(input.length, input.length + 4).includes("\n")) {
+      let indentLength = 0;
+      let newChars = "";
+      while (
+        indentLength + input.length < code.length &&
+        code[indentLength + input.length] !== "\n"
+      ) {
+        indentLength++;
       }
-    });
+      newChars += " ".repeat(indentLength) + "\n";
+      indentLength = 0;
+      while (
+        indentLength + newChars.length + input.length + 1 < code.length &&
+        code[indentLength + newChars.length + input.length] === " "
+      ) {
+        indentLength++;
+      }
+      if (indentLength >= 0) {
+        newChars += " ".repeat(indentLength);
+      }
+      setInput(input + newChars);
+      setTextIndicatorPosition((prevTextIndicatorPosition) => {
+        if (typeof prevTextIndicatorPosition === "number") {
+          return prevTextIndicatorPosition + newChars.length;
+        } else {
+          return prevTextIndicatorPosition;
+        }
+      });
+    } else {
+      let tabSpace = "";
+      const counter = currentCharPosition;
+      const nextTabStop = 4 - (counter % 4);
+      tabSpace = " ".repeat(nextTabStop);
+
+      setInput(input + tabSpace);
+      setTextIndicatorPosition((prevTextIndicatorPosition) => {
+        if (typeof prevTextIndicatorPosition === "number") {
+          return prevTextIndicatorPosition + tabSpace.length;
+        } else {
+          return prevTextIndicatorPosition;
+        }
+      });
+    }
   }
 
   function Backspace() {
@@ -427,7 +459,11 @@ export default function Race({
             description="Start typing to get racing"
           />
           {user && (
-            <ReportButton snippetId={snippet.id} language={snippet.language} />
+            <ReportButton
+              snippetId={snippet.id}
+              // userId={user.id}
+              language={snippet.language}
+            />
           )}
         </div>
         <Code
