@@ -52,6 +52,11 @@ async function AuthenticatedPage({
       },
     },
   });
+  const currentSnippet = await prisma.snippet.findUnique({
+    where: {
+      id: currentRaceResult.snippetId,
+    },
+  });
   const firstRaceBadge = await getFirstRaceBadge();
   let raceResults: ParsedRacesResult[] = [];
   let cardObjects = [] as { title: string; value: string | undefined }[];
@@ -104,11 +109,7 @@ async function AuthenticatedPage({
           })}
         </div>
       </div>
-      <div className="flex flex-col p-8 rounded-xl border-2 border-white">
-        <div className="flex flex-wrap justify-center gap-4 w-full">
-          {/* <p className="text-primary text-center text-xl">
-            Your progress on this snippet
-          </p> */}
+      <div className="flex flex-col px-8 rounded-xl">
           <Tabs defaultValue="Current" className="w-full">
             <TabsList>
               <TabsTrigger value="Current">Current</TabsTrigger>
@@ -116,18 +117,17 @@ async function AuthenticatedPage({
             </TabsList>
             <TabsContent value="Current">
               {/* works even for unauthorized user */}
-              <span className="text-2xl mx-auto text-primary flex-wrap sm:hidden">
-                View in Larger Screen to Unlock Exciting Features!
-              </span>
-              <CurrentChart />
+              <span className="text-2xl mx-auto text-primary flex-wrap sm:hidden">View in Larger Screen to Unlock Exciting Features!</span>
+            <CurrentChart code={currentSnippet?.code} />
             </TabsContent>
             <TabsContent value="History">
               <Chart raceResult={raceResults} />
             </TabsContent>
-          </Tabs>
-        </div>
+        </Tabs>
       </div>
-      <div className="flex flex-wrap items-center justify-center gap-4 p-2">
+      <div
+        className="flex flex-wrap items-center justify-center gap-4 p-2"
+      >
         <Link
           title="Retry"
           className={cn(buttonVariants(), "gap-2")}

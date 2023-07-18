@@ -121,9 +121,10 @@ function renderTooltip(
   }
 }
 
-export function CurrentChart() {
+export function CurrentChart({ code }: { code?: string }) {
   const [raceTimeStamp, setRaceTimeStamp] = useState<raceTimeStampProps[]>([]);
   const [activeCharIndex, setActiveCharIndex] = useState<number>();
+  let removeExtras = 0;
 
   useEffect(() => {
     const getData = () => {
@@ -131,15 +132,31 @@ export function CurrentChart() {
     };
 
     const data = getData();
-    return setRaceTimeStamp(data);
-  }, []);
+    return setRaceTimeStamp(data)
+  }, [])
+
+  const RenderCode = () => {
+    return <code className="flex-wrap text-2xl hidden sm:block whitespace-pre-wrap">
+      {
+        code && raceTimeStamp &&
+        code.split("").map((item, index) => {
+          if (item !== " " && item !== "\n" && item !== "↵") {
+            const raceChar = raceTimeStamp[index - removeExtras]
+            return (
+              <span key={index} className={`text-2xl ${activeCharIndex === raceChar.time ? "bg-primary text-secondary" : ""}`}>{item}</span>
+            )
+          } else {
+            removeExtras++;
+            return <span key={index} className="text-2xl">{item}</span>
+          }
+        })
+      }
+    </code>
+  }
 
   return (
-    <div
-      style={{ width: "100%", height: 300 }}
-      className="mx-auto pb-10 flex flex-col"
-    >
-      <ResponsiveContainer>
+    <div style={{ width: "100%" }} className="mx-auto pb-3 flex flex-col">
+      <ResponsiveContainer height={300}>
         <LineChart data={raceTimeStamp} margin={{ right: 25, top: 10 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="char" tick={{ fontSize: 0 }} />
@@ -165,23 +182,7 @@ export function CurrentChart() {
         </LineChart>
       </ResponsiveContainer>
       <div className="px-2 bg-accent text-primary">
-        <code className="flex-wrap hidden sm:inline">
-          {raceTimeStamp.length > 0 &&
-            raceTimeStamp.map((item, index) => {
-              return (
-                <span
-                  key={index}
-                  className={`text-2xl ${
-                    activeCharIndex === item.time
-                      ? "bg-primary text-secondary"
-                      : ""
-                  }`}
-                >
-                  {item.char}
-                </span>
-              );
-            })}
-        </code>
+        <RenderCode />
       </div>
     </div>
   );
