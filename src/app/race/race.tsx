@@ -441,14 +441,15 @@ export default function Race({
       setTotalErrors(totalErrors + 1);
     }
 
-    if (e.key === code.slice(input.length, input.length + 1)) {
+    if (e.key === code[input.length]) {
       const currTime = Date.now();
+      const timeTaken = startTime ? ((currTime - startTime.getTime()) / 1000) : 0;
       setRaceTimeStamp((prev) => [
         ...prev,
         {
           char: e.key,
           accuracy: calculateAccuracy(input.length, totalErrors),
-          cpm: calculateCPM(input.length, ((currTime - Number(startTime)) / 1000)),
+          cpm: calculateCPM(input.length, timeTaken),
           time: currTime,
         }
       ]);
