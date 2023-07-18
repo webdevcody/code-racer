@@ -15,7 +15,7 @@ async function getSearchParamSnippet(snippetId: string | string[]) {
       },
     });
 
-    return snippet
+    return snippet;
   }
   return null;
 }
@@ -35,17 +35,10 @@ export default async function PracticeRacePage({
   const language = searchParams.lang;
 
   return (
-    <main className="flex flex-col items-center justify-between py-10 lg:p-24">
+    <main>
       {snippet && (
-        <div className="flex flex-col w-3/4 gap-2">
+        <div className="pt-8">
           <Race snippet={snippet} user={user} />
-          {user && (
-            <ReportButton
-              snippetId={snippet.id}
-              userId={user.id}
-              language={language}
-            />
-          )}
         </div>
       )}
       {!snippet && (

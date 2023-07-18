@@ -16,6 +16,7 @@ export function ReviewButtons({ snippetId }: { snippetId: Snippet["id"] }) {
     <div className="flex justify-between">
       <Button
         disabled={isAcquitting || isDeleting}
+        variant={"success"}
         onClick={async () => {
           setIsAcquitting(true);
           try {

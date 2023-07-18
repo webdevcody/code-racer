@@ -10,11 +10,9 @@ import { Icons } from "@/components/icons";
 import { downVoteSnippetAction } from "@/app/_actions/snippet";
 
 export function ReportButton({
-  userId,
   snippetId,
   language,
 }: {
-  userId: string;
   snippetId: string;
   language: string;
 }) {
@@ -28,7 +26,7 @@ export function ReportButton({
   return (
     <Button
       disabled={isPending}
-      className="self-end"
+      // className="self-start"
       variant="destructive"
       onClick={() => {
         startTransition(async () => {
@@ -59,7 +57,7 @@ export function ReportButton({
       }}
     >
       {isPending && <Icons.spinner className="mr-2 animate-spin h-4 w-4" />}
-      Report a snippet
+      Report this snippet
     </Button>
   );
 }
