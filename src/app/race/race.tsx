@@ -206,6 +206,9 @@ export default function Race({
     }
 
     if (e.ctrlKey && e.key === "ArrowRight") {
+      if (textIndicatorPosition === input.length) {
+        return;
+      }
       let i = textIndicatorPosition as number;
       while (i < input.length) {
         if (typeof textIndicatorPosition === "number") {
