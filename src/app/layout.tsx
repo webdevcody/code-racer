@@ -42,7 +42,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
-          "min-h-[50rem] h-screen flex flex-col bg-background",
+          "min-h-screen flex flex-col bg-background",
           inter.className,
           bruno_ace_sc.variable,
         )}
