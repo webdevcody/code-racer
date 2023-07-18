@@ -3,7 +3,7 @@ import * as React from "react";
 import Link from "next/link";
 import { NavItem } from "@/types/nav";
 import { siteConfig } from "@/config/site";
-import { checkActiveRoute, cn } from "@/lib/utils";
+import { isActiveRoute, cn } from "@/lib/utils";
 import { Icons } from "@/components/icons";
 import { buttonVariants } from "./ui/button";
 import { usePathname } from "next/navigation";
@@ -31,7 +31,7 @@ export function MainNav({ items }: { items?: NavItem[] }) {
                     "md:text-xs lg:text-sm",
                     buttonVariants({ variant: "ghost" }),
                     item.disabled && "cursor-not-allowed opacity-80",
-                    checkActiveRoute(currentPathName, item.href) && "underline underline-offset-8 decoration-2 decoration-primary"
+                    isActiveRoute(currentPathName, item.href) && "underline underline-offset-8 decoration-2 decoration-primary"
                   )}
                 >
                   {item.title} 
