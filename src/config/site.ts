@@ -42,6 +42,7 @@ export const siteConfig = {
       githubStars: "https://api.github.com/repos/webdevcody/code-racer",
       githubWeeklyActivity:
         "https://api.github.com/repos/webdevcody/code-racer/stats/code_frequency",
+      githubContributorActivity: "https://api.github.com/repos/webdevcody/code-racer/stats/contributors",
       cacheRevalidationInterval: 60,
     },
   },
