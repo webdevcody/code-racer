@@ -34,6 +34,13 @@ function calculateAccuracy(
   return (1 - errorsCount / numberOfCharacters) * 100;
 }
 
+interface raceTimeStampProps {
+  char: string;
+  accuracy: number;
+  cpm: number;
+  time: number;
+}
+
 export default function Race({
   user,
   snippet,
@@ -62,8 +69,8 @@ export default function Race({
 
   const isRaceFinished = input === code;
   const showRaceTimer = !!startTime && !isRaceFinished;
-  const [currentWord, setCurrentWord] = useState("");
-  const [raceTimeStamp, setRaceTimeStamp] = useState<any[]>([]);
+  const [currentChar, setCurrentChar] = useState("");
+  const [raceTimeStamp, setRaceTimeStamp] = useState<raceTimeStampProps[]>([]);
 
   async function endRace() {
     if (!startTime) return;
@@ -71,7 +78,9 @@ export default function Race({
     const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
 
     localStorage.setItem("raceTimeStamp", JSON.stringify([...raceTimeStamp, {
-      word: currentWord,
+      char: currentChar,
+      accuracy: calculateAccuracy(input.length, totalErrors),
+      cpm: calculateCPM(input.length, timeTaken),
       time: Date.now(),
     }]))
 
@@ -369,19 +378,20 @@ export default function Race({
       setTotalErrors(totalErrors + 1);
     }
 
-    if (e.key === " " && e.key === code.slice(input.length, input.length + 1)) {
+    if (e.key === code.slice(input.length, input.length + 1)) {
+      const currTime = Date.now();
+      const lastTime = raceTimeStamp[raceTimeStamp.length - 1]?.time || 0;
+      console.log(e.key, input.length, totalErrors, currTime - lastTime);
       setRaceTimeStamp((prev) => [
         ...prev,
         {
-          word: currentWord,
-          time: Date.now(),
+          char: e.key,
+          accuracy: calculateAccuracy(input.length, totalErrors),
+          cpm: calculateCPM(input.length, ((currTime - lastTime) / 1000)),
+          time: currTime,
         }
       ]);
-      setCurrentWord("");
-    }
-
-    if (e.key === code.slice(input.length, input.length + 1)) {
-      setCurrentWord((prev) => prev + e.key);
+      setCurrentChar("");
     }
 
     if (!Array.isArray(textIndicatorPosition)) {

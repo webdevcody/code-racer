@@ -1,4 +1,4 @@
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Chart, { CurrentChart } from "./chart";
 import { Icons } from "@/components/icons";
@@ -55,7 +55,6 @@ async function AuthenticatedPage({
   const firstRaceBadge = await getFirstRaceBadge();
   let raceResults: ParsedRacesResult[] = [];
   let cardObjects = [] as { title: string; value: string | undefined }[];
-  const RaceTimeStamp = [];
 
   if (!currentRaceResult) {
     throw new Error("race result not found");
@@ -105,7 +104,7 @@ async function AuthenticatedPage({
           })}
         </div>
       </div>
-      <div className="flex flex-col p-8 rounded-xl">
+      <div className="flex flex-col p-8 rounded-xl border-2 border-white">
         <div className="flex flex-wrap justify-center gap-4 w-full">
           {/* <p className="text-primary text-center text-xl">
             Your progress on this snippet
@@ -116,6 +115,8 @@ async function AuthenticatedPage({
               <TabsTrigger value="History">History</TabsTrigger>
             </TabsList>
             <TabsContent value="Current">
+              {/* works even for unauthorized user */}
+              <span className="text-2xl mx-auto text-primary flex-wrap sm:hidden">View in Larger Screen to Unlock Exciting Features!</span>
               <CurrentChart />
             </TabsContent>
             <TabsContent value="History">
@@ -126,7 +127,6 @@ async function AuthenticatedPage({
       </div>
       <div
         className="flex flex-wrap items-center justify-center gap-4 p-2"
-        tabIndex={-1}
       >
         <Link
           title="Retry"

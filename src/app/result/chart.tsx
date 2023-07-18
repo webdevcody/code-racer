@@ -25,6 +25,13 @@ const dataKeys: ResultChartLineProps[] = [
   { dataKey: "errorCount", stroke: "#f00d0d" },
 ];
 
+interface raceTimeStampProps {
+  char: string;
+  accuracy: number;
+  cpm: number;
+  time: number;
+}
+
 export default function Chart({
   raceResult,
 }: {
@@ -91,18 +98,20 @@ export default function Chart({
   );
 }
 
-function renderTooltip(props: TooltipProps<ValueType, NameType>) {
+function renderTooltip(props: TooltipProps<ValueType, NameType>, setActiveCharIndex: React.Dispatch<React.SetStateAction<number | undefined>>) {
   const { active, payload } = props;
 
   if (active && payload && payload.length) {
     const data = payload[0] && payload[0].payload;
+    setActiveCharIndex(data.time);
 
     return (
       <div className="p-5 m-0 border-2 rounded-lg bg-accent border-primary text-primary">
         <p>{data.word}</p>
-        <p>
-          <span>Time : </span>
-          {data.time}
+        <p className="flex flex-col">
+          <span>Char : {data.char}</span>
+          <span>Accuracy : {Math.ceil(data.accuracy)}</span>
+          <span>Cpm : {data.cpm}</span>
         </p>
       </div>
     );
@@ -110,7 +119,8 @@ function renderTooltip(props: TooltipProps<ValueType, NameType>) {
 }
 
 export function CurrentChart() {
-  const [raceTimeStamp, setRaceTimeStamp] = useState<any[]>([]);
+  const [raceTimeStamp, setRaceTimeStamp] = useState<raceTimeStampProps[]>([]);
+  const [activeCharIndex, setActiveCharIndex] = useState<number>();
 
   useEffect(() => {
     const getData = () => {
@@ -122,21 +132,41 @@ export function CurrentChart() {
   }, [])
 
   return (
-    <div style={{ width: "100%", height: 300 }} className="mx-auto ">
+    <div style={{ width: "100%", height: 300 }} className="mx-auto pb-10 flex flex-col">
       <ResponsiveContainer>
         <LineChart data={raceTimeStamp} margin={{ right: 25, top: 10 }}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="word" />
-          <YAxis />
+          <XAxis dataKey="char" tick={{ fontSize: 0 }} />
+          <YAxis yAxisId="left" />
+          <YAxis yAxisId="right" orientation="right" />
           <Line
             type="monotone"
-            dataKey="time"
-            stroke="hsl(var(--primary))"
+            dataKey="accuracy"
+            yAxisId="left"
+            stroke="hsl(var(--warning-dark))"
             activeDot={{ r: 8 }}
           />
-          <Tooltip content={renderTooltip} />
+          <Line
+            type="monotone"
+            dataKey="cpm"
+            yAxisId="right"
+            stroke="hsl(var(--warning-light))"
+            activeDot={{ r: 8 }}
+          />
+          <Tooltip content={(props) => renderTooltip(props, setActiveCharIndex)} />
         </LineChart>
       </ResponsiveContainer>
+      <div className="px-2 bg-accent text-primary">
+        <code className="flex-wrap hidden sm:inline">
+          {
+            raceTimeStamp.length > 0 && raceTimeStamp.map((item, index) => {
+              return (
+                <span key={index} className={`text-2xl ${activeCharIndex === item.time ? "bg-primary text-secondary" : ""}`}>{item.char}</span>
+              )
+            })
+          }
+        </code>
+      </div>
     </div>
   )
 }
