@@ -144,7 +144,7 @@ export function CurrentChart({ code }: { code: string }) {
             )
           } else {
             removeExtras++;
-            return <span key={index} className="text-2xl text-white bg-white">{item}</span>
+            return <span key={index} className="text-2xl">{item}</span>
           }
         })
       }
