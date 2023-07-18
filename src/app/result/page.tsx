@@ -104,11 +104,7 @@ async function AuthenticatedPage({
           })}
         </div>
       </div>
-      <div className="flex flex-col p-8 rounded-xl border-2 border-white">
-        <div className="flex flex-wrap justify-center gap-4 w-full">
-          {/* <p className="text-primary text-center text-xl">
-            Your progress on this snippet
-          </p> */}
+      <div className="flex flex-col px-8 rounded-xl">
           <Tabs defaultValue="Current" className="w-full">
             <TabsList>
               <TabsTrigger value="Current">Current</TabsTrigger>
@@ -122,8 +118,7 @@ async function AuthenticatedPage({
             <TabsContent value="History">
               <Chart raceResult={raceResults} />
             </TabsContent>
-          </Tabs>
-        </div>
+        </Tabs>
       </div>
       <div
         className="flex flex-wrap items-center justify-center gap-4 p-2"

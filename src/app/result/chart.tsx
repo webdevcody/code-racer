@@ -18,6 +18,7 @@ import {
   NameType,
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
+import { HeightIcon } from "@radix-ui/react-icons";
 
 const dataKeys: ResultChartLineProps[] = [
   { dataKey: "accuracy", stroke: "#0261b9" },
@@ -132,8 +133,8 @@ export function CurrentChart() {
   }, [])
 
   return (
-    <div style={{ width: "100%", height: 300 }} className="mx-auto pb-10 flex flex-col">
-      <ResponsiveContainer>
+    <div style={{ width: "100%" }} className="mx-auto pb-3 flex flex-col">
+      <ResponsiveContainer height={300}>
         <LineChart data={raceTimeStamp} margin={{ right: 25, top: 10 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="char" tick={{ fontSize: 0 }} />
@@ -157,7 +158,7 @@ export function CurrentChart() {
         </LineChart>
       </ResponsiveContainer>
       <div className="px-2 bg-accent text-primary">
-        <code className="flex-wrap hidden sm:inline">
+        <code className="flex-wrap hidden sm:block whitespace-pre-wrap">
           {
             raceTimeStamp.length > 0 && raceTimeStamp.map((item, index) => {
               return (
