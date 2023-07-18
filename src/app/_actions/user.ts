@@ -56,10 +56,5 @@ export const deleteUserAction = action(
         id: user.id,
       },
     });
-    await prisma.account.delete({
-      where: {
-        id: user.id,
-      },
-    });
   },
 );
