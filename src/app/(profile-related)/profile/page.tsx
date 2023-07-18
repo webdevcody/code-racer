@@ -101,22 +101,25 @@ export default async function ProfilePage() {
               </ul>
             </>
           ) : (
-              <div className="flex flex-col items-center justify-center w-full md:pt-[12vh]">
-                <p className="p-5 text-2xl font-bold">
-                  Sorry currently you have no achievements.
-                  <Link href="/race" className="underline">
-                    Race
-                  </Link>{" "}
-                  to earn some{" "}
-                </p>
+            <div className="flex flex-col items-center justify-center w-full md:pt-[12vh]">
+              <p className="p-5 text-2xl font-bold">
+                Shiver me timbers! You must
+                <Link href="/race" className="underline text-primary">
+                  &nbsp;race
+                </Link>{" "}
+                to show off your greatness.{" "}
+              </p>
+              <div className="w-[clamp(20rem,calc(0.1rem+5vw),60rem)] aspect-square">
                 <Image
                   src="/images/achievement_page.svg"
                   width={500}
                   height={500}
                   alt="image"
+                  className="w-full h-full object-contain"
                 />
               </div>
-            )}
+            </div>
+          )}
         </section>
       </article>
     </main>
