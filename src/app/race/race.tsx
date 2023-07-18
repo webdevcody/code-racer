@@ -290,15 +290,6 @@ export default function Race({
         }
       });
     } else {
-      // Get number of line breaks
-      let n = 0;
-      for (let i = 0; i < input.length; i++) {
-        const element = input[i];
-        if (element == "\n") {
-          n += 1;
-        }
-      }
-
       let tabSpace = "";
       const counter = currentCharPosition;
       const nextTabStop = 4 - (counter % 4);
