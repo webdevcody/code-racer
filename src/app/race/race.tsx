@@ -17,6 +17,7 @@ import Code from "./code";
 import { saveUserResultAction } from "../_actions/result";
 import RaceDetails from "./_components/race-details";
 import RaceTimer from "./race-timer";
+import { ReportButton } from "./_components/report-button";
 
 function calculateCPM(
   numberOfCharacters: number,
@@ -99,7 +100,6 @@ export default function Race({
     const lines = input.split("\n");
     setCurrentLineNumber(lines.length);
     setCurrentCharPosition(lines[lines.length - 1].length);
-
   }, [input]);
 
   useEffect(() => {
@@ -402,9 +402,6 @@ export default function Race({
     });
   }
 
-
-
-
   function handleRestart() {
     setStartTime(null);
     setInput("");
@@ -415,7 +412,7 @@ export default function Race({
   return (
     <>
       <div
-        className="relative flex flex-col w-3/4 overflow-x-hidden gap-2 p-4 rounded-md lg:p-8 bg-accent"
+        className="relative flex flex-col gap-2 p-4 rounded-md lg:p-8 bg-accent w-3/4 mx-auto"
         onClick={focusOnLoad}
         role="none" // eslint fix - will remove the semantic meaning of an element while still exposing it to assistive technology
       >
@@ -424,11 +421,18 @@ export default function Race({
           inputLength={input.length}
           user={user}
         />
-        <div className="mb-2 md:mb-4">
+        <div className="mb-2 md:mb-4 flex justify-between">
           <Heading
             title="Type this code"
             description="Start typing to get racing"
           />
+          {user && (
+            <ReportButton
+              snippetId={snippet.id}
+              userId={user.id}
+              language={snippet.language}
+            />
+          )}
         </div>
         <Code
           code={code}
