@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import * as React from "react";
 import Link from "next/link";
 import { NavItem } from "@/types/nav";
@@ -30,11 +30,14 @@ export function MainNav({ items }: { items?: NavItem[] }) {
                   className={cn(
                     "md:text-xs lg:text-sm",
                     buttonVariants({ variant: "ghost" }),
-                    item.disabled && "cursor-not-allowed opacity-80",
-                    isActiveRoute(currentPathName, item.href) && "underline underline-offset-8 decoration-2 decoration-primary"
+                    {
+                      "cursor-not-allowed opacity-80": item.disabled,
+                      "underline underline-offset-8 decoration-2 decoration-primary":
+                        isActiveRoute(currentPathName, item.href),
+                    },
                   )}
                 >
-                  {item.title} 
+                  {item.title}
                 </Link>
               ),
           )}

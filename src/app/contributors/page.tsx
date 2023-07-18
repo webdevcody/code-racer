@@ -51,8 +51,8 @@ async function getContributors(): Promise<GitHubUser[] | []> {
   try {
     const response = await fetch(url, {
       next: {
-        revalidate: siteConfig.api.github.cacheRevalidationInterval
-      }
+        revalidate: siteConfig.api.github.cacheRevalidationInterval,
+      },
     });
 
     if (!response.ok) {
@@ -72,8 +72,8 @@ async function getRepoWeeklyCommitActivity() : Promise<GitHubRepoCommitActivity[
   try {
     const response = await fetch(url, {
       next: {
-        revalidate: siteConfig.api.github.cacheRevalidationInterval
-      }
+        revalidate: siteConfig.api.github.cacheRevalidationInterval,
+      },
     });
 
     if (!response.ok) {

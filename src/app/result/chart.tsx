@@ -98,7 +98,10 @@ export default function Chart({
   );
 }
 
-function renderTooltip(props: TooltipProps<ValueType, NameType>, setActiveCharIndex: React.Dispatch<React.SetStateAction<number | undefined>>) {
+function renderTooltip(
+  props: TooltipProps<ValueType, NameType>,
+  setActiveCharIndex: React.Dispatch<React.SetStateAction<number | undefined>>,
+) {
   const { active, payload } = props;
 
   if (active && payload && payload.length) {
@@ -125,14 +128,17 @@ export function CurrentChart() {
   useEffect(() => {
     const getData = () => {
       return JSON.parse(localStorage.getItem("raceTimeStamp") || "[]");
-    }
+    };
 
     const data = getData();
-    return setRaceTimeStamp(data)
-  }, [])
+    return setRaceTimeStamp(data);
+  }, []);
 
   return (
-    <div style={{ width: "100%", height: 300 }} className="mx-auto pb-10 flex flex-col">
+    <div
+      style={{ width: "100%", height: 300 }}
+      className="mx-auto pb-10 flex flex-col"
+    >
       <ResponsiveContainer>
         <LineChart data={raceTimeStamp} margin={{ right: 25, top: 10 }}>
           <CartesianGrid strokeDasharray="3 3" />
@@ -153,20 +159,30 @@ export function CurrentChart() {
             stroke="hsl(var(--warning-light))"
             activeDot={{ r: 8 }}
           />
-          <Tooltip content={(props) => renderTooltip(props, setActiveCharIndex)} />
+          <Tooltip
+            content={(props) => renderTooltip(props, setActiveCharIndex)}
+          />
         </LineChart>
       </ResponsiveContainer>
       <div className="px-2 bg-accent text-primary">
         <code className="flex-wrap hidden sm:inline">
-          {
-            raceTimeStamp.length > 0 && raceTimeStamp.map((item, index) => {
+          {raceTimeStamp.length > 0 &&
+            raceTimeStamp.map((item, index) => {
               return (
-                <span key={index} className={`text-2xl ${activeCharIndex === item.time ? "bg-primary text-secondary" : ""}`}>{item.char}</span>
-              )
-            })
-          }
+                <span
+                  key={index}
+                  className={`text-2xl ${
+                    activeCharIndex === item.time
+                      ? "bg-primary text-secondary"
+                      : ""
+                  }`}
+                >
+                  {item.char}
+                </span>
+              );
+            })}
         </code>
       </div>
     </div>
-  )
+  );
 }
