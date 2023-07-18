@@ -15,4 +15,5 @@ export const snippetSchema = z.object({
         "Code must have a minimum length of 30 characters (excluding spaces and tabs)",
       path: ["code"],
     }),
+  onReview: z.boolean().optional(),
 });
