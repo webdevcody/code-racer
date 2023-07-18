@@ -39,3 +39,9 @@ export function catchError(err: unknown) {
     });
   }
 }
+
+export const checkActiveRoute = (currentRouteHref:string, providedRouteHref: string) => {
+  const routePattern = new RegExp(`^${providedRouteHref.replace("[]", "\\d+")}`);
+
+  return routePattern.test(currentRouteHref);
+};
