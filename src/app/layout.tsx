@@ -1,7 +1,6 @@
 import "@/styles/globals.css";
 import Header from "@/components/header";
 import type { Metadata } from "next";
-import { Inter, Bruno_Ace_SC } from "next/font/google";
 import NextTopLoader from "nextjs-toploader";
 import { Footer } from "@/components/footer";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
@@ -9,15 +8,7 @@ import { ContextProvider } from "@/components/context-provider";
 import { siteConfig } from "@/config/site";
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
-
-const inter = Inter({ subsets: ["latin"] });
-
-export const bruno_ace_sc = Bruno_Ace_SC({
-  subsets: ["latin"],
-  weight: "400",
-  variable: "--font-bruno-ace-sc",
-  display: "swap",
-});
+import { bruno_ace_sc, inter } from "@/lib/fonts";
 
 const domain = process.env.NEXT_PUBLIC_DOMAIN;
 

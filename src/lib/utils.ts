@@ -39,3 +39,8 @@ export function catchError(err: unknown) {
     });
   }
 }
+
+export const isActiveRoute = (
+  currentRouteHref: string,
+  providedRouteHref: string,
+) => currentRouteHref.startsWith(providedRouteHref);

@@ -8,7 +8,6 @@ export async function getRandomSnippet(input: {
   language: string;
   reportedSnippets?: string[];
 }) {
-
   const itemCount = await prisma.snippet.count({
     where: {
       onReview: false,

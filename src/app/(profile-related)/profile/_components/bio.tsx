@@ -47,7 +47,7 @@ export function Bio({ bio }: BioProps) {
           <div className="grid gap-4 py-4">
             <Textarea
               name="bio"
-              defaultValue={bio ?? ""}
+              defaultValue={optimisticBio ?? ""}
               placeholder="Add your bio"
               id="bio"
               onChange={(e) => setOptimisticBio(e.currentTarget.value)}

@@ -63,19 +63,9 @@ export default function Code({
     }
   }
 
-  function verifyErrors(errors: number[]) {
-    if (errors.length > 0) {
-      return (
-        <span className="text-red-500">
-          You must fix all errors before you can finish the race!
-        </span>
-      );
-    }
-  }
-
   return (
     <>
-      <pre className="text-monochrome mb-4 overflow-auto font-medium">
+      <pre className="text-monochrome mb-4 overflow-auto font-medium px-2 w-full">
         {code.split("").map((char, index) => (
           <span
             key={index}
@@ -103,7 +93,6 @@ export default function Code({
           </span>
         ))}
       </pre>
-      {verifyErrors(errors)}
     </>
   );
 }

@@ -1,21 +1,58 @@
 import { Heading } from "@/components/ui/heading";
 import { siteConfig } from "@/config/site";
 import Contributor from "./contributor";
-import { GitHubUser } from "./contributor";
+import { GitHubUser, GitHubUserCommitActivity } from "./contributor";
+import AdditionsDeletions from "./_components/additions-deletions";
+import ProportionBarChart from "./_components/proportion-bar-chart";
 
-type GitHubCommitActivity = number[];
+type GitHubRepoCommitActivity = number[];
+
+async function getContributorsActivity(contributors: GitHubUser[]) : Promise<GitHubUserCommitActivity[]> {
+  const url = siteConfig.api.github.githubContributorActivity;
+  const commitActivity: GitHubUserCommitActivity[] = [];
+  try {
+    const response = await fetch(url, {
+      next: {
+        revalidate: siteConfig.api.github.cacheRevalidationInterval
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data: any[] = await response.json();
+    contributors
+      .map(contributor => contributor.login)
+      .forEach(username => {
+        const activity = data.find((e) => e.author.login === username);
+        if (activity) {
+          const activityAllTime = activity.weeks.reduce((accumulator: GitHubUserCommitActivity, currentValue: {a: number, d:number, w:number, c:number}) => 
+            ({
+              ...accumulator,
+              additions: currentValue.a + accumulator.additions,
+              deletions: currentValue.d + accumulator.deletions,
+            })
+          , { additions: 0, deletions: 0, login: username});
+          commitActivity.push(activityAllTime);
+        }
+      })
+    // console.debug(commitActivity);
+    return commitActivity;
+  } catch (error) {
+    console.error("An error occurred", error);
+    return [];
+  }
+}
 
 async function getContributors(): Promise<GitHubUser[] | []> {
   const url = siteConfig.api.github.githubContributors;
 
   try {
     const response = await fetch(url, {
-      // headers: {
-      //   Authorization: "Bearer " + siteConfig.api.github.accessToken,
-      // },
       next: {
-        revalidate: siteConfig.api.github.cacheRevalidationInterval
-      }
+        revalidate: siteConfig.api.github.cacheRevalidationInterval,
+      },
     });
 
     if (!response.ok) {
@@ -30,23 +67,20 @@ async function getContributors(): Promise<GitHubUser[] | []> {
   }
 }
 
-async function getWeeklyCommitActivity() : Promise<GitHubCommitActivity[] | []>{
+async function getRepoWeeklyCommitActivity() : Promise<GitHubRepoCommitActivity[] | []>{
   const url = siteConfig.api.github.githubWeeklyActivity;
   try {
     const response = await fetch(url, {
-      // headers: {
-      //   Authorization: "Bearer " + siteConfig.api.github.accessToken,
-      // },
       next: {
-        revalidate: siteConfig.api.github.cacheRevalidationInterval
-      }
+        revalidate: siteConfig.api.github.cacheRevalidationInterval,
+      },
     });
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const data: GitHubCommitActivity[] = await response.json();
+    const data: GitHubRepoCommitActivity[] = await response.json();
     return data;
   } catch (error) {
     console.error("An error occurred", error);
@@ -56,8 +90,9 @@ async function getWeeklyCommitActivity() : Promise<GitHubCommitActivity[] | []>{
 
 export default async function ContributorsPage() {
   const contributors = await getContributors();
-  const commitActivity = await getWeeklyCommitActivity();
-  const [_, additions, deletions] = commitActivity.length > 0 ? commitActivity[0] : [0,0,0];
+  const contributorCommitActivities = await getContributorsActivity(contributors);
+  const repoCommitActivity = await getRepoWeeklyCommitActivity();
+  const [ _, additions, deletions] = repoCommitActivity.length > 0 ? repoCommitActivity[0] : [0,0,0];
   return (
     <div className="pt-12 pb-12">
       <Heading
@@ -66,14 +101,15 @@ export default async function ContributorsPage() {
       />
       <br />
       <div className="flex flex-col justify-start items-center gap-3">
-        <p className="font-md text-muted-foreground">This weeks: <span className="text-green-500">+{additions} additions</span> <span className="text-red-500">-{Math.abs(deletions)} deletions</span></p>
-        <div className="flex justify-start w-72 h-2 bg-red-500 rounded-full overflow-clip box-border">
-          <span className="h-full bg-green-500 box-border" style={{width: `${(additions / (additions + Math.abs(deletions))) * 100}%`}}></span>
+        <div className="w-[80vw] md:w-[70vw] lg:w-[50vw] xl:w-[600px] flex flex-col gap-2 justify-start items-center">
+          <p className="text-secondary-foreground font-bold text-center text-2xl">This week</p>
+          <AdditionsDeletions verbose additions={additions} deletions={deletions} className="w-full"/>
+          <ProportionBarChart a={additions} b={deletions} className="w-full h-4"/>
         </div>
       </div>
       <ul className="grid gap-8 mt-8 list-none md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {contributors.map((contributor) => (
-          <Contributor key={contributor.id} contributor={contributor} />
+          <Contributor key={contributor.id} contributor={contributor} contributorsActivity={contributorCommitActivities.find((e) => e.login === contributor.login) ?? {additions: 0, deletions: 0, login: contributor.login}}/>
         ))}
       </ul>
     </div>
