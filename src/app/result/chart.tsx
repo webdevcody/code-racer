@@ -138,7 +138,7 @@ export function CurrentChart({ code }: { code?: string }) {
   const RenderCode = () => {
     return <code className="flex-wrap text-2xl hidden sm:block whitespace-pre-wrap">
       {
-        code &&
+        code && raceTimeStamp &&
         code.split("").map((item, index) => {
           if (item !== " " && item !== "\n" && item !== "↵") {
             const raceChar = raceTimeStamp[index - removeExtras]
