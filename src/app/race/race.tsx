@@ -34,6 +34,13 @@ function calculateAccuracy(
   return (1 - errorsCount / numberOfCharacters) * 100;
 }
 
+interface raceTimeStampProps {
+  char: string;
+  accuracy: number;
+  cpm: number;
+  time: number;
+}
+
 export default function Race({
   user,
   snippet,
@@ -62,11 +69,20 @@ export default function Race({
 
   const isRaceFinished = input === code;
   const showRaceTimer = !!startTime && !isRaceFinished;
+  const [currentChar, setCurrentChar] = useState("");
+  const [raceTimeStamp, setRaceTimeStamp] = useState<raceTimeStampProps[]>([]);
 
   async function endRace() {
     if (!startTime) return;
     const endTime = new Date();
     const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
+
+    localStorage.setItem("raceTimeStamp", JSON.stringify([...raceTimeStamp, {
+      char: currentChar,
+      accuracy: calculateAccuracy(input.length, totalErrors),
+      cpm: calculateCPM(input.length, timeTaken),
+      time: Date.now(),
+    }]))
 
     if (user) {
       const result = await saveUserResultAction({
@@ -422,6 +438,21 @@ export default function Race({
   function Key(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key !== code.slice(input.length, input.length + 1)) {
       setTotalErrors(totalErrors + 1);
+    }
+
+    if (e.key === code[input.length]) {
+      const currTime = Date.now();
+      const timeTaken = startTime ? ((currTime - startTime.getTime()) / 1000) : 0;
+      setRaceTimeStamp((prev) => [
+        ...prev,
+        {
+          char: e.key,
+          accuracy: calculateAccuracy(input.length, totalErrors),
+          cpm: calculateCPM(input.length, timeTaken),
+          time: currTime,
+        }
+      ]);
+      setCurrentChar("");
     }
 
     if (!Array.isArray(textIndicatorPosition)) {
