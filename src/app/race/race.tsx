@@ -160,14 +160,14 @@ export default function Race({
     if (noopKeys.includes(e.key)) {
       e.preventDefault();
     } else {
-      if (!startTime) {
-        setStartTime(new Date());
-      }
       switch (e.key) {
         case "Backspace":
           Backspace();
           break;
         case "Enter":
+          if (!startTime) {
+            setStartTime(new Date());
+          }
           Enter();
           break;
         case "ArrowLeft":
@@ -178,10 +178,16 @@ export default function Race({
           break;
         case "Tab":
           e.preventDefault();
+          if (!startTime) {
+            setStartTime(new Date());
+          }
           Tab();
           break;
         default:
           Key(e);
+          if (!startTime) {
+            setStartTime(new Date());
+          }
           break;
       }
     }
