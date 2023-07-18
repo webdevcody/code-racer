@@ -8,6 +8,7 @@ export default function Code({
   textIndicatorPosition,
   currentLineNumber,
   currentCharPosition,
+  totalErrors,
 }: {
   code: string;
   userInput: string;
@@ -15,10 +16,12 @@ export default function Code({
   currentLineNumber: number;
   currentCharPosition: number;
   errors: number[];
+  totalErrors: number;
 }) {
-
   const spanRefs = useRef<(React.RefObject<HTMLSpanElement> | null)[]>([]);
-  spanRefs.current = Array(code.length).fill(" ").map((_, i) => spanRefs.current[i] || createRef());
+  spanRefs.current = Array(code.length)
+    .fill(" ")
+    .map((_, i) => spanRefs.current[i] || createRef());
 
   useEffect(() => {
     const span = spanRefs.current[0]?.current;
@@ -26,8 +29,15 @@ export default function Code({
 
     const currentLine = code.split("\n")[currentLineNumber - 1];
     const lineLength = currentLine?.length;
-    const progress = (currentCharPosition / lineLength) - .33;
-    console.table({ currentLineNumber, currentCharPosition, progress, lineLength, currentLine });
+    const progress = currentCharPosition / lineLength - 0.33;
+    console.table({
+      currentLineNumber,
+      currentCharPosition,
+      progress,
+      lineLength,
+      currentLine,
+      totalErrors,
+    });
 
     const pre = span?.parentNode as HTMLElement;
 
@@ -40,7 +50,6 @@ export default function Code({
       }
     }
   }, [code, currentLineNumber, currentCharPosition]);
-
 
   function textIndicatorPositionDeterminer(charIndex: number) {
     if (!Array.isArray(textIndicatorPosition)) {

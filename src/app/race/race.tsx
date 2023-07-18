@@ -437,6 +437,7 @@ export default function Race({
           currentLineNumber={currentLineNumber}
           currentCharPosition={currentCharPosition}
           textIndicatorPosition={textIndicatorPosition}
+          totalErrors={totalErrors}
         />
         <input
           type="text"
