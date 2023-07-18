@@ -205,6 +205,19 @@ export default function Race({
       });
     }
 
+    if (e.ctrlKey && e.key === "ArrowRight") {
+      let i = textIndicatorPosition as number;
+      while (i < input.length) {
+        if (typeof textIndicatorPosition === "number") {
+          if (code.charAt(i + 1) !== " " && code.charAt(i) === " ") {
+            setTextIndicatorPosition(i + 1);
+            break;
+          }
+        }
+        i++;
+      }
+    }
+
     if (e.shiftKey && e.key === "ArrowRight") {
       setTextIndicatorPosition((prevTextIndicatorPosition) => {
         if (typeof prevTextIndicatorPosition === "number") {
@@ -233,6 +246,21 @@ export default function Race({
             return lastValue !== 0 ? lastValue - 1 : lastValue;
           }
         });
+      }
+    }
+
+    if (e.ctrlKey && e.key === "ArrowLeft") {
+      let n = 0;
+      let i = textIndicatorPosition as number;
+      while (i > 0) {
+        if (typeof textIndicatorPosition === "number") {
+          if (code.charAt(i - 1) !== " " && code.charAt(i) === " ") {
+            n = textIndicatorPosition - i;
+            setTextIndicatorPosition(textIndicatorPosition - n - 1);
+            break;
+          }
+        }
+        i--;
       }
     }
 
