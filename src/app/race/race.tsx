@@ -412,7 +412,6 @@ export default function Race({
 
     if (e.key === code.slice(input.length, input.length + 1)) {
       const currTime = Date.now();
-      console.log(e.key, input.length, totalErrors, currTime - lastTime);
       setRaceTimeStamp((prev) => [
         ...prev,
         {
