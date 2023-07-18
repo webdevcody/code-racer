@@ -412,14 +412,13 @@ export default function Race({
 
     if (e.key === code.slice(input.length, input.length + 1)) {
       const currTime = Date.now();
-      const lastTime = raceTimeStamp[raceTimeStamp.length - 1]?.time || 0;
       console.log(e.key, input.length, totalErrors, currTime - lastTime);
       setRaceTimeStamp((prev) => [
         ...prev,
         {
           char: e.key,
           accuracy: calculateAccuracy(input.length, totalErrors),
-          cpm: calculateCPM(input.length, ((currTime - lastTime) / 1000)),
+          cpm: calculateCPM(input.length, ((currTime - Number(startTime)) / 1000)),
           time: currTime,
         }
       ]);
