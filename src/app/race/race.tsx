@@ -543,25 +543,43 @@ export default function Race({
             />
           )}
         </div>
-        <Code
-          code={code}
-          errors={errors}
-          userInput={input}
-          currentLineNumber={currentLineNumber}
-          currentCharPosition={currentCharPosition}
-          textIndicatorPosition={textIndicatorPosition}
-          totalErrors={totalErrors}
-        />
-        <input
-          type="text"
-          defaultValue={input}
-          ref={inputElement}
-          onKeyDown={handleKeyboardDownEvent}
-          disabled={isRaceFinished}
-          className="absolute inset-y-0 left-0 w-full h-full p-8 rounded-md -z-40 focus:outline outline-blue-500"
-          onPaste={(e) => e.preventDefault()}
-        />
+        <div className="flex ">
+          <div className="flex-col px-1 w-10 ">
+            {code.split("\n").map((index, line) => (
+              <div
+                key={line}
+                className={
+                  currentLineNumber === line + 1
+                    ? // && textIndicatorPosition
+                      "text-center bg-slate-600  border-r-2 border-yellow-500"
+                    : " text-center border-r-2 border-yellow-500"
+                }
+              >
+                {line + 1}
+              </div>
+            ))}
+          </div>
 
+          <Code
+            code={code}
+            errors={errors}
+            userInput={input}
+            currentLineNumber={currentLineNumber}
+            currentCharPosition={currentCharPosition}
+            textIndicatorPosition={textIndicatorPosition}
+            totalErrors={totalErrors}
+          />
+          <input
+            type="text"
+            defaultValue={input}
+            ref={inputElement}
+            onKeyDown={handleKeyboardDownEvent}
+            disabled={isRaceFinished}
+            className="absolute inset-y-0 left-0 w-full h-full p-8 rounded-md -z-40 focus:outline outline-blue-500"
+            onPaste={(e) => e.preventDefault()}
+          />
+        </div>
+        {verifyErrors(errors)}
         <div className="flex justify-between items-center">
           {showRaceTimer && (
             <>
@@ -582,8 +600,17 @@ export default function Race({
           )}
         </div>
       </div>
-
       <RaceDetails submittingResults={submittingResults} />
     </>
   );
+}
+
+function verifyErrors(errors: number[]) {
+  if (errors.length > 0) {
+    return (
+      <span className="text-red-500">
+        You must fix all errors before you can finish the race!
+      </span>
+    );
+  }
 }
