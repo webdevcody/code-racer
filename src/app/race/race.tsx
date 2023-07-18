@@ -47,6 +47,8 @@ export default function Race({
   >(0);
   const [submittingResults, setSubmittingResults] = useState(false);
   const [totalErrors, setTotalErrors] = useState(0);
+  const [currentLineNumber, setCurrentLineNumber] = useState(0);
+  const [currentCharPosition, setCurrentCharPosition] = useState(0);
   const router = useRouter();
   const inputElement = useRef<HTMLInputElement | null>(null);
   const code = snippet.code.trimEnd();
@@ -92,6 +94,12 @@ export default function Race({
       endRace();
     }
     focusOnLoad();
+
+    // Calculate the current line and cursor position in that line
+    const lines = input.split("\n");
+    setCurrentLineNumber(lines.length);
+    setCurrentCharPosition(lines[lines.length - 1].length);
+
   }, [input]);
 
   useEffect(() => {
@@ -113,8 +121,6 @@ export default function Race({
   }
 
   function handleKeyboardDownEvent(e: React.KeyboardEvent<HTMLInputElement>) {
-    console.log(e.key);
-    console.log("hit");
     if (!startTime) {
       setStartTime(new Date());
     }
@@ -180,6 +186,9 @@ export default function Race({
           break;
       }
     }
+    const lines = input.split("\n");
+    setCurrentLineNumber(lines.length);
+    setCurrentCharPosition(lines[lines.length - 1].length);
   }
 
   function ArrowRight(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -393,6 +402,9 @@ export default function Race({
     });
   }
 
+
+
+
   function handleRestart() {
     setStartTime(null);
     setInput("");
@@ -403,7 +415,7 @@ export default function Race({
   return (
     <>
       <div
-        className="relative flex flex-col w-full gap-2 p-4 rounded-md lg:p-8 bg-accent"
+        className="relative flex flex-col w-3/4 overflow-x-hidden gap-2 p-4 rounded-md lg:p-8 bg-accent"
         onClick={focusOnLoad}
         role="none" // eslint fix - will remove the semantic meaning of an element while still exposing it to assistive technology
       >
@@ -422,6 +434,8 @@ export default function Race({
           code={code}
           errors={errors}
           userInput={input}
+          currentLineNumber={currentLineNumber}
+          currentCharPosition={currentCharPosition}
           textIndicatorPosition={textIndicatorPosition}
         />
         <input
