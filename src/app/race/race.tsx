@@ -121,10 +121,6 @@ export default function Race({
   }
 
   function handleKeyboardDownEvent(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (!startTime) {
-      setStartTime(new Date());
-    }
-
     // Unfocus Shift + Tab
     if (e.shiftKey && e.key === "Tab") {
       e.currentTarget.blur();
@@ -164,6 +160,9 @@ export default function Race({
     if (noopKeys.includes(e.key)) {
       e.preventDefault();
     } else {
+      if (!startTime) {
+        setStartTime(new Date());
+      }
       switch (e.key) {
         case "Backspace":
           Backspace();
