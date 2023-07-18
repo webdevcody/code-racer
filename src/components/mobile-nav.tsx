@@ -48,7 +48,12 @@ export function MobileNav({
                     className={cn(
                       buttonVariants({ size: "lg" }),
                       "text-xl w-full",
-                      isActiveRoute(currentPathName, item.href) && "bg-background border-2 border-primary"
+                      {
+                        "bg-background border-2 border-primary": isActiveRoute(
+                          currentPathName,
+                          item.href,
+                        ),
+                      },
                     )}
                     href={item.href}
                     key={item.href}
