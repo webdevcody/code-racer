@@ -8,10 +8,11 @@ import { catchError } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { updateUserAction } from "../../../_actions/user";
+import { useState } from "react";
+import { updateUserAction } from "@/app/_actions/user";
+import { Icons } from "@/components/icons";
 
 const updateUserSchema = z.object({
   name: z
@@ -38,22 +39,20 @@ export default function ChangeNameForm({
     },
   });
 
-  const [isEditing, setIsEditing] = React.useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const { toast } = useToast();
 
   async function onSubmit(data: UpdateUser) {
+    setIsEditing(false);
     try {
       await updateUserAction({ name: data.name });
-
       toast({
         title: "Username successfully updated.",
         description: "Your username has been successfully updated.",
         variant: "default",
       });
-
       await session.update({ name: data.name });
-
       router.refresh();
     } catch (error) {
       catchError(error);
@@ -64,7 +63,7 @@ export default function ChangeNameForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="w-[75%] text-center mb-4 mx-auto"
+        className="w-[75%] text-center mx-auto"
       >
         <FormField
           control={form.control}
@@ -74,23 +73,33 @@ export default function ChangeNameForm({
               <FormControl>
                 <>
                   <Input
-                    className="text-2xl text-center font-bold hover:border-dashed border hover:border-white"
+                    className="text-2xl text-center font-bold border-2 hover:border-dashed hover:border-primary"
                     onFocus={() => setIsEditing(true)}
                     {...field}
                   />
                   {isEditing && (
-                    <div className="flex items-center gap-2">
-                      <Button
-                        type="reset"
-                        className="w-full"
-                        onClick={() => setIsEditing(false)}
-                      >
-                        Cancel
-                      </Button>
-                      <Button type="submit" className="w-full">
-                        Submit
-                      </Button>
-                    </div>
+                    <>
+                      <div className="flex items-center justify-center gap-2">
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          type="reset"
+                          onClick={() => setIsEditing(false)}
+                        >
+                          <Icons.cross className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="success"
+                          disabled={
+                            field.value === displayName || field.value === ""
+                          }
+                          type="submit"
+                        >
+                          <Icons.check className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </>
                   )}
                 </>
               </FormControl>

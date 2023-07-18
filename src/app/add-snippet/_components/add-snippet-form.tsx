@@ -16,8 +16,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { addSnippetAction } from "../../_actions/snippet";
+import {
+  addSnippetAction,
+  addSnippetForReviewAction,
+} from "../../_actions/snippet";
 import LanguageDropDown from "./language-dropdown";
+import { catchError } from "@/lib/utils";
 
 const formDataSchema = z.object({
   codeLanguage: z
@@ -35,7 +39,7 @@ const formDataSchema = z.object({
 type FormData = z.infer<typeof formDataSchema>;
 
 export default function AddSnippetForm({ lang }: { lang: string }) {
-  const { toast } = useToast();
+  const { toast, dismiss } = useToast();
   const confettiCtx = useConfettiContext();
 
   const form = useForm<FormData>({
@@ -47,19 +51,36 @@ export default function AddSnippetForm({ lang }: { lang: string }) {
     },
   });
 
-  async function onSubmit(data: FormData) {
+  async function onSubmitForReview(data: FormData) {
     try {
-      const res = await addSnippetAction({
+      await addSnippetForReviewAction({
         language: data.codeLanguage,
         code: data.codeSnippet,
       });
 
-      if (res.validationError) {
+      toast({
+        title: "Success!",
+        description: "Snippet submitted for review",
+        duration: 5000,
+      });
+    } catch (err) {
+      catchError(err);
+    }
+  }
+
+  async function onSubmit(data: FormData) {
+    try {
+      const { data: responseData, validationError } = await addSnippetAction({
+        language: data.codeLanguage,
+        code: data.codeSnippet,
+      });
+
+      if (validationError) {
         toast({
           title: "Error!",
-          description: `Something went wrong! ${
-            res.validationError.code ?? ""
-          }\n${res.validationError.language ?? ""}`,
+          description: `Something went wrong! ${validationError.code ?? ""}\n${
+            validationError.language ?? ""
+          }`,
           duration: 5000,
           style: {
             background: "hsl(var(--destructive))",
@@ -68,7 +89,35 @@ export default function AddSnippetForm({ lang }: { lang: string }) {
         return;
       }
 
-      if (res?.data?.message === "snippet-created-and-achievement-unlocked") {
+      if (responseData?.failure) {
+        const failureToast = toast({
+          title: "Error!",
+          description: `${
+            responseData?.failure.reason ?? "Something went wrong!"
+          }`,
+          duration: 5000,
+          style: {
+            background: "hsl(var(--destructive))",
+          },
+          action: (
+            <Button
+              className="py-7"
+              variant="secondary"
+              onClick={() => {
+                dismiss(failureToast.id);
+                onSubmitForReview(data);
+              }}
+            >
+              Submit for Review
+            </Button>
+          ),
+        });
+        return;
+      }
+
+      if (
+        responseData?.message === "snippet-created-and-achievement-unlocked"
+      ) {
         toast({
           title: "Achievement Unlocked",
           description: "Uploaded First Snippet",
@@ -89,16 +138,8 @@ export default function AddSnippetForm({ lang }: { lang: string }) {
       });
 
       form.reset();
-    } catch (err: any) {
-      console.log(err);
-      toast({
-        title: "Error!",
-        description: "Something went wrong!" + err.message,
-        duration: 5000,
-        style: {
-          background: "hsl(var(--destructive))",
-        },
-      });
+    } catch (err) {
+      catchError(err);
     }
   }
 
