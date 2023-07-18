@@ -1,5 +1,6 @@
 import Link from "next/link";
 import TitleBackdropSvg from "./title-backdrop-svg";
+import { ArrowRight } from "lucide-react";
 
 export default function HeroBanner() {
   return (
@@ -17,9 +18,9 @@ export default function HeroBanner() {
             href={"/race"}
             title="Start Racing"
             prefetch
-            className="px-4 py-2 text-sm font-medium transition-colors bg-warning rounded-md md:text-2xl ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:bg-accent hover:bg-accent hover:text-accent-foreground"
+            className="px-4 py-2 text-sm font-black text-black uppercase tracking-wider flex items-center gap-2 w-fit transition-colors bg-warning rounded-md md:text-2xl ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:bg-accent hover:bg-accent hover:text-accent-foreground"
           >
-            Start Racing
+            Start Racing <ArrowRight />
           </Link>
         </div>
       </div>
