@@ -1,13 +1,16 @@
+"use client"
 import * as React from "react";
 import Link from "next/link";
-
 import { NavItem } from "@/types/nav";
 import { siteConfig } from "@/config/site";
-import { cn } from "@/lib/utils";
+import { isActiveRoute, cn } from "@/lib/utils";
 import { Icons } from "@/components/icons";
 import { buttonVariants } from "./ui/button";
+import { usePathname } from "next/navigation";
 
 export function MainNav({ items }: { items?: NavItem[] }) {
+  const currentPathName = usePathname();
+
   return (
     <div className="flex gap-6 md:gap-10">
       <Link href="/" className="flex items-center space-x-2">
@@ -28,9 +31,10 @@ export function MainNav({ items }: { items?: NavItem[] }) {
                     "md:text-xs lg:text-sm",
                     buttonVariants({ variant: "ghost" }),
                     item.disabled && "cursor-not-allowed opacity-80",
+                    isActiveRoute(currentPathName, item.href) && "underline underline-offset-8 decoration-2 decoration-primary"
                   )}
                 >
-                  {item.title}
+                  {item.title} 
                 </Link>
               ),
           )}
