@@ -118,7 +118,7 @@ function renderTooltip(props: TooltipProps<ValueType, NameType>, setActiveCharIn
   }
 }
 
-export function CurrentChart({ code }: { code: string }) {
+export function CurrentChart({ code }: { code?: string }) {
   const [raceTimeStamp, setRaceTimeStamp] = useState<raceTimeStampProps[]>([]);
   const [activeCharIndex, setActiveCharIndex] = useState<number>();
   let removeExtras = 0;
@@ -135,7 +135,7 @@ export function CurrentChart({ code }: { code: string }) {
   const RenderCode = () => {
     return <code className="flex-wrap text-2xl hidden sm:block whitespace-pre-wrap">
       {
-        raceTimeStamp.length > 0 &&
+        code &&
         code.split("").map((item, index) => {
           if (item !== " " && item !== "\n" && item !== "↵") {
             const raceChar = raceTimeStamp[index - removeExtras]
