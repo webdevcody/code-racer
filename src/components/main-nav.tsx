@@ -27,7 +27,9 @@ export function MainNav({ items }: { items?: NavItem[] }) {
                   className={cn(
                     "md:text-xs lg:text-sm",
                     buttonVariants({ variant: "ghost" }),
-                    item.disabled && "cursor-not-allowed opacity-80",
+                    {
+                      "cursor-not-allowed opacity-80": item.disabled,
+                    },
                   )}
                 >
                   {item.title}
