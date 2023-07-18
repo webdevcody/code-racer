@@ -4,13 +4,13 @@ import { useState } from "react";
 import { Button, buttonVariants } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { ScrollArea } from "./ui/scroll-area";
-import { cn } from "@/lib/utils";
+import { isActiveRoute, cn } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
 import { UserDropdown } from "./user-dropdown";
 import { Icons } from "./icons";
 import Link, { LinkProps } from "next/link";
 import { ModeToggle } from "./mode-toggle";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import type { User } from "next-auth";
 import { UserRole } from "@prisma/client";
@@ -24,6 +24,7 @@ export function MobileNav({
 }) {
   const [open, setOpen] = useState(false);
   const isLoggedIn = !!useSession().data;
+  const currentPathName = usePathname();
 
   return (
     <div className="md:hidden">
@@ -47,6 +48,12 @@ export function MobileNav({
                     className={cn(
                       buttonVariants({ size: "lg" }),
                       "text-xl w-full",
+                      {
+                        "bg-background border-2 border-primary": isActiveRoute(
+                          currentPathName,
+                          item.href,
+                        ),
+                      },
                     )}
                     href={item.href}
                     key={item.href}

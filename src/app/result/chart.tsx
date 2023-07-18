@@ -98,7 +98,10 @@ export default function Chart({
   );
 }
 
-function renderTooltip(props: TooltipProps<ValueType, NameType>, setActiveCharIndex: React.Dispatch<React.SetStateAction<number | undefined>>) {
+function renderTooltip(
+  props: TooltipProps<ValueType, NameType>,
+  setActiveCharIndex: React.Dispatch<React.SetStateAction<number | undefined>>,
+) {
   const { active, payload } = props;
 
   if (active && payload && payload.length) {
@@ -126,7 +129,7 @@ export function CurrentChart({ code }: { code?: string }) {
   useEffect(() => {
     const getData = () => {
       return JSON.parse(localStorage.getItem("raceTimeStamp") || "[]");
-    }
+    };
 
     const data = getData();
     return setRaceTimeStamp(data)
@@ -173,12 +176,14 @@ export function CurrentChart({ code }: { code?: string }) {
             stroke="hsl(var(--warning-light))"
             activeDot={{ r: 8 }}
           />
-          <Tooltip content={(props) => renderTooltip(props, setActiveCharIndex)} />
+          <Tooltip
+            content={(props) => renderTooltip(props, setActiveCharIndex)}
+          />
         </LineChart>
       </ResponsiveContainer>
       <div className="px-2 bg-accent text-primary">
         <RenderCode />
       </div>
     </div>
-  )
+  );
 }
