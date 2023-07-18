@@ -138,10 +138,11 @@ export function CurrentChart({ code }: { code?: string }) {
   const RenderCode = () => {
     return <code className="flex-wrap text-2xl hidden sm:block whitespace-pre-wrap">
       {
-        code && raceTimeStamp &&
+        (code && raceTimeStamp.length > 0) &&
         code.split("").map((item, index) => {
           if (item !== " " && item !== "\n" && item !== "↵") {
             const raceChar = raceTimeStamp[index - removeExtras]
+            console.log("raceChar", raceChar)
             return (
               <span key={index} className={`text-2xl ${activeCharIndex === raceChar.time ? "bg-primary text-secondary" : ""}`}>{item}</span>
             )
