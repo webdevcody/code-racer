@@ -1,4 +1,5 @@
 "use client";
+
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,7 +24,7 @@ export default function ProfileNav({ displayName }: { displayName: string }) {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="gap-2">
               <Icons.settings />
-              Setting
+              Settings
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
