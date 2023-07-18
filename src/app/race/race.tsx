@@ -17,6 +17,7 @@ import Code from "./code";
 import { saveUserResultAction } from "../_actions/result";
 import RaceDetails from "./_components/race-details";
 import RaceTimer from "./race-timer";
+import { ReportButton } from "./_components/report-button";
 
 function calculateCPM(
   numberOfCharacters: number,
@@ -47,6 +48,8 @@ export default function Race({
   >(0);
   const [submittingResults, setSubmittingResults] = useState(false);
   const [totalErrors, setTotalErrors] = useState(0);
+  const [currentLineNumber, setCurrentLineNumber] = useState(0);
+  const [currentCharPosition, setCurrentCharPosition] = useState(0);
   const router = useRouter();
   const inputElement = useRef<HTMLInputElement | null>(null);
   const code = snippet.code.trimEnd();
@@ -92,6 +95,11 @@ export default function Race({
       endRace();
     }
     focusOnLoad();
+
+    // Calculate the current line and cursor position in that line
+    const lines = input.split("\n");
+    setCurrentLineNumber(lines.length);
+    setCurrentCharPosition(lines[lines.length - 1].length);
   }, [input]);
 
   useEffect(() => {
@@ -113,8 +121,6 @@ export default function Race({
   }
 
   function handleKeyboardDownEvent(e: React.KeyboardEvent<HTMLInputElement>) {
-    console.log(e.key);
-    console.log("hit");
     if (!startTime) {
       setStartTime(new Date());
     }
@@ -180,6 +186,9 @@ export default function Race({
           break;
       }
     }
+    const lines = input.split("\n");
+    setCurrentLineNumber(lines.length);
+    setCurrentCharPosition(lines[lines.length - 1].length);
   }
 
   function ArrowRight(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -403,7 +412,7 @@ export default function Race({
   return (
     <>
       <div
-        className="relative flex flex-col w-3/4 gap-2 p-4 rounded-md lg:p-8 bg-accent"
+        className="relative flex flex-col gap-2 p-4 rounded-md lg:p-8 bg-accent w-3/4 mx-auto"
         onClick={focusOnLoad}
         role="none" // eslint fix - will remove the semantic meaning of an element while still exposing it to assistive technology
       >
@@ -412,16 +421,21 @@ export default function Race({
           inputLength={input.length}
           user={user}
         />
-        <div className="mb-2 md:mb-4">
+        <div className="mb-2 md:mb-4 flex justify-between">
           <Heading
             title="Type this code"
             description="Start typing to get racing"
           />
+          {user && (
+            <ReportButton snippetId={snippet.id} language={snippet.language} />
+          )}
         </div>
         <Code
           code={code}
           errors={errors}
           userInput={input}
+          currentLineNumber={currentLineNumber}
+          currentCharPosition={currentCharPosition}
           textIndicatorPosition={textIndicatorPosition}
         />
         <input
@@ -434,20 +448,24 @@ export default function Race({
           onPaste={(e) => e.preventDefault()}
         />
 
-        <div className="flex justify-between">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" onClick={handleRestart}>
-                  Restart (ESC)
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Press Esc to reset</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          {showRaceTimer && <RaceTimer />}
+        <div className="flex justify-between items-center">
+          {showRaceTimer && (
+            <>
+              <RaceTimer />
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="outline" onClick={handleRestart}>
+                      Restart (ESC)
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Press Esc to reset</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </>
+          )}
         </div>
       </div>
 

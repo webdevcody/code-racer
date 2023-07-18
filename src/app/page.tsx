@@ -4,18 +4,15 @@ import { siteConfig } from "@/config/site";
 
 async function getGitHubStars(): Promise<string | null> {
   try {
-    const response = await fetch(
-      siteConfig.api.github.githubStars,
-      {
-        headers: {
-          Accept: "application/vnd.github+json",
-          Authorization: `Bearer ${siteConfig.api.github.accessToken}`,
-        },
-        next: {
-          revalidate: 60,
-        },
+    const response = await fetch(siteConfig.api.github.githubStars, {
+      headers: {
+        Accept: "application/vnd.github+json",
+        Authorization: `Bearer ${siteConfig.api.github.accessToken}`,
       },
-    );
+      next: {
+        revalidate: 60,
+      },
+    });
 
     if (!response?.ok) {
       return null;

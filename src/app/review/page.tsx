@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { notFound } from "next/navigation";
 import ReviewButtons from "./review-buttons";
+import { Heading } from "@/components/ui/heading";
 
 export default async function ReviewPage() {
   const user = await getCurrentUser();
@@ -15,21 +16,26 @@ export default async function ReviewPage() {
   });
 
   return (
-    <div className="container flex flex-col items-center max-w-2xl p-4 space-y-4">
-      <h1 className="text-4xl">Review page </h1>
+    <div className="container flex flex-col items-center p-4 space-y-4">
+      <Heading
+        title="Review page"
+        description="Review snippets to either approve or remove"
+      />
       {downvotedSnippets.length === 0 ? (
         <div>No downvoted snippets to review</div>
       ) : (
-        downvotedSnippets.map((s) => (
-          <div
-            className="flex flex-col w-full max-w-sm gap-4 p-4 border rounded border-border"
-            key={s.id}
-          >
-            <code className="text-muted-foreground">{s.code}</code>
-            <span className="text-sm">Total characters: {s.code.length}</span>
-            <ReviewButtons snippetId={s.id} />
-          </div>
-        ))
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {downvotedSnippets.map((s) => (
+            <div
+              className="flex flex-col justify-between gap-4 p-8 border rounded overflow-hidden min-h-[100px]"
+              key={s.id}
+            >
+              <code className="text-muted-foreground">{s.code}</code>
+              <span className="text-sm">Total characters: {s.code.length}</span>
+              <ReviewButtons snippetId={s.id} />
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
