@@ -132,27 +132,40 @@ export function CurrentChart({ code }: { code?: string }) {
     };
 
     const data = getData();
-    return setRaceTimeStamp(data)
-  }, [])
+    return setRaceTimeStamp(data);
+  }, []);
 
   const RenderCode = () => {
-    return <code className="flex-wrap text-2xl hidden sm:block whitespace-pre-wrap">
-      {
-        code && raceTimeStamp &&
-        code.split("").map((item, index) => {
-          if (item !== " " && item !== "\n" && item !== "↵") {
-            const raceChar = raceTimeStamp[index - removeExtras]
-            return (
-              <span key={index} className={`text-2xl ${activeCharIndex === raceChar.time ? "bg-primary text-secondary" : ""}`}>{item}</span>
-            )
-          } else {
-            removeExtras++;
-            return <span key={index} className="text-2xl">{item}</span>
-          }
-        })
-      }
-    </code>
-  }
+    return (
+      <code className="flex-wrap text-2xl hidden sm:block whitespace-pre-wrap">
+        {code &&
+          code.split("").map((item, index) => {
+            if (item !== " " && item !== "\n" && item !== "↵") {
+              const raceChar = raceTimeStamp[index - removeExtras];
+              return (
+                <span
+                  key={index}
+                  className={`text-2xl ${
+                    activeCharIndex === raceChar?.time
+                      ? "bg-primary text-secondary"
+                      : ""
+                  }`}
+                >
+                  {item}
+                </span>
+              );
+            } else {
+              removeExtras++;
+              return (
+                <span key={index} className="text-2xl">
+                  {item}
+                </span>
+              );
+            }
+          })}
+      </code>
+    );
+  };
 
   return (
     <div style={{ width: "100%" }} className="mx-auto pb-3 flex flex-col">
