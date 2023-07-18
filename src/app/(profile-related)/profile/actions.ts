@@ -14,29 +14,26 @@ export async function updateBio(fd: FormData) {
     .string()
     .max(128)
     .refine((bio) => bio.trim());
-  try {
-    if (bio === "") {
-      await prisma.user.update({
-        where: {
-          id: user.id,
-        },
-        data: {
-          bio,
-        },
-      });
-    } else {
-      const parsedBio = bioSchema.parse(bio);
-      await prisma.user.update({
-        where: {
-          id: user.id,
-        },
-        data: {
-          bio: parsedBio,
-        },
-      });
-    }
-  } catch (err) {
-    catchError(err);
+  if (bio === "") {
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        bio,
+      },
+    });
+  } else {
+    const parsedBio = bioSchema.parse(bio);
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        bio: parsedBio,
+      },
+    });
   }
+
   revalidatePath("/profile");
 }

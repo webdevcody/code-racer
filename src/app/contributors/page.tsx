@@ -14,8 +14,8 @@ async function getContributors(): Promise<GitHubUser[] | []> {
       //   Authorization: "Bearer " + siteConfig.api.github.accessToken,
       // },
       next: {
-        revalidate: siteConfig.api.github.cacheRevalidationInterval
-      }
+        revalidate: siteConfig.api.github.cacheRevalidationInterval,
+      },
     });
 
     if (!response.ok) {
@@ -30,7 +30,7 @@ async function getContributors(): Promise<GitHubUser[] | []> {
   }
 }
 
-async function getWeeklyCommitActivity() : Promise<GitHubCommitActivity[] | []>{
+async function getWeeklyCommitActivity(): Promise<GitHubCommitActivity[] | []> {
   const url = siteConfig.api.github.githubWeeklyActivity;
   try {
     const response = await fetch(url, {
@@ -38,8 +38,8 @@ async function getWeeklyCommitActivity() : Promise<GitHubCommitActivity[] | []>{
       //   Authorization: "Bearer " + siteConfig.api.github.accessToken,
       // },
       next: {
-        revalidate: siteConfig.api.github.cacheRevalidationInterval
-      }
+        revalidate: siteConfig.api.github.cacheRevalidationInterval,
+      },
     });
 
     if (!response.ok) {
@@ -57,7 +57,8 @@ async function getWeeklyCommitActivity() : Promise<GitHubCommitActivity[] | []>{
 export default async function ContributorsPage() {
   const contributors = await getContributors();
   const commitActivity = await getWeeklyCommitActivity();
-  const [_, additions, deletions] = commitActivity.length > 0 ? commitActivity[0] : [0,0,0];
+  const [_, additions, deletions] =
+    commitActivity.length > 0 ? commitActivity[0] : [0, 0, 0];
   return (
     <div className="pt-12 pb-12">
       <Heading
@@ -66,9 +67,20 @@ export default async function ContributorsPage() {
       />
       <br />
       <div className="flex flex-col justify-start items-center gap-3">
-        <p className="font-md text-muted-foreground">This weeks: <span className="text-green-500">+{additions} additions</span> <span className="text-red-500">-{Math.abs(deletions)} deletions</span></p>
+        <p className="font-md text-muted-foreground">
+          This weeks:{" "}
+          <span className="text-green-500">+{additions} additions</span>{" "}
+          <span className="text-red-500">-{Math.abs(deletions)} deletions</span>
+        </p>
         <div className="flex justify-start w-72 h-2 bg-red-500 rounded-full overflow-clip box-border">
-          <span className="h-full bg-green-500 box-border" style={{width: `${(additions / (additions + Math.abs(deletions))) * 100}%`}}></span>
+          <span
+            className="h-full bg-green-500 box-border"
+            style={{
+              width: `${
+                (additions / (additions + Math.abs(deletions))) * 100
+              }%`,
+            }}
+          ></span>
         </div>
       </div>
       <ul className="grid gap-8 mt-8 list-none md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
