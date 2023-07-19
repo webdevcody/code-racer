@@ -67,7 +67,7 @@ To get started with Code Racer locally, follow these steps
 8. Open Docker Desktop Application and go back to your VSCode terminal and run this command:
 
    ```sh
-   docker compose up -d
+   docker-compose up -d
    ```
 
 9. Once your database is ready, push your prisma schema to the database.
