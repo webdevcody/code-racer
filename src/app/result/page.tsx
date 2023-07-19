@@ -18,6 +18,7 @@ import { Heading } from "@/components/ui/heading";
 import { cn } from "@/lib/utils";
 import { User } from "next-auth";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ReplayCode } from "./replay-timestamps";
 
 async function AuthenticatedPage({
   resultId,
@@ -114,6 +115,7 @@ async function AuthenticatedPage({
           <TabsList>
             <TabsTrigger value="Current">Current</TabsTrigger>
             <TabsTrigger value="History">History</TabsTrigger>
+            <TabsTrigger value="Replay">Replay</TabsTrigger>
           </TabsList>
           <TabsContent value="Current">
             {/* works even for unauthorized user */}
@@ -124,6 +126,9 @@ async function AuthenticatedPage({
           </TabsContent>
           <TabsContent value="History">
             <Chart raceResult={raceResults} />
+          </TabsContent>
+          <TabsContent value="Replay">
+            <ReplayCode code={currentSnippet?.code} />
           </TabsContent>
         </Tabs>
       </div>
@@ -168,7 +173,7 @@ async function AuthenticatedPage({
 }
 
 function UnauthenticatedPage() {
-  return <>TODO: Results are not implmemented for unauthenticated users yet</>;
+  return <>TODO: Results are not implemented for unauthenticated users yet</>;
 }
 
 export default async function ResultPage({
