@@ -387,8 +387,12 @@ export default function Race({
             } else {
               const array = [...prevTextIndicatorPosition];
               const lastValue = prevTextIndicatorPosition?.at(-1) as number;
-              array.push(lastValue - 1);
-              return array;
+              if (lastValue === 0) {
+                return array;
+              } else {
+                array.push(lastValue - 1);
+                return array;
+              }
             }
           } else {
             return prevTextIndicatorPosition;
@@ -448,7 +452,7 @@ export default function Race({
       });
     }
   }
-
+  console.log(textIndicatorPosition)
   function Backspace() {
     if (textIndicatorPosition === input.length) {
       setInput((prevInput) => prevInput.slice(0, -1));
