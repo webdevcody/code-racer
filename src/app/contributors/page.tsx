@@ -4,6 +4,7 @@ import Contributor from "./contributor";
 import { GitHubUser, GitHubUserCommitActivity } from "./contributor";
 import AdditionsDeletions from "./_components/additions-deletions";
 import ProportionBarChart from "./_components/proportion-bar-chart";
+import Time from "@/components/ui/time";
 
 type GitHubRepoCommitActivity = number[];
 
@@ -102,8 +103,11 @@ export default async function ContributorsPage() {
     contributors,
   );
   const repoCommitActivity = await getRepoWeeklyCommitActivity();
-  const [_, additions, deletions] =
-    repoCommitActivity.length > 0 ? repoCommitActivity[0] : [0, 0, 0];
+  const [since, additions, deletions] =
+    repoCommitActivity.length > 0
+      ? repoCommitActivity[repoCommitActivity.length - 1]
+      : [0, 0, 0];
+  const sinceDate = new Date(since * 1000); // `since` is in Unix time (second)
   return (
     <div className="pt-12 pb-12">
       <Heading
@@ -114,7 +118,7 @@ export default async function ContributorsPage() {
       <div className="flex flex-col justify-start items-center gap-3">
         <div className="w-[80vw] md:w-[70vw] lg:w-[50vw] xl:w-[600px] flex flex-col gap-2 justify-start items-center">
           <p className="text-secondary-foreground font-bold text-center text-2xl">
-            This week
+            Since <Time date={sinceDate} />
           </p>
           <AdditionsDeletions
             verbose
