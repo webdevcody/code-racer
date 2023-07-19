@@ -81,9 +81,7 @@ export default function Race({
   const showRaceTimer = !!startTime && !isRaceFinished;
   const [currentChar, setCurrentChar] = useState("");
   const [raceTimeStamp, setRaceTimeStamp] = useState<raceTimeStampProps[]>([]);
-  const [replayTimeStamp, setReplayTimeStamp] = useState<
-    replayTimeStampProps[]
-  >([]);
+  const [replayTimeStamp, setReplayTimeStamp] = useState<replayTimeStampProps[]>([]);
 
   async function endRace() {
     if (!startTime) return;
@@ -161,7 +159,7 @@ export default function Race({
         errors,
         totalErrors,
         time: Date.now(),
-      },
+      }
     ]);
   }, [input]);
 
@@ -266,7 +264,7 @@ export default function Race({
         errors,
         totalErrors,
         time: Date.now(),
-      },
+      }
     ]);
   }
 
@@ -281,9 +279,7 @@ export default function Race({
         if (typeof prevTextIndicatorPosition === "number") {
           return prevTextIndicatorPosition + 1;
         } else {
-          const secondToLastValue =
-            prevTextIndicatorPosition[prevTextIndicatorPosition?.length - 2] ??
-            prevTextIndicatorPosition;
+          const secondToLastValue = prevTextIndicatorPosition[prevTextIndicatorPosition?.length - 2] ?? prevTextIndicatorPosition;
           return secondToLastValue;
         }
       });
@@ -320,7 +316,7 @@ export default function Race({
             return array;
           } else if (lastValue >= prevTextIndicatorPosition[0]) {
             if (lastValue === input.length) {
-              return prevTextIndicatorPosition;
+              return prevTextIndicatorPosition
             } else {
               const array = [...prevTextIndicatorPosition];
               const lastValue = prevTextIndicatorPosition.at(-1) as number;
@@ -387,7 +383,7 @@ export default function Race({
             return array;
           } else if (lastValue <= prevTextIndicatorPosition[0]) {
             if (lastValue === input.length) {
-              return prevTextIndicatorPosition;
+              return prevTextIndicatorPosition
             } else {
               const array = [...prevTextIndicatorPosition];
               const lastValue = prevTextIndicatorPosition?.at(-1) as number;
@@ -496,7 +492,11 @@ export default function Race({
           return prevTextIndicatorPosition - 1;
         } else {
           const lastValue = prevTextIndicatorPosition.at(-1) as number;
-          return lastValue;
+          if (lastValue > prevTextIndicatorPosition[0]) {
+            return prevTextIndicatorPosition[0];
+          } else {
+            return lastValue;
+          }
         }
       });
     }
@@ -611,8 +611,6 @@ export default function Race({
     setTotalErrors(0);
   }
 
-  console.log("text-position", textIndicatorPosition, "input", input);
-
   return (
     <>
       <div
@@ -646,7 +644,7 @@ export default function Race({
                 className={
                   currentLineNumber === line + 1
                     ? // && textIndicatorPosition
-                      "text-center bg-slate-600  border-r-2 border-yellow-500"
+                    "text-center bg-slate-600  border-r-2 border-yellow-500"
                     : " text-center border-r-2 border-yellow-500"
                 }
               >
