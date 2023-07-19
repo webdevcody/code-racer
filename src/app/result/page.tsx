@@ -1,6 +1,6 @@
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Chart, { CurrentChart } from "./chart";
+import Chart, { ParentCurrentChart } from "./chart";
 import { Icons } from "@/components/icons";
 import Link from "next/link";
 import { FirstRaceBadge } from "./first-race-badge";
@@ -122,7 +122,7 @@ async function AuthenticatedPage({
             <span className="text-2xl mx-auto text-primary flex-wrap sm:hidden">
               View in Larger Screen to Unlock Exciting Features!
             </span>
-            <CurrentChart code={currentSnippet?.code} />
+            <ParentCurrentChart code={currentSnippet?.code} />
           </TabsContent>
           <TabsContent value="History">
             <Chart raceResult={raceResults} />
