@@ -168,7 +168,7 @@ async function AuthenticatedPage({
 }
 
 function UnauthenticatedPage() {
-  return <>TODO: Results are not implmemented for unauthenticated users yet</>;
+  return <>TODO: Results are not implemented for unauthenticated users yet</>;
 }
 
 export default async function ResultPage({
