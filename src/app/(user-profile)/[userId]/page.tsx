@@ -10,8 +10,8 @@ import { findUserAchievements } from "@/app/_actions/achievements";
 import { findUser } from "@/app/_actions/user";
 import { notFound } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
-import { LoginButton } from "@/components/ui/buttons";
-import { Button } from "@/components/ui/button";
+// import { LoginButton } from "@/components/ui/buttons";
+// import { Button } from "@/components/ui/button";
 import NotCurrentUserButtons from "../(components)/not-current-user-buttons";
 
 export const metadata = {

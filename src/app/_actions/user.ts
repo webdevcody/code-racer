@@ -114,90 +114,90 @@ export const findUser = action(
   },
 );
 
-/** The userId parameter is the user who will follow/unfollow a user.
- *
- *  Uses the current user's id if not passed on as a parameter.
- *
- *  Note: You need to pass on a target user and their id for this to work.
- */
-export const updateUserFollowersAction = action(
-  z.object({
-    userId: z.string().optional(),
-    targetUserId: z.string(),
-    typeOfUpdate: z.enum(["follow", "unfollow"]),
-  }),
-  async (input, { user, prisma }) => {
-    if (!user) throw new UnauthorizedError();
+// /** The userId parameter is the user who will follow/unfollow a user.
+//  *
+//  *  Uses the current user's id if not passed on as a parameter.
+//  *
+//  *  Note: You need to pass on a target user and their id for this to work.
+//  */
+// export const updateUserFollowersAction = action(
+//   z.object({
+//     userId: z.string().optional(),
+//     targetUserId: z.string(),
+//     typeOfUpdate: z.enum(["follow", "unfollow"]),
+//   }),
+//   async (input, { user, prisma }) => {
+//     if (!user) throw new UnauthorizedError();
 
-    if (!input.userId) {
-      input.userId = user?.id;
-    }
+//     if (!input.userId) {
+//       input.userId = user?.id;
+//     }
 
-    const targetUsersCurrentFollowers = (
-      await findUser({
-        userId: input.targetUserId,
-      })
-    ).data?.followers as string[];
+//     const targetUsersCurrentFollowers = (
+//       await findUser({
+//         userId: input.targetUserId,
+//       })
+//     ).data?.followers as string[];
 
-    // This is sure to not be undefined as we will
-    // throw an error if there's no logged in user.
-    const currentUsersFollowing = (
-      await findUser({
-        userId: input.userId,
-      })
-    ).data?.following as string[];
+//     // This is sure to not be undefined as we will
+//     // throw an error if there's no logged in user.
+//     const currentUsersFollowing = (
+//       await findUser({
+//         userId: input.userId,
+//       })
+//     ).data?.following as string[];
 
-    const addFollower = async () => {
-      await prisma.user.update({
-        where: {
-          id: input.targetUserId,
-        },
-        data: {
-          followers: [...targetUsersCurrentFollowers, input.userId as string],
-        },
-      });
-      await prisma.user.update({
-        where: {
-          id: input.userId,
-        },
-        data: {
-          following: [...currentUsersFollowing, input.targetUserId],
-        },
-      });
-    };
+//     const addFollower = async () => {
+//       await prisma.user.update({
+//         where: {
+//           id: input.targetUserId,
+//         },
+//         data: {
+//           followers: [...targetUsersCurrentFollowers, input.userId as string],
+//         },
+//       });
+//       await prisma.user.update({
+//         where: {
+//           id: input.userId,
+//         },
+//         data: {
+//           following: [...currentUsersFollowing, input.targetUserId],
+//         },
+//       });
+//     };
 
-    const removeFollower = async () => {
-      await prisma.user.update({
-        where: {
-          id: input.targetUserId,
-        },
-        data: {
-          followers: targetUsersCurrentFollowers.filter((follower) => {
-            return follower === user?.id ? null : follower;
-          }),
-        },
-      });
-      await prisma.user.update({
-        where: {
-          id: input.userId,
-        },
-        data: {
-          following: currentUsersFollowing.filter((following) => {
-            return following === input.targetUserId ? null : following;
-          }),
-        },
-      });
-    };
+//     const removeFollower = async () => {
+//       await prisma.user.update({
+//         where: {
+//           id: input.targetUserId,
+//         },
+//         data: {
+//           followers: targetUsersCurrentFollowers.filter((follower) => {
+//             return follower === user?.id ? null : follower;
+//           }),
+//         },
+//       });
+//       await prisma.user.update({
+//         where: {
+//           id: input.userId,
+//         },
+//         data: {
+//           following: currentUsersFollowing.filter((following) => {
+//             return following === input.targetUserId ? null : following;
+//           }),
+//         },
+//       });
+//     };
 
-    switch (input.typeOfUpdate) {
-      case "follow":
-        await addFollower();
-        break;
-      case "unfollow":
-        await removeFollower();
-        break;
-    }
+//     switch (input.typeOfUpdate) {
+//       case "follow":
+//         await addFollower();
+//         break;
+//       case "unfollow":
+//         await removeFollower();
+//         break;
+//     }
 
-    revalidatePath(`/${input.targetUserId}`);
-  },
-);
+//     revalidatePath(`/${input.targetUserId}`);
+//   },
+// );

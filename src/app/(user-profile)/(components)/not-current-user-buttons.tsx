@@ -1,6 +1,6 @@
 "use client";
 
-import { updateUserFollowersAction } from "@/app/_actions/user";
+// import { updateUserFollowersAction } from "@/app/_actions/user";
 import { Button } from "@/components/ui/button";
 
 export default function NotCurrentUserButtons({
