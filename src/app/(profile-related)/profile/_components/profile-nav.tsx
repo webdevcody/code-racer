@@ -22,8 +22,8 @@ export default function ProfileNav({ displayName }: { displayName: string }) {
       <div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="gap-2">
-              <Icons.settings />
+            <Button variant="outline" className="gap-2">
+              <Icons.settings size={18} />
               Settings
             </Button>
           </DropdownMenuTrigger>

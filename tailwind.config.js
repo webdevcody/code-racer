@@ -16,6 +16,9 @@ module.exports = {
       },
     },
     extend: {
+      screens: {
+        xs: "480px"
+      },
       fontFamily: {
         special: ["var(--font-bruno-ace-sc)"],
       },
