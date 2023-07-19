@@ -41,6 +41,16 @@ interface raceTimeStampProps {
   time: number;
 }
 
+interface replayTimeStampProps {
+  char: string;
+  textIndicatorPosition: number | number[];
+  currentLineNumber: number;
+  currentCharPosition: number;
+  errors: number[];
+  totalErrors: number;
+  time: number;
+}
+
 export default function Race({
   user,
   snippet,
@@ -71,6 +81,9 @@ export default function Race({
   const showRaceTimer = !!startTime && !isRaceFinished;
   const [currentChar, setCurrentChar] = useState("");
   const [raceTimeStamp, setRaceTimeStamp] = useState<raceTimeStampProps[]>([]);
+  const [replayTimeStamp, setReplayTimeStamp] = useState<
+    replayTimeStampProps[]
+  >([]);
 
   async function endRace() {
     if (!startTime) return;
@@ -85,6 +98,22 @@ export default function Race({
           char: currentChar,
           accuracy: calculateAccuracy(input.length, totalErrors),
           cpm: calculateCPM(input.length, timeTaken),
+          time: Date.now(),
+        },
+      ]),
+    );
+
+    localStorage.setItem(
+      "replayTimeStamp",
+      JSON.stringify([
+        ...replayTimeStamp,
+        {
+          char: currentChar,
+          textIndicatorPosition,
+          currentLineNumber,
+          currentCharPosition,
+          errors,
+          totalErrors,
           time: Date.now(),
         },
       ]),
@@ -122,6 +151,18 @@ export default function Race({
     const lines = input.split("\n");
     setCurrentLineNumber(lines.length);
     setCurrentCharPosition(lines[lines.length - 1].length);
+    setReplayTimeStamp((prev) => [
+      ...prev,
+      {
+        char: currentChar,
+        textIndicatorPosition,
+        currentLineNumber,
+        currentCharPosition,
+        errors,
+        totalErrors,
+        time: Date.now(),
+      },
+    ]);
   }, [input]);
 
   useEffect(() => {
@@ -215,6 +256,18 @@ export default function Race({
     const lines = input.split("\n");
     setCurrentLineNumber(lines.length);
     setCurrentCharPosition(lines[lines.length - 1].length);
+    setReplayTimeStamp((prev) => [
+      ...prev,
+      {
+        char: currentChar,
+        textIndicatorPosition,
+        currentLineNumber,
+        currentCharPosition,
+        errors,
+        totalErrors,
+        time: Date.now(),
+      },
+    ]);
   }
 
   function ArrowRight(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -228,7 +281,9 @@ export default function Race({
         if (typeof prevTextIndicatorPosition === "number") {
           return prevTextIndicatorPosition + 1;
         } else {
-          const secondToLastValue = prevTextIndicatorPosition[prevTextIndicatorPosition?.length - 2] ?? prevTextIndicatorPosition;
+          const secondToLastValue =
+            prevTextIndicatorPosition[prevTextIndicatorPosition?.length - 2] ??
+            prevTextIndicatorPosition;
           return secondToLastValue;
         }
       });
@@ -265,7 +320,7 @@ export default function Race({
             return array;
           } else if (lastValue >= prevTextIndicatorPosition[0]) {
             if (lastValue === input.length) {
-              return prevTextIndicatorPosition
+              return prevTextIndicatorPosition;
             } else {
               const array = [...prevTextIndicatorPosition];
               const lastValue = prevTextIndicatorPosition.at(-1) as number;
@@ -332,7 +387,7 @@ export default function Race({
             return array;
           } else if (lastValue <= prevTextIndicatorPosition[0]) {
             if (lastValue === input.length) {
-              return prevTextIndicatorPosition
+              return prevTextIndicatorPosition;
             } else {
               const array = [...prevTextIndicatorPosition];
               const lastValue = prevTextIndicatorPosition?.at(-1) as number;
@@ -591,7 +646,7 @@ export default function Race({
                 className={
                   currentLineNumber === line + 1
                     ? // && textIndicatorPosition
-                    "text-center bg-slate-600  border-r-2 border-yellow-500"
+                      "text-center bg-slate-600  border-r-2 border-yellow-500"
                     : " text-center border-r-2 border-yellow-500"
                 }
               >
