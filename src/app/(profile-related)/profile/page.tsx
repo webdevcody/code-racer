@@ -18,7 +18,6 @@ export const metadata = {
 export default async function ProfilePage() {
   const userAchievements = (await findUserAchievements({})).data;
   const userData = (await findUser({})).data;
-
   const photoURL = userData?.image ?? "/placeholder-image.jpg";
   const displayName = userData?.name ?? "Display Name";
   const bio = userData?.bio;
@@ -27,7 +26,7 @@ export default async function ProfilePage() {
 
   return (
     <main>
-      <article className="flex flex-col md:flex-row items-center md:items-start md:justify-start gap-8 py-8">
+      <article className="flex flex-col items-center gap-8 py-8 md:flex-row md:items-start md:justify-start">
         <ProfileCard
           photoURL={photoURL}
           displayName={displayName}
@@ -41,7 +40,7 @@ export default async function ProfilePage() {
           <div className="flex flex-col items-center justify-start w-full pt-[clamp(0.5rem,calc(0.1rem+4vw),3rem)]">
             {userAchievements?.length ? (
               <>
-                <ul className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4">
+                <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 2xl:grid-cols-3">
                   {userAchievements?.map(({ achievementType, unlockedAt }) => {
                     const achievement = achievements.find(
                       (achievement) => achievement.type === achievementType,
@@ -63,7 +62,7 @@ export default async function ProfilePage() {
               </>
             ) : (
               <>
-                <p className="p-5 text-2xl font-bold max-w-2xl text-center">
+                <p className="max-w-2xl p-5 text-2xl font-bold text-center">
                   You currently have no achievements. You must
                   <Link href="/race" className="underline text-primary">
                     &nbsp;race
@@ -76,7 +75,7 @@ export default async function ProfilePage() {
                     width={400}
                     height={400}
                     alt="image"
-                    className="w-full h-full object-contain"
+                    className="object-contain w-full h-full"
                   />
                 </div>
               </>

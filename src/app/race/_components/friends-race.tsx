@@ -14,9 +14,9 @@ export default function FriendsRace() {
   const { toast } = useToast();
 
   return (
-    <Card className="flex-1 bg-warning text-black">
+    <Card className="flex flex-col justify-between flex-1 text-black bg-warning">
       <CardHeader>
-        <div className="grid place-content-center text-center">
+        <div className="grid text-center place-content-center">
           <Users className="justify-self-center" size={40} />
           <div>
             <h2 style={bruno_ace_sc.style} className="text-3xl font-bold">
@@ -28,7 +28,7 @@ export default function FriendsRace() {
           </div>
         </div>
       </CardHeader>
-      <CardContent className="grid gap-2 items-center">
+      <CardContent className="grid items-center gap-2">
         <Button
           variant="black"
           disabled
