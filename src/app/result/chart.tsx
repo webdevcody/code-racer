@@ -18,7 +18,6 @@ import {
   NameType,
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
-import { ReplayCode } from "./replay-timestamps";
 
 const dataKeys: ResultChartLineProps[] = [
   { dataKey: "accuracy", stroke: "#0261b9" },
@@ -30,16 +29,6 @@ interface raceTimeStampProps {
   char: string;
   accuracy: number;
   cpm: number;
-  time: number;
-}
-
-interface replayTimeStampProps {
-  char: string;
-  textIndicatorPosition: number | number[];
-  currentLineNumber: number;
-  currentCharPosition: number;
-  errors: number[];
-  totalErrors: number;
   time: number;
 }
 
@@ -134,7 +123,6 @@ function renderTooltip(
 
 export function CurrentChart({ code }: { code?: string }) {
   const [raceTimeStamp, setRaceTimeStamp] = useState<raceTimeStampProps[]>([]);
-  const [replayTimeStamp, setReplayTimeStamp] = useState<replayTimeStampProps[]>([]);
   const [activeCharIndex, setActiveCharIndex] = useState<number>();
   let removeExtras = 0;
 
@@ -143,13 +131,7 @@ export function CurrentChart({ code }: { code?: string }) {
       return JSON.parse(localStorage.getItem("raceTimeStamp") || "[]");
     };
 
-    const getReplay = () => {
-      return JSON.parse(localStorage.getItem("replayTimeStamp") || "[]");
-    }
-
     const data = getData();
-    const replay = getReplay();
-    setReplayTimeStamp(replay);
     return setRaceTimeStamp(data);
   }, []);
 
@@ -214,9 +196,6 @@ export function CurrentChart({ code }: { code?: string }) {
       </ResponsiveContainer>
       <div className="px-2 bg-accent text-primary">
         <RenderCode />
-      </div>
-      <div className="relative">
-        <ReplayCode code={code} replayTimeStamp={replayTimeStamp} />
       </div>
     </div>
   );
