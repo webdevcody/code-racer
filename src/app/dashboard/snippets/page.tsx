@@ -1,7 +1,7 @@
 import { Heading } from "@/components/ui/heading";
 import Shell from "@/components/shell";
 import React from "react";
-import { Result } from "@prisma/client";
+import { Result, Snippet } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { redirect } from "next/navigation";
@@ -30,24 +30,26 @@ export default async function SnippetsPage({
   const [column, order] =
     typeof sort === "string"
       ? (sort.split(".") as [
-          keyof Result | undefined,
+          keyof Snippet | undefined,
           "asc" | "desc" | undefined,
         ])
       : [];
 
+  const sortBy = column && column in prisma.snippet.fields ? column : "rating";
+
   const { snippets, totalSnippets } = await prisma.$transaction(async (tx) => {
-    const snippets = await prisma.snippet.findMany({
+    const snippets = await tx.snippet.findMany({
       take,
       skip,
       where: {
         userId: user.id,
       },
       orderBy: {
-        [column ?? "rating"]: order,
+        [sortBy]: order,
       },
     });
 
-    const totalSnippets = await prisma.snippet.count({
+    const totalSnippets = await tx.snippet.count({
       where: {
         userId: user.id,
       },
