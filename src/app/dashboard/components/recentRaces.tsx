@@ -99,8 +99,8 @@ export function RecentRacesTable({
       data={data}
       pageCount={pageCount}
       defaultSorting={{
-        prop: "createdAt",
-        val: "asc",
+        prop: "cpm",
+        val: "desc",
       }}
     />
   );
