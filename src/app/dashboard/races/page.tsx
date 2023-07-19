@@ -35,19 +35,21 @@ export default async function RacesPage({
         ])
       : [];
 
+  const sortBy = column && column in prisma.result.fields ? column : "cpm";
+
   const { races, totalRaces } = await prisma.$transaction(async (tx) => {
-    const races = await prisma.result.findMany({
+    const races = await tx.result.findMany({
       take,
       skip,
       where: {
         userId: user.id,
       },
       orderBy: {
-        [column ?? "createdAt"]: order,
+        [sortBy]: order,
       },
     });
 
-    const totalRaces = await prisma.result.count({
+    const totalRaces = await tx.result.count({
       where: {
         userId: user.id,
       },

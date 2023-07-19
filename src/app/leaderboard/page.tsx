@@ -2,7 +2,7 @@ import React from "react";
 
 import { prisma } from "@/lib/prisma";
 import { UsersTable } from "./users-table";
-import { User } from "@prisma/client";
+import { Prisma, User } from "@prisma/client";
 import { Heading } from "@/components/ui/heading";
 
 export default async function LeaderboardPage({
@@ -29,11 +29,18 @@ export default async function LeaderboardPage({
         ])
       : [];
 
-  const { users, totalUsers } = await prisma.$transaction(async () => {
+  const sortBy =
+    column === "Races played"
+      ? "Races played"
+      : column && column in prisma.user.fields
+      ? column
+      : "averageCpm";
+
+  const { users, totalUsers } = await prisma.$transaction(async (tx) => {
     let users;
 
     if (column === "Races played") {
-      users = await prisma.user.findMany({
+      users = await tx.user.findMany({
         take,
         skip,
         orderBy: {
@@ -51,11 +58,11 @@ export default async function LeaderboardPage({
         },
       });
     } else {
-      users = await prisma.user.findMany({
+      users = await tx.user.findMany({
         take,
         skip,
         orderBy: {
-          [column ?? ""]: order,
+          [sortBy]: order,
         },
         include: {
           results: true,
