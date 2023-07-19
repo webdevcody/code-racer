@@ -8,15 +8,20 @@ import React, { useState } from "react";
 import { bruno_ace_sc } from "@/lib/fonts";
 
 export default function MultiplayerRace() {
-  const [selectedMultiplayerLanguage, setSelectedMultiplayerLanguage] = useState("");
+  const [selectedMultiplayerLanguage, setSelectedMultiplayerLanguage] =
+    useState("");
 
   return (
     <Card className="flex-1 bg-warning text-black">
       <CardHeader>
         <div className="grid place-content-center text-center">
           <Users className="justify-self-center" size={40} />
-          <h2 style={bruno_ace_sc.style} className="text-3xl font-bold">Multiplayer</h2>
-          <p className="font-light">Race against other people and see who can type the fastest!</p>
+          <h2 style={bruno_ace_sc.style} className="text-3xl font-bold">
+            Multiplayer
+          </h2>
+          <p className="font-light">
+            Race against other people and see who can type the fastest!
+          </p>
         </div>
       </CardHeader>
       <CardContent>
@@ -27,8 +32,9 @@ export default function MultiplayerRace() {
               true && "pointer-events-none cursor-not-allowed opacity-40",
             )}
             onClick={(e) => e.preventDefault()}
-            href={`/race/multiplayer${selectedMultiplayerLanguage ? "?lang=" : ""
-              }${encodeURIComponent(selectedMultiplayerLanguage)}`} // Make sure it is URL encoded
+            href={`/race/multiplayer${
+              selectedMultiplayerLanguage ? "?lang=" : ""
+            }${encodeURIComponent(selectedMultiplayerLanguage)}`} // Make sure it is URL encoded
           >
             Start Racing (Coming Soon)
           </Link>

@@ -2,7 +2,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import AdditionsDeletions from "./_components/additions-deletions";
 import ProportionBarChart from "./_components/proportion-bar-chart";
-
+import {
+  HoverCard,
+  HoverCardTrigger,
+  HoverCardContent,
+} from "@/components/ui/hover-card";
+import GitHubCommitDisplay from "./_components/github-commit-display";
+import { Suspense } from "react";
 export interface GitHubUserCommitActivity {
   login: string; // username
   additions: number;
@@ -47,35 +53,49 @@ export default function Contributor({
   };
   return (
     <li key={contributor.id} className="flex gap-4 p-1 rounded-full">
-      <Card className="w-full">
-        <CardContent className="inline-flex py-4 items-center top-[20%] w-full">
-          <div className="">
-            <Avatar className="w-11 h-11">
-              <AvatarImage
-                src={contributor.avatar_url}
-                alt={contributor.login}
-              />
-              <AvatarFallback className="text-primary bg-secondary font-bold">
-                {abbreviatedName}
-              </AvatarFallback>
-            </Avatar>
-          </div>
-          <div className="flex flex-col ml-4 w-full">
-            <p className="text-base font-medium leading-none">
-              {contributor.login}
-            </p>
-            <p className="mt-1 text-base text-muted-foreground">
-              {contributor.contributions} contributions
-            </p>
-            <AdditionsDeletions additions={additions} deletions={deletions} />
-            <ProportionBarChart
-              a={additions}
-              b={deletions}
-              className="mt-1 w-full h-3"
-            />
-          </div>
-        </CardContent>
-      </Card>
+      <HoverCard>
+        <HoverCardTrigger asChild>
+          <Card className="w-full hover:bg-secondary transition-colors duration-100">
+            <a href={contributor.html_url}>
+              <CardContent className="inline-flex py-4 items-center top-[20%] w-full">
+                <div className="">
+                  <Avatar className="w-11 h-11">
+                    <AvatarImage
+                      src={contributor.avatar_url}
+                      alt={contributor.login}
+                    />
+                    <AvatarFallback className="text-primary bg-secondary font-bold">
+                      {abbreviatedName}
+                    </AvatarFallback>
+                  </Avatar>
+                </div>
+                <div className="flex flex-col ml-4 w-full">
+                  <p className="text-base font-medium leading-none">
+                    {contributor.login}
+                  </p>
+                  <p className="mt-1 text-base text-muted-foreground">
+                    {contributor.contributions} contributions
+                  </p>
+                  <AdditionsDeletions
+                    additions={additions}
+                    deletions={deletions}
+                  />
+                  <ProportionBarChart
+                    a={additions}
+                    b={deletions}
+                    className="mt-1 w-full h-3"
+                  />
+                </div>
+              </CardContent>
+            </a>
+          </Card>
+        </HoverCardTrigger>
+        <HoverCardContent className="w-80 p-2">
+          <Suspense fallback="Loading...">
+            <GitHubCommitDisplay contributor={contributor} />
+          </Suspense>
+        </HoverCardContent>
+      </HoverCard>
     </li>
   );
 }
