@@ -110,24 +110,24 @@ async function AuthenticatedPage({
         </div>
       </div>
       <div className="flex flex-col px-8 rounded-xl">
-          <Tabs defaultValue="Current" className="w-full">
-            <TabsList>
-              <TabsTrigger value="Current">Current</TabsTrigger>
-              <TabsTrigger value="History">History</TabsTrigger>
-            </TabsList>
-            <TabsContent value="Current">
-              {/* works even for unauthorized user */}
-              <span className="text-2xl mx-auto text-primary flex-wrap sm:hidden">View in Larger Screen to Unlock Exciting Features!</span>
+        <Tabs defaultValue="Current" className="w-full">
+          <TabsList>
+            <TabsTrigger value="Current">Current</TabsTrigger>
+            <TabsTrigger value="History">History</TabsTrigger>
+          </TabsList>
+          <TabsContent value="Current">
+            {/* works even for unauthorized user */}
+            <span className="text-2xl mx-auto text-primary flex-wrap sm:hidden">
+              View in Larger Screen to Unlock Exciting Features!
+            </span>
             <CurrentChart code={currentSnippet?.code} />
-            </TabsContent>
-            <TabsContent value="History">
-              <Chart raceResult={raceResults} />
-            </TabsContent>
+          </TabsContent>
+          <TabsContent value="History">
+            <Chart raceResult={raceResults} />
+          </TabsContent>
         </Tabs>
       </div>
-      <div
-        className="flex flex-wrap items-center justify-center gap-4 p-2"
-      >
+      <div className="flex flex-wrap items-center justify-center gap-4 p-2">
         <Link
           title="Retry"
           className={cn(buttonVariants(), "gap-2")}

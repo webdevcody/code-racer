@@ -36,9 +36,15 @@ interface ContributorProps {
   contributorsActivity: GitHubUserCommitActivity;
 }
 
-export default function Contributor({ contributor, contributorsActivity }: ContributorProps) {
+export default function Contributor({
+  contributor,
+  contributorsActivity,
+}: ContributorProps) {
   const abbreviatedName = contributor?.login.toUpperCase().slice(0, 2) ?? "Co";
-  const { additions, deletions } = contributorsActivity ?? { additions: 0, deletions: 0 };
+  const { additions, deletions } = contributorsActivity ?? {
+    additions: 0,
+    deletions: 0,
+  };
   return (
     <li key={contributor.id} className="flex gap-4 p-1 rounded-full">
       <Card className="w-full">
@@ -62,7 +68,11 @@ export default function Contributor({ contributor, contributorsActivity }: Contr
               {contributor.contributions} contributions
             </p>
             <AdditionsDeletions additions={additions} deletions={deletions} />
-            <ProportionBarChart a={additions} b={deletions} className="mt-1 w-full h-3"/>
+            <ProportionBarChart
+              a={additions}
+              b={deletions}
+              className="mt-1 w-full h-3"
+            />
           </div>
         </CardContent>
       </Card>
