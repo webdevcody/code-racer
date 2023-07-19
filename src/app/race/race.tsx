@@ -452,7 +452,7 @@ export default function Race({
       });
     }
   }
-  console.log(textIndicatorPosition)
+  
   function Backspace() {
     if (textIndicatorPosition === input.length) {
       setInput((prevInput) => prevInput.slice(0, -1));
