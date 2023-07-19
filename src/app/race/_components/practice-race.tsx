@@ -29,9 +29,9 @@ export default function PracticeRace() {
   }
 
   return (
-    <Card className="flex-1 bg-warning text-black">
+    <Card className="flex flex-col justify-between flex-1 text-black bg-warning">
       <CardHeader>
-        <div className="grid place-content-center text-center">
+        <div className="grid text-center place-content-center">
           <Target className="justify-self-center" size={40} />
           <h2 style={bruno_ace_sc.style} className="text-3xl font-bold">
             Practice
@@ -44,7 +44,7 @@ export default function PracticeRace() {
       <CardContent>
         <form
           onSubmit={handleSubmit}
-          className="grid grid-cols-2 items-start gap-2"
+          className="grid items-start grid-cols-2 gap-2"
         >
           <div className="flex flex-col">
             <LanguageDropDown
@@ -62,7 +62,7 @@ export default function PracticeRace() {
             Practice{" "}
             <ArrowRight
               size="20"
-              className="absolute right-4 opacity-50 top-1/2 -translate-y-1/2"
+              className="absolute -translate-y-1/2 opacity-50 right-4 top-1/2"
             />
           </Button>
         </form>
