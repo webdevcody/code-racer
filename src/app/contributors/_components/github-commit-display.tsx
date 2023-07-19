@@ -29,9 +29,6 @@ async function getContributorCommitList(
       next: {
         revalidate: siteConfig.api.github.cacheRevalidationInterval,
       },
-      headers: {
-        Authorization: "Bearer " + siteConfig.api.github.accessToken,
-      },
     });
     if (!response.ok) {
       throw new Error("Fetch failed" + url);
