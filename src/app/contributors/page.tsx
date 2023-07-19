@@ -115,9 +115,9 @@ export default async function ContributorsPage() {
         description="All the project contributors"
       />
       <br />
-      <div className="flex flex-col justify-start items-center gap-3">
+      <div className="flex flex-col items-center justify-start gap-3">
         <div className="w-[80vw] md:w-[70vw] lg:w-[50vw] xl:w-[600px] flex flex-col gap-2 justify-start items-center">
-          <p className="text-secondary-foreground font-bold text-center text-2xl">
+          <p className="text-2xl font-bold text-center text-secondary-foreground">
             Since <Time date={sinceDate} />
           </p>
           <AdditionsDeletions

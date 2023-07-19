@@ -12,9 +12,9 @@ export default function MultiplayerRace() {
     useState("");
 
   return (
-    <Card className="flex-1 bg-warning text-black">
+    <Card className="flex flex-col justify-between flex-1 text-black bg-warning">
       <CardHeader>
-        <div className="grid place-content-center text-center">
+        <div className="grid text-center place-content-center">
           <Users className="justify-self-center" size={40} />
           <h2 style={bruno_ace_sc.style} className="text-3xl font-bold">
             Multiplayer
