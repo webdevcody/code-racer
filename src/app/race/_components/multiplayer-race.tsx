@@ -5,34 +5,30 @@ import { Users } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import React, { useState } from "react";
+import { bruno_ace_sc } from "@/lib/fonts";
 
 export default function MultiplayerRace() {
-  const [languageMultiplayer, setLanguageMultiplayer] = useState("");
+  const [selectedMultiplayerLanguage, setSelectedMultiplayerLanguage] = useState("");
 
   return (
-    <Card className="text-gray-700">
+    <Card className="flex-1 bg-warning text-black">
       <CardHeader>
-        <div className="flex items-center gap-4">
-          <div>
-            <Users size={32} />
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold">Multiplayer</h2>
-            <p>Race against other people and see who can type the fastest!</p>
-          </div>
+        <div className="grid place-content-center text-center">
+          <Users className="justify-self-center" size={40} />
+          <h2 style={bruno_ace_sc.style} className="text-3xl font-bold">Multiplayer</h2>
+          <p className="font-light">Race against other people and see who can type the fastest!</p>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="flex items-center gap-2">
+        <div className="grid items-center gap-2">
           <Link
             className={cn(
-              buttonVariants({ variant: "default" }),
+              buttonVariants({ variant: "black" }),
               true && "pointer-events-none cursor-not-allowed opacity-40",
             )}
             onClick={(e) => e.preventDefault()}
-            href={`/race/multiplayer${
-              languageMultiplayer ? "?lang=" : ""
-            }${encodeURIComponent(languageMultiplayer)}`} // Make sure it is URL encoded
+            href={`/race/multiplayer${selectedMultiplayerLanguage ? "?lang=" : ""
+              }${encodeURIComponent(selectedMultiplayerLanguage)}`} // Make sure it is URL encoded
           >
             Start Racing (Coming Soon)
           </Link>
