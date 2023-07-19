@@ -37,7 +37,7 @@ const ProgressIndicator = React.forwardRef<
     <Progress.Indicator
       ref={ref}
       className={cn(
-        "bg-primary w-[0%] h-full transition-all duration-700 ease-[cubic-bezier(0.65, 0, 0.35, 1)]",
+        "bg-primary w-[0%] h-full transition-all duration-300 ease-in-out",
         className,
       )}
       {...props}
