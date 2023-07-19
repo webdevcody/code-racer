@@ -27,14 +27,14 @@ export default async function ProfilePage() {
 
   return (
     <main>
-      <article className="flex flex-col md:flex-row justify-center items-center gap-8 py-8">
+      <article className="flex flex-col md:flex-row items-center md:items-start md:justify-start gap-8 py-8">
         <ProfileCard
           photoURL={photoURL}
           displayName={displayName}
           bio={bio}
           totalPoints={totalPoints}
         />
-        <section className="min-h-[30rem] md:w-[60%] lg:w-[70%] xl:w-[75%]">
+        <section className="min-h-[20rem] md:w-[60%] lg:w-[70%] xl:w-[75%]">
           <div>
             <Heading title="Achievements" centered />
           </div>
