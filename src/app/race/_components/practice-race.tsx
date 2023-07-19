@@ -21,8 +21,10 @@ export default function PracticeRace() {
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
-    if (!selectedPracticeLanguage) return setError("please select a language to practice");
-    router.push(`/race/practice?lang=${encodeURIComponent(selectedPracticeLanguage)}`, // Make sure it is URL encoded
+    if (!selectedPracticeLanguage)
+      return setError("please select a language to practice");
+    router.push(
+      `/race/practice?lang=${encodeURIComponent(selectedPracticeLanguage)}`, // Make sure it is URL encoded
     );
   }
 
@@ -31,12 +33,19 @@ export default function PracticeRace() {
       <CardHeader>
         <div className="grid place-content-center text-center">
           <Target className="justify-self-center" size={40} />
-          <h2 style={bruno_ace_sc.style} className="text-3xl font-bold">Practice</h2>
-          <p className="font-light">Practice typing with a random snippet from your snippets</p>
+          <h2 style={bruno_ace_sc.style} className="text-3xl font-bold">
+            Practice
+          </h2>
+          <p className="font-light">
+            Practice typing with a random snippet from your snippets
+          </p>
         </div>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="grid grid-cols-2 items-start gap-2">
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-2 items-start gap-2"
+        >
           <div className="flex flex-col">
             <LanguageDropDown
               className={cn("w-full", error && "border-red-500")}
@@ -45,8 +54,16 @@ export default function PracticeRace() {
             />
             <span className="text-red-500">{error}</span>
           </div>
-          <Button disabled={selectedPracticeLanguage === ""} variant="black" className="relative justify-start">
-            Practice <ArrowRight size="20" className="absolute right-4 opacity-50 top-1/2 -translate-y-1/2" />
+          <Button
+            disabled={selectedPracticeLanguage === ""}
+            variant="black"
+            className="relative justify-start"
+          >
+            Practice{" "}
+            <ArrowRight
+              size="20"
+              className="absolute right-4 opacity-50 top-1/2 -translate-y-1/2"
+            />
           </Button>
         </form>
       </CardContent>

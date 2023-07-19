@@ -19,8 +19,12 @@ export default function FriendsRace() {
         <div className="grid place-content-center text-center">
           <Users className="justify-self-center" size={40} />
           <div>
-            <h2 style={bruno_ace_sc.style} className="text-3xl font-bold">Race Friends</h2>
-            <p className="font-light">Create your own racetrack and play with friends</p>
+            <h2 style={bruno_ace_sc.style} className="text-3xl font-bold">
+              Race Friends
+            </h2>
+            <p className="font-light">
+              Create your own racetrack and play with friends
+            </p>
           </div>
         </div>
       </CardHeader>

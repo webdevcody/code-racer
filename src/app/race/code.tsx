@@ -30,14 +30,14 @@ export default function Code({
     const currentLine = code.split("\n")[currentLineNumber - 1];
     const lineLength = currentLine?.length;
     const progress = currentCharPosition / lineLength - 0.33;
-    console.table({
-      currentLineNumber,
-      currentCharPosition,
-      progress,
-      lineLength,
-      currentLine,
-      totalErrors,
-    });
+    // console.table({
+    //   currentLineNumber,
+    //   currentCharPosition,
+    //   progress,
+    //   lineLength,
+    //   currentLine,
+    //   totalErrors,
+    // });
 
     const pre = span?.parentNode as HTMLElement;
 

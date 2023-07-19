@@ -41,8 +41,8 @@ const LanguageDropDown = ({
         >
           {codeLanguage
             ? snippetLanguages.find(
-              (language) => language.value === codeLanguage,
-            )?.label
+                (language) => language.value === codeLanguage,
+              )?.label
             : "Select language..."}
           <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
         </Button>
