@@ -111,7 +111,6 @@ function EditMode({
     );
 
     try {
-      console.log(biography);
       await updateUserProfile({
         displayName: name,
         biography: biography as string,
