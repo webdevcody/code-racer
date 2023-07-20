@@ -5,6 +5,7 @@ import { getRandomSnippet } from "../loaders";
 import NoSnippet from "../../no-snippet";
 import Race from "../../race";
 import { getSnippetById } from "./loaders";
+import { CacheBuster } from "@/components/cache-buster";
 
 async function getSearchParamSnippet(snippetId: string | string[]) {
   if (typeof snippetId === "string") {
@@ -29,6 +30,7 @@ export default async function PracticeRacePage({
 
   return (
     <main>
+      <CacheBuster />
       {snippet && (
         <div className="pt-8">
           <Race snippet={snippet} user={user} />
