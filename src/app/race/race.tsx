@@ -203,6 +203,9 @@ export default function Race({
       "Home",
       "OS",
       "NumLock",
+      "Tab",
+      "ArrowRight",
+      "ArrowLeft",
     ];
 
     if (noopKeys.includes(e.key)) {
@@ -213,25 +216,18 @@ export default function Race({
           Backspace();
           break;
         case "Enter":
+          if (input !== code.slice(0, input.length)) {
+            return;
+          }
           Enter();
           if (!startTime) {
             setStartTime(new Date());
           }
           break;
-        case "ArrowLeft":
-          ArrowLeft(e);
-          break;
-        case "ArrowRight":
-          ArrowRight(e);
-          break;
-        case "Tab":
-          e.preventDefault();
-          Tab();
-          if (!startTime) {
-            setStartTime(new Date());
-          }
-          break;
         default:
+          if (input !== code.slice(0, input.length)) {
+            return;
+          }
           Key(e);
           if (!startTime) {
             setStartTime(new Date());
@@ -256,193 +252,6 @@ export default function Race({
     ]);
   }
 
-  function ArrowRight(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (textIndicatorPosition === input.length) return;
-
-    // if text is highlighted, set the text position
-    // after the last value of the array.
-    // e.g [3, 2, 1], will set the text position to 2 because it's the second value before the last index.
-    if (!e.shiftKey) {
-      setTextIndicatorPosition((prevTextIndicatorPosition) => {
-        if (typeof prevTextIndicatorPosition === "number") {
-          return prevTextIndicatorPosition + 1;
-        } else {
-          const secondToLastValue =
-            prevTextIndicatorPosition[prevTextIndicatorPosition?.length - 2] ??
-            prevTextIndicatorPosition;
-          return secondToLastValue;
-        }
-      });
-    }
-
-    if (e.ctrlKey && e.key === "ArrowRight") {
-      if (textIndicatorPosition === input.length) {
-        return;
-      }
-      let i = textIndicatorPosition as number;
-      while (i < input.length) {
-        if (typeof textIndicatorPosition === "number") {
-          if (code.charAt(i + 1) !== " " && code.charAt(i) === " ") {
-            setTextIndicatorPosition(i + 1);
-            break;
-          }
-        }
-        i++;
-      }
-    }
-
-    if (e.shiftKey && e.key === "ArrowRight") {
-      setTextIndicatorPosition((prevTextIndicatorPosition) => {
-        if (typeof prevTextIndicatorPosition === "number") {
-          const array = [prevTextIndicatorPosition + 1];
-          return array;
-        } else {
-          const lastValue = prevTextIndicatorPosition?.at(-1) as number;
-          // if the current state of the highlighted text is in descending order,
-          // then that means the array was formed with the left arrow key plus shift key.
-          if (lastValue < prevTextIndicatorPosition[0]) {
-            const array = [...prevTextIndicatorPosition];
-            array.pop();
-            return array;
-          } else if (lastValue >= prevTextIndicatorPosition[0]) {
-            if (lastValue === input.length) {
-              return prevTextIndicatorPosition;
-            } else {
-              const array = [...prevTextIndicatorPosition];
-              const lastValue = prevTextIndicatorPosition.at(-1) as number;
-              array.push(lastValue + 1);
-              return array;
-            }
-          } else {
-            return prevTextIndicatorPosition;
-          }
-        }
-      });
-    }
-  }
-
-  function ArrowLeft(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (!e.shiftKey) {
-      if (textIndicatorPosition !== 0) {
-        setTextIndicatorPosition((prevTextIndicatorPosition) => {
-          if (typeof prevTextIndicatorPosition === "number") {
-            return prevTextIndicatorPosition - 1;
-          } else {
-            const lastValue = prevTextIndicatorPosition.at(-1) as number;
-            return lastValue !== 0 ? lastValue - 1 : lastValue;
-          }
-        });
-      }
-    }
-
-    if (e.ctrlKey && e.key === "ArrowLeft") {
-      let n = 0;
-      let i = textIndicatorPosition as number;
-      while (i > 0) {
-        if (typeof textIndicatorPosition === "number") {
-          if (code.charAt(i - 1) !== " " && code.charAt(i) === " ") {
-            n = textIndicatorPosition - i;
-            setTextIndicatorPosition((prevTextIndicatorPosition) =>
-              typeof prevTextIndicatorPosition === "number"
-                ? prevTextIndicatorPosition - n - 1
-                : prevTextIndicatorPosition,
-            );
-            break;
-          }
-        }
-        i--;
-      }
-    }
-
-    if (e.shiftKey && e.key === "ArrowLeft") {
-      setTextIndicatorPosition((prevTextIndicatorPosition) => {
-        if (typeof prevTextIndicatorPosition === "number") {
-          // if it's still not an array, then convert it to an
-          // array when shift key is being held down. Since
-          // this function will be called when the ArrowLeft key is
-          // pressed/held down.
-          const array = [prevTextIndicatorPosition - 1];
-          return array;
-        } else {
-          const lastValue = prevTextIndicatorPosition?.at(-1) as number;
-          // if the current state of the highlighted text is in descending order,
-          // then that means the array was formed with the left arrow key plus shift key.
-          if (lastValue > prevTextIndicatorPosition[0]) {
-            const array = [...prevTextIndicatorPosition];
-            array.pop();
-            return array;
-          } else if (lastValue <= prevTextIndicatorPosition[0]) {
-            if (lastValue === input.length) {
-              return prevTextIndicatorPosition;
-            } else {
-              const array = [...prevTextIndicatorPosition];
-              const lastValue = prevTextIndicatorPosition?.at(-1) as number;
-              if (lastValue === 0) {
-                return array;
-              } else {
-                array.push(lastValue - 1);
-                return array;
-              }
-            }
-          } else {
-            return prevTextIndicatorPosition;
-          }
-        }
-      });
-    }
-  }
-
-  function Tab() {
-    // if the more than one text is highlighted, remove the highlighted text.
-    if (Array.isArray(textIndicatorPosition)) {
-      Backspace();
-    }
-
-    if (code.slice(input.length, input.length + 4).includes("\n")) {
-      let indentLength = 0;
-      let newChars = "";
-      while (
-        indentLength + input.length < code.length &&
-        code[indentLength + input.length] !== "\n"
-      ) {
-        indentLength++;
-      }
-      newChars += " ".repeat(indentLength) + "\n";
-      indentLength = 0;
-      while (
-        indentLength + newChars.length + input.length + 1 < code.length &&
-        code[indentLength + newChars.length + input.length] === " "
-      ) {
-        indentLength++;
-      }
-      if (indentLength >= 0) {
-        newChars += " ".repeat(indentLength);
-      }
-      setInput((prevInput) => prevInput + newChars);
-      setTextIndicatorPosition((prevTextIndicatorPosition) => {
-        if (typeof prevTextIndicatorPosition === "number") {
-          return prevTextIndicatorPosition + newChars.length;
-        } else {
-          return prevTextIndicatorPosition;
-        }
-      });
-    } else {
-      let tabSpace = "";
-      const counter = currentCharPosition;
-      const nextTabStop = 4 - (counter % 4);
-      tabSpace = " ".repeat(nextTabStop);
-
-      setInput((prevInput) => prevInput + tabSpace);
-      setTextIndicatorPosition((prevTextIndicatorPosition) => {
-        if (typeof prevTextIndicatorPosition === "number") {
-          return prevTextIndicatorPosition + tabSpace.length;
-        } else {
-          return prevTextIndicatorPosition;
-        }
-      });
-    }
-  }
-
   function Backspace() {
     if (textIndicatorPosition === input.length) {
       setInput((prevInput) => prevInput.slice(0, -1));
@@ -453,9 +262,6 @@ export default function Race({
       textIndicatorPosition < input.length
     ) {
       const inputArray = input.split("");
-      // Filter out the the character to be deleted based on where the current text
-      // indicator is located. Subtract the position by one since we are comparing them
-      // through an array's index.
       const newArray = inputArray.filter((char, index) => {
         if (index !== textIndicatorPosition - 1) return char;
       });
@@ -466,11 +272,8 @@ export default function Race({
       if (Array.isArray(textIndicatorPosition)) {
         const inputArray = input.split("");
 
-        // This is a double loop, so open for refactoring.
         const newArray = inputArray.filter((char, index) => {
           for (let i = 0; i < textIndicatorPosition.length; i++) {
-            // loop through each position stored in the textIndicatorPosition
-            // array, and check if it's equal to any of the index in the inputArray.
             if (textIndicatorPosition[i] === index) {
               return null;
             }
@@ -501,41 +304,36 @@ export default function Race({
   }
 
   function Enter() {
-    if (Array.isArray(textIndicatorPosition)) {
-      Backspace();
-    }
-
-    let indentLength = 0;
-    let newChars = "";
-    // indent until the first newline
-    while (
-      indentLength + input.length < code.length &&
-      code[indentLength + input.length] !== "\n"
+    const lines = code.split("\n");
+    if (
+      input === code.slice(0, input.length) &&
+      code.charAt(input.length) === "\n"
     ) {
-      indentLength++;
-    }
-    newChars += " ".repeat(indentLength) + "\n";
-    // indent all whitespace
-    indentLength = 0;
-    while (
-      indentLength + newChars.length + input.length + 1 < code.length &&
-      code[indentLength + newChars.length + input.length] === " "
-    ) {
-      indentLength++;
-    }
-    if (indentLength >= 0) {
-      newChars += " ".repeat(indentLength);
-    }
-
-    setInput((prevInput) => prevInput + newChars);
-
-    setTextIndicatorPosition((prevTextIndicatorPosition) => {
-      if (typeof prevTextIndicatorPosition === "number") {
-        return prevTextIndicatorPosition + newChars.length;
-      } else {
-        return prevTextIndicatorPosition;
+      let indent = "";
+      let i = 0;
+      while (lines[currentLineNumber].charAt(i) === " ") {
+        indent += " ";
+        i++;
       }
-    });
+
+      setInput(input + "\n" + indent);
+      setTextIndicatorPosition((prevTextIndicatorPosition) => {
+        if (typeof prevTextIndicatorPosition === "number") {
+          return prevTextIndicatorPosition + 1 + indent.length;
+        } else {
+          return prevTextIndicatorPosition;
+        }
+      });
+    } else {
+      setInput(input + "\n");
+      setTextIndicatorPosition((prevTextIndicatorPosition) => {
+        if (typeof prevTextIndicatorPosition === "number") {
+          return prevTextIndicatorPosition + 1;
+        } else {
+          return prevTextIndicatorPosition;
+        }
+      });
+    }
   }
 
   function Key(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -565,13 +363,6 @@ export default function Race({
 
       if (textIndicatorPosition < input.length) {
         const inputArray: string[] = [];
-
-        /**
-         * Loop through each of the input's total length, then
-         * if the current loop we are in is === to the textIndicator's position,
-         * insert the pressed key there and also the current character that
-         * was originally in that position.
-         */
         for (let i = 0; i < input.length; i++) {
           if (i === textIndicatorPosition) {
             inputArray.push(e.key);
@@ -639,7 +430,7 @@ export default function Race({
                 className={
                   currentLineNumber === line + 1
                     ? // && textIndicatorPosition
-                    "text-center bg-slate-600  border-r-2 border-yellow-500"
+                      "text-center bg-slate-600  border-r-2 border-yellow-500"
                     : " text-center border-r-2 border-yellow-500"
                 }
               >
