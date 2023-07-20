@@ -24,7 +24,7 @@ export function Footer() {
             >
               Cody
             </Link>
-            &nbsp; & his{" "}
+            &nbsp;& his{" "}
             <Link
               href={siteConfig.links.codyDiscord}
               target="_blank"
