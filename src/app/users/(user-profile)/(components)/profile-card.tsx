@@ -35,7 +35,7 @@ export default function ProfileCard({
     <section className="w-full md:w-[40%] lg:w-[30%] xl:w-[25%]">
       <div data-name="profile-card">
         <Link
-          href={`/view-photo?photoURL=${photoURL}`}
+          href={`/users/view-photo?photoURL=${photoURL}`}
           title="View Profile Picture"
           prefetch
           className="inline-block overflow-hidden rounded-full w-32 aspect-square md:w-[90%] mx-auto"

@@ -81,7 +81,7 @@ export const updateUserProfile = action(
       });
     }
 
-    revalidatePath(`/${user.id}`);
+    revalidatePath(`/users/${user.id}`);
   },
 );
 

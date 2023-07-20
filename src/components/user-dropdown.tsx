@@ -61,7 +61,7 @@ const AccountMenu = ({
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href={`/${user.id}`} className="flex items-center gap-1">
+          <Link href={`/users/${user.id}`} className="flex items-center gap-1">
             <Icons.profile className="w-4 h-4 mr-2" />
             <span>Profile</span>
           </Link>
