@@ -81,3 +81,20 @@ export async function getCurrentRaceResult(resultId: string) {
 
   return raceResults;
 }
+
+export async function getSnippetVote(snippetId: string) {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    redirect("/auth");
+  }
+
+  return await prisma.snippetVote.findUnique({
+    where: {
+      userId_snippetId: {
+        userId: user.id,
+        snippetId,
+      },
+    },
+  });
+}

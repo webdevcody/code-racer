@@ -1,5 +1,5 @@
 import Shell from "@/components/shell";
-import AccuracyChart from "../components/accuracyChart";
+import AccuracyChart from "../_components/accuracyChart";
 import { getRecentGames } from "../loaders";
 import { Heading } from "@/components/ui/heading";
 

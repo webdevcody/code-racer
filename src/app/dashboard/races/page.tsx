@@ -2,10 +2,10 @@ import { Heading } from "@/components/ui/heading";
 import Shell from "@/components/shell";
 import React from "react";
 import { Result } from "@prisma/client";
-import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { redirect } from "next/navigation";
-import { RecentRacesTable } from "../components/recentRaces";
+import { RecentRacesTable } from "../_components/recentRaces";
+import { getRaces, getTotalRaces, isFieldInResult } from "./loaders";
 
 export default async function RacesPage({
   searchParams,
@@ -35,28 +35,17 @@ export default async function RacesPage({
         ])
       : [];
 
-  const sortBy = column && column in prisma.result.fields ? column : "cpm";
+  const sortBy = column && isFieldInResult(column) ? column : "cpm";
 
-  const { races, totalRaces } = await prisma.$transaction(async (tx) => {
-    const races = await tx.result.findMany({
-      take,
+  const [races, totalRaces] = await Promise.all([
+    getRaces({
+      order,
       skip,
-      where: {
-        userId: user.id,
-      },
-      orderBy: {
-        [sortBy]: order,
-      },
-    });
-
-    const totalRaces = await tx.result.count({
-      where: {
-        userId: user.id,
-      },
-    });
-
-    return { races, totalRaces };
-  });
+      sortBy,
+      take,
+    }),
+    getTotalRaces(),
+  ]);
 
   const userPageCount = totalRaces === 0 ? 1 : Math.ceil(totalRaces / take);
   return (

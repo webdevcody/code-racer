@@ -1,5 +1,5 @@
 import Shell from "@/components/shell";
-import CpmChart from "../components/cpmChart";
+import CpmChart from "../_components/cpmChart";
 import { getRecentGames } from "../loaders";
 import { Heading } from "@/components/ui/heading";
 

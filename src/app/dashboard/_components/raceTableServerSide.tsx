@@ -1,15 +1,12 @@
 import React from "react";
 import { RecentRacesTable } from "./recentRaces";
 import { Result } from "@prisma/client";
-import { prisma } from "@/lib/prisma";
-import { User } from "next-auth";
+import { getRecentGames } from "./loaders";
 
 export default async function RaceTableServerSide({
-  user,
   searchParams,
   totalUserGames,
 }: {
-  user: User;
   searchParams: {
     [key: string]: string | string[] | undefined;
   };
@@ -32,15 +29,11 @@ export default async function RaceTableServerSide({
         ])
       : [];
 
-  const recentGames = await prisma.result.findMany({
-    take,
+  const recentGames = await getRecentGames({
+    column,
+    order,
     skip,
-    where: {
-      userId: user.id,
-    },
-    orderBy: {
-      [column ?? "createdAt"]: order,
-    },
+    take,
   });
 
   const userPageCount =
