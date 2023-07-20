@@ -40,7 +40,7 @@ export function UsersTable({
           const userInfo = cell.getValue() as User;
 
           return (
-            <Link href={`${userInfo.id}`}>
+            <Link href={`/users/${userInfo.id}`}>
               <div className="flex items-center gap-2">
                 <Image
                   className="rounded-full"
