@@ -20,6 +20,11 @@ import { User } from "next-auth";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ReplayCode } from "./replay-timestamps";
 import { getSnippetById } from "../race/(play)/practice/loaders";
+import {
+  deleteVoteAction,
+  downVoteSnippetAction,
+  upvoteSnippetAction,
+} from "./actions";
 
 async function AuthenticatedPage({
   resultId,

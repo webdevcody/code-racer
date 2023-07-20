@@ -1,64 +1,68 @@
 "use server";
 
-import { action } from "@/lib/actions";
+import { safeAction } from "@/lib/actions";
 import { UnauthorizedError } from "@/lib/exceptions/custom-hooks";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/session";
 
-export const acquitSnippetAction = action(
+export const acquitSnippetAction = safeAction(
   z.object({
     id: z.string(),
   }),
-  async ({ id }, { prisma, user }) => {
-    if (user?.role !== "ADMIN") {
-      throw new UnauthorizedError();
-    }
+)(async ({ id }) => {
+  const user = await getCurrentUser();
 
-    // TODO : Update the snippet
-    // Would be good if users
-    // will no longer be able
-    // to down/upvote it
+  if (user?.role !== "ADMIN") {
+    throw new UnauthorizedError();
+  }
 
-    await prisma.snippet.update({
-      data: {
-        rating: 0,
-        onReview: false,
-      },
-      where: {
-        id,
-      },
-    });
+  // TODO : Update the snippet
+  // Would be good if users
+  // will no longer be able
+  // to down/upvote it
 
-    revalidatePath("/review");
-  },
-);
+  await prisma.snippet.update({
+    data: {
+      rating: 0,
+      onReview: false,
+    },
+    where: {
+      id,
+    },
+  });
 
-export const deleteSnippetAction = action(
+  revalidatePath("/review");
+});
+
+export const deleteSnippetAction = safeAction(
   z.object({
     id: z.string(),
     path: z.string(),
   }),
-  async ({ id, path }, { prisma, user }) => {
-    const snippet = await prisma.snippet.findUnique({
-      where: {
-        id,
-      },
-    });
+)(async ({ id, path }) => {
+  const user = await getCurrentUser();
 
-    if (user?.role !== "ADMIN" && snippet?.userId !== user?.id) {
-      throw new UnauthorizedError();
-    }
+  const snippet = await prisma.snippet.findUnique({
+    where: {
+      id,
+    },
+  });
 
-    await prisma.snippet.delete({
-      where: {
-        id,
-      },
-    });
+  if (user?.role !== "ADMIN" && snippet?.userId !== user?.id) {
+    throw new UnauthorizedError();
+  }
 
-    // TODO:
-    // create a counter for user's bad
-    // snippets (that was deleted)
+  await prisma.snippet.delete({
+    where: {
+      id,
+    },
+  });
 
-    revalidatePath(path);
-  },
-);
+  // TODO:
+  // create a counter for user's bad
+  // snippets (that was deleted)
+
+  revalidatePath(path);
+});
