@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { signOut } from "next-auth/react";
 import { AlertTriangle } from "lucide-react";
 import { catchError } from "@/lib/utils";
-import { deleteUserAction } from "@/app/_actions/user";
+import { deleteUserAction } from "./actions";
 
 export default function DeleteConfirmation({
   setWillDelete,

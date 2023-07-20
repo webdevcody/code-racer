@@ -15,9 +15,9 @@ import { Badge } from "@/components/ui/badge";
 import { Icons } from "@/components/icons";
 import { User } from "next-auth";
 import { Checkbox } from "@/components/ui/checkbox";
-import { deleteSnippetAction } from "@/app/_actions/snippet";
 import { catchError } from "@/lib/utils";
 import { snippetLanguages } from "@/config/languages";
+import { deleteSnippetAction } from "@/app/review/actions";
 
 export function SnippetsTable({
   data,

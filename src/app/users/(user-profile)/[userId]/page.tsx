@@ -6,13 +6,12 @@ import ProfileCard from "../(components)/profile-card";
 
 import { achievements } from "@/config/achievements";
 import { Heading } from "@/components/ui/heading";
-import { findUserAchievements } from "@/app/_actions/achievements";
-import { findUser } from "@/app/_actions/user";
 import { notFound } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
 // import { LoginButton } from "@/components/ui/buttons";
 // import { Button } from "@/components/ui/button";
 import NotCurrentUserButtons from "../(components)/not-current-user-buttons";
+import { findUser, findUserAchievements } from "./actions";
 
 export const metadata = {
   title: "Profile Page",

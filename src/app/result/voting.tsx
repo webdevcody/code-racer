@@ -9,7 +9,7 @@ import {
   deleteVoteAction,
   downVoteSnippetAction,
   upvoteSnippetAction,
-} from "../_actions/snippet";
+} from "./actions";
 import { toast } from "@/components/ui/use-toast";
 import { catchError, cn } from "@/lib/utils";
 

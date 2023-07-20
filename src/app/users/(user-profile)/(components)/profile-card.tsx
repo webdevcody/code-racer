@@ -11,8 +11,8 @@ import { Label } from "@radix-ui/react-label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
-import { updateUserProfile } from "@/app/_actions/user";
 import { catchError } from "@/lib/utils";
+import { updateUserProfile } from "./actions";
 
 export default function ProfileCard({
   photoURL,

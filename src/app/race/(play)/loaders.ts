@@ -1,8 +1,5 @@
 "use server";
 import { prisma } from "@/lib/prisma";
-import { action } from "@/lib/actions";
-import { z } from "zod";
-import { downVoteSnippetAction } from "@/app/_actions/snippet";
 
 export async function getRandomSnippet(input: {
   language: string;
