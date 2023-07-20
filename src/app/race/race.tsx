@@ -170,10 +170,6 @@ export default function Race({
   }
 
   function handleKeyboardDownEvent(e: React.KeyboardEvent<HTMLInputElement>) {
-    // if (input === code.slice(0, input.length) && input.slice(-1) === "\n") {
-    //   return;
-    // }
-
     // Unfocus Shift + Tab
     if (e.shiftKey && e.key === "Tab") {
       e.currentTarget.blur();
@@ -309,26 +305,16 @@ export default function Race({
 
   function Enter() {
     const lines = code.split("\n");
-    console.log(input);
-    console.log(code.slice(0, input.length));
-
-    console.log(lines);
-    console.log(currentLineNumber);
-    const s = JSON.stringify(input);
     if (
       input === code.slice(0, input.length) &&
       code.charAt(input.length) === "\n"
     ) {
-      console.log("hit");
-
       let indent = "";
       let i = 0;
       while (lines[currentLineNumber].charAt(i) === " ") {
         indent += " ";
         i++;
       }
-
-      console.log(indent);
 
       setInput(input + "\n" + indent);
       setTextIndicatorPosition((prevTextIndicatorPosition) => {
@@ -377,13 +363,6 @@ export default function Race({
 
       if (textIndicatorPosition < input.length) {
         const inputArray: string[] = [];
-
-        /**
-         * Loop through each of the input's total length, then
-         * if the current loop we are in is === to the textIndicator's position,
-         * insert the pressed key there and also the current character that
-         * was originally in that position.
-         */
         for (let i = 0; i < input.length; i++) {
           if (i === textIndicatorPosition) {
             inputArray.push(e.key);
