@@ -18,21 +18,7 @@ import RaceDetails from "./_components/race-details";
 import RaceTimer from "./race-timer";
 import { ReportButton } from "./_components/report-button";
 import { saveUserResultAction } from "./actions";
-
-function calculateCPM(
-  numberOfCharacters: number,
-  secondsTaken: number,
-): number {
-  const minutesTaken = secondsTaken / 60;
-  return Math.round(numberOfCharacters / minutesTaken);
-}
-
-function calculateAccuracy(
-  numberOfCharacters: number,
-  errorsCount: number,
-): number {
-  return (1 - errorsCount / numberOfCharacters) * 100;
-}
+import { calculateAccuracy, calculateCPM } from "./_helpers/race-helpers";
 
 interface raceTimeStampProps {
   char: string;
@@ -641,6 +627,7 @@ export default function Race({
               snippetId={snippet.id}
               // userId={user.id}
               language={snippet.language}
+              handleRestart={handleRestart}
             />
           )}
         </div>
@@ -652,7 +639,7 @@ export default function Race({
                 className={
                   currentLineNumber === line + 1
                     ? // && textIndicatorPosition
-                      "text-center bg-slate-600  border-r-2 border-yellow-500"
+                    "text-center bg-slate-600  border-r-2 border-yellow-500"
                     : " text-center border-r-2 border-yellow-500"
                 }
               >
@@ -680,7 +667,11 @@ export default function Race({
             onPaste={(e) => e.preventDefault()}
           />
         </div>
-        {verifyErrors(errors)}
+        {errors.length > 0 ? (
+          <span className="text-red-500">
+            You must fix all errors before you can finish the race!
+          </span>
+        ) : null}
         <div className="flex justify-between items-center">
           {showRaceTimer && (
             <>
@@ -704,14 +695,4 @@ export default function Race({
       <RaceDetails submittingResults={submittingResults} />
     </>
   );
-}
-
-function verifyErrors(errors: number[]) {
-  if (errors.length > 0) {
-    return (
-      <span className="text-red-500">
-        You must fix all errors before you can finish the race!
-      </span>
-    );
-  }
 }
