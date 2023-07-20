@@ -8,7 +8,7 @@ export default function RacePage() {
     <main className="pt-12">
       <Heading
         title="Choose a Race Mode"
-        description="Practice your typing skills by yourself, with friends, or with other soy devs online"
+        description="Practice your typing skills by yourself, with friends, or with other devs online"
         centered
       />
       <div className="grid grid-cols-1 gap-8 my-10 lg:grid-cols-3">
