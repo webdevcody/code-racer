@@ -1,5 +1,5 @@
 import { GitHubUser } from "../contributor";
-import { siteConfig } from "@/config/site";
+import { getGitHubAuthorizationToken, siteConfig } from "@/config/site";
 
 export interface GitHubCommit {
   commit: {

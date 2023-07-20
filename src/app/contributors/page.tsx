@@ -5,6 +5,7 @@ import { GitHubUser, GitHubUserCommitActivity } from "./contributor";
 import AdditionsDeletions from "./_components/additions-deletions";
 import ProportionBarChart from "./_components/proportion-bar-chart";
 import Time from "@/components/ui/time";
+import CountingAnimation from "./_components/counting-animation";
 
 type GitHubRepoCommitActivity = number[];
 
@@ -53,7 +54,12 @@ async function getContributorsActivity(
 }
 
 async function getContributors(): Promise<GitHubUser[] | []> {
-  const url = siteConfig.api.github.githubContributors;
+  const searchParams = new URLSearchParams({
+    per_page: "100", // per GitHub api docs max is 100
+    page: "1",
+  });
+  const url =
+    siteConfig.api.github.githubContributors + "?" + searchParams.toString();
 
   try {
     const response = await fetch(url, {
@@ -116,21 +122,34 @@ export default async function ContributorsPage() {
       />
       <br />
       <div className="flex flex-col items-center justify-start gap-3">
-        <div className="w-[80vw] md:w-[70vw] lg:w-[50vw] xl:w-[600px] flex flex-col gap-2 justify-start items-center">
-          <p className="text-2xl font-bold text-center text-secondary-foreground">
-            Since <Time date={sinceDate} />
-          </p>
-          <AdditionsDeletions
-            verbose
-            additions={additions}
-            deletions={deletions}
-            className="w-full"
-          />
-          <ProportionBarChart
-            a={additions}
-            b={deletions}
-            className="w-full h-4"
-          />
+        <div className="w-[80vw] md:w-[70vw] lg:w-[50vw] xl:w-[600px] flex flex-col gap-4 justify-start items-center">
+          <div className="flex flex-col items-center justify- gap-3">
+            <CountingAnimation
+              targetNumber={contributors.length}
+              startingNumber={0}
+              animationDuration={4000}
+              className="text-7xl text-primary font-extrabold"
+            />
+            <p className="text-2xl font-bold text-secondary-foreground">
+              Contributors and counting!
+            </p>
+          </div>
+          <div className="flex flex-col gap-2 w-full">
+            <p className="text-xl font-semibold text-center text-secondary-foreground">
+              Since <Time date={sinceDate} />
+            </p>
+            <AdditionsDeletions
+              verbose
+              additions={additions}
+              deletions={deletions}
+              className="w-full"
+            />
+            <ProportionBarChart
+              a={additions}
+              b={deletions}
+              className="w-full h-4"
+            />
+          </div>
         </div>
       </div>
       <ul className="grid gap-8 mt-8 list-none md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
