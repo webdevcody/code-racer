@@ -12,7 +12,7 @@ export default function RacePage() {
         centered
       />
       <div className="grid grid-cols-1 gap-8 my-10 lg:grid-cols-3">
-        <PracticeRace /> {/* <MultiplayerRace /> <FriendsRace /> */}
+        <PracticeRace />
         <MultiplayerRace />
         <FriendsRace />
       </div>
