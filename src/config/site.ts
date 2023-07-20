@@ -51,3 +51,7 @@ export const siteConfig = {
     },
   },
 };
+
+export function getGitHubAuthorizationToken() {
+  return siteConfig.api.github.accessToken ? `Bearer ${siteConfig.api.github.accessToken}` : "";
+}
