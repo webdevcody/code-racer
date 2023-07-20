@@ -22,6 +22,9 @@ async function getContributorCommitList(
     author: contributor.login,
     per_page: take.toString(),
   });
+  const headers = {
+    Authorization: getGitHubAuthorizationToken(), // Get access token if have any
+  } as HeadersInit;
   const url =
     siteConfig.api.github.githubListCommit + "?" + searchParams.toString();
   try {
@@ -29,6 +32,7 @@ async function getContributorCommitList(
       next: {
         revalidate: siteConfig.api.github.cacheRevalidationInterval,
       },
+      headers,
     });
     if (!response.ok) {
       throw new Error("Fetch failed" + url);

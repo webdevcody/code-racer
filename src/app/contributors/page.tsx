@@ -103,7 +103,27 @@ async function getRepoWeeklyCommitActivity(): Promise<
   }
 }
 
-export default async function ContributorsPage() {
+export default async function ContributorsPage({
+  searchParams,
+}: {
+  searchParams: {
+    page: string;
+    per_page: string;
+  };
+}) {
+  const { page, per_page } = searchParams;
+  const parsed_page = page ? parseInt(page) : 1;
+  const parsed_per_page = per_page
+    ? parseInt(per_page) >= 30
+      ? 30
+      : parseInt(per_page)
+    : 30; // Limit to only 30 per page to avoid hitting rate limit
+  const sliceStartIndex = (parsed_page - 1) * parsed_per_page;
+  const sliceEndIndex = sliceStartIndex + parsed_per_page;
+
+  console.log(sliceStartIndex, "sliceStartIndex");
+  console.log(sliceEndIndex, "sliceEndIndex");
+
   const contributors = await getContributors();
   const contributorCommitActivities = await getContributorsActivity(
     contributors,
@@ -153,17 +173,19 @@ export default async function ContributorsPage() {
         </div>
       </div>
       <ul className="grid gap-8 mt-8 list-none md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {contributors.map((contributor) => (
-          <Contributor
-            key={contributor.id}
-            contributor={contributor}
-            contributorsActivity={
-              contributorCommitActivities.find(
-                (e) => e.login === contributor.login,
-              ) ?? { additions: 0, deletions: 0, login: contributor.login }
-            }
-          />
-        ))}
+        {contributors
+          .slice(sliceStartIndex, sliceEndIndex)
+          .map((contributor) => (
+            <Contributor
+              key={contributor.id}
+              contributor={contributor}
+              contributorsActivity={
+                contributorCommitActivities.find(
+                  (e) => e.login === contributor.login,
+                ) ?? { additions: 0, deletions: 0, login: contributor.login }
+              }
+            />
+          ))}
       </ul>
     </div>
   );
