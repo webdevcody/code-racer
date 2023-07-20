@@ -12,9 +12,11 @@ import { downVoteSnippetAction } from "@/app/result/actions";
 export function ReportButton({
   snippetId,
   language,
+  handleRestart
 }: {
   snippetId: string;
   language: string;
+  handleRestart: () => void;
 }) {
   const [prevReportedSnippets, setPrevReportedSnippets] = React.useState<
     Snippet["id"][]
@@ -40,9 +42,9 @@ export function ReportButton({
 
           if (!snippet) {
             return void toast({
-              title: "Oops, it's the last snippet that you didn't report",
+              title: "Oops, this is the only unreported snippet left",
               description:
-                "You can try creating new one or choosing different language",
+                "Please create a new snippet or choose a different language.",
               variant: "destructive",
             });
           }
@@ -53,6 +55,7 @@ export function ReportButton({
             )}&snippetId=${encodeURIComponent(snippet.id)}`,
           );
           router.refresh();
+          handleRestart();
         });
       }}
     >
