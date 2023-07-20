@@ -670,7 +670,7 @@ export default function Race({
             ref={inputElement}
             onKeyDown={handleKeyboardDownEvent}
             disabled={isRaceFinished}
-            className="absolute inset-y-0 left-0 w-full h-full p-8 rounded-md -z-40 focus:outline outline-blue-500"
+            className="absolute inset-y-0 left-0 w-full h-full p-8 rounded-md -z-40 focus:outline outline-blue-500 cursor-none"
             onPaste={(e) => e.preventDefault()}
           />
         </div>
