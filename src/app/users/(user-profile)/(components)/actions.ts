@@ -26,12 +26,16 @@ export const updateUserProfile = action(
   async (input, { user, prisma }) => {
     if (!user) throw new UnauthorizedError();
 
-    if (input.biography) {
-      const bioSchema = z
-        .string()
-        .max(128)
-        .refine((bio) => bio.trim());
+    if (input.biography || input.biography === "") {
+      const bioSchema =
+        input.biography.length > 128
+          ? z
+              .string()
+              .max(128)
+              .refine((bio) => bio.trim())
+          : z.string();
       const parsedBio = await bioSchema.parseAsync(input.biography);
+
       await prisma.user.update({
         where: {
           id: user.id,
