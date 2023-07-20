@@ -6,6 +6,8 @@ import AdditionsDeletions from "./_components/additions-deletions";
 import ProportionBarChart from "./_components/proportion-bar-chart";
 import Time from "@/components/ui/time";
 import CountingAnimation from "./_components/counting-animation";
+import PaginationBar from "./_components/pagination-bar";
+import { redirect } from "next/navigation";
 
 type GitHubRepoCommitActivity = number[];
 
@@ -112,6 +114,9 @@ export default async function ContributorsPage({
   };
 }) {
   const { page, per_page } = searchParams;
+  if (!page || !per_page) {
+    redirect("/contributors?page=1&per_page=30");
+  }
   const parsed_page = page ? parseInt(page) : 1;
   const parsed_per_page = per_page
     ? parseInt(per_page) >= 30
@@ -170,6 +175,15 @@ export default async function ContributorsPage({
               className="w-full h-4"
             />
           </div>
+          <PaginationBar
+            className="mt-3"
+            nextURL={`/contributors?page=${
+              parsed_page + 1
+            }&per_page=${parsed_per_page}`}
+            prevURL={`/contributors?page=${
+              parsed_page - 1 < 1 ? 1 : parsed_page - 1
+            }&per_page=${parsed_per_page}`}
+          />
         </div>
       </div>
       <ul className="grid gap-8 mt-8 list-none md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
