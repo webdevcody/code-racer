@@ -16,10 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import {
-  addSnippetAction,
-  addSnippetForReviewAction,
-} from "../../_actions/snippet";
+import { addSnippetAction, addSnippetForReviewAction } from "./actions";
 import LanguageDropDown from "./language-dropdown";
 import { catchError } from "@/lib/utils";
 

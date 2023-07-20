@@ -1,14 +1,9 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { action } from "@/lib/actions";
 import { Prisma } from "@prisma/client";
 import { UnauthorizedError } from "@/lib/exceptions/custom-hooks";
-
-// when snippets rating hits this number
-// it will no longer be on the race
-// and will be reviewed by admin on the review page
 
 export const saveUserResultAction = action(
   z.object({
@@ -58,3 +53,11 @@ export const saveUserResultAction = action(
     });
   },
 );
+
+/**
+ * This should create a private room for the user
+ * Not implemented. Need to decide on the multiplayer architecture
+ **/
+export const createPrivateRaceRoom = action(z.object({}), async () => {
+  throw new Error("Not implemented");
+});

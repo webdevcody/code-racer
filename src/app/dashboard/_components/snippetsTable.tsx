@@ -13,20 +13,17 @@ import {
 } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { Icons } from "@/components/icons";
-import { User } from "next-auth";
 import { Checkbox } from "@/components/ui/checkbox";
-import { deleteSnippetAction } from "@/app/_actions/snippet";
 import { catchError } from "@/lib/utils";
 import { snippetLanguages } from "@/config/languages";
+import { deleteSnippetAction } from "@/app/review/actions";
 
 export function SnippetsTable({
   data,
   pageCount,
-  userId,
 }: {
   data: Snippet[];
   pageCount: number;
-  userId: User["id"];
 }) {
   const [selectedRowIds, setSelectedRowIds] = React.useState<string[]>([]);
 
@@ -117,15 +114,6 @@ export function SnippetsTable({
           return filterValue.includes(value);
         },
       },
-      // {
-      //   accessorKey: "createdAt",
-      //   header: "Date",
-      //   cell: ({ cell }) => {
-      //     const date = cell.getValue() as Date;
-
-      //     return <span> {formatDate(date)}</span>;
-      //   },
-      // },
     ],
     [],
   );

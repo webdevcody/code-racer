@@ -1,11 +1,11 @@
 import { Heading } from "@/components/ui/heading";
 import Shell from "@/components/shell";
 import React from "react";
-import { Result, Snippet } from "@prisma/client";
-import { prisma } from "@/lib/prisma";
+import { Snippet } from "@prisma/client";
 import { getCurrentUser } from "@/lib/session";
 import { redirect } from "next/navigation";
-import { SnippetsTable } from "../components/snippetsTable";
+import { SnippetsTable } from "../_components/snippetsTable";
+import { getSnippets, getTotalSnippets, isFieldInSnippet } from "./loaders";
 
 export default async function SnippetsPage({
   searchParams,
@@ -35,39 +35,24 @@ export default async function SnippetsPage({
         ])
       : [];
 
-  const sortBy = column && column in prisma.snippet.fields ? column : "rating";
+  const sortBy = column && isFieldInSnippet(column) ? column : "rating";
 
-  const { snippets, totalSnippets } = await prisma.$transaction(async (tx) => {
-    const snippets = await tx.snippet.findMany({
-      take,
+  const [snippets, totalSnippets] = await Promise.all([
+    getSnippets({
+      order,
       skip,
-      where: {
-        userId: user.id,
-      },
-      orderBy: {
-        [sortBy]: order,
-      },
-    });
-
-    const totalSnippets = await tx.snippet.count({
-      where: {
-        userId: user.id,
-      },
-    });
-
-    return { snippets, totalSnippets };
-  });
+      sortBy,
+      take,
+    }),
+    getTotalSnippets(),
+  ]);
 
   const userPageCount =
     totalSnippets === 0 ? 1 : Math.ceil(totalSnippets / take);
   return (
     <Shell layout="dashboard">
       <Heading title="Snippets" description="Manage your snippets." />
-      <SnippetsTable
-        data={snippets}
-        pageCount={userPageCount}
-        userId={user.id}
-      />
+      <SnippetsTable data={snippets} pageCount={userPageCount} />
     </Shell>
   );
 }

@@ -2,14 +2,12 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Users } from "lucide-react";
-import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useToast } from "@/components/ui/use-toast";
-import { createPrivateRaceRoom } from "@/app/_actions/room";
 import { bruno_ace_sc } from "@/lib/fonts";
+import { createPrivateRaceRoom } from "../actions";
 
 export default function FriendsRace() {
-  const [selectedLanguage, setSelectedLanguage] = useState("");
   const { data: session } = useSession();
   const { toast } = useToast();
 

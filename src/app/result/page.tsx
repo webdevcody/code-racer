@@ -1,11 +1,10 @@
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Chart, { CurrentChart } from "./chart";
 import { Icons } from "@/components/icons";
 import Link from "next/link";
 import { FirstRaceBadge } from "./first-race-badge";
 import { getCurrentUser } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
 import { Voting } from "./voting";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -13,12 +12,14 @@ import {
   getUserResultsForSnippet,
   getCurrentRaceResult,
   ParsedRacesResult,
+  getSnippetVote,
 } from "./loaders";
 import { Heading } from "@/components/ui/heading";
 import { cn } from "@/lib/utils";
 import { User } from "next-auth";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ReplayCode } from "./replay-timestamps";
+import { getSnippetById } from "../race/(play)/practice/loaders";
 
 async function AuthenticatedPage({
   resultId,
@@ -45,19 +46,9 @@ async function AuthenticatedPage({
     throw new Error("no result found with this id");
   }
 
-  const usersVote = await prisma.snippetVote.findUnique({
-    where: {
-      userId_snippetId: {
-        userId: user.id,
-        snippetId: currentRaceResult.snippetId,
-      },
-    },
-  });
-  const currentSnippet = await prisma.snippet.findUnique({
-    where: {
-      id: currentRaceResult.snippetId,
-    },
-  });
+  const usersVote = await getSnippetVote(currentRaceResult.snippetId);
+  const currentSnippet = await getSnippetById(currentRaceResult.snippetId);
+
   const firstRaceBadge = await getFirstRaceBadge();
   let raceResults: ParsedRacesResult[] = [];
   let cardObjects = [] as { title: string; value: string | undefined }[];

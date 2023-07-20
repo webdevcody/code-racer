@@ -11,19 +11,23 @@ import { Label } from "@radix-ui/react-label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
-import { updateUserProfile } from "@/app/_actions/user";
 import { catchError } from "@/lib/utils";
+import { updateUserProfile } from "./actions";
 
 export default function ProfileCard({
   photoURL,
   displayName,
   bio,
   totalPoints,
+  followers,
+  following,
 }: {
   photoURL: string;
   displayName: string;
   bio?: string | null;
   totalPoints: number;
+  followers: string[];
+  following: string[];
 }) {
   const [mode, setMode] = React.useState<"view" | "edit">("view");
 
@@ -31,7 +35,7 @@ export default function ProfileCard({
     <section className="w-full md:w-[40%] lg:w-[30%] xl:w-[25%]">
       <div data-name="profile-card">
         <Link
-          href={`/view-photo?photoURL=${photoURL}`}
+          href={`/users/view-photo?photoURL=${photoURL}`}
           title="View Profile Picture"
           prefetch
           className="inline-block overflow-hidden rounded-full w-32 aspect-square md:w-[90%] mx-auto"
@@ -60,6 +64,10 @@ export default function ProfileCard({
             changeMode={() => setMode("view")}
           />
         )}
+        <section className="flex flex-wrap items-center gap-2 mt-4 text-xs text-monochrome/50">
+          <div>Followers: {followers.length}</div>
+          <div>Following: {following.length}</div>
+        </section>
       </div>
       <hr className="bg-primary py-[0.1rem] rounded-full my-4" />
       <div>Total Points: {totalPoints}</div>
@@ -192,7 +200,7 @@ function ViewMode({
 }) {
   return (
     <>
-      <h2 className="text-secondary text-2xl mt-2 break-words w-full max-w-sm md:max-w-none">
+      <h2 className="text-monochrome/60 text-2xl mt-2 break-words w-full max-w-sm md:max-w-none">
         {displayName}
       </h2>
       {bio && <p className="md:max-w-xs break-words mt-4">{bio}</p>}

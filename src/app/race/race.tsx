@@ -14,10 +14,10 @@ import {
 import { Heading } from "@/components/ui/heading";
 import RaceTracker from "./race-tracker";
 import Code from "./code";
-import { saveUserResultAction } from "../_actions/result";
 import RaceDetails from "./_components/race-details";
 import RaceTimer from "./race-timer";
 import { ReportButton } from "./_components/report-button";
+import { saveUserResultAction } from "./actions";
 
 function calculateCPM(
   numberOfCharacters: number,
@@ -391,8 +391,12 @@ export default function Race({
             } else {
               const array = [...prevTextIndicatorPosition];
               const lastValue = prevTextIndicatorPosition?.at(-1) as number;
-              array.push(lastValue - 1);
-              return array;
+              if (lastValue === 0) {
+                return array;
+              } else {
+                array.push(lastValue - 1);
+                return array;
+              }
             }
           } else {
             return prevTextIndicatorPosition;
@@ -496,7 +500,11 @@ export default function Race({
           return prevTextIndicatorPosition - 1;
         } else {
           const lastValue = prevTextIndicatorPosition.at(-1) as number;
-          return lastValue;
+          if (lastValue > prevTextIndicatorPosition[0]) {
+            return prevTextIndicatorPosition[0];
+          } else {
+            return lastValue;
+          }
         }
       });
     }
@@ -610,8 +618,6 @@ export default function Race({
     setTextIndicatorPosition(0);
     setTotalErrors(0);
   }
-
-  console.log("text-position", textIndicatorPosition, "input", input);
 
   return (
     <>

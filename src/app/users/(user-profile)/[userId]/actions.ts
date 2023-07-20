@@ -20,3 +20,16 @@ export const findUserAchievements = action(
     return achievements;
   },
 );
+
+export const findUser = action(
+  z.object({ userId: z.string().optional() }),
+  async (params, { user, prisma }) => {
+    const foundUser = await prisma.user.findUnique({
+      where: {
+        id: params.userId ? params.userId : user?.id,
+      },
+    });
+
+    return foundUser;
+  },
+);
