@@ -43,3 +43,6 @@ prisma/dev.db-journal
 
 #local notes & todos - for personal track only
 Note.md
+
+# VS Code
+.vscode

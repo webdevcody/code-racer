@@ -18,7 +18,7 @@ export default function RaceTracker({
       <ProgressBar>
         <ProgressIndicator progress={progress}>
           <Image
-            className="absolute left-0 top-[-50%] border-2 border-monochrome rounded-full transition-all duration-700 ease-[cubic-bezier(0.65, 0, 0.35, 1)]"
+            className="absolute left-0 top-[-50%] border-2 border-monochrome rounded-full transition-all duration-300 ease-in-out"
             src={user?.image ?? "/placeholder-image.jpg"}
             alt={`${user?.name} avatar` ?? "user avatar"}
             height={30}

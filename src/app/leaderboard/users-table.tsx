@@ -120,10 +120,10 @@ export function UsersTable({
       columns={columns}
       data={data}
       pageCount={pageCount}
-      // defaultSorting={{
-      //   prop: "averageCpm",
-      //   val: "asc",
-      // }}
+      defaultSorting={{
+        prop: "averageCpm",
+        val: "desc",
+      }}
     />
   );
 }

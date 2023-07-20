@@ -1,19 +1,15 @@
-import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { notFound } from "next/navigation";
 import ReviewButtons from "./review-buttons";
 import { Heading } from "@/components/ui/heading";
+import { getSnippetsInReview } from "./loaders";
 
 export default async function ReviewPage() {
   const user = await getCurrentUser();
 
   if (user?.role !== "ADMIN") notFound();
 
-  const downvotedSnippets = await prisma.snippet.findMany({
-    where: {
-      onReview: true,
-    },
-  });
+  const downvotedSnippets = await getSnippetsInReview();
 
   return (
     <div className="container flex flex-col items-center p-4 space-y-4">

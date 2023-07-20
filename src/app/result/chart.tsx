@@ -32,6 +32,14 @@ interface raceTimeStampProps {
   time: number;
 }
 
+interface CurrentChartProps {
+  code?: string;
+  raceTimeStamp: raceTimeStampProps[];
+  setRaceTimeStamp: React.Dispatch<React.SetStateAction<raceTimeStampProps[]>>;
+  activeCharIndex?: number;
+  setActiveCharIndex: React.Dispatch<React.SetStateAction<number | undefined>>;
+}
+
 export default function Chart({
   raceResult,
 }: {
@@ -98,15 +106,23 @@ export default function Chart({
   );
 }
 
-function renderTooltip(
+function RenderTooltip(
   props: TooltipProps<ValueType, NameType>,
   setActiveCharIndex: React.Dispatch<React.SetStateAction<number | undefined>>,
 ) {
   const { active, payload } = props;
 
+  useEffect(() => {
+    if (active && payload && payload.length) {
+      const data = payload[0] && payload[0].payload;
+      setActiveCharIndex(data.time);
+    } else {
+      setActiveCharIndex(undefined);
+    }
+  }, [active, payload, setActiveCharIndex]);
+
   if (active && payload && payload.length) {
     const data = payload[0] && payload[0].payload;
-    setActiveCharIndex(data.time);
 
     return (
       <div className="p-5 m-0 border-2 rounded-lg bg-accent border-primary text-primary">
@@ -119,11 +135,45 @@ function renderTooltip(
       </div>
     );
   }
+
+  return null;
 }
 
-export function CurrentChart() {
-  const [raceTimeStamp, setRaceTimeStamp] = useState<raceTimeStampProps[]>([]);
-  const [activeCharIndex, setActiveCharIndex] = useState<number>();
+
+const RenderCode = ({ code, activeCharIndex, raceTimeStamp }: { code?: string, activeCharIndex?: number, raceTimeStamp: raceTimeStampProps[] }) => {
+  let removeExtras = 0;
+  return (
+    <code className="flex-wrap text-2xl hidden sm:block whitespace-pre-wrap">
+      {code &&
+        code.split("").map((item, index) => {
+          if (item !== " " && item !== "\n" && item !== "↵") {
+            const raceChar = raceTimeStamp[index - removeExtras];
+            return (
+              <span
+                key={index}
+                className={`text-2xl ${activeCharIndex === raceChar?.time
+                  ? "bg-primary text-secondary"
+                  : ""
+                  }`}
+              >
+                {item}
+              </span>
+            );
+          } else {
+            removeExtras++;
+            return (
+              <span key={index} className="text-2xl">
+                {item}
+              </span>
+            );
+          }
+        })}
+    </code>
+  );
+};
+
+function CurrentChart(props: CurrentChartProps) {
+  const { code, raceTimeStamp, setRaceTimeStamp, activeCharIndex, setActiveCharIndex } = props;
 
   useEffect(() => {
     const getData = () => {
@@ -132,14 +182,11 @@ export function CurrentChart() {
 
     const data = getData();
     return setRaceTimeStamp(data);
-  }, []);
+  }, [setRaceTimeStamp]);
 
   return (
-    <div
-      style={{ width: "100%", height: 300 }}
-      className="mx-auto pb-10 flex flex-col"
-    >
-      <ResponsiveContainer>
+    <div style={{ width: "100%" }} className="mx-auto pb-3 flex flex-col">
+      <ResponsiveContainer height={300}>
         <LineChart data={raceTimeStamp} margin={{ right: 25, top: 10 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="char" tick={{ fontSize: 0 }} />
@@ -160,29 +207,26 @@ export function CurrentChart() {
             activeDot={{ r: 8 }}
           />
           <Tooltip
-            content={(props) => renderTooltip(props, setActiveCharIndex)}
+            content={(props) => RenderTooltip(props, setActiveCharIndex)}
           />
         </LineChart>
       </ResponsiveContainer>
       <div className="px-2 bg-accent text-primary">
-        <code className="flex-wrap hidden sm:inline">
-          {raceTimeStamp.length > 0 &&
-            raceTimeStamp.map((item, index) => {
-              return (
-                <span
-                  key={index}
-                  className={`text-2xl ${
-                    activeCharIndex === item.time
-                      ? "bg-primary text-secondary"
-                      : ""
-                  }`}
-                >
-                  {item.char}
-                </span>
-              );
-            })}
-        </code>
+        <RenderCode code={code} activeCharIndex={activeCharIndex} raceTimeStamp={raceTimeStamp} />
       </div>
     </div>
   );
+}
+
+export function ParentCurrentChart({ code }: { code?: string }) {
+  const [raceTimeStamp, setRaceTimeStamp] = useState<raceTimeStampProps[]>([]);
+  const [activeCharIndex, setActiveCharIndex] = useState<number>();
+
+  return <CurrentChart
+    code={code}
+    raceTimeStamp={raceTimeStamp}
+    setRaceTimeStamp={setRaceTimeStamp}
+    activeCharIndex={activeCharIndex}
+    setActiveCharIndex={setActiveCharIndex}
+  />
 }

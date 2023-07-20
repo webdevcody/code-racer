@@ -1,21 +1,14 @@
 import { getCurrentUser } from "@/lib/session";
 
-import { prisma } from "@/lib/prisma";
 import { getRandomSnippet } from "../loaders";
 
 import NoSnippet from "../../no-snippet";
 import Race from "../../race";
-import { ReportButton } from "../../_components/report-button";
+import { getSnippetById } from "./loaders";
 
 async function getSearchParamSnippet(snippetId: string | string[]) {
   if (typeof snippetId === "string") {
-    const snippet = await prisma.snippet.findFirst({
-      where: {
-        id: snippetId,
-      },
-    });
-
-    return snippet;
+    return await getSnippetById(snippetId);
   }
   return null;
 }

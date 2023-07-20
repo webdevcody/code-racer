@@ -30,6 +30,8 @@ model User {
   sessions      Session[]
   results       Result[]
   achievements  Achievement[]
+  // followers     String[]
+  // following     String[]
 
   averageAccuracy Decimal @default(0) @db.Decimal(5, 2)
   averageCpm      Decimal @default(0) @db.Decimal(6, 2)

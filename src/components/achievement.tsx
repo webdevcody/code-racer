@@ -10,7 +10,7 @@ const AchievementCard = ({
   };
 }) => {
   return (
-    <li className="flex items-center justify-between bg-accent px-6 py-3 rounded-sm">
+    <li className="flex items-center justify-between bg-accent p-3 sm:p-4 md:px-6 md:py-3 rounded-sm">
       <div className="flex-1 flex flex-col gap-2">
         <h3 className="text-xl font-bold">{achievement.name}</h3>
         {achievement.description && (
@@ -21,17 +21,22 @@ const AchievementCard = ({
         <p className="flex items-center text-xs text-accent-foreground">
           <Icons.trophy className="w-4 h-4 mr-2" />
           <span>
-            Unlocked: <time>{achievement.unlockedAt.toLocaleDateString()}</time>
+            Unlocked:{" "}
+            <time dateTime={achievement.unlockedAt.toISOString()}>
+              {achievement.unlockedAt.toLocaleDateString()}
+            </time>
           </span>
         </p>
       </div>
-      <Image
-        src={achievement.image}
-        width={50}
-        height={50}
-        alt={`Achievement: ${achievement.name}`}
-        className="h-full w-auto"
-      />
+      <div className="w-13 h-13 md:w-20 md:h-20">
+        <Image
+          src={achievement.image}
+          width={50}
+          height={50}
+          alt={`Achievement: ${achievement.name}`}
+          className="w-full max-w-full object-cover"
+        />
+      </div>
     </li>
   );
 };

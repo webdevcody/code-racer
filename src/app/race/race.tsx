@@ -14,10 +14,10 @@ import {
 import { Heading } from "@/components/ui/heading";
 import RaceTracker from "./race-tracker";
 import Code from "./code";
-import { saveUserResultAction } from "../_actions/result";
 import RaceDetails from "./_components/race-details";
 import RaceTimer from "./race-timer";
 import { ReportButton } from "./_components/report-button";
+import { saveUserResultAction } from "./actions";
 
 function calculateCPM(
   numberOfCharacters: number,
@@ -38,6 +38,16 @@ interface raceTimeStampProps {
   char: string;
   accuracy: number;
   cpm: number;
+  time: number;
+}
+
+interface replayTimeStampProps {
+  char: string;
+  textIndicatorPosition: number | number[];
+  currentLineNumber: number;
+  currentCharPosition: number;
+  errors: number[];
+  totalErrors: number;
   time: number;
 }
 
@@ -71,6 +81,9 @@ export default function Race({
   const showRaceTimer = !!startTime && !isRaceFinished;
   const [currentChar, setCurrentChar] = useState("");
   const [raceTimeStamp, setRaceTimeStamp] = useState<raceTimeStampProps[]>([]);
+  const [replayTimeStamp, setReplayTimeStamp] = useState<
+    replayTimeStampProps[]
+  >([]);
 
   async function endRace() {
     if (!startTime) return;
@@ -85,6 +98,22 @@ export default function Race({
           char: currentChar,
           accuracy: calculateAccuracy(input.length, totalErrors),
           cpm: calculateCPM(input.length, timeTaken),
+          time: Date.now(),
+        },
+      ]),
+    );
+
+    localStorage.setItem(
+      "replayTimeStamp",
+      JSON.stringify([
+        ...replayTimeStamp,
+        {
+          char: currentChar,
+          textIndicatorPosition,
+          currentLineNumber,
+          currentCharPosition,
+          errors,
+          totalErrors,
           time: Date.now(),
         },
       ]),
@@ -122,6 +151,18 @@ export default function Race({
     const lines = input.split("\n");
     setCurrentLineNumber(lines.length);
     setCurrentCharPosition(lines[lines.length - 1].length);
+    setReplayTimeStamp((prev) => [
+      ...prev,
+      {
+        char: currentChar,
+        textIndicatorPosition,
+        currentLineNumber,
+        currentCharPosition,
+        errors,
+        totalErrors,
+        time: Date.now(),
+      },
+    ]);
   }, [input]);
 
   useEffect(() => {
@@ -153,7 +194,6 @@ export default function Race({
       e.preventDefault;
       return;
     }
-
     // Catch Alt Gr - Please confirm I am unable to test this
     if (e.ctrlKey && e.altKey) {
       e.preventDefault();
@@ -216,18 +256,35 @@ export default function Race({
     const lines = input.split("\n");
     setCurrentLineNumber(lines.length);
     setCurrentCharPosition(lines[lines.length - 1].length);
+    setReplayTimeStamp((prev) => [
+      ...prev,
+      {
+        char: currentChar,
+        textIndicatorPosition,
+        currentLineNumber,
+        currentCharPosition,
+        errors,
+        totalErrors,
+        time: Date.now(),
+      },
+    ]);
   }
 
   function ArrowRight(e: React.KeyboardEvent<HTMLInputElement>) {
     if (textIndicatorPosition === input.length) return;
 
+    // if text is highlighted, set the text position
+    // after the last value of the array.
+    // e.g [3, 2, 1], will set the text position to 2 because it's the second value before the last index.
     if (!e.shiftKey) {
       setTextIndicatorPosition((prevTextIndicatorPosition) => {
         if (typeof prevTextIndicatorPosition === "number") {
           return prevTextIndicatorPosition + 1;
         } else {
-          const lastValue = prevTextIndicatorPosition.at(-1) as number;
-          return lastValue + 1;
+          const secondToLastValue =
+            prevTextIndicatorPosition[prevTextIndicatorPosition?.length - 2] ??
+            prevTextIndicatorPosition;
+          return secondToLastValue;
         }
       });
     }
@@ -253,13 +310,26 @@ export default function Race({
         if (typeof prevTextIndicatorPosition === "number") {
           const array = [prevTextIndicatorPosition + 1];
           return array;
-        } else if (prevTextIndicatorPosition.at(1) !== 1) {
-          const array = [...prevTextIndicatorPosition];
-          const lastValue = prevTextIndicatorPosition.at(-1) as number;
-          array.push(lastValue + 1);
-          return array;
         } else {
-          return prevTextIndicatorPosition;
+          const lastValue = prevTextIndicatorPosition?.at(-1) as number;
+          // if the current state of the highlighted text is in descending order,
+          // then that means the array was formed with the left arrow key plus shift key.
+          if (lastValue < prevTextIndicatorPosition[0]) {
+            const array = [...prevTextIndicatorPosition];
+            array.pop();
+            return array;
+          } else if (lastValue >= prevTextIndicatorPosition[0]) {
+            if (lastValue === input.length) {
+              return prevTextIndicatorPosition;
+            } else {
+              const array = [...prevTextIndicatorPosition];
+              const lastValue = prevTextIndicatorPosition.at(-1) as number;
+              array.push(lastValue + 1);
+              return array;
+            }
+          } else {
+            return prevTextIndicatorPosition;
+          }
         }
       });
     }
@@ -286,7 +356,11 @@ export default function Race({
         if (typeof textIndicatorPosition === "number") {
           if (code.charAt(i - 1) !== " " && code.charAt(i) === " ") {
             n = textIndicatorPosition - i;
-            setTextIndicatorPosition(textIndicatorPosition - n - 1);
+            setTextIndicatorPosition((prevTextIndicatorPosition) =>
+              typeof prevTextIndicatorPosition === "number"
+                ? prevTextIndicatorPosition - n - 1
+                : prevTextIndicatorPosition,
+            );
             break;
           }
         }
@@ -303,22 +377,41 @@ export default function Race({
           // pressed/held down.
           const array = [prevTextIndicatorPosition - 1];
           return array;
-        } else if (prevTextIndicatorPosition.at(-1) !== 0) {
-          // make a shallow copy of the prevTextIndicatorPosition array.
-          const array = [...prevTextIndicatorPosition];
-          // Get the last value. Add an "as number" to avoid a typescript error
-          // as it is expected to not be undefined everytime.
-          const lastValue = prevTextIndicatorPosition.at(-1) as number;
-          array.push(lastValue - 1);
-          return array;
         } else {
-          return prevTextIndicatorPosition;
+          const lastValue = prevTextIndicatorPosition?.at(-1) as number;
+          // if the current state of the highlighted text is in descending order,
+          // then that means the array was formed with the left arrow key plus shift key.
+          if (lastValue > prevTextIndicatorPosition[0]) {
+            const array = [...prevTextIndicatorPosition];
+            array.pop();
+            return array;
+          } else if (lastValue <= prevTextIndicatorPosition[0]) {
+            if (lastValue === input.length) {
+              return prevTextIndicatorPosition;
+            } else {
+              const array = [...prevTextIndicatorPosition];
+              const lastValue = prevTextIndicatorPosition?.at(-1) as number;
+              if (lastValue === 0) {
+                return array;
+              } else {
+                array.push(lastValue - 1);
+                return array;
+              }
+            }
+          } else {
+            return prevTextIndicatorPosition;
+          }
         }
       });
     }
   }
 
   function Tab() {
+    // if the more than one text is highlighted, remove the highlighted text.
+    if (Array.isArray(textIndicatorPosition)) {
+      Backspace();
+    }
+
     if (code.slice(input.length, input.length + 4).includes("\n")) {
       let indentLength = 0;
       let newChars = "";
@@ -339,7 +432,7 @@ export default function Race({
       if (indentLength >= 0) {
         newChars += " ".repeat(indentLength);
       }
-      setInput(input + newChars);
+      setInput((prevInput) => prevInput + newChars);
       setTextIndicatorPosition((prevTextIndicatorPosition) => {
         if (typeof prevTextIndicatorPosition === "number") {
           return prevTextIndicatorPosition + newChars.length;
@@ -353,7 +446,7 @@ export default function Race({
       const nextTabStop = 4 - (counter % 4);
       tabSpace = " ".repeat(nextTabStop);
 
-      setInput(input + tabSpace);
+      setInput((prevInput) => prevInput + tabSpace);
       setTextIndicatorPosition((prevTextIndicatorPosition) => {
         if (typeof prevTextIndicatorPosition === "number") {
           return prevTextIndicatorPosition + tabSpace.length;
@@ -407,13 +500,25 @@ export default function Race({
           return prevTextIndicatorPosition - 1;
         } else {
           const lastValue = prevTextIndicatorPosition.at(-1) as number;
-          return lastValue;
+          if (lastValue > prevTextIndicatorPosition[0]) {
+            return prevTextIndicatorPosition[0];
+          } else {
+            return lastValue;
+          }
         }
       });
+    }
+
+    if (raceTimeStamp.length > 0 && errors.length == 0) {
+      setRaceTimeStamp((prev) => prev.slice(0, -1));
     }
   }
 
   function Enter() {
+    if (Array.isArray(textIndicatorPosition)) {
+      Backspace();
+    }
+
     let indentLength = 0;
     let newChars = "";
     // indent until the first newline
@@ -436,7 +541,7 @@ export default function Race({
       newChars += " ".repeat(indentLength);
     }
 
-    setInput(input + newChars);
+    setInput((prevInput) => prevInput + newChars);
 
     setTextIndicatorPosition((prevTextIndicatorPosition) => {
       if (typeof prevTextIndicatorPosition === "number") {
@@ -449,10 +554,10 @@ export default function Race({
 
   function Key(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key !== code.slice(input.length, input.length + 1)) {
-      setTotalErrors(totalErrors + 1);
+      setTotalErrors((prevTotalErrors) => prevTotalErrors + 1);
     }
 
-    if (e.key === code[input.length]) {
+    if (e.key === code[input.length] && errors.length === 0 && e.key !== " ") {
       const currTime = Date.now();
       const timeTaken = startTime ? (currTime - startTime.getTime()) / 1000 : 0;
       setRaceTimeStamp((prev) => [
@@ -495,7 +600,7 @@ export default function Race({
 
     if (Array.isArray(textIndicatorPosition)) {
       Backspace();
-      setInput(input + e.key);
+      setInput((prevInput) => prevInput + e.key);
     }
 
     setTextIndicatorPosition((prevTextIndicatorPosition) => {
@@ -539,25 +644,43 @@ export default function Race({
             />
           )}
         </div>
-        <Code
-          code={code}
-          errors={errors}
-          userInput={input}
-          currentLineNumber={currentLineNumber}
-          currentCharPosition={currentCharPosition}
-          textIndicatorPosition={textIndicatorPosition}
-          totalErrors={totalErrors}
-        />
-        <input
-          type="text"
-          defaultValue={input}
-          ref={inputElement}
-          onKeyDown={handleKeyboardDownEvent}
-          disabled={isRaceFinished}
-          className="absolute inset-y-0 left-0 w-full h-full p-8 rounded-md -z-40 focus:outline outline-blue-500"
-          onPaste={(e) => e.preventDefault()}
-        />
+        <div className="flex ">
+          <div className="flex-col px-1 w-10 ">
+            {code.split("\n").map((index, line) => (
+              <div
+                key={line}
+                className={
+                  currentLineNumber === line + 1
+                    ? // && textIndicatorPosition
+                      "text-center bg-slate-600  border-r-2 border-yellow-500"
+                    : " text-center border-r-2 border-yellow-500"
+                }
+              >
+                {line + 1}
+              </div>
+            ))}
+          </div>
 
+          <Code
+            code={code}
+            errors={errors}
+            userInput={input}
+            currentLineNumber={currentLineNumber}
+            currentCharPosition={currentCharPosition}
+            textIndicatorPosition={textIndicatorPosition}
+            totalErrors={totalErrors}
+          />
+          <input
+            type="text"
+            defaultValue={input}
+            ref={inputElement}
+            onKeyDown={handleKeyboardDownEvent}
+            disabled={isRaceFinished}
+            className="absolute inset-y-0 left-0 w-full h-full p-8 rounded-md -z-40 focus:outline outline-blue-500 cursor-none"
+            onPaste={(e) => e.preventDefault()}
+          />
+        </div>
+        {verifyErrors(errors)}
         <div className="flex justify-between items-center">
           {showRaceTimer && (
             <>
@@ -578,8 +701,17 @@ export default function Race({
           )}
         </div>
       </div>
-
       <RaceDetails submittingResults={submittingResults} />
     </>
   );
+}
+
+function verifyErrors(errors: number[]) {
+  if (errors.length > 0) {
+    return (
+      <span className="text-red-500">
+        You must fix all errors before you can finish the race!
+      </span>
+    );
+  }
 }

@@ -42,13 +42,13 @@ const AccountMenu = ({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="flex gap-2 px-4">
+        <Button variant="ghost" className="flex gap-2 px-2 lg:px-4">
           <Image
             className="rounded-full"
             src={user.image ?? ""}
             alt="user avatar"
-            height={30}
-            width={30}
+            height={26}
+            width={26}
           />
           <p className="whitespace-nowrap">{user.name}</p>
         </Button>
@@ -61,7 +61,7 @@ const AccountMenu = ({
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/profile" className="flex items-center gap-1">
+          <Link href={`/users/${user.id}`} className="flex items-center gap-1">
             <Icons.profile className="w-4 h-4 mr-2" />
             <span>Profile</span>
           </Link>

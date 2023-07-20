@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import { createRef, useEffect, useRef } from "react";
 
@@ -30,14 +32,14 @@ export default function Code({
     const currentLine = code.split("\n")[currentLineNumber - 1];
     const lineLength = currentLine?.length;
     const progress = currentCharPosition / lineLength - 0.33;
-    console.table({
-      currentLineNumber,
-      currentCharPosition,
-      progress,
-      lineLength,
-      currentLine,
-      totalErrors,
-    });
+    // console.table({
+    //   currentLineNumber,
+    //   currentCharPosition,
+    //   progress,
+    //   lineLength,
+    //   currentLine,
+    //   totalErrors,
+    // });
 
     const pre = span?.parentNode as HTMLElement;
 
@@ -63,19 +65,9 @@ export default function Code({
     }
   }
 
-  function verifyErrors(errors: number[]) {
-    if (errors.length > 0) {
-      return (
-        <span className="text-red-500">
-          You must fix all errors before you can finish the race!
-        </span>
-      );
-    }
-  }
-
   return (
     <>
-      <pre className="text-monochrome mb-4 overflow-auto font-medium">
+      <pre className="text-monochrome mb-4 overflow-auto font-medium px-2 w-full">
         {code.split("").map((char, index) => (
           <span
             key={index}
@@ -103,7 +95,6 @@ export default function Code({
           </span>
         ))}
       </pre>
-      {verifyErrors(errors)}
     </>
   );
 }

@@ -1,11 +1,10 @@
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Chart, { CurrentChart } from "./chart";
+import Chart, { ParentCurrentChart } from "./chart";
 import { Icons } from "@/components/icons";
 import Link from "next/link";
 import { FirstRaceBadge } from "./first-race-badge";
 import { getCurrentUser } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
 import { Voting } from "./voting";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -13,11 +12,14 @@ import {
   getUserResultsForSnippet,
   getCurrentRaceResult,
   ParsedRacesResult,
+  getSnippetVote,
 } from "./loaders";
 import { Heading } from "@/components/ui/heading";
 import { cn } from "@/lib/utils";
 import { User } from "next-auth";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ReplayCode } from "./replay-timestamps";
+import { getSnippetById } from "../race/(play)/practice/loaders";
 
 async function AuthenticatedPage({
   resultId,
@@ -44,14 +46,9 @@ async function AuthenticatedPage({
     throw new Error("no result found with this id");
   }
 
-  const usersVote = await prisma.snippetVote.findUnique({
-    where: {
-      userId_snippetId: {
-        userId: user.id,
-        snippetId: currentRaceResult.snippetId,
-      },
-    },
-  });
+  const usersVote = await getSnippetVote(currentRaceResult.snippetId);
+  const currentSnippet = await getSnippetById(currentRaceResult.snippetId);
+
   const firstRaceBadge = await getFirstRaceBadge();
   let raceResults: ParsedRacesResult[] = [];
   let cardObjects = [] as { title: string; value: string | undefined }[];
@@ -104,28 +101,27 @@ async function AuthenticatedPage({
           })}
         </div>
       </div>
-      <div className="flex flex-col p-8 rounded-xl border-2 border-white">
-        <div className="flex flex-wrap justify-center gap-4 w-full">
-          {/* <p className="text-primary text-center text-xl">
-            Your progress on this snippet
-          </p> */}
-          <Tabs defaultValue="Current" className="w-full">
-            <TabsList>
-              <TabsTrigger value="Current">Current</TabsTrigger>
-              <TabsTrigger value="History">History</TabsTrigger>
-            </TabsList>
-            <TabsContent value="Current">
-              {/* works even for unauthorized user */}
-              <span className="text-2xl mx-auto text-primary flex-wrap sm:hidden">
-                View in Larger Screen to Unlock Exciting Features!
-              </span>
-              <CurrentChart />
-            </TabsContent>
-            <TabsContent value="History">
-              <Chart raceResult={raceResults} />
-            </TabsContent>
-          </Tabs>
-        </div>
+      <div className="flex flex-col px-8 rounded-xl">
+        <Tabs defaultValue="Current" className="w-full">
+          <TabsList>
+            <TabsTrigger value="Current">Current</TabsTrigger>
+            <TabsTrigger value="History">History</TabsTrigger>
+            <TabsTrigger value="Replay">Replay</TabsTrigger>
+          </TabsList>
+          <TabsContent value="Current">
+            {/* works even for unauthorized user */}
+            <span className="text-2xl mx-auto text-primary flex-wrap sm:hidden">
+              View in Larger Screen to Unlock Exciting Features!
+            </span>
+            <ParentCurrentChart code={currentSnippet?.code} />
+          </TabsContent>
+          <TabsContent value="History">
+            <Chart raceResult={raceResults} />
+          </TabsContent>
+          <TabsContent value="Replay">
+            <ReplayCode code={currentSnippet?.code} />
+          </TabsContent>
+        </Tabs>
       </div>
       <div className="flex flex-wrap items-center justify-center gap-4 p-2">
         <Link
@@ -168,7 +164,7 @@ async function AuthenticatedPage({
 }
 
 function UnauthenticatedPage() {
-  return <>TODO: Results are not implmemented for unauthenticated users yet</>;
+  return <>TODO: Results are not implemented for unauthenticated users yet</>;
 }
 
 export default async function ResultPage({

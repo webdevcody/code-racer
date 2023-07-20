@@ -1,28 +1,23 @@
 import React from "react";
-import StackCard from "../components/stackbox";
+import StackCard from "../_components/stackbox";
 import { Crown, FileCode2, Swords } from "lucide-react";
 import { getCurrentUser } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { Heading } from "@/components/ui/heading";
 import Shell from "@/components/shell";
+import { getUserResultsCount, getUserSnippetCount } from "./loaders";
 
 export default async function AwardsPage({}) {
   const user = await getCurrentUser();
 
-  if (!user) redirect("/auth");
+  if (!user) {
+    redirect("/auth");
+  }
 
-  const totalUserGames = await prisma.result.count({
-    where: {
-      userId: user.id,
-    },
-  });
-
-  const totalUserSnippets = await prisma.snippet.count({
-    where: {
-      userId: user.id,
-    },
-  });
+  const [totalUserGames, totalUserSnippets] = await Promise.all([
+    getUserResultsCount(),
+    getUserSnippetCount(),
+  ]);
 
   const userRank = 1;
 
