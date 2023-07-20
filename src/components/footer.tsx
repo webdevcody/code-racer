@@ -24,7 +24,17 @@ export function Footer() {
             >
               Cody
             </Link>
-            &nbsp; & his community.
+            &nbsp; & his{" "}
+            <Link
+              href={siteConfig.links.codyTwitter}
+              target="_blank"
+              title="See Web Dev Cody's Discord"
+              rel="noreferrer"
+              className={`font-medium text-primary ${hoverLinkStyles}`}
+            >
+              Discord
+            </Link>{" "}
+            community.
           </p>
           <p>
             The source code is available on&nbsp;
