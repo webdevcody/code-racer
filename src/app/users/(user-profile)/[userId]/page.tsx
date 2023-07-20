@@ -22,16 +22,13 @@ export default async function ProfilePage({
 }: {
   params: { userId: string };
 }) {
-  const userParamsAchievements = (
-    await findUserAchievements({
-      userId: params.userId,
-    })
-  ).data;
-  const userParamsData = (
-    await findUser({
-      userId: params.userId,
-    })
-  ).data;
+  const userParamsAchievements = await findUserAchievements({
+    userId: params.userId,
+  });
+  
+  const userParamsData = await findUser({
+    userId: params.userId,
+  });
 
   if (!userParamsData) return notFound();
 

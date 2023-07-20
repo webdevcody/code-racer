@@ -114,11 +114,11 @@ export default function Race({
         snippetId: snippet.id,
       });
 
-      if (!result.data) {
+      if (!result) {
         return router.refresh();
       }
 
-      router.push(`/result?resultId=${result.data.id}`);
+      router.push(`/result?resultId=${result.id}`);
     } else {
       router.push(`/result`);
     }
