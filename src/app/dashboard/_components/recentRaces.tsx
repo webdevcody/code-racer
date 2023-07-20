@@ -33,7 +33,7 @@ export function RecentRacesTable({
           const snippetId = cell.getValue() as string;
           return (
             <Link
-              className={cn(buttonVariants(), "whitespace-nowrap")}
+              className={cn(buttonVariants(), "whitespace-nowrap text-accent")}
               href={`/race/practice?snippetId=${snippetId}`}
             >
               Practice

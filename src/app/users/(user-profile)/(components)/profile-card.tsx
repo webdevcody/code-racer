@@ -173,7 +173,7 @@ function EditMode({
       </div>
 
       <div className="w-full flex items-center justify-start gap-4 mt-2">
-        <Button type="submit" disabled={isLoading}>
+        <Button type="submit" className="text-accent" disabled={isLoading}>
           Save
         </Button>
         <Button
