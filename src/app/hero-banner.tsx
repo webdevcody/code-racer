@@ -13,12 +13,19 @@ export default function HeroBanner() {
         <p className="text-lg md:text-2xl color-primary my-2">
           Test your typing speed and race against other coders
         </p>
-        <div className="my-9">
+        <div
+          className="
+          my-10
+          max-sm:flex 
+          max-sm:items-center 
+          max-sm:justify-center
+          "
+        >
           <Link
             href={"/race"}
             title="Start Racing"
             prefetch
-            className="px-4 py-2 text-sm font-black text-black uppercase tracking-wider flex items-center gap-2 w-fit transition-colors bg-warning rounded-md md:text-2xl ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:bg-accent hover:bg-accent hover:text-accent-foreground"
+            className="px-4 py-2 font-black text-black uppercase tracking-wider flex items-center gap-2 w-fit transition-colors bg-warning rounded-md md:text-2xl ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:bg-accent hover:bg-accent hover:text-accent-foreground"
           >
             Start Racing <ArrowRight />
           </Link>
