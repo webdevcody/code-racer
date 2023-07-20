@@ -29,11 +29,14 @@ export default function PracticeRace() {
   }
 
   return (
-    <Card className="flex flex-col justify-between flex-1 text-black bg-warning">
+    <Card className="flex flex-col justify-between flex-1 border-2 border-warning">
       <CardHeader>
         <div className="grid text-center place-content-center">
           <Target className="justify-self-center" size={40} />
-          <h2 style={bruno_ace_sc.style} className="text-3xl font-bold">
+          <h2
+            style={bruno_ace_sc.style}
+            className="text-3xl font-bold text-warning"
+          >
             Practice
           </h2>
           <p className="font-light">
@@ -57,7 +60,7 @@ export default function PracticeRace() {
           <Button
             disabled={selectedPracticeLanguage === ""}
             variant="black"
-            className="relative justify-start"
+            className="relative justify-start border"
           >
             Practice{" "}
             <ArrowRight
