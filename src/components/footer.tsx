@@ -26,7 +26,7 @@ export function Footer() {
             </Link>
             &nbsp; & his{" "}
             <Link
-              href={siteConfig.links.codyTwitter}
+              href={siteConfig.links.codyDiscord}
               target="_blank"
               title="See Web Dev Cody's Discord"
               rel="noreferrer"
