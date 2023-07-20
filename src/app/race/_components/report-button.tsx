@@ -12,7 +12,7 @@ import { downVoteSnippetAction } from "@/app/result/actions";
 export function ReportButton({
   snippetId,
   language,
-  handleRestart
+  handleRestart,
 }: {
   snippetId: string;
   language: string;
@@ -32,7 +32,24 @@ export function ReportButton({
       variant="destructive"
       onClick={() => {
         startTransition(async () => {
-          await downVoteSnippetAction({ snippetId });
+          try {
+            await downVoteSnippetAction({ snippetId });
+          } catch (err) {
+            return void toast({
+              title: "Something Went Wrong",
+              description:
+                "Sorry, but there was a problem reporting this snippet.",
+              variant: "destructive",
+            });
+          }
+
+          toast({
+            title: "Snippet reported",
+            description:
+              "Thank you for reporting this snippet.  We will review it soon.",
+            variant: "default",
+          });
+
           const snippet = await getRandomSnippet({
             language: language,
             reportedSnippets: [...prevReportedSnippets, snippetId],
