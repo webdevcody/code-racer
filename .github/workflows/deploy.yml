@@ -14,7 +14,7 @@ jobs:
           --build-arg GITHUB_CLIENT_ID=${{secrets._GITHUB_CLIENT_ID}}
           --build-arg GITHUB_CLIENT_SECRET=${{secrets._GITHUB_CLIENT_SECRET}}
           --build-arg GITHUB_ACCESS_TOKEN=${{secrets._GITHUB_ACCESS_TOKEN}}
-          --build-arg NEXTAUTH_URL=${{secrets.NEXAUTH_URL}}
+          --build-arg NEXTAUTH_URL=${{secrets.NEXTAUTH_URL}}
           --build-arg NEXTAUTH_SECRET=${{secrets.NEXTAUHT_SECRET}}
           --build-arg OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}}"
         env:
