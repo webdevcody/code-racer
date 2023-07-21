@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
+import { useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,7 +30,14 @@ const LanguageDropDown = ({
 }) => {
   const [open, setOpen] = React.useState(false);
   const [search, setSearch] = React.useState("");
-   
+  
+  useEffect(() => {
+    const savedCodeLanguage = window.localStorage.getItem("codeLanguage");
+    if (savedCodeLanguage) {
+      setCodeLanguage(savedCodeLanguage);
+    }
+  }, []);
+  
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -60,9 +68,9 @@ const LanguageDropDown = ({
             key={language.label}
             value={language.value}
             onSelect={(currentValue) => {
-              setCodeLanguage(
-                currentValue === codeLanguage ? "" : currentValue,
-              );
+              const newCodeLanguage = currentValue === codeLanguage ? "" : currentValue;
+              setCodeLanguage(newCodeLanguage);
+              window.localStorage.setItem("codeLanguage", newCodeLanguage);
               setOpen(false);
             }}
           >
