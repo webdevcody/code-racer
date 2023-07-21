@@ -27,11 +27,25 @@ async function getContributorsActivity(
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const data: any[] = await response.json();
+    // GitHub response JSON schema
+    type GitHubContributorCommitActivity = {
+      author: GitHubUser;
+      total: number;
+      weeks: {
+        w: number;
+        a: number;
+        d: number;
+        c: number;
+      }[];
+    };
+
+    const data: GitHubContributorCommitActivity[] = await response.json();
     contributors
       .map((contributor) => contributor.login)
       .forEach((username) => {
-        const activity = data.find((e) => e.author.login === username);
+        const activity: GitHubContributorCommitActivity | undefined = data.find(
+          (e) => e.author.login === username,
+        );
         if (activity) {
           const activityAllTime = activity.weeks.reduce(
             (
@@ -47,7 +61,6 @@ async function getContributorsActivity(
           commitActivity.push(activityAllTime);
         }
       });
-    // console.debug(commitActivity);
     return commitActivity;
   } catch (error) {
     console.error("An error occurred", error);
@@ -125,10 +138,6 @@ export default async function ContributorsPage({
     : 30; // Limit to only 30 per page to avoid hitting rate limit
   const sliceStartIndex = (parsed_page - 1) * parsed_per_page;
   const sliceEndIndex = sliceStartIndex + parsed_per_page;
-
-  console.log(sliceStartIndex, "sliceStartIndex");
-  console.log(sliceEndIndex, "sliceEndIndex");
-
   const contributors = await getContributors();
   const contributorCommitActivities = await getContributorsActivity(
     contributors,
@@ -151,8 +160,6 @@ export default async function ContributorsPage({
           <div className="flex flex-col items-center justify- gap-3">
             <CountingAnimation
               targetNumber={contributors.length}
-              startingNumber={0}
-              animationDuration={4000}
               className="text-7xl text-primary font-extrabold"
             />
             <p className="text-2xl font-bold text-secondary-foreground">

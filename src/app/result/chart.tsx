@@ -112,14 +112,10 @@ function RenderTooltip(
 ) {
   const { active, payload } = props;
 
-  useEffect(() => {
-    if (active && payload && payload.length) {
-      const data = payload[0] && payload[0].payload;
-      setActiveCharIndex(data.time);
-    } else {
-      setActiveCharIndex(undefined);
-    }
-  }, [active, payload, setActiveCharIndex]);
+  if (active && payload && payload.length) {
+    const data = payload[0] && payload[0].payload;
+    setActiveCharIndex(data.time);
+  }
 
   if (active && payload && payload.length) {
     const data = payload[0] && payload[0].payload;
