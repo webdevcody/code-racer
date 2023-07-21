@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
-
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,7 +28,8 @@ const LanguageDropDown = ({
   className?: string;
 }) => {
   const [open, setOpen] = React.useState(false);
-
+  const [search, setSearch] = React.useState("");
+   
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -49,19 +49,23 @@ const LanguageDropDown = ({
       </PopoverTrigger>
       <PopoverContent className="w-full p-0 h-44">
         <Command>
-          <CommandInput placeholder="Search a Language..." />
+          <CommandInput placeholder="Search a Language..." value = {search} onValueChange={setSearch}/>
           <CommandEmpty>No language found.</CommandEmpty>
           <CommandGroup className="overflow-y-auto">
-            {snippetLanguages.map((language) => (
-              <CommandItem
-                key={language.value}
-                onSelect={(currentValue) => {
-                  setCodeLanguage(
-                    currentValue === codeLanguage ? "" : currentValue,
-                  );
-                  setOpen(false);
-                }}
-              >
+          {snippetLanguages
+          .filter(language => 
+          language.label.toLowerCase().includes(search.toLowerCase()))
+          .map((language) => (
+          <CommandItem
+            key={language.label}
+            value={language.value}
+            onSelect={(currentValue) => {
+              setCodeLanguage(
+                currentValue === codeLanguage ? "" : currentValue,
+              );
+              setOpen(false);
+            }}
+          >
                 <Check
                   className={cn(
                     "mr-2 h-4 w-4",
