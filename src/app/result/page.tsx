@@ -20,11 +20,7 @@ import { User } from "next-auth";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ReplayCode } from "./replay-timestamps";
 import { getSnippetById } from "../race/(play)/practice/loaders";
-import {
-  deleteVoteAction,
-  downVoteSnippetAction,
-  upvoteSnippetAction,
-} from "./actions";
+import { TopTable } from "./topten";
 
 async function AuthenticatedPage({
   resultId,
@@ -112,6 +108,7 @@ async function AuthenticatedPage({
             <TabsTrigger value="Current">Current</TabsTrigger>
             <TabsTrigger value="History">History</TabsTrigger>
             <TabsTrigger value="Replay">Replay</TabsTrigger>
+            <TabsTrigger value="TopTen">Top 10</TabsTrigger>
           </TabsList>
           <TabsContent value="Current">
             {/* works even for unauthorized user */}
@@ -125,6 +122,9 @@ async function AuthenticatedPage({
           </TabsContent>
           <TabsContent value="Replay">
             <ReplayCode code={currentSnippet?.code} />
+          </TabsContent>
+          <TabsContent value="TopTen">
+            <TopTable snippet={currentSnippet?.id} />
           </TabsContent>
         </Tabs>
       </div>
