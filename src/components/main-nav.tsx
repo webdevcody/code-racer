@@ -33,7 +33,7 @@ export function MainNav({ items }: { items?: NavItem[] }) {
                     {
                       "cursor-not-allowed opacity-80": item.disabled,
                       "underline underline-offset-8 decoration-2 decoration-primary":
-                        isActiveRoute(currentPathName, item.href),
+                        isActiveRoute(currentPathName as string, item.href),
                     },
                   )}
                 >

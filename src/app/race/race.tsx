@@ -51,14 +51,14 @@ async function getSocketConnection() {
     console.log({ socket });
 }
 
-interface raceTimeStampProps {
+interface RaceTimeStampProps {
     char: string;
     accuracy: number;
     cpm: number;
     time: number;
 }
 
-interface replayTimeStampProps {
+interface ReplayTimeStampProps {
     char: string;
     textIndicatorPosition: number | number[];
     currentLineNumber: number;
@@ -101,11 +101,11 @@ export default function Race({
     const isRaceFinished = input === code;
     const showRaceTimer = !!startTime && !isRaceFinished;
     const [currentChar, setCurrentChar] = useState("");
-    const [raceTimeStamp, setRaceTimeStamp] = useState<raceTimeStampProps[]>(
+    const [raceTimeStamp, setRaceTimeStamp] = useState<RaceTimeStampProps[]>(
         [],
     );
     const [replayTimeStamp, setReplayTimeStamp] = useState<
-        replayTimeStampProps[]
+        ReplayTimeStampProps[]
     >([]);
 
     //multiplayer-specific
