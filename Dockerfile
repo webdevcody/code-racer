@@ -43,6 +43,9 @@ RUN npx prisma generate
 # Copy application code
 COPY --link . .
 
+# Seed db
+RUN npm run seed
+
 # Run build script
 RUN npm run build
 
