@@ -2,11 +2,11 @@
 
 import Image from "next/image";
 import { UnlockIcon } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
 import { useConfettiContext } from "@/context/confetti";
+import { toast } from "@/components/ui/use-toast";
+
 
 export function FirstRaceBadge({ image }: { image: string }) {
-  const { toast } = useToast();
   const confettiCtx = useConfettiContext();
 
   toast({
