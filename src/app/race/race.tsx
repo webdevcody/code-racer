@@ -98,8 +98,6 @@ export default function Race({
         .map((char, index) => (char !== currentText[index] ? index : -1))
         .filter((index) => index !== -1);
 
-    const isRaceFinished = input === code;
-    const showRaceTimer = !!startTime && !isRaceFinished;
     const [currentChar, setCurrentChar] = useState("");
     const [raceTimeStamp, setRaceTimeStamp] = useState<RaceTimeStampProps[]>(
         [],
@@ -120,6 +118,9 @@ export default function Race({
     const position = parseFloat(
         ((completedInputLength / code.length) * 100).toFixed(2),
     );
+    const isRaceFinished = raceId ? raceStatus === "finished" : input === code;
+    const showRaceTimer = !!startTime && !isRaceFinished;
+
     function startRaceEventHandlers() {
         socket.on(`RACE_${raceId}`, (payload: SocketPayload) => {
             switch (payload.type) {
@@ -201,6 +202,7 @@ export default function Race({
     //end of multiplayer-specific
 
     async function endRace() {
+        //TODO: find a way to only trigger this once, not by every player in the race.
         if (raceId) {
             await endRaceAction({
                 raceId,
@@ -540,21 +542,22 @@ export default function Race({
 
     return (
         <>
-            <pre className="max-w-sm rounded p-8">
-                {JSON.stringify(
-                    {
-                        startTime,
-                        raceStartCountdown,
-                        raceStatus,
-                        participants,
-                        position,
-                        completedInputLength,
-                        errors,
-                    },
-                    null,
-                    4,
-                )}
-            </pre>
+            {/* Debug purposes */}
+            {/* <pre className="max-w-sm rounded p-8"> */}
+            {/*     {JSON.stringify( */}
+            {/*         { */}
+            {/*             startTime, */}
+            {/*             raceStartCountdown, */}
+            {/*             raceStatus, */}
+            {/*             participants, */}
+            {/*             position, */}
+            {/*             completedInputLength, */}
+            {/*             errors, */}
+            {/*         }, */}
+            {/*         null, */}
+            {/*         4, */}
+            {/*     )} */}
+            {/* </pre> */}
             <div
                 className="relative flex flex-col gap-2 p-4 rounded-md lg:p-8 bg-accent w-3/4 mx-auto"
                 onClick={focusOnLoad}
@@ -572,11 +575,17 @@ export default function Race({
                     )}
                 {raceStatus === "running" && (
                     <>
-                        <RaceTracker
-                            codeLength={code.length}
-                            inputLength={input.length}
-                            user={user}
-                        />
+                        {raceId ? (
+                            participants.map((p) => (
+                                <RaceTracker
+                                    key={p.id}
+                                    position={p.position}
+                                    participantId={p.id}
+                                />
+                            ))
+                        ) : (
+                            <RaceTracker position={position} user={user} />
+                        )}
                         <div className="mb-2 md:mb-4 flex justify-between">
                             <Heading
                                 title="Type this code"
@@ -634,6 +643,9 @@ export default function Race({
                         You must fix all errors before you can finish the race!
                     </span>
                 ) : null}
+                {raceStatus === "finished" && (
+                <h2 className="text-2xl p-4">Loading race results, please wait...</h2>
+                )}
                 <div className="flex justify-between items-center">
                     {showRaceTimer && (
                         <>
