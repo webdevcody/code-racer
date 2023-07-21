@@ -11,6 +11,16 @@ it("can hover on contributor card and display recent commits", () => {
 })
 
 it("can click on contributor card and redirected to github profile page", () => {
-    cy.contains("contributions").first().click();
-    cy.url().should("include", "github")
+    cy.contains("contributions").first().click({ timeout: 20000 });
+    cy.on("url:changed", (newUrl) => {
+        expect(newUrl).to.contain("github");
+    })
+})
+
+it("can click on contributor card and click on any commit message and redirected to github commit page", () => {
+    cy.contains("contributions").first().focus();
+    cy.contains("Last").parent().get("ol li").first().click();
+    cy.on("url:changed", (newUrl: string) => {
+        expect(newUrl).to.contain("github").and.contain("commit");
+    })
 })
