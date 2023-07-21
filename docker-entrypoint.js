@@ -16,8 +16,6 @@ const env = { ...process.env };
     await exec(process.argv.slice(2).join(" "));
 })();
 
-console.log({env})
-
 function exec(command) {
     const child = spawn(command, { shell: true, stdio: "inherit", env });
     return new Promise((resolve, reject) => {
