@@ -33,6 +33,7 @@ export const siteConfig = {
   links: {
     github: "https://github.com/webdevcody/code-racer",
     codyTwitter: "https://twitter.com/webdevcody",
+    codyDiscord: "https://discord.gg/sduWx3kp",
   },
   api: {
     github: {
@@ -50,3 +51,7 @@ export const siteConfig = {
     },
   },
 };
+
+export function getGitHubAuthorizationToken() {
+  return siteConfig.api.github.accessToken ? `Bearer ${siteConfig.api.github.accessToken}` : "";
+}

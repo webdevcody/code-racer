@@ -12,9 +12,11 @@ import { downVoteSnippetAction } from "@/app/result/actions";
 export function ReportButton({
   snippetId,
   language,
+  handleRestart,
 }: {
   snippetId: string;
   language: string;
+  handleRestart: () => void;
 }) {
   const [prevReportedSnippets, setPrevReportedSnippets] = React.useState<
     Snippet["id"][]
@@ -30,7 +32,24 @@ export function ReportButton({
       variant="destructive"
       onClick={() => {
         startTransition(async () => {
-          await downVoteSnippetAction({ snippetId });
+          try {
+            await downVoteSnippetAction({ snippetId });
+          } catch (err) {
+            return void toast({
+              title: "Something Went Wrong",
+              description:
+                "Sorry, but there was a problem reporting this snippet.",
+              variant: "destructive",
+            });
+          }
+
+          toast({
+            title: "Snippet reported",
+            description:
+              "Thank you for reporting this snippet.  We will review it soon.",
+            variant: "default",
+          });
+
           const snippet = await getRandomSnippet({
             language: language,
             reportedSnippets: [...prevReportedSnippets, snippetId],
@@ -40,9 +59,9 @@ export function ReportButton({
 
           if (!snippet) {
             return void toast({
-              title: "Oops, it's the last snippet that you didn't report",
+              title: "Oops, this is the only unreported snippet left",
               description:
-                "You can try creating new one or choosing different language",
+                "Please create a new snippet or choose a different language.",
               variant: "destructive",
             });
           }
@@ -53,6 +72,7 @@ export function ReportButton({
             )}&snippetId=${encodeURIComponent(snippet.id)}`,
           );
           router.refresh();
+          handleRestart();
         });
       }}
     >

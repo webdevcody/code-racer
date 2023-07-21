@@ -67,24 +67,10 @@ export default function AddSnippetForm({ lang }: { lang: string }) {
 
   async function onSubmit(data: FormData) {
     try {
-      const { data: responseData, validationError } = await addSnippetAction({
+      const responseData = await addSnippetAction({
         language: data.codeLanguage,
         code: data.codeSnippet,
       });
-
-      if (validationError) {
-        toast({
-          title: "Error!",
-          description: `Something went wrong! ${validationError.code ?? ""}\n${
-            validationError.language ?? ""
-          }`,
-          duration: 5000,
-          style: {
-            background: "hsl(var(--destructive))",
-          },
-        });
-        return;
-      }
 
       if (responseData?.failure) {
         const failureToast = toast({

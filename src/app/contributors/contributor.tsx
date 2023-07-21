@@ -55,7 +55,7 @@ export default function Contributor({
     <li key={contributor.id} className="flex gap-4 p-1 rounded-full">
       <HoverCard>
         <HoverCardTrigger asChild>
-          <Card className="w-full hover:bg-secondary transition-colors duration-100">
+          <Card className="w-full hover:bg-secondary transition-colors duration-100 border-primary">
             <a href={contributor.html_url}>
               <CardContent className="inline-flex py-4 items-center top-[20%] w-full">
                 <div className="">

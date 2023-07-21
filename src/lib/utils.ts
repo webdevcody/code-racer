@@ -21,20 +21,21 @@ export function catchError(err: unknown) {
     const errors = err.issues.map((issue) => {
       return issue.message;
     });
-    toast({
-      title: "Something went wrong.",
+    return toast({
+      title: "Error",
       description: errors.join("\n"),
       variant: "destructive",
     });
   } else if (err instanceof Error) {
-    toast({
-      title: "Something went wrong.",
+    return toast({
+      title: "Error",
       description: err.message,
       variant: "destructive",
     });
   } else {
-    toast({
-      title: "Something went wrong, please try again later.",
+    return toast({
+      title: "Error",
+      description: "Something went wrong, please try again later.",
       variant: "destructive",
     });
   }
