@@ -1,25 +1,22 @@
 name: Deploy
-env:
-  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 on:
   push:
     branches:
-      - main
+      - multiplayer
 jobs:
   Deploy-Production:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: "Install Dependencies"
-        run: npm i
-      - name: "Update Database"
-        run: DATABASE_URL=${{ secrets.DATABASE_URL }} npx prisma db push
-      - name: Install Vercel CLI
-        run: npm install --global vercel@latest
-      - name: Pull Vercel Environment Information
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-      - name: Build Project Artifacts
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-      - name: Deploy Project Artifacts to Vercel
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - uses: actions/checkout@v3
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: "flyctl deploy --remote-only"
+        with:
+          args: "--build-arg DATABASE_URL=${{secrets.DATABASE_URL}}\\
+                 --build-arg GITHUB_CLIENT_ID=${{secrets._GITHUB_CLIENT_ID}}\\
+                 --build-arg GITHUB_CLIENT_SECRET=${{secrets._GITHUB_CLIENT_SECRET}}\\
+                 --build-arg GITHUB_ACCESS_TOKEN=${{secrets._GITHUB_ACCESS_TOKEN}}\\
+                 --build-arg NEXTAUTH_URL=${{secrets.NEXAUTH_URL}}\\
+                 --build-arg NEXTAUTH_SECRET=${{secrets.NEXTAUHT_SECRET}}\\
+                 --build-arg OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}}"
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN}}
