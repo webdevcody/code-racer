@@ -12,7 +12,6 @@ WORKDIR /app
 # Set production environment
 ENV NODE_ENV=production
 
-
 # Throw-away build stage to reduce size of final image
 FROM base as build
 
@@ -28,9 +27,6 @@ RUN npm ci --include=dev
 COPY --link prisma .
 RUN npx prisma generate
 
-# Copy .env file to the image
-COPY .env /app/.env
-
 # Copy application code
 COPY --link . .
 
@@ -39,7 +35,6 @@ RUN npm run build
 
 # Remove development dependencies
 RUN npm prune --omit=dev
-
 
 # Final stage for app image
 FROM base

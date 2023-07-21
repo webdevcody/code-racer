@@ -13,9 +13,16 @@ while IFS= read -r line || [[ -n "$line" ]]; do
     continue
   fi
 
-  # Extract key-value pairs
-  KEY=$(echo "$line" | cut -d '=' -f 1)
-  VALUE=$(echo "$line" | cut -d '=' -f 2-)
+  # Check if the line has double quotes
+  if echo "$line" | grep -q -E '^[[:space:]]*[^=]+="[^"]*"$'; then
+    # Extract key-value pairs with quotes
+    KEY=$(echo "$line" | grep -o -E '^[[:space:]]*[^=]+' | xargs)
+    VALUE=$(echo "$line" | grep -o -E '"[^"]*"' | sed 's/"//g')
+  else
+    # If no quotes are found, extract key-value pairs without quotes
+    KEY=$(echo "$line" | cut -d '=' -f 1)
+    VALUE=$(echo "$line" | cut -d '=' -f 2-)
+  fi
 
   # Log the name of the variable being set as a secret
   echo "Setting secret for: $KEY"

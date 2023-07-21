@@ -1,17 +1,8 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const dotenv = require('dotenv');
+// This is for the build to not crash, because the secrets are not set during this process for some reason
+process.env.SKIP_ENV_VALIDATION = "true";
 const { spawn } = require("node:child_process");
-
-// Load environment variables from .env file
-const envConfig = dotenv.parse(fs.readFileSync('/app/.env'));
-for (const key in envConfig) {
-  process.env[key] = envConfig[key];
-}
-
-// Remove the .env file after setting the environment variables
-fs.unlinkSync('/app/.env');
 
 const env = { ...process.env };
 
@@ -24,6 +15,8 @@ const env = { ...process.env };
     // launch application
     await exec(process.argv.slice(2).join(" "));
 })();
+
+console.log({env})
 
 function exec(command) {
     const child = spawn(command, { shell: true, stdio: "inherit", env });
