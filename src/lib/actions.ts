@@ -12,9 +12,7 @@ type validatedAction<InputType extends z.ZodTypeAny, ResponseType> = ActionType<
 export function safeAction<InputType extends z.ZodTypeAny>(
   validator?: InputType,
 ) {
-  return function <ResponseType>(
-    action: ActionType<InputType, ResponseType>,
-  ) {
+  return function <ResponseType>(action: ActionType<InputType, ResponseType>) {
     const validatedAction = async (input: z.infer<InputType>) => {
       if (validator) {
         try {

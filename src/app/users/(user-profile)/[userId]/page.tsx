@@ -25,7 +25,7 @@ export default async function ProfilePage({
   const userParamsAchievements = await findUserAchievements({
     userId: params.userId,
   });
-  
+
   const userParamsData = await findUser({
     userId: params.userId,
   });

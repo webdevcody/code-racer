@@ -139,8 +139,15 @@ function RenderTooltip(
   return null;
 }
 
-
-const RenderCode = ({ code, activeCharIndex, raceTimeStamp }: { code?: string, activeCharIndex?: number, raceTimeStamp: raceTimeStampProps[] }) => {
+const RenderCode = ({
+  code,
+  activeCharIndex,
+  raceTimeStamp,
+}: {
+  code?: string;
+  activeCharIndex?: number;
+  raceTimeStamp: raceTimeStampProps[];
+}) => {
   let removeExtras = 0;
   return (
     <code className="flex-wrap text-2xl hidden sm:block whitespace-pre-wrap">
@@ -151,10 +158,11 @@ const RenderCode = ({ code, activeCharIndex, raceTimeStamp }: { code?: string, a
             return (
               <span
                 key={index}
-                className={`text-2xl ${activeCharIndex === raceChar?.time
-                  ? "bg-primary text-secondary"
-                  : ""
-                  }`}
+                className={`text-2xl ${
+                  activeCharIndex === raceChar?.time
+                    ? "bg-primary text-secondary"
+                    : ""
+                }`}
               >
                 {item}
               </span>
@@ -173,7 +181,13 @@ const RenderCode = ({ code, activeCharIndex, raceTimeStamp }: { code?: string, a
 };
 
 function CurrentChart(props: CurrentChartProps) {
-  const { code, raceTimeStamp, setRaceTimeStamp, activeCharIndex, setActiveCharIndex } = props;
+  const {
+    code,
+    raceTimeStamp,
+    setRaceTimeStamp,
+    activeCharIndex,
+    setActiveCharIndex,
+  } = props;
 
   useEffect(() => {
     const getData = () => {
@@ -212,7 +226,11 @@ function CurrentChart(props: CurrentChartProps) {
         </LineChart>
       </ResponsiveContainer>
       <div className="px-2 bg-accent text-primary">
-        <RenderCode code={code} activeCharIndex={activeCharIndex} raceTimeStamp={raceTimeStamp} />
+        <RenderCode
+          code={code}
+          activeCharIndex={activeCharIndex}
+          raceTimeStamp={raceTimeStamp}
+        />
       </div>
     </div>
   );
@@ -222,11 +240,13 @@ export function ParentCurrentChart({ code }: { code?: string }) {
   const [raceTimeStamp, setRaceTimeStamp] = useState<raceTimeStampProps[]>([]);
   const [activeCharIndex, setActiveCharIndex] = useState<number>();
 
-  return <CurrentChart
-    code={code}
-    raceTimeStamp={raceTimeStamp}
-    setRaceTimeStamp={setRaceTimeStamp}
-    activeCharIndex={activeCharIndex}
-    setActiveCharIndex={setActiveCharIndex}
-  />
+  return (
+    <CurrentChart
+      code={code}
+      raceTimeStamp={raceTimeStamp}
+      setRaceTimeStamp={setRaceTimeStamp}
+      activeCharIndex={activeCharIndex}
+      setActiveCharIndex={setActiveCharIndex}
+    />
+  );
 }

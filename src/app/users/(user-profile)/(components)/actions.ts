@@ -62,19 +62,19 @@ export const updateUserProfile = safeAction(
   revalidatePath(`/users/${user.id}`);
 });
 
-export const updateUserAction = safeAction(z.object({ name: z.string() }))(async (
-  input,
-) => {
-  const user = await getCurrentUser();
+export const updateUserAction = safeAction(z.object({ name: z.string() }))(
+  async (input) => {
+    const user = await getCurrentUser();
 
-  if (!user) throw new UnauthorizedError();
+    if (!user) throw new UnauthorizedError();
 
-  await prisma.user.update({
-    where: {
-      id: user.id,
-    },
-    data: {
-      name: input.name,
-    },
-  });
-});
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        name: input.name,
+      },
+    });
+  },
+);
