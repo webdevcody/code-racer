@@ -71,6 +71,30 @@ export const endRaceAction = safeAction(
     });
 });
 
+export const getParticipantUser = safeAction(z.object({
+    participantId: z.string(),
+}))(async (input)=> {
+    const participant = await prisma.raceParticipant.findUnique({
+        where: {
+            id: input.participantId,
+        }
+    })
+
+    if(!participant || !participant.userId) return null
+
+    const user = await prisma.user.findUnique({
+        where: {
+            id: participant.userId,
+        },
+        select: {
+            name: true,
+            image: true,
+        }
+    })
+
+    return user
+})
+
 /**
  * This should create a private room for the user
  * Not implemented. Need to decide on the multiplayer architecture
