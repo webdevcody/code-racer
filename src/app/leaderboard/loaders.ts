@@ -21,8 +21,10 @@ export async function getUsersWithResultCounts({
       results: true,
     },
     where: {
-      results: {
-        some: {},
+      achievements: {
+        some: {
+          achievementType: "FIFTH_RACE",
+        },
       },
     },
   });
@@ -49,8 +51,10 @@ export async function getUsersWithResults({
       results: true,
     },
     where: {
-      results: {
-        some: {},
+      achievements: {
+        some: {
+          achievementType: "FIFTH_RACE",
+        },
       },
     },
   });
@@ -59,8 +63,10 @@ export async function getUsersWithResults({
 export async function getTotalUsers() {
   return prisma.user.count({
     where: {
-      results: {
-        some: {},
+      achievements: {
+        some: {
+          achievementType: "FIFTH_RACE",
+        },
       },
     },
   });
