@@ -56,7 +56,6 @@ export async function getFifthRaceBadge() {
     },
   });
 
-
   const fifthRaceBadge = await prisma.achievement.findFirst({
     where: {
       achievementType: "FIFTH_RACE",
@@ -64,7 +63,7 @@ export async function getFifthRaceBadge() {
     },
   });
 
-  if (!fifthRaceBadge && resultsCount === 5) {
+  if (!fifthRaceBadge && resultsCount >= 5) {
     await prisma.achievement.create({
       data: {
         achievementType: "FIFTH_RACE",
