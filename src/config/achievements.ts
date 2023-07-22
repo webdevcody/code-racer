@@ -11,4 +11,9 @@ export const achievements: Achievement[] = [
     image: "/static/first.png",
     name: "First Snippet",
   },
+  {
+    type: "FIFTH_RACE",
+    image: "/static/first.png",
+    name: "Fifth Race",
+  },
 ];

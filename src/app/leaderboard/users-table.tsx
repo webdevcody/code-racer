@@ -116,14 +116,17 @@ export function UsersTable({
   );
 
   return (
+    <>
     <DataTable
       columns={columns}
       data={data}
       pageCount={pageCount}
       defaultSorting={{
         prop: "averageCpm",
-        val: "desc",
+        val: "asc",
       }}
-    />
+      />
+      <p className="text-sm md:text-base mt-1 text-muted-foreground">You must complete have completed 5 races to be placed in the leaderboards.</p>
+    </>
   );
 }
