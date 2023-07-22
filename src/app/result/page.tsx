@@ -4,11 +4,13 @@ import Chart, { ParentCurrentChart } from "./chart";
 import { Icons } from "@/components/icons";
 import Link from "next/link";
 import { FirstRaceBadge } from "./first-race-badge";
+import { FifthRaceBadge } from "./fifth-race-badge"
 import { getCurrentUser } from "@/lib/session";
 import { Voting } from "./voting";
 import { Badge } from "@/components/ui/badge";
 import {
   getFirstRaceBadge,
+  getFifthRaceBadge,
   getUserResultsForSnippet,
   getCurrentRaceResult,
   ParsedRacesResult,
@@ -51,6 +53,8 @@ async function AuthenticatedPage({
   const currentSnippet = await getSnippetById(currentRaceResult.snippetId);
 
   const firstRaceBadge = await getFirstRaceBadge();
+  const fifthRaceBadge = await getFifthRaceBadge();
+
   let raceResults: ParsedRacesResult[] = [];
   let cardObjects = [] as { title: string; value: string | undefined }[];
 
@@ -84,6 +88,7 @@ async function AuthenticatedPage({
     <div className="w-auto">
       <div className="flex flex-col justify-center gap-4 mt-5">
         {firstRaceBadge && <FirstRaceBadge image={firstRaceBadge.image} />}
+        {fifthRaceBadge && <FifthRaceBadge  image={fifthRaceBadge.image}/>}
         <Heading
           centered
           title="Your Race Results"
@@ -94,7 +99,9 @@ async function AuthenticatedPage({
             return (
               <Card key={idx}>
                 <CardHeader>
-                  <CardTitle className="text-center">{c.title}</CardTitle>
+                  <CardTitle className="text-center text-warning">
+                    {c.title}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="text-center">{c.value}</CardContent>
               </Card>
@@ -103,15 +110,14 @@ async function AuthenticatedPage({
         </div>
       </div>
       <div className="flex flex-col px-8 rounded-xl">
-        <Tabs defaultValue="Current" className="w-full">
-          <TabsList>
+        <Tabs defaultValue="Current" className="w-full m-5">
+          <TabsList className="m-5">
             <TabsTrigger value="Current">Current</TabsTrigger>
-            <TabsTrigger value="History">History</TabsTrigger>
             <TabsTrigger value="Replay">Replay</TabsTrigger>
             <TabsTrigger value="TopTen">Top 10</TabsTrigger>
+            <TabsTrigger value="History">History</TabsTrigger>
           </TabsList>
           <TabsContent value="Current">
-            {/* works even for unauthorized user */}
             <span className="text-2xl mx-auto text-primary flex-wrap sm:hidden">
               View in Larger Screen to Unlock Exciting Features!
             </span>
@@ -131,16 +137,37 @@ async function AuthenticatedPage({
       <div className="flex flex-wrap items-center justify-center gap-4 p-2">
         <Link
           title="Retry"
-          className={cn(buttonVariants(), "gap-2")}
+          className={cn(buttonVariants(), "gap-2 text-accent")}
           href={`/race/practice?snippetId=${currentRaceResult.snippetId}`}
         >
           <Icons.refresh className="w-5 h-5" aria-hidden="true" /> Retry
         </Link>
-        <Link title="New Race" className={buttonVariants()} href="/race">
+        <Link
+          title="New Race"
+          className={cn(buttonVariants(), "text-accent")}
+          href="/race"
+        >
           <Icons.chevronRight className="w-5 h-5" aria-hidden="true" /> New Race
         </Link>
       </div>
-      <div className="my-4">
+
+      <div className="flex items-center justify-center m-2">
+        <Badge
+          variant="outline"
+          className="flex items-center justify-center text-base border-2"
+        >
+          <Badge variant="secondary" className="text-warning">
+            Tab
+          </Badge>
+          <span className="m-1">+</span>
+          <Badge variant="secondary" className="text-warning">
+            Enter
+          </Badge>
+          <span className="m-1">Restart Game</span>
+        </Badge>
+      </div>
+
+      <div className="m-2">
         {currentRaceResult && (
           <Voting
             snippetId={currentRaceResult.snippetId}
@@ -148,21 +175,6 @@ async function AuthenticatedPage({
             usersVote={usersVote ?? undefined}
           />
         )}
-      </div>
-      <div className="flex items-center justify-center space-x-2">
-        <Badge variant="outline">
-          <Badge variant="secondary" className="mr-2">
-            tab
-          </Badge>
-          <span>+</span>
-          <Badge variant="secondary" className="mx-2">
-            enter
-          </Badge>
-          <span>restart game</span>
-        </Badge>
-
-        {/* <span className={buttonVariants()}>tab</span> <span>+</span>
-        <span className={buttonVariants()}>enter</span> <span>-</span> */}
       </div>
     </div>
   );

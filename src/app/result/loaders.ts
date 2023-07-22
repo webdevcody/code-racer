@@ -39,6 +39,41 @@ export async function getFirstRaceBadge() {
   }
 }
 
+export async function getFifthRaceBadge() {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return undefined;
+  }
+
+  const fifthRaceAchievement = achievements.find(
+    (achievement) => achievement.type === "FIFTH_RACE",
+  );
+
+  const resultsCount = await prisma.result.count({
+    where: {
+      userId: user.id,
+    },
+  });
+
+  const fifthRaceBadge = await prisma.achievement.findFirst({
+    where: {
+      achievementType: "FIFTH_RACE",
+      userId: user.id,
+    },
+  });
+
+  if (!fifthRaceBadge && resultsCount >= 5) {
+    await prisma.achievement.create({
+      data: {
+        achievementType: "FIFTH_RACE",
+        userId: user.id,
+      },
+    });
+    return fifthRaceAchievement;
+  }
+}
+
 export async function getUserResultsForSnippet(
   snippetId: string,
   numberOfResults = 7,

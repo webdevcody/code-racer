@@ -14,8 +14,9 @@ enum UserRole {
 }
 
 enum AchievementType {
-    FIRST_RACE
-    FIRST_SNIPPET
+  FIRST_RACE
+  FIRST_SNIPPET
+  FIFTH_RACE
 }
 
 model User {

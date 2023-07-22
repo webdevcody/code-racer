@@ -35,7 +35,7 @@ export default function MultiplayerRace() {
   }
 
   return (
-    <Card className="flex flex-col justify-between flex-1 border-2 border-warning  ">
+    <Card className="flex flex-col justify-between flex-1 border-2 border-warning">
       <CardHeader>
         <div className="grid text-center place-content-center">
           <Users className="justify-self-center" size={40} />
