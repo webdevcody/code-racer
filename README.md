@@ -14,6 +14,7 @@ Code Racer is a multiplayer coding game where developers can compete against eac
 ## Features
 
 - Code snippet games
+- [Multiplayer races](./src/wss/README.md)
 
 ## Technologies Used
 

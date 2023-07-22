@@ -12,7 +12,7 @@ export default function ViewPhoto() {
    */
   const router = useRouter();
   const searchParam = useSearchParams();
-  const photoURL = searchParam.get("photoURL");
+  const photoURL = searchParam?.get("photoURL") ?? "";
   return (
     <div className="grid place-items-center h-[clamp(55rem,90dvh,65rem)] bg-monochrome-low-opacity">
       <div className="flex flex-col gap-4 justify-center h-[85%]">

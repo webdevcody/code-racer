@@ -50,7 +50,7 @@ export function MobileNav({
                       "text-xl w-full",
                       {
                         "bg-background border-2 border-primary text-primary":
-                          isActiveRoute(currentPathName, item.href),
+                          isActiveRoute(currentPathName as string, item.href),
                       },
                     )}
                     href={item.href}

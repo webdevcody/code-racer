@@ -10,7 +10,7 @@ import { usePathname } from "next/navigation";
 
 export function MainNav({ items }: { items?: NavItem[] }) {
   const currentPathName = usePathname();
-  console.log(items);
+//   console.log(items);
   return (
     <div className="flex items-center h-full gap-6 lg:gap-10">
       <Link href="/" className="flex items-center space-x-2">
@@ -32,7 +32,7 @@ export function MainNav({ items }: { items?: NavItem[] }) {
                     {
                       "cursor-not-allowed opacity-80": item.disabled,
                       "border-b-2 border-b-yellow-500 border-opacity-100 text-yellow-500 decoration-2 decoration-primary":
-                      isActiveRoute(currentPathName, item.href),
+                      isActiveRoute(currentPathName as string, item.href),
                     },
                   )}
                 >

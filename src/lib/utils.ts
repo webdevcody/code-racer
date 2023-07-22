@@ -3,6 +3,10 @@ import { twMerge } from "tailwind-merge";
 import { toast } from "@/components/ui/use-toast";
 import * as z from "zod";
 
+export function raise(message: string): never {
+  throw new Error(message);
+}
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
