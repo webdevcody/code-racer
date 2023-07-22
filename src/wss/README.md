@@ -2,7 +2,6 @@
 
 ### Lifecycle
 
-
 1. Players can connect to the game server through Socket.io.
 2. When a player wants to enter a race, the server handles the player's request and adds them to the race. If the race is not already created, a new race is created, and the player is added as the first participant.
 3. If the race already has participants, additional players are allowed to join until the maximum number of participants (MAX_PARTICIPANTS_PER_RACE) is reached. After this limit, the race is considered full, and no more players can join.
