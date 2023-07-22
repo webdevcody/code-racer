@@ -7,7 +7,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { bruno_ace_sc } from "@/lib/fonts";
 import { createPrivateRaceRoom } from "../actions";
 
-export default function FriendsRace() {
+export default function FriendsRace({ enabled }: { enabled: boolean }) {
   const { data: session } = useSession();
   const { toast } = useToast();
 
@@ -34,6 +34,7 @@ export default function FriendsRace() {
           variant="black"
           disabled
           onClick={() => {
+            if (!enabled) return;
             if (!session) {
               toast({
                 title: "Unauthorized",

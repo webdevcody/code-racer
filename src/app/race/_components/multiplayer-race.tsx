@@ -7,8 +7,9 @@ import React, { SetStateAction, useState } from "react";
 import { bruno_ace_sc } from "@/lib/fonts";
 import LanguageDropDown from "@/app/add-snippet/_components/language-dropdown";
 import { useRouter } from "next/navigation";
+import clsx from "clsx";
 
-export default function MultiplayerRace() {
+export default function MultiplayerRace({ enabled }: { enabled: boolean }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -22,6 +23,8 @@ export default function MultiplayerRace() {
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (!enabled) return;
+
     setIsLoading(true);
     setError("");
     if (!selectedMultiplayerLanguage)
@@ -53,34 +56,47 @@ export default function MultiplayerRace() {
       <CardContent>
         <form
           onSubmit={handleSubmit}
-          className="grid items-start grid-cols-2 gap-2"
+          className={clsx({
+            "grid items-start grid-cols-2 gap-2": enabled,
+            "grid items-center gap-2": !enabled,
+          })}
         >
-          <div className="flex flex-col">
-            <LanguageDropDown
-              className={cn("w-full", error && "border-red-500")}
-              codeLanguage={selectedMultiplayerLanguage}
-              setCodeLanguage={handleSetCodeLanguage}
-            />
-            <span className="text-red-500">{error}</span>
-          </div>
-          <Button
-            disabled={isLoading || selectedMultiplayerLanguage === ""}
-            variant="black"
-            className="relative justify-start border"
-          >
-            Start racing
-            {isLoading ? (
-              <Loader2
-                size={20}
-                className="text-white absolute -translate-y-1/2 opacity-50 right-4 top-1/2"
-              />
-            ) : (
-              <ArrowRight
-                size="20"
-                className="absolute -translate-y-1/2 opacity-50 right-4 top-1/2"
-              />
-            )}
-          </Button>
+          {!enabled ? (
+            <Button className="w-full" variant="black" disabled>
+              Create Room (Coming Soon)
+            </Button>
+          ) : (
+            <>
+              <div className="flex flex-col">
+                <LanguageDropDown
+                  className={cn("w-full", error && "border-red-500")}
+                  codeLanguage={selectedMultiplayerLanguage}
+                  setCodeLanguage={handleSetCodeLanguage}
+                />
+                <span className="text-red-500">{error}</span>
+              </div>
+              <Button
+                disabled={
+                  !enabled || isLoading || selectedMultiplayerLanguage === ""
+                }
+                variant="black"
+                className="relative justify-start border"
+              >
+                Start racing
+                {isLoading ? (
+                  <Loader2
+                    size={20}
+                    className="text-white absolute -translate-y-1/2 opacity-50 right-4 top-1/2"
+                  />
+                ) : (
+                  <ArrowRight
+                    size="20"
+                    className="absolute -translate-y-1/2 opacity-50 right-4 top-1/2"
+                  />
+                )}
+              </Button>
+            </>
+          )}
         </form>
       </CardContent>
     </Card>
