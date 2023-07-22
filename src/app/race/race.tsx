@@ -173,6 +173,9 @@ export default function Race({
         startRaceEventHandlers();
       });
     });
+    return () => {
+      socket.disconnect();
+    }
   }, []);
   //send updated position to server
   useEffect(() => {
