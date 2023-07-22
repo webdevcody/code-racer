@@ -123,7 +123,7 @@ export function UsersTable({
       pageCount={pageCount}
       defaultSorting={{
         prop: "averageCpm",
-        val: "asc",
+        val: "desc",
       }}
       />
       <p className="text-sm md:text-base mt-1 text-muted-foreground">You must complete have completed 5 races to be placed in the leaderboards.</p>

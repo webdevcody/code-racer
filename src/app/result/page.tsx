@@ -4,11 +4,13 @@ import Chart, { ParentCurrentChart } from "./chart";
 import { Icons } from "@/components/icons";
 import Link from "next/link";
 import { FirstRaceBadge } from "./first-race-badge";
+import { FifthRaceBadge } from "./fifth-race-badge"
 import { getCurrentUser } from "@/lib/session";
 import { Voting } from "./voting";
 import { Badge } from "@/components/ui/badge";
 import {
   getFirstRaceBadge,
+  getFifthRaceBadge,
   getUserResultsForSnippet,
   getCurrentRaceResult,
   ParsedRacesResult,
@@ -51,6 +53,8 @@ async function AuthenticatedPage({
   const currentSnippet = await getSnippetById(currentRaceResult.snippetId);
 
   const firstRaceBadge = await getFirstRaceBadge();
+  const fifthRaceBadge = await getFifthRaceBadge();
+
   let raceResults: ParsedRacesResult[] = [];
   let cardObjects = [] as { title: string; value: string | undefined }[];
 
@@ -84,6 +88,7 @@ async function AuthenticatedPage({
     <div className="w-auto">
       <div className="flex flex-col justify-center gap-4 mt-5">
         {firstRaceBadge && <FirstRaceBadge image={firstRaceBadge.image} />}
+        {fifthRaceBadge && <FifthRaceBadge  image={fifthRaceBadge.image}/>}
         <Heading
           centered
           title="Your Race Results"
