@@ -34,7 +34,7 @@ If you are getting WSL error when you launch your desktop docker application, go
 
 To get started with Code Racer locally, follow these steps
 
-1. Fork the repo asdfasdf
+1. Fork the repo
 
 2. clone your fork
 

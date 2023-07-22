@@ -7,7 +7,7 @@ const hoverLinkStyles = "hover:underline underline-offset-2";
 
 export function Footer() {
   return (
-    <footer className="border-t-2 border-primary">
+    <footer className="bg-gray-300 dark:bg-black ">
       <article className="container flex flex-col py-6 gap-x-8 gap-y-4 lg:flex-row lg:justify-between lg:py-4">
         <section className="flex flex-col lg:flex-row gap-x-2 gap-y-4 lg:items-center">
           <Link href={"/"} title="CodeRacer Home">
@@ -51,7 +51,7 @@ export function Footer() {
 
         <section
           data-name="legal-links"
-          className="text-sm flex flex-wrap flex-row gap-4 lg:items-center"
+          className="flex flex-row flex-wrap gap-4 text-sm lg:items-center"
         >
           <Link
             href={"/privacy"}
@@ -104,7 +104,7 @@ export function Footer() {
           </p>
         </section>
 
-        <div className="text-center mb-2">
+        <div className="mb-2 text-center">
           <Link href={"/privacy"} className="text-xs font-medium">
             Privacy Policy
           </Link>
