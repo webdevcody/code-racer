@@ -14,6 +14,7 @@ export default async function ReviewPage() {
   return (
     <div className="container flex flex-col items-center p-4 space-y-4">
       <Heading
+        centered
         title="Review page"
         description="Review snippets to either approve or remove"
       />
@@ -26,8 +27,12 @@ export default async function ReviewPage() {
               className="flex flex-col justify-between gap-4 p-8 border rounded overflow-hidden min-h-[100px]"
               key={s.id}
             >
-              <code className="text-muted-foreground">{s.code}</code>
-              <span className="text-sm">Total characters: {s.code.length}</span>
+              <pre className="text-sm md:text-base whitespace-pre-wrap text-muted-foreground">
+                {s.code}
+              </pre>
+              <span className="text-sm mt-auto">
+                Total characters: {s.code.length}
+              </span>
               <ReviewButtons snippetId={s.id} />
             </div>
           ))}
