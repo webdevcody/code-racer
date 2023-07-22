@@ -6,9 +6,10 @@ import { getCurrentUser } from "@/lib/session";
 import { snippetSchema } from "@/lib/validations/snippet";
 import { Configuration, OpenAIApi } from "openai";
 import { prisma } from "@/lib/prisma";
+import { env } from "@/env.mjs";
 
 const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: env.OPENAI_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
 
@@ -19,7 +20,7 @@ export const addSnippetAction = safeAction(snippetSchema)(async (input) => {
     throw new UnauthorizedError();
   }
 
-  if (process.env.OPENAI_API_KEY) {
+  if (env.OPENAI_API_KEY) {
     try {
       const validationResponse = await openai.createChatCompletion({
         model: "gpt-3.5-turbo",

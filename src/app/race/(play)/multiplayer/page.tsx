@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 
 import NoSnippet from "../../no-snippet";
 import Race from "../../race";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -34,6 +35,9 @@ export default async function MultiplayerRacePage({
     lang: string;
   };
 }) {
+  if (!searchParams.lang) {
+    redirect("/race");
+  }
   const user = await getCurrentUser();
   const snippet = await getRandomSnippet(searchParams.lang);
   const language = searchParams.lang;
