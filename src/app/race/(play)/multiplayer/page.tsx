@@ -7,26 +7,50 @@ import NoSnippet from "../../no-snippet";
 import Race from "../../race";
 import { redirect } from "next/navigation";
 import { type Snippet, type User } from "@prisma/client";
+import { siteConfig } from "@/config/site";
 
 export const dynamic = "force-dynamic";
 
 // This function will find race that is most suitable to user
 async function raceMatchMaking(snippet: Snippet, userId?: User["id"]): Promise<RaceType> {
-  console.log("raceMatchMaking invoked");
-  const races = await prisma.race.findMany({
+  if (userId) {
+    // For logged in user, we choose race if:
+      // 1. its snippet is the same
+      // 2. hasn't started or ended yet
+      // 3. all participants are logged in user
+      // 4. race's participants has not reached maxiumun capacity
+      // TODO: 5. participants stats most suitable to current user
+    
+    let availableRace = await prisma.race.findMany({
       where: {
         snippet: {
-          language: snippet.language
+          id: snippet.id
+        },
+        AND: [{ startedAt: null }, { endedAt: null }],
+        participants: {
+          every: {
+            user: {
+              isNot: null
+            }
+          },
+        },
+      },
+      include: {
+        participants:  true,
+        _count: {
+          select: {
+            participants: true
+          }
         }
-    },
-    include: {
-      participants: true
-    }
-  });
+      }
+    });
 
-  if (races.length < 1) {
-    // There is no existing race, we create a new one
-    return await prisma.race.create({
+    // filter out full race
+    availableRace = availableRace.filter((race) => race._count.participants < siteConfig.multiplayer.maxParticipantsPerRace);
+
+    // TODO: sort races based on participant stats most suitable to current user
+    // for now we pick first one, if there isn't any create one instead
+    const race = availableRace.length > 0 ? availableRace[0] : await prisma.race.create({
       data: {
         snippet: {
           connect: {
@@ -35,28 +59,42 @@ async function raceMatchMaking(snippet: Snippet, userId?: User["id"]): Promise<R
         }
       }
     });
-  }
-  
-  if (!userId) {
-    // If user is a GUEST user, we choose:
-    // Race which its participant is also a guest user
-    const guestOnlyRaces = races.filter((race) => !(race.participants[0].userId));
-
-    if (guestOnlyRaces.length > 0) {
-      return guestOnlyRaces[0];
-    }
+    console.log("Picked race", race);
+    return race;
   }
   else {
-    // If user is LOGGED IN, we choose:
-    // Race which its participant has similar stats on race's snippet
-    const loggedInUserRaces = races.filter((race) => race.participants[0].userId && race.participants[0].userId !== userId);
-    if (loggedInUserRaces.length > 0) {
-      return loggedInUserRaces[0];
-    }
-  }
+    // For guest user, we choose race if:
+      // 1. its snippet is the same
+      // 2. hasn't started or ended yet
+      // 3. all participants are guest user
+      // 4. race's participants has not reached maxiumun capacity
+    
+    let availableRace = await prisma.race.findMany({
+      where: {
+        snippet: {
+          id: snippet.id
+        },
+        AND: [{ startedAt: null }, { endedAt: null }],
+        participants: {
+          every: {
+            user: null
+          },
+        },
+      },
+      include: {
+        _count: {
+          select: {
+            participants: true
+          }
+        }
+      }
+    });
 
-  // Failed to find suitable race, then we create one
-  return await prisma.race.create({
+    // filter out full race
+    availableRace = availableRace.filter((race) => race._count.participants < siteConfig.multiplayer.maxParticipantsPerRace);
+
+    // pick first one, if there isn't any create one instead
+    const race = availableRace.length > 0 ? availableRace[0] : await prisma.race.create({
       data: {
         snippet: {
           connect: {
@@ -65,6 +103,9 @@ async function raceMatchMaking(snippet: Snippet, userId?: User["id"]): Promise<R
         }
       }
     });
+    console.log("Picked race", race);
+    return race;
+  }
 }
 
 async function getRandomSnippet(lang: string) {
