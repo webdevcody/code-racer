@@ -6,8 +6,66 @@ import { prisma } from "@/lib/prisma";
 import NoSnippet from "../../no-snippet";
 import Race from "../../race";
 import { redirect } from "next/navigation";
+import { type Snippet, type User } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
+
+// This function will find race that is most suitable to user
+async function raceMatchMaking(snippet: Snippet, userId?: User["id"]): Promise<RaceType> {
+  console.log("raceMatchMaking invoked");
+  const races = await prisma.race.findMany({
+      where: {
+        snippet: {
+          language: snippet.language
+        }
+    },
+    include: {
+      participants: true
+    }
+  });
+
+  if (races.length < 1) {
+    // There is no existing race, we create a new one
+    return await prisma.race.create({
+      data: {
+        snippet: {
+          connect: {
+            id: snippet.id
+          }
+        }
+      }
+    });
+  }
+  
+  if (!userId) {
+    // If user is a GUEST user, we choose:
+    // Race which its participant is also a guest user
+    const guestOnlyRaces = races.filter((race) => !(race.participants[0].userId));
+
+    if (guestOnlyRaces.length > 0) {
+      return guestOnlyRaces[0];
+    }
+  }
+  else {
+    // If user is LOGGED IN, we choose:
+    // Race which its participant has similar stats on race's snippet
+    const loggedInUserRaces = races.filter((race) => race.participants[0].userId && race.participants[0].userId !== userId);
+    if (loggedInUserRaces.length > 0) {
+      return loggedInUserRaces[0];
+    }
+  }
+
+  // Failed to find suitable race, then we create one
+  return await prisma.race.create({
+      data: {
+        snippet: {
+          connect: {
+            id: snippet.id
+          }
+        }
+      }
+    });
+}
 
 async function getRandomSnippet(lang: string) {
   const itemCount = await prisma.snippet.count({
@@ -53,34 +111,11 @@ export default async function MultiplayerRacePage({
     );
   }
 
-  let raceToJoin: RaceType;
+  let raceToJoin: RaceType | null = null;
   let participantId: RaceParticipant["id"];
 
   //Fetch available races and join one. if there none, create one.
-
-  const races = await prisma.race.findMany({
-    where: {
-      startedAt: null,
-      endedAt: null,
-      snippet: {
-        language: language,
-      },
-    },
-  });
-
-  if (races.length === 0) {
-    raceToJoin = await prisma.race.create({
-      data: {
-        snippet: {
-          connect: {
-            id: snippet.id,
-          },
-        },
-      },
-    });
-  } else {
-    raceToJoin = races[Math.floor(Math.random() * races.length)]!;
-  }
+  raceToJoin = await raceMatchMaking(snippet, user?.id);
 
   const participant = await prisma.raceParticipant.create({
     data: {
@@ -93,7 +128,7 @@ export default async function MultiplayerRacePage({
         : undefined,
       Race: {
         connect: {
-          id: raceToJoin.id,
+          id: raceToJoin?.id,
         },
       },
     },

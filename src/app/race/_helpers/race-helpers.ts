@@ -1,3 +1,6 @@
+import { prisma } from "@/lib/prisma";
+import { Race, Snippet, User } from "@prisma/client";
+
 function calculateCPM(
   numberOfCharacters: number,
   secondsTaken: number,
