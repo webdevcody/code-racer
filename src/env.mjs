@@ -12,7 +12,7 @@ export const env = createEnv({
     MULTIPLAYER: z
       .enum(["true", "false"])
       .transform((v) => v === "true")
-      .default(false),
+      .or(z.undefined().transform(() => false)),
   },
   skipValidation: process.env.SKIP_ENV_VALIDATION === "true",
   client: {},
