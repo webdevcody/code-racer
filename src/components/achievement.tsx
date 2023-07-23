@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect } from "react";
 import { toast } from "@/components/ui/use-toast";
 import { tossConfetti } from "@/context/use-confetti";
 import { Achievement } from "@/types/achievement";
@@ -43,6 +46,24 @@ export const AchievementCard = ({
     </li>
   );
 };
+
+export function AchievementBadge({
+  name,
+  title,
+  description,
+  image,
+}: Parameters<typeof unlockAchievement>[0]) {
+  useEffect(() => {
+    unlockAchievement({
+      name,
+      title,
+      description,
+      image,
+    });
+  }, [name, title, description, image]);
+
+  return null;
+}
 
 export function unlockAchievement({
   name,

@@ -3,14 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Chart, { ParentCurrentChart } from "./chart";
 import { Icons } from "@/components/icons";
 import Link from "next/link";
-import { FirstRaceBadge } from "./first-race-badge";
-import { FifthRaceBadge } from "./fifth-race-badge";
 import { getCurrentUser } from "@/lib/session";
 import { Voting } from "./voting";
 import { Badge } from "@/components/ui/badge";
 import {
-  getFirstRaceBadge,
-  getFifthRaceBadge,
   getUserResultsForSnippet,
   getCurrentRaceResult,
   ParsedRacesResult,
@@ -24,6 +20,7 @@ import { ReplayCode } from "./replay-timestamps";
 import { getSnippetById } from "../race/(play)/practice/loaders";
 import { TopTable } from "./topten";
 import { notFound } from "next/navigation";
+import { RaceAchievementBadges } from "./race-achievement-badges";
 
 async function AuthenticatedPage({
   resultId,
@@ -50,9 +47,6 @@ async function AuthenticatedPage({
 
   const usersVote = await getSnippetVote(currentRaceResult.snippetId);
   const currentSnippet = await getSnippetById(currentRaceResult.snippetId);
-
-  const firstRaceBadge = await getFirstRaceBadge();
-  const fifthRaceBadge = await getFifthRaceBadge();
 
   let raceResults: ParsedRacesResult[] = [];
   let cardObjects = [] as { title: string; value: string | undefined }[];
@@ -86,8 +80,7 @@ async function AuthenticatedPage({
   return (
     <div className="w-auto">
       <div className="flex flex-col justify-center gap-4 mt-5">
-        {firstRaceBadge && <FirstRaceBadge image={firstRaceBadge.image} />}
-        {fifthRaceBadge && <FifthRaceBadge image={fifthRaceBadge.image} />}
+        <RaceAchievementBadges />
         <Heading
           centered
           title="Your Race Results"
