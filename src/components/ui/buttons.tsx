@@ -10,7 +10,9 @@ export const LoginButton = () => {
     <Button
       variant="outline"
       className="flex gap-2 px-4"
-      onClick={() => signIn("github")}
+      onClick={() => signIn("github", {
+        callbackUrl: `${location.origin}/race`
+      })}
     >
       <Icons.github className="h-[1.2rem] w-[1.2rem]" />
       <p className="whitespace-nowrap">Sign in</p>
