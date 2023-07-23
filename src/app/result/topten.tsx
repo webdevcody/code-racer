@@ -20,6 +20,7 @@ async function getTopTen(snippet: string | undefined) {
       cpm: "desc",
     },
     take: 10,
+    distinct: ["userId"],
     include: {
       user: true,
     },
