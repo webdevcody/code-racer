@@ -104,7 +104,7 @@ export default function Race({
     ReplayTimeStampProps[]
   >([]);
 
-  //multiplayer-specific
+  //multiplayer-specific -----------------------------------------------------------------------------------
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [raceStatus, setRaceStatus] = useState<
     "waiting" | "countdown" | "running" | "finished"
@@ -123,7 +123,6 @@ export default function Race({
     socket.on(`RACE_${raceId}`, (payload: SocketPayload) => {
       switch (payload.type) {
         case "GAME_STATE_UPDATE":
-          // console.log({ payload });
           const { raceState } = gameStateUpdatePayloadSchema.parse(
             payload.payload,
           );
@@ -159,6 +158,7 @@ export default function Race({
       }
     });
   }
+
   // Connection to wss
   useEffect(() => {
     if (!raceId || !participantId) return;
@@ -175,8 +175,9 @@ export default function Race({
     });
     return () => {
       socket.disconnect();
-    }
+    };
   }, []);
+
   //send updated position to server
   useEffect(() => {
     if (!participantId || !raceId || raceStatus !== "running") return;
@@ -193,7 +194,7 @@ export default function Race({
     }, 200);
     return () => clearInterval(gameLoop);
   }, [raceStatus, position]);
-  //end of multiplayer-specific
+  //end of multiplayer-specific -----------------------------------------------------------------------------------
 
   async function endRace() {
     //TODO: find a way to only trigger this once, not by every player in the race.
@@ -281,18 +282,6 @@ export default function Race({
     ]);
   }, [input]);
 
-  useEffect(() => {
-    const handleRestartKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        handleRestart();
-      }
-    };
-    document.addEventListener("keydown", handleRestartKey);
-    return () => {
-      document.removeEventListener("keydown", handleRestartKey);
-    };
-  }, []);
-
   function focusOnLoad() {
     if (inputElement.current !== null) {
       inputElement.current?.focus();
@@ -300,6 +289,11 @@ export default function Race({
   }
 
   function handleKeyboardDownEvent(e: React.KeyboardEvent<HTMLInputElement>) {
+    // Restart
+    if (e.key === "Escape") {
+      handleRestart();
+      return;
+    }
     // Unfocus Shift + Tab
     if (e.shiftKey && e.key === "Tab") {
       e.currentTarget.blur();
