@@ -549,6 +549,7 @@ export default function Race({
         onClick={focusOnLoad}
         role="none" // eslint fix - will remove the semantic meaning of an element while still exposing it to assistive technology
       >
+        <p>participant id: {participantId}</p>
         {raceId && raceStatus === "waiting" && !startTime && (
           <div>Waiting for players...</div>
         )}

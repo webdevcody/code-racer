@@ -6,8 +6,107 @@ import { prisma } from "@/lib/prisma";
 import NoSnippet from "../../no-snippet";
 import Race from "../../race";
 import { redirect } from "next/navigation";
+import { type Snippet, type User } from "@prisma/client";
+import { siteConfig } from "@/config/site";
 
 export const dynamic = "force-dynamic";
+
+// This function will find race that is most suitable to user
+async function raceMatchMaking(snippet: Snippet, userId?: User["id"]): Promise<RaceType> {
+  if (userId) {
+    // For logged in user, we choose race if:
+      // 1. its snippet is the same
+      // 2. hasn't started or ended yet
+      // 3. all participants are logged in user
+      // 4. race's participants has not reached maxiumun capacity
+      // TODO: 5. participants stats most suitable to current user
+    
+    let availableRace = await prisma.race.findMany({
+      where: {
+        snippet: {
+          id: snippet.id
+        },
+        AND: [{ startedAt: null }, { endedAt: null }],
+        participants: {
+          every: {
+            user: {
+              isNot: null
+            }
+          },
+        },
+      },
+      include: {
+        participants:  true,
+        _count: {
+          select: {
+            participants: true
+          }
+        }
+      }
+    });
+
+    // filter out full race
+    availableRace = availableRace.filter((race) => race._count.participants < siteConfig.multiplayer.maxParticipantsPerRace);
+
+    // TODO: sort races based on participant stats most suitable to current user
+    // for now we pick first one, if there isn't any create one instead
+    const race = availableRace.length > 0 ? availableRace[0] : await prisma.race.create({
+      data: {
+        snippet: {
+          connect: {
+            id: snippet.id
+          }
+        }
+      }
+    });
+    console.log("Picked race", race);
+    return race;
+  }
+  else {
+    // For guest user, we choose race if:
+      // 1. its snippet is the same
+      // 2. hasn't started or ended yet
+      // 3. all participants are guest user
+      // 4. race's participants has not reached maxiumun capacity
+    
+    let availableRace = await prisma.race.findMany({
+      where: {
+        snippet: {
+          id: snippet.id
+        },
+        AND: [{ startedAt: null }, { endedAt: null }],
+        participants: {
+          every: {
+            user: null
+          },
+        },
+      },
+      include: {
+        _count: {
+          select: {
+            participants: true
+          }
+        }
+      }
+    });
+
+    // filter out full race
+    availableRace = availableRace.filter((race) => race._count.participants < siteConfig.multiplayer.maxParticipantsPerRace);
+
+    // pick first one, if there isn't any create one instead
+    const race = availableRace.length > 0 ? availableRace[0] : await prisma.race.create({
+      data: {
+        snippet: {
+          connect: {
+            id: snippet.id
+          }
+        }
+      }
+    });
+    console.log("Picked race", race);
+    return race;
+  }
+}
 
 async function getRandomSnippet(lang: string) {
   const itemCount = await prisma.snippet.count({
@@ -53,34 +152,11 @@ export default async function MultiplayerRacePage({
     );
   }
 
-  let raceToJoin: RaceType;
+  let raceToJoin: RaceType | null = null;
   let participantId: RaceParticipant["id"];
 
   //Fetch available races and join one. if there none, create one.
-
-  const races = await prisma.race.findMany({
-    where: {
-      startedAt: null,
-      endedAt: null,
-      snippet: {
-        language: language,
-      },
-    },
-  });
-
-  if (races.length === 0) {
-    raceToJoin = await prisma.race.create({
-      data: {
-        snippet: {
-          connect: {
-            id: snippet.id,
-          },
-        },
-      },
-    });
-  } else {
-    raceToJoin = races[Math.floor(Math.random() * races.length)]!;
-  }
+  raceToJoin = await raceMatchMaking(snippet, user?.id);
 
   const participant = await prisma.raceParticipant.create({
     data: {
@@ -93,7 +169,7 @@ export default async function MultiplayerRacePage({
         : undefined,
       Race: {
         connect: {
-          id: raceToJoin.id,
+          id: raceToJoin?.id,
         },
       },
     },
