@@ -65,6 +65,8 @@ export const ReplayCode = ({ code }: { code?: string }) => {
 
   const progress = (currentIndex / (replayTimeStamp.length - 1)) * 100;
 
+  if (!currentTimestamp) handleRestart();
+
   return (
     <div className="py-2 w-full bg-accent text-2xl text-primary relative group">
       {/* Buttons */}
@@ -88,12 +90,12 @@ export const ReplayCode = ({ code }: { code?: string }) => {
       </div>
       <Code
         code={code}
-        userInput={currentTimestamp.char}
-        textIndicatorPosition={currentTimestamp.textIndicatorPosition}
-        currentLineNumber={currentTimestamp.currentLineNumber}
-        currentCharPosition={currentTimestamp.currentCharPosition}
-        errors={currentTimestamp.errors}
-        totalErrors={currentTimestamp.totalErrors}
+        userInput={currentTimestamp?.char}
+        textIndicatorPosition={currentTimestamp?.textIndicatorPosition}
+        currentLineNumber={currentTimestamp?.currentLineNumber}
+        currentCharPosition={currentTimestamp?.currentCharPosition}
+        errors={currentTimestamp?.errors}
+        totalErrors={currentTimestamp?.totalErrors}
       />
       <div className="w-full h-2 bg-secondary mt-2">
         <div

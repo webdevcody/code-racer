@@ -250,7 +250,7 @@ export default function Race({
 
       router.push(`/result?resultId=${result.id}`);
     } else {
-      router.push(`/result`);
+      router.push(`/result?snippetId=${snippet.id}`);
     }
 
     setSubmittingResults(false);
