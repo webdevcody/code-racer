@@ -257,12 +257,14 @@ export default function Race({
     setSubmittingResults(false);
   }
 
-  // Check if race is finished
   useEffect(() => {
+    // Focus Input
+    inputElement.current?.focus();
+
+    // Check if race is finished
     if (isRaceFinished) {
       endRace();
     }
-    focusOnLoad();
 
     // Calculate the current line and cursor position in that line
     const lines = input.split("\n");
@@ -281,12 +283,6 @@ export default function Race({
       },
     ]);
   }, [input]);
-
-  function focusOnLoad() {
-    if (inputElement.current !== null) {
-      inputElement.current?.focus();
-    }
-  }
 
   function handleKeyboardDownEvent(e: React.KeyboardEvent<HTMLInputElement>) {
     // Restart
@@ -540,7 +536,9 @@ export default function Race({
       {/* </pre> */}
       <div
         className="relative flex flex-col gap-2 p-4 rounded-md lg:p-8 bg-accent w-3/4 mx-auto"
-        onClick={focusOnLoad}
+        onClick={() => {
+          inputElement.current?.focus();
+        }}
         role="none" // eslint fix - will remove the semantic meaning of an element while still exposing it to assistive technology
       >
         <p>participant id: {participantId}</p>
