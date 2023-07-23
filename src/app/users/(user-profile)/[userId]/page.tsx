@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import AchievementCard from "@/components/achievement";
+import { AchievementCard } from "@/components/achievement";
 import ProfileCard from "../(components)/profile-card";
 
 import { achievements } from "@/config/achievements";

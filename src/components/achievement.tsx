@@ -1,8 +1,11 @@
+import { toast } from "@/components/ui/use-toast";
+import { tossConfetti } from "@/context/use-confetti";
 import { Achievement } from "@/types/achievement";
+import { UnlockIcon } from "lucide-react";
 import Image from "next/image";
 import { Icons } from "./icons";
 
-const AchievementCard = ({
+export const AchievementCard = ({
   achievement,
 }: {
   achievement: Pick<Achievement, "image" | "name" | "description"> & {
@@ -41,4 +44,31 @@ const AchievementCard = ({
   );
 };
 
-export default AchievementCard;
+export function unlockAchievement({
+  name,
+  title,
+  description,
+  image,
+}: {
+  name: string;
+  title?: string;
+  description: string;
+  image: string;
+}) {
+  toast({
+    description: (
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center gap-2 text-lg md:text-xl">
+          <UnlockIcon className="text-accent-foreground" />{" "}
+          <span className="text-muted-foreground">Unlocked:</span>{" "}
+          <span className="text-accent-foreground">{title || name}</span>
+        </div>
+        <div className="flex items-center gap-8">
+          <Image src={image} width={65} height={65} alt={`${name} Badge`} />
+          <span>{description}</span>
+        </div>
+      </div>
+    ),
+  });
+  tossConfetti();
+}

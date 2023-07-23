@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
-import { useConfettiContext } from "@/context/confetti";
+import { achievements } from "@/config/achievements";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
@@ -19,6 +19,7 @@ import * as z from "zod";
 import { addSnippetAction, addSnippetForReviewAction } from "./actions";
 import LanguageDropDown from "./language-dropdown";
 import { catchError } from "@/lib/utils";
+import { unlockAchievement } from "@/components/achievement";
 
 const formDataSchema = z.object({
   codeLanguage: z
@@ -37,7 +38,6 @@ type FormData = z.infer<typeof formDataSchema>;
 
 export default function AddSnippetForm({ lang }: { lang: string }) {
   const { toast, dismiss } = useToast();
-  const confettiCtx = useConfettiContext();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formDataSchema),
@@ -101,11 +101,16 @@ export default function AddSnippetForm({ lang }: { lang: string }) {
       if (
         responseData?.message === "snippet-created-and-achievement-unlocked"
       ) {
-        toast({
-          title: "Achievement Unlocked",
-          description: "Uploaded First Snippet",
-        });
-        confettiCtx.showConfetti();
+        const firstSnippetAchievement = achievements.find(
+          (achievement) => achievement.type === "FIRST_SNIPPET",
+        );
+        if (firstSnippetAchievement)
+          unlockAchievement({
+            name: firstSnippetAchievement.name,
+            description:
+              "Thank you! Your first snippet is successfully uploaded!",
+            image: firstSnippetAchievement.image,
+          });
       }
 
       toast({
