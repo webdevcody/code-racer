@@ -38,7 +38,9 @@ export class Game {
     private activeCountdowns = new Map<Race["id"], Promise<void>>();
     // ...
 ```
+
 The activeCountdowns map is an instance variable within the Game class. It is defined as a Map data structure, which associates a Race["id"] (the unique identifier for a race) with a Promise<void>.
 
 #### Purpose:
+
 The primary purpose of the activeCountdowns map is to keep track of the ongoing countdowns for different races in the game. When a race is about to start, a countdown is initiated, and this map is used to ensure that multiple countdowns for the same race do not overlap.

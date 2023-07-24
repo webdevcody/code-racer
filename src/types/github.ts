@@ -1,4 +1,3 @@
-
 interface User {
   login: string;
   id: number;
@@ -65,4 +64,3 @@ export interface CommitInterface {
   committer: User;
   parents: Parent[];
 }
-

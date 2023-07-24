@@ -37,8 +37,9 @@ export default async function ProfilePage({
   const photoURL = userParamsData?.image ?? "/placeholder-image.jpg";
   const displayName = userParamsData?.name ?? "Display Name";
   const bio = userParamsData?.bio;
-  const following = /** userParamsData.following */[] as string[];
-  const followers = /** userParamsData.followers */[] as string[];
+  const following = /** userParamsData.following */ [] as string[];
+  const followers = /** userParamsData.followers */ [] as string[];
+  const profileEmail = userParamsData?.email ?? "";
 
   const totalPoints = 0;
 
@@ -167,7 +168,7 @@ export default async function ProfilePage({
           </div>
         </section>
       </article>
-      <UserCommits />
+      <UserCommits profileEmail={profileEmail} />
     </main>
   );
 }

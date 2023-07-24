@@ -23,7 +23,8 @@ type ParticipantsMap = Map<
 
 export class Game {
   private static readonly START_GAME_COUNTDOWN = 5;
-  private static readonly MAX_PARTICIPANTS_PER_RACE = siteConfig.multiplayer.maxParticipantsPerRace;
+  private static readonly MAX_PARTICIPANTS_PER_RACE =
+    siteConfig.multiplayer.maxParticipantsPerRace;
   private static readonly GAME_LOOP_INTERVAL = 500;
   private static readonly GAME_MAX_POSITION = 100;
   private activeCountdowns = new Map<Race["id"], Promise<void>>();
