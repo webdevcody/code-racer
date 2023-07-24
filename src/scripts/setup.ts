@@ -6,10 +6,6 @@ const getVersion = (version: string) => version.slice(1);
 async function setup() {
   logger.log("📂 Setting up project...");
 
-  logger.log("📦 Installing dependencies...");
-
-  exec("npm install");
-
   exec("node -v", (error, stdout) => {
     if (error) {
       logger.error("❌ Node is not installed. Please install Node.");
@@ -33,6 +29,9 @@ async function setup() {
       }
     }
   });
+
+  logger.log("📦 Installing dependencies...");
+  exec("npm install");
 
   logger.success("✅ Setup complete!");
 }
