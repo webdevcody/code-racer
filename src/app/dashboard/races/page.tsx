@@ -50,7 +50,7 @@ export default async function RacesPage({
   const userPageCount = totalRaces === 0 ? 1 : Math.ceil(totalRaces / take);
   return (
     <Shell layout="dashboard">
-      <Heading title="Races" description="Checkout your previous races." />
+      <Heading title="Races" description="Check out your previous races" />
       <RecentRacesTable data={races} pageCount={userPageCount} />
     </Shell>
   );

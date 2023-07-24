@@ -51,7 +51,7 @@ export default async function SnippetsPage({
     totalSnippets === 0 ? 1 : Math.ceil(totalSnippets / take);
   return (
     <Shell layout="dashboard">
-      <Heading title="Snippets" description="Manage your snippets." />
+      <Heading title="Snippets" description="Manage your snippets" />
       <SnippetsTable data={snippets} pageCount={userPageCount} />
     </Shell>
   );
