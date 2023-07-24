@@ -171,7 +171,7 @@ export default function AddSnippetForm({ lang }: { lang: string }) {
             </FormItem>
           )}
         />
-        <Button className="w-fit" type="submit">
+        <Button className="w-fit text-accent" type="submit">
           Upload
         </Button>
       </form>
