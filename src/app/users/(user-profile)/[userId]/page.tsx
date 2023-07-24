@@ -167,9 +167,8 @@ export default async function ProfilePage({
             )}
           </div>
         </section>
-        <UserCommits profileEmail={profileEmail} />
       </article>
-
+      <UserCommits profileEmail={profileEmail} />
     </main>
   );
 }
