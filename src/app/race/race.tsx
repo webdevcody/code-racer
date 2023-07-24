@@ -79,42 +79,39 @@ export default function Race({
   user?: User;
   snippet: Snippet;
 }) {
-  const [startTime, setStartTime] = useState<Date | null>(null);
   const [input, setInput] = useState("");
-  const [textIndicatorPosition, setTextIndicatorPosition] = useState<
-    number | number[]
-  >(0);
-  const [submittingResults, setSubmittingResults] = useState(false);
-  const [totalErrors, setTotalErrors] = useState(0);
+  const [textIndicatorPosition, setTextIndicatorPosition] = useState(0);
   const [currentLineNumber, setCurrentLineNumber] = useState(0);
   const [currentCharPosition, setCurrentCharPosition] = useState(0);
-  const router = useRouter();
-  const inputElement = useRef<HTMLInputElement | null>(null);
-  const code = snippet.code.trimEnd();
+  const [currentChar, setCurrentChar] = useState("");
 
+  const [startTime, setStartTime] = useState<Date | null>(null);
+  const [submittingResults, setSubmittingResults] = useState(false);
+  const [totalErrors, setTotalErrors] = useState(0);
+
+  const [raceTimeStamp, setRaceTimeStamp] = useState<RaceTimeStampProps[]>([]);
+  const [replayTimeStamp, setReplayTimeStamp] = useState<
+    ReplayTimeStampProps[]
+  >([]);
+
+  const code = snippet.code.trimEnd();
   const currentText = code.substring(0, input.length);
   const errors = input
     .split("")
     .map((char, index) => (char !== currentText[index] ? index : -1))
     .filter((index) => index !== -1);
 
-  const [currentChar, setCurrentChar] = useState("");
-  const [raceTimeStamp, setRaceTimeStamp] = useState<RaceTimeStampProps[]>([]);
-  const [replayTimeStamp, setReplayTimeStamp] = useState<
-    ReplayTimeStampProps[]
-  >([]);
+  const inputElement = useRef<HTMLInputElement | null>(null);
+  const router = useRouter();
 
-  //multiplayer-specific
+  //multiplayer-specific -----------------------------------------------------------------------------------
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [raceStatus, setRaceStatus] = useState<
     "waiting" | "countdown" | "running" | "finished"
   >(Boolean(raceId) ? "waiting" : "running");
-  const [raceStartCountdown, setRaceStartCountdown] = useState<number | null>(
-    null,
-  );
-  const completedInputLength = Math.max(input.length - errors.length, 0);
+  const [raceStartCountdown, setRaceStartCountdown] = useState(0);
   const position = parseFloat(
-    ((completedInputLength / code.length) * 100).toFixed(2),
+    (((input.length - errors.length) / code.length) * 100).toFixed(2),
   );
   const isRaceFinished = raceId ? raceStatus === "finished" : input === code;
   const showRaceTimer = !!startTime && !isRaceFinished;
@@ -123,7 +120,6 @@ export default function Race({
     socket.on(`RACE_${raceId}`, (payload: SocketPayload) => {
       switch (payload.type) {
         case "GAME_STATE_UPDATE":
-          // console.log({ payload });
           const { raceState } = gameStateUpdatePayloadSchema.parse(
             payload.payload,
           );
@@ -159,6 +155,7 @@ export default function Race({
       }
     });
   }
+
   // Connection to wss
   useEffect(() => {
     if (!raceId || !participantId) return;
@@ -175,8 +172,9 @@ export default function Race({
     });
     return () => {
       socket.disconnect();
-    }
+    };
   }, []);
+
   //send updated position to server
   useEffect(() => {
     if (!participantId || !raceId || raceStatus !== "running") return;
@@ -193,7 +191,7 @@ export default function Race({
     }, 200);
     return () => clearInterval(gameLoop);
   }, [raceStatus, position]);
-  //end of multiplayer-specific
+  //end of multiplayer-specific -----------------------------------------------------------------------------------
 
   async function endRace() {
     //TODO: find a way to only trigger this once, not by every player in the race.
@@ -256,12 +254,14 @@ export default function Race({
     setSubmittingResults(false);
   }
 
-  // Check if race is finished
   useEffect(() => {
+    // Focus Input
+    inputElement.current?.focus();
+
+    // Check if race is finished
     if (isRaceFinished) {
       endRace();
     }
-    focusOnLoad();
 
     // Calculate the current line and cursor position in that line
     const lines = input.split("\n");
@@ -281,25 +281,12 @@ export default function Race({
     ]);
   }, [input]);
 
-  useEffect(() => {
-    const handleRestartKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        handleRestart();
-      }
-    };
-    document.addEventListener("keydown", handleRestartKey);
-    return () => {
-      document.removeEventListener("keydown", handleRestartKey);
-    };
-  }, []);
-
-  function focusOnLoad() {
-    if (inputElement.current !== null) {
-      inputElement.current?.focus();
-    }
-  }
-
   function handleKeyboardDownEvent(e: React.KeyboardEvent<HTMLInputElement>) {
+    // Restart
+    if (e.key === "Escape") {
+      handleRestart();
+      return;
+    }
     // Unfocus Shift + Tab
     if (e.shiftKey && e.key === "Tab") {
       e.currentTarget.blur();
@@ -387,46 +374,9 @@ export default function Race({
       setInput((prevInput) => prevInput.slice(0, -1));
     }
 
-    if (
-      !Array.isArray(textIndicatorPosition) &&
-      textIndicatorPosition < input.length
-    ) {
-      const inputArray = input.split("");
-      const newArray = inputArray.filter((char, index) => {
-        if (index !== textIndicatorPosition - 1) return char;
-      });
-      setInput(newArray.join(""));
-    }
-
-    if (textIndicatorPosition !== 0) {
-      if (Array.isArray(textIndicatorPosition)) {
-        const inputArray = input.split("");
-
-        const newArray = inputArray.filter((char, index) => {
-          for (let i = 0; i < textIndicatorPosition.length; i++) {
-            if (textIndicatorPosition[i] === index) {
-              return null;
-            }
-          }
-          return char;
-        });
-
-        setInput(newArray.join(""));
-      }
-
-      setTextIndicatorPosition((prevTextIndicatorPosition) => {
-        if (typeof prevTextIndicatorPosition === "number") {
-          return prevTextIndicatorPosition - 1;
-        } else {
-          const lastValue = prevTextIndicatorPosition.at(-1) as number;
-          if (lastValue > prevTextIndicatorPosition[0]) {
-            return prevTextIndicatorPosition[0];
-          } else {
-            return lastValue;
-          }
-        }
-      });
-    }
+    setTextIndicatorPosition(
+      (prevTextIndicatorPosition) => prevTextIndicatorPosition - 1,
+    );
 
     if (raceTimeStamp.length > 0 && errors.length == 0) {
       setRaceTimeStamp((prev) => prev.slice(0, -1));
@@ -486,37 +436,10 @@ export default function Race({
       setCurrentChar("");
     }
 
-    if (!Array.isArray(textIndicatorPosition)) {
-      if (textIndicatorPosition === input.length) {
-        setInput((prevInput) => prevInput + e.key);
-      }
-
-      if (textIndicatorPosition < input.length) {
-        const inputArray: string[] = [];
-        for (let i = 0; i < input.length; i++) {
-          if (i === textIndicatorPosition) {
-            inputArray.push(e.key);
-            inputArray.push(input[i]);
-          } else {
-            inputArray.push(input[i]);
-          }
-        }
-        setInput(inputArray.join(""));
-      }
-    }
-
-    if (Array.isArray(textIndicatorPosition)) {
-      Backspace();
-      setInput((prevInput) => prevInput + e.key);
-    }
-
-    setTextIndicatorPosition((prevTextIndicatorPosition) => {
-      if (typeof prevTextIndicatorPosition === "number") {
-        return prevTextIndicatorPosition + 1;
-      } else {
-        return prevTextIndicatorPosition;
-      }
-    });
+    setInput((prevInput) => prevInput + e.key);
+    setTextIndicatorPosition(
+      (prevTextIndicatorPosition) => prevTextIndicatorPosition + 1,
+    );
   }
 
   function handleRestart() {
@@ -528,25 +451,27 @@ export default function Race({
 
   return (
     <>
-      {/* Debug purposes */}
-      {/* <pre className="max-w-sm rounded p-8"> */}
-      {/*     {JSON.stringify( */}
-      {/*         { */}
-      {/*             startTime, */}
-      {/*             raceStartCountdown, */}
-      {/*             raceStatus, */}
-      {/*             participants, */}
-      {/*             position, */}
-      {/*             completedInputLength, */}
-      {/*             errors, */}
-      {/*         }, */}
-      {/*         null, */}
-      {/*         4, */}
-      {/*     )} */}
-      {/* </pre> */}
+      {/* Debug purposes 
+       <pre className="max-w-sm rounded p-8"> 
+           {JSON.stringify( 
+               { 
+                   startTime, 
+                   raceStartCountdown, 
+                   raceStatus, 
+                   participants, 
+                   position, 
+                   inputLength: input.length, 
+                   errors, 
+               }, 
+               null, 
+               4, 
+           )} 
+       </pre>  */}
       <div
         className="relative flex flex-col gap-2 p-4 rounded-md lg:p-8 bg-accent w-3/4 mx-auto"
-        onClick={focusOnLoad}
+        onClick={() => {
+          inputElement.current?.focus();
+        }}
         role="none" // eslint fix - will remove the semantic meaning of an element while still exposing it to assistive technology
       >
         <p>participant id: {participantId}</p>
