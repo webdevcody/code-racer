@@ -6,7 +6,7 @@ import Code from "../race/code";
 
 interface replayTimeStampProps {
   char: string;
-  textIndicatorPosition: number | number[];
+  textIndicatorPosition: number;
   currentLineNumber: number;
   currentCharPosition: number;
   errors: number[];
@@ -92,10 +92,7 @@ export const ReplayCode = ({ code }: { code?: string }) => {
         code={code}
         userInput={currentTimestamp?.char}
         textIndicatorPosition={currentTimestamp?.textIndicatorPosition}
-        currentLineNumber={currentTimestamp?.currentLineNumber}
-        currentCharPosition={currentTimestamp?.currentCharPosition}
         errors={currentTimestamp?.errors}
-        totalErrors={currentTimestamp?.totalErrors}
       />
       <div className="w-full h-2 bg-secondary mt-2">
         <div

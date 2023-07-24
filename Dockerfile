@@ -8,8 +8,6 @@ ARG GITHUB_CLIENT_ID
 ENV GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
 ARG GITHUB_CLIENT_SECRET
 ENV GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
-ARG GITHUB_ACCESS_TOKEN
-ENV GITHUB_ACCESS_TOKEN=${GITHUB_ACCESS_TOKEN}
 ARG NEXTAUTH_URL
 ENV NEXTAUTH_URL=${NEXTAUTH_URL}
 ARG NEXTAUTH_SECRET
@@ -43,9 +41,6 @@ RUN npx prisma generate
 # Copy application code
 COPY --link . .
 
-# Seed db
-RUN npm run seed
-
 # Run build script
 RUN npm run build
 
@@ -62,9 +57,6 @@ RUN apt-get update -qq && \
 
 # Copy built application
 COPY --from=build /app /app
-
-# Entrypoint prepares the database.
-ENTRYPOINT [ "/app/docker-entrypoint.js" ]
 
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
