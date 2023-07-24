@@ -46,9 +46,9 @@ async function getSocketConnection() {
     path: "/api/socket_io",
   });
   socket.on("connect", () => {
-    console.log("connected");
+    // console.log("connected");
   });
-  console.log({ socket });
+  // console.log({ socket });
 }
 
 interface RaceTimeStampProps {
@@ -234,6 +234,8 @@ export default function Race({
     );
 
     if (user) {
+      // console.log("saving user result");
+
       const result = await saveUserResultAction({
         timeTaken,
         errors: totalErrors,
@@ -255,13 +257,15 @@ export default function Race({
   }
 
   useEffect(() => {
-    // Focus Input
-    inputElement.current?.focus();
-
-    // Check if race is finished
     if (isRaceFinished) {
+      // console.log("Race Finished");
       endRace();
     }
+  }, [isRaceFinished]);
+
+  useEffect(() => {
+    // Focus Input
+    inputElement.current?.focus();
 
     // Calculate the current line and cursor position in that line
     const lines = input.split("\n");
@@ -451,22 +455,21 @@ export default function Race({
 
   return (
     <>
-      {/* Debug purposes 
-       <pre className="max-w-sm rounded p-8"> 
-           {JSON.stringify( 
-               { 
-                   startTime, 
-                   raceStartCountdown, 
-                   raceStatus, 
-                   participants, 
-                   position, 
-                   inputLength: input.length, 
-                   errors, 
-               }, 
-               null, 
-               4, 
-           )} 
-       </pre>  */}
+      {/* Debug purposes  */}
+      {/* <pre className="max-w-sm rounded p-8"> */}
+      {/*   {JSON.stringify( */}
+      {/*     { */}
+      {/*       participantId, */}
+      {/*       user, */}
+      {/*       isRaceFinished, */}
+      {/*       raceStatus, */}
+      {/*       participants, */}
+      {/*       position, */}
+      {/*     }, */}
+      {/*     null, */}
+      {/*     4, */}
+      {/*   )} */}
+      {/* </pre> */}
       <div
         className="relative flex flex-col gap-2 p-4 rounded-md lg:p-8 bg-accent w-3/4 mx-auto"
         onClick={() => {
