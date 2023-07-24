@@ -8,10 +8,9 @@ import { achievements } from "@/config/achievements";
 import { Heading } from "@/components/ui/heading";
 import { notFound } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
-// import { LoginButton } from "@/components/ui/buttons";
-// import { Button } from "@/components/ui/button";
 import NotCurrentUserButtons from "../(components)/not-current-user-buttons";
 import { findUser, findUserAchievements } from "./actions";
+import UserCommits from "../(components)/UserCommits";
 
 export const metadata = {
   title: "Profile Page",
@@ -38,8 +37,8 @@ export default async function ProfilePage({
   const photoURL = userParamsData?.image ?? "/placeholder-image.jpg";
   const displayName = userParamsData?.name ?? "Display Name";
   const bio = userParamsData?.bio;
-  const following = /** userParamsData.following */ [] as string[];
-  const followers = /** userParamsData.followers */ [] as string[];
+  const following = /** userParamsData.following */[] as string[];
+  const followers = /** userParamsData.followers */[] as string[];
 
   const totalPoints = 0;
 
@@ -168,6 +167,7 @@ export default async function ProfilePage({
           </div>
         </section>
       </article>
+      <UserCommits />
     </main>
   );
 }
