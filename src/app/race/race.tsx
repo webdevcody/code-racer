@@ -149,7 +149,7 @@ export default function Race({
             raceParticipantNotificationSchema.parse(payload.payload);
           setParticipants((participants) => [
             ...participants,
-            { id: _participantId, position: 0 },
+            { id: _participantId, position: 0, finishedAt: null },
           ]);
           break;
       }
@@ -455,7 +455,7 @@ export default function Race({
 
   return (
     <>
-      {/* Debug purposes  */}
+      {/* Debug purposes */}
       {/* <pre className="max-w-sm rounded p-8"> */}
       {/*   {JSON.stringify( */}
       {/*     { */}

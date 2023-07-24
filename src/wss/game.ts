@@ -1,25 +1,28 @@
-import { RaceParticipant, type Race } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { RaceParticipant, type Race } from "@prisma/client";
 
+import { siteConfig } from "@/config/site";
+import { raise } from "@/lib/utils";
+import { type Server } from "socket.io";
 import { SocketEvents, SocketPayload } from "./events";
 import { RaceFullException } from "./exceptions";
-import { raise } from "@/lib/utils";
 import {
   GameStateUpdatePayload,
   ParticipantRacePayload,
-  participantRacePayloadSchema,
   RaceParticipantNotification,
   RaceParticipantPositionPayload,
+  participantRacePayloadSchema,
   raceParticipantPositionPayloadSchema,
 } from "./schemas";
-import { type Server } from "socket.io";
-import { siteConfig } from "@/config/site";
-import { is } from "cypress/types/bluebird";
 
 type ParticipantsMap = Map<
   //this is the socketId
   string,
-  { id: RaceParticipant["id"]; position: number; placement: number | null }
+  {
+    id: RaceParticipant["id"];
+    position: number;
+    finishedAt: number | null;
+  }
 >;
 
 export class Game {
@@ -74,15 +77,13 @@ export class Game {
     });
   }
 
-  private serializeParticipants(
-    participants: ParticipantsMap,
-  ): { id: string; socketId: string; position: number }[] {
+  private serializeParticipants(participants: ParticipantsMap) {
     return Array.from(participants.entries()).map(
-      ([socketId, { id, position, placement }]) => ({
+      ([socketId, { id, position, finishedAt }]) => ({
         id,
         socketId,
         position,
-        placement,
+        finishedAt,
       }),
     );
   }
@@ -99,6 +100,7 @@ export class Game {
         participants: new Map().set(parsedPayload.socketId, {
           id: parsedPayload.participantId,
           position: 0,
+          finishedAt: null,
         }),
       });
     } else if (race.participants.size + 1 > Game.MAX_PARTICIPANTS_PER_RACE) {
@@ -108,7 +110,7 @@ export class Game {
       race.participants.set(parsedPayload.socketId, {
         id: parsedPayload.participantId,
         position: 0,
-        placement: null,
+        finishedAt: null,
       });
       this.startRaceCountdown(parsedPayload.raceId);
     }
@@ -280,8 +282,12 @@ export class Game {
     //TODO: Log a warning or handle exception
     if (!participant) return;
 
-    // update participant position
     participant.position = parsedPayload.position;
+
+    if (participant.position >= Game.GAME_MAX_POSITION) {
+      if (participant.finishedAt) return;
+      participant.finishedAt = new Date().getTime();
+    }
 
     const isRaceEnded = this.isRaceEnded(parsedPayload.raceId);
 
