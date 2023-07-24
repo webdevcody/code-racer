@@ -1,45 +1,40 @@
 import { exec } from "child_process";
+import { logger } from "../lib/logger";
 
 const getVersion = (version: string) => version.slice(1);
 
 async function setup() {
-  console.log("📂 Setting up project...");
+  logger.log("📂 Setting up project...");
 
-  console.log("✅ Installing dependencies...");
+  logger.log("📦 Installing dependencies...");
+
+  exec("npm install");
 
   exec("node -v", (error, stdout) => {
     if (error) {
-      console.log(
-        "❌ Node is not installed. Please install Node version 18 or greater and try again.",
-      );
-      return;
+      logger.error("❌ Node is not installed. Please install Node.");
     } else {
       const major = getVersion(stdout).split(".")[0];
 
       if (Number(major) < 18) {
-        console.error(
-          `❌ Node version must be at least v18. You are using v${major}.`,
-        );
+        logger.error("❌ Node version must be at least v18.");
       }
     }
   });
 
   exec("docker -v", (error, stdout) => {
     if (error) {
-      console.log(
-        "❌ Docker is not installed. Please install Docker version 23 or greater and try again.",
-      );
-      return;
+      logger.error("❌ Docker is not installed. Please install Docker.");
     } else {
       const major = getVersion(stdout).split(".")[0];
 
       if (Number(major) < 23) {
-        console.log(
-          `❌ Docker version must be at least v23. You are using v${major}.`,
-        );
+        logger.error("❌ Docker version must be at least v23.");
       }
     }
   });
+
+  logger.success("✅ Setup complete!");
 }
 
 setup();
