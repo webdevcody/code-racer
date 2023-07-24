@@ -532,12 +532,9 @@ export default function Race({
 
               <Code
                 code={code}
-                errors={errors}
                 userInput={input}
-                currentLineNumber={currentLineNumber}
-                currentCharPosition={currentCharPosition}
                 textIndicatorPosition={textIndicatorPosition}
-                totalErrors={totalErrors}
+                errors={errors}
               />
               <input
                 type="text"
