@@ -437,37 +437,10 @@ export default function Race({
       setCurrentChar("");
     }
 
-    if (!Array.isArray(textIndicatorPosition)) {
-      if (textIndicatorPosition === input.length) {
-        setInput((prevInput) => prevInput + e.key);
-      }
-
-      if (textIndicatorPosition < input.length) {
-        const inputArray: string[] = [];
-        for (let i = 0; i < input.length; i++) {
-          if (i === textIndicatorPosition) {
-            inputArray.push(e.key);
-            inputArray.push(input[i]);
-          } else {
-            inputArray.push(input[i]);
-          }
-        }
-        setInput(inputArray.join(""));
-      }
-    }
-
-    if (Array.isArray(textIndicatorPosition)) {
-      Backspace();
-      setInput((prevInput) => prevInput + e.key);
-    }
-
-    setTextIndicatorPosition((prevTextIndicatorPosition) => {
-      if (typeof prevTextIndicatorPosition === "number") {
-        return prevTextIndicatorPosition + 1;
-      } else {
-        return prevTextIndicatorPosition;
-      }
-    });
+    setInput((prevInput) => prevInput + e.key);
+    setTextIndicatorPosition(
+      (prevTextIndicatorPosition) => prevTextIndicatorPosition + 1,
+    );
   }
 
   function handleRestart() {
