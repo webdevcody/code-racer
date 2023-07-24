@@ -3,7 +3,7 @@ import { Prisma } from "@prisma/client";
 import { User } from "next-auth";
 
 export async function createRaceParticipant(
-  raceToJoin: Prisma.RaceGetPayload<{}>,
+  raceToJoin: Prisma.RaceGetPayload<Record<string, never>>,
   user?: User | null,
 ) {
   return await prisma.raceParticipant.create({
