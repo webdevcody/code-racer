@@ -81,9 +81,7 @@ export default function Race({
 }) {
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [input, setInput] = useState("");
-  const [textIndicatorPosition, setTextIndicatorPosition] = useState<
-    number | number[]
-  >(0);
+  const [textIndicatorPosition, setTextIndicatorPosition] = useState(0);
   const [submittingResults, setSubmittingResults] = useState(false);
   const [totalErrors, setTotalErrors] = useState(0);
   const [currentLineNumber, setCurrentLineNumber] = useState(0);
@@ -377,46 +375,9 @@ export default function Race({
       setInput((prevInput) => prevInput.slice(0, -1));
     }
 
-    if (
-      !Array.isArray(textIndicatorPosition) &&
-      textIndicatorPosition < input.length
-    ) {
-      const inputArray = input.split("");
-      const newArray = inputArray.filter((char, index) => {
-        if (index !== textIndicatorPosition - 1) return char;
-      });
-      setInput(newArray.join(""));
-    }
-
-    if (textIndicatorPosition !== 0) {
-      if (Array.isArray(textIndicatorPosition)) {
-        const inputArray = input.split("");
-
-        const newArray = inputArray.filter((char, index) => {
-          for (let i = 0; i < textIndicatorPosition.length; i++) {
-            if (textIndicatorPosition[i] === index) {
-              return null;
-            }
-          }
-          return char;
-        });
-
-        setInput(newArray.join(""));
-      }
-
-      setTextIndicatorPosition((prevTextIndicatorPosition) => {
-        if (typeof prevTextIndicatorPosition === "number") {
-          return prevTextIndicatorPosition - 1;
-        } else {
-          const lastValue = prevTextIndicatorPosition.at(-1) as number;
-          if (lastValue > prevTextIndicatorPosition[0]) {
-            return prevTextIndicatorPosition[0];
-          } else {
-            return lastValue;
-          }
-        }
-      });
-    }
+    setTextIndicatorPosition(
+      (prevTextIndicatorPosition) => prevTextIndicatorPosition - 1,
+    );
 
     if (raceTimeStamp.length > 0 && errors.length == 0) {
       setRaceTimeStamp((prev) => prev.slice(0, -1));
