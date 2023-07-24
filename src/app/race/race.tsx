@@ -520,8 +520,7 @@ export default function Race({
                     key={line}
                     className={
                       currentLineNumber === line + 1
-                        ?
-                        "text-center bg-slate-600 text-white  border-r-2 border-yellow-500"
+                        ? "text-center bg-slate-600 text-white  border-r-2 border-yellow-500"
                         : " text-center border-r-2 border-yellow-500"
                     }
                   >

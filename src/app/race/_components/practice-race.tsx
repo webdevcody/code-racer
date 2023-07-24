@@ -51,7 +51,11 @@ export default function PracticeRace() {
         >
           <div className="flex flex-col">
             <LanguageDropDown
-              className={cn("w-full", buttonVariants({ variant: "black" }), error && "border-red-500")}
+              className={cn(
+                "w-full",
+                buttonVariants({ variant: "black" }),
+                error && "border-red-500",
+              )}
               codeLanguage={selectedPracticeLanguage}
               setCodeLanguage={handleSetCodeLanguage}
             />

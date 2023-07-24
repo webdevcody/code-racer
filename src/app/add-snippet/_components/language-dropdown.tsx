@@ -30,14 +30,14 @@ const LanguageDropDown = ({
 }) => {
   const [open, setOpen] = React.useState(false);
   const [search, setSearch] = React.useState("");
-  
+
   useEffect(() => {
     const savedCodeLanguage = window.localStorage.getItem("codeLanguage");
     if (savedCodeLanguage) {
       setCodeLanguage(savedCodeLanguage);
     }
   }, []);
-  
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -57,34 +57,43 @@ const LanguageDropDown = ({
       </PopoverTrigger>
       <PopoverContent className="w-full p-0 h-44">
         <Command>
-          <CommandInput placeholder="Search a Language..." value = {search} onValueChange={setSearch}/>
+          <CommandInput
+            placeholder="Search a Language..."
+            value={search}
+            onValueChange={setSearch}
+          />
           <CommandEmpty>No language found.</CommandEmpty>
           <CommandGroup className="overflow-y-auto">
-          {snippetLanguages
-          .filter(language => 
-          language.label.toLowerCase().includes(search.toLowerCase()))
-          .map((language) => (
-          <CommandItem
-            key={language.label}
-            value={language.value}
-            onSelect={(currentValue) => {
-              const newCodeLanguage = currentValue === codeLanguage ? "" : currentValue;
-              setCodeLanguage(newCodeLanguage);
-              window.localStorage.setItem("codeLanguage", newCodeLanguage);
-              setOpen(false);
-            }}
-          >
-                <Check
-                  className={cn(
-                    "mr-2 h-4 w-4",
-                    codeLanguage === language.value
-                      ? "opacity-100"
-                      : "opacity-0",
-                  )}
-                />
-                {language.label}
-              </CommandItem>
-            ))}
+            {snippetLanguages
+              .filter((language) =>
+                language.label.toLowerCase().includes(search.toLowerCase()),
+              )
+              .map((language) => (
+                <CommandItem
+                  key={language.label}
+                  value={language.value}
+                  onSelect={(currentValue) => {
+                    const newCodeLanguage =
+                      currentValue === codeLanguage ? "" : currentValue;
+                    setCodeLanguage(newCodeLanguage);
+                    window.localStorage.setItem(
+                      "codeLanguage",
+                      newCodeLanguage,
+                    );
+                    setOpen(false);
+                  }}
+                >
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      codeLanguage === language.value
+                        ? "opacity-100"
+                        : "opacity-0",
+                    )}
+                  />
+                  {language.label}
+                </CommandItem>
+              ))}
           </CommandGroup>
         </Command>
       </PopoverContent>

@@ -53,7 +53,7 @@ export const siteConfig = {
 
   multiplayer: {
     maxParticipantsPerRace: 4,
-  }
+  },
 };
 
 export function getGitHubAuthorizationToken() {
