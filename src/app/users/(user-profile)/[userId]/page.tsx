@@ -39,6 +39,7 @@ export default async function ProfilePage({
   const bio = userParamsData?.bio;
   const following = /** userParamsData.following */[] as string[];
   const followers = /** userParamsData.followers */[] as string[];
+  const profileEmail = userParamsData?.email ?? "";
 
   const totalPoints = 0;
 
@@ -166,8 +167,9 @@ export default async function ProfilePage({
             )}
           </div>
         </section>
+        <UserCommits profileEmail={profileEmail} />
       </article>
-      <UserCommits />
+
     </main>
   );
 }
