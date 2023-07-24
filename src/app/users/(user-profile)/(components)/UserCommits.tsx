@@ -1,5 +1,4 @@
 import { Heading } from "@/components/ui/heading";
-import { getCurrentUser } from "@/lib/session";
 import { CommitInterface } from "@/types/github";
 import { formatDate } from "@/lib/utils";
 import { ExternalLink } from "lucide-react";
@@ -11,9 +10,8 @@ const getUserContributions = async (userEmail: string) => {
   return res ?? [];
 }
 
-export default async function UserCommits() {
-  const user = await getCurrentUser();
-  const userCommits = await getUserContributions(user?.email as string) as CommitInterface[] ?? [];
+export default async function UserCommits({ profileEmail }: { profileEmail: string }) {
+  const userCommits = await getUserContributions(profileEmail) as CommitInterface[] ?? [];
   if (userCommits.length === 0) return null;
   return (
     <section className="">
