@@ -145,7 +145,7 @@ model Race {
 model RaceParticipant {
     id String @id @default(cuid())
 
-    Race   Race   @relation(fields: [raceId], references: [id])
+    Race   Race   @relation(fields: [raceId], references: [id], onDelete: Cascade)
     raceId String
 
     // a race participant could be a guest user

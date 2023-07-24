@@ -7,7 +7,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-    if(!env.MULTIPLAYER) return res.end();
+  if (!env.MULTIPLAYER) return res.end();
 
   //eslint-disable-next-line @typescript-eslint/ban-ts-comment
   //@ts-ignore
