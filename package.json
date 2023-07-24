@@ -5,7 +5,7 @@
   "scripts": {
     "predev": "husky install && prisma generate && prisma db push && npm run seed",
     "seed": "ts-node prisma/seed.ts",
-    "setup": "ts-node --esm ./src/scripts/setup.ts",
+    "setup": "ts-node ./src/scripts/setup.ts",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -83,7 +83,6 @@
     "eslint-config-next": "13.4.9",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-jsx-a11y": "^6.7.1",
-    "execa": "^7.1.1",
     "husky": "^8.0.0",
     "prettier": "^3.0.0",
     "prisma": "^5.0.0",
