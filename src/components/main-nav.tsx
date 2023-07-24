@@ -10,17 +10,17 @@ import { usePathname } from "next/navigation";
 
 export function MainNav({ items }: { items?: NavItem[] }) {
   const currentPathName = usePathname();
-
+//   console.log(items);
   return (
-    <div className="flex gap-6 md:gap-10">
+    <div className="flex items-center h-full gap-6 lg:gap-10">
       <Link href="/" className="flex items-center space-x-2">
         <Icons.logo width={30} height={30} />
-        <span className="inline-block font-special font-bold">
+        <span className="inline-block font-bold font-special">
           {siteConfig.name}
         </span>
       </Link>
-      {items?.length ? (
-        <nav className="items-center justify-center flex-1 hidden gap-2 md:flex">
+      {items?.length && (
+        <nav className="items-center flex-1 hidden h-full md:flex">
           {items?.map(
             (item, index) =>
               item.href && (
@@ -28,12 +28,11 @@ export function MainNav({ items }: { items?: NavItem[] }) {
                   key={index}
                   href={item.href}
                   className={cn(
-                    "md:text-xs lg:text-sm",
-                    buttonVariants({ variant: "ghost" }),
+                    "md:text-xs lg:text-sm flex h-full items-center p-4 border-b-2 border-b-yellow-500 border-opacity-0 hover:text-yellow-500 border-t-2 border-t-transparent hover:bg-white hover:bg-opacity-5",
                     {
                       "cursor-not-allowed opacity-80": item.disabled,
-                      "underline underline-offset-8 decoration-2 decoration-primary":
-                        isActiveRoute(currentPathName, item.href),
+                      "border-b-2 border-b-yellow-500 border-opacity-100 text-yellow-500 decoration-2 decoration-primary":
+                      isActiveRoute(currentPathName as string, item.href),
                     },
                   )}
                 >
@@ -42,7 +41,7 @@ export function MainNav({ items }: { items?: NavItem[] }) {
               ),
           )}
         </nav>
-      ) : null}
+      )}
     </div>
   );
 }

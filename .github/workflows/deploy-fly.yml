@@ -1,0 +1,21 @@
+name: Deploy
+on:
+  push:
+    branches:
+      - multiplayer
+jobs:
+  Deploy-Production:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: "flyctl deploy --remote-only
+          --build-arg DATABASE_URL=${{secrets.DATABASE_URL}}
+          --build-arg GITHUB_CLIENT_ID=${{secrets._GITHUB_CLIENT_ID}}
+          --build-arg GITHUB_CLIENT_SECRET=${{secrets._GITHUB_CLIENT_SECRET}}
+          --build-arg GITHUB_ACCESS_TOKEN=${{secrets._GITHUB_ACCESS_TOKEN}}
+          --build-arg NEXTAUTH_URL=${{secrets.NEXTAUTH_URL}}
+          --build-arg NEXTAUTH_SECRET=${{secrets.NEXTAUTH_SECRET}}
+          --build-arg OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}}"
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN}}

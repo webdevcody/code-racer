@@ -1,3 +1,4 @@
+
 function calculateCPM(
   numberOfCharacters: number,
   secondsTaken: number,

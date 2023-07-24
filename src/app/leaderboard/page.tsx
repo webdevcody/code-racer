@@ -1,9 +1,14 @@
 import React from "react";
 
-import { prisma } from "@/lib/prisma";
 import { UsersTable } from "./users-table";
 import { User } from "@prisma/client";
 import { Heading } from "@/components/ui/heading";
+import {
+  getTotalUsers,
+  getUsersWithResultCounts,
+  getUsersWithResults,
+  isFieldInUser,
+} from "./loaders";
 
 export default async function LeaderboardPage({
   searchParams,
@@ -29,58 +34,31 @@ export default async function LeaderboardPage({
         ])
       : [];
 
-  const { users, totalUsers } = await prisma.$transaction(async () => {
-    let users;
+  const sortBy =
+    column === "Races played"
+      ? "Races played"
+      : column && isFieldInUser(column)
+      ? column
+      : "averageCpm";
 
-    if (column === "Races played") {
-      users = await prisma.user.findMany({
-        take,
-        skip,
-        orderBy: {
-          results: {
-            _count: order,
-          },
-        },
-        include: {
-          results: true,
-        },
-        where: {
-          results: {
-            some: {},
-          },
-        },
-      });
-    } else {
-      users = await prisma.user.findMany({
-        take,
-        skip,
-        orderBy: {
-          [column ?? ""]: order,
-        },
-        include: {
-          results: true,
-        },
-        where: {
-          results: {
-            some: {},
-          },
-        },
-      });
-    }
+  let users = [];
 
-    const totalUsers = await prisma.user.count({
-      where: {
-        results: {
-          some: {},
-        },
-      },
+  if (column === "Races played") {
+    users = await getUsersWithResultCounts({
+      take,
+      skip,
+      order,
     });
+  } else {
+    users = await getUsersWithResults({
+      order,
+      skip,
+      sortBy,
+      take,
+    });
+  }
 
-    return {
-      users,
-      totalUsers,
-    };
-  });
+  const totalUsers = await getTotalUsers();
 
   const pageCount = totalUsers === 0 ? 1 : Math.ceil(totalUsers / take);
 

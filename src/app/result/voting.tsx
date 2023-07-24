@@ -9,7 +9,7 @@ import {
   deleteVoteAction,
   downVoteSnippetAction,
   upvoteSnippetAction,
-} from "../_actions/snippet";
+} from "./actions";
 import { toast } from "@/components/ui/use-toast";
 import { catchError, cn } from "@/lib/utils";
 
@@ -35,25 +35,11 @@ export function Voting({
           disabled={isPending}
           onClick={() => {
             startTransition(async () => {
-              if (!userId) {
-                toast({
-                  title: "Warning",
-                  description: "You should sign in first to vote.",
-                  variant: "middle",
-                });
-              }
               try {
-                if (usersVote?.type === "UP") {
-                  await deleteVoteAction({ snippetId });
-                } else {
-                  await upvoteSnippetAction({ snippetId });
-                  toast({
-                    title: "Success.",
-                    description:
-                      "Thanks for your feedback! We will consider it.",
-                    variant: "default",
-                  });
-                }
+                if (usersVote?.type === "UP")
+                  return void (await deleteVoteAction({ snippetId }));
+
+                await upvoteSnippetAction({ snippetId });
               } catch (err) {
                 catchError(err);
               }
@@ -72,29 +58,14 @@ export function Voting({
           disabled={isPending}
           onClick={() => {
             startTransition(async () => {
-              if (!userId) {
-                toast({
-                  title: "Warning",
-                  description: "You should sign in first to vote.",
-                  variant: "middle",
-                });
-              }
               try {
-                if (usersVote?.type === "DOWN") {
-                  await deleteVoteAction({
+                if (usersVote?.type === "DOWN")
+                  return void (await deleteVoteAction({
                     snippetId,
-                  });
-                } else {
-                  await downVoteSnippetAction({
-                    snippetId,
-                  });
-                  toast({
-                    title: "Success.",
-                    description:
-                      "Thanks for your feedback! We will consider it.",
-                    variant: "default",
-                  });
-                }
+                  }));
+                await downVoteSnippetAction({
+                  snippetId,
+                });
               } catch (err) {
                 catchError(err);
               }

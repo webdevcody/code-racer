@@ -40,7 +40,7 @@ export function UsersTable({
           const userInfo = cell.getValue() as User;
 
           return (
-            <Link href={`${userInfo.id}`}>
+            <Link href={`/users/${userInfo.id}`}>
               <div className="flex items-center gap-2">
                 <Image
                   className="rounded-full"
@@ -116,14 +116,19 @@ export function UsersTable({
   );
 
   return (
-    <DataTable
-      columns={columns}
-      data={data}
-      pageCount={pageCount}
-      // defaultSorting={{
-      //   prop: "averageCpm",
-      //   val: "asc",
-      // }}
-    />
+    <>
+      <DataTable
+        columns={columns}
+        data={data}
+        pageCount={pageCount}
+        defaultSorting={{
+          prop: "averageCpm",
+          val: "desc",
+        }}
+      />
+      <p className="text-sm md:text-base mt-1 text-muted-foreground">
+        You must have completed 5 races to be placed in the leaderboards.
+      </p>
+    </>
   );
 }

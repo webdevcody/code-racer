@@ -1,23 +1,26 @@
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Chart, { CurrentChart } from "./chart";
+import Chart, { ParentCurrentChart } from "./chart";
 import { Icons } from "@/components/icons";
 import Link from "next/link";
-import { FirstRaceBadge } from "./first-race-badge";
 import { getCurrentUser } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
 import { Voting } from "./voting";
 import { Badge } from "@/components/ui/badge";
 import {
-  getFirstRaceBadge,
   getUserResultsForSnippet,
   getCurrentRaceResult,
   ParsedRacesResult,
+  getSnippetVote,
 } from "./loaders";
 import { Heading } from "@/components/ui/heading";
 import { cn } from "@/lib/utils";
 import { User } from "next-auth";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ReplayCode } from "./replay-timestamps";
+import { getSnippetById } from "../race/(play)/practice/loaders";
+import { TopTable } from "./topten";
+import { notFound } from "next/navigation";
+import { RaceAchievementBadges } from "./race-achievement-badges";
 
 async function AuthenticatedPage({
   resultId,
@@ -40,24 +43,11 @@ async function AuthenticatedPage({
     );
   const currentRaceResult = await getCurrentRaceResult(resultId);
 
-  if (!currentRaceResult) {
-    throw new Error("no result found with this id");
-  }
+  if (!currentRaceResult) notFound();
 
-  const usersVote = await prisma.snippetVote.findUnique({
-    where: {
-      userId_snippetId: {
-        userId: user.id,
-        snippetId: currentRaceResult.snippetId,
-      },
-    },
-  });
-  const currentSnippet = await prisma.snippet.findUnique({
-    where: {
-      id: currentRaceResult.snippetId,
-    },
-  });
-  const firstRaceBadge = await getFirstRaceBadge();
+  const usersVote = await getSnippetVote(currentRaceResult.snippetId);
+  const currentSnippet = await getSnippetById(currentRaceResult.snippetId);
+
   let raceResults: ParsedRacesResult[] = [];
   let cardObjects = [] as { title: string; value: string | undefined }[];
 
@@ -90,7 +80,7 @@ async function AuthenticatedPage({
   return (
     <div className="w-auto">
       <div className="flex flex-col justify-center gap-4 mt-5">
-        {firstRaceBadge && <FirstRaceBadge image={firstRaceBadge.image} />}
+        <RaceAchievementBadges />
         <Heading
           centered
           title="Your Race Results"
@@ -101,7 +91,9 @@ async function AuthenticatedPage({
             return (
               <Card key={idx}>
                 <CardHeader>
-                  <CardTitle className="text-center">{c.title}</CardTitle>
+                  <CardTitle className="text-center text-warning">
+                    {c.title}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="text-center">{c.value}</CardContent>
               </Card>
@@ -110,36 +102,64 @@ async function AuthenticatedPage({
         </div>
       </div>
       <div className="flex flex-col px-8 rounded-xl">
-          <Tabs defaultValue="Current" className="w-full">
-            <TabsList>
-              <TabsTrigger value="Current">Current</TabsTrigger>
-              <TabsTrigger value="History">History</TabsTrigger>
-            </TabsList>
-            <TabsContent value="Current">
-              {/* works even for unauthorized user */}
-              <span className="text-2xl mx-auto text-primary flex-wrap sm:hidden">View in Larger Screen to Unlock Exciting Features!</span>
-            <CurrentChart code={currentSnippet?.code} />
-            </TabsContent>
-            <TabsContent value="History">
-              <Chart raceResult={raceResults} />
-            </TabsContent>
+        <Tabs defaultValue="Current" className="w-full m-5">
+          <TabsList className="m-5">
+            <TabsTrigger value="Current">Current</TabsTrigger>
+            <TabsTrigger value="Replay">Replay</TabsTrigger>
+            <TabsTrigger value="TopTen">Top 10</TabsTrigger>
+            <TabsTrigger value="History">History</TabsTrigger>
+          </TabsList>
+          <TabsContent value="Current">
+            <span className="text-2xl mx-auto text-primary flex-wrap sm:hidden">
+              View in Larger Screen to Unlock Exciting Features!
+            </span>
+            <ParentCurrentChart code={currentSnippet?.code} />
+          </TabsContent>
+          <TabsContent value="History">
+            <Chart raceResult={raceResults} />
+          </TabsContent>
+          <TabsContent value="Replay">
+            <ReplayCode code={currentSnippet?.code} />
+          </TabsContent>
+          <TabsContent value="TopTen">
+            <TopTable snippet={currentSnippet?.id} />
+          </TabsContent>
         </Tabs>
       </div>
-      <div
-        className="flex flex-wrap items-center justify-center gap-4 p-2"
-      >
+      <div className="flex flex-wrap items-center justify-center gap-4 p-2">
         <Link
           title="Retry"
-          className={cn(buttonVariants(), "gap-2")}
+          className={cn(buttonVariants(), "gap-2 text-accent")}
           href={`/race/practice?snippetId=${currentRaceResult.snippetId}`}
         >
           <Icons.refresh className="w-5 h-5" aria-hidden="true" /> Retry
         </Link>
-        <Link title="New Race" className={buttonVariants()} href="/race">
+        <Link
+          title="New Race"
+          className={cn(buttonVariants(), "text-accent")}
+          href="/race"
+        >
           <Icons.chevronRight className="w-5 h-5" aria-hidden="true" /> New Race
         </Link>
       </div>
-      <div className="my-4">
+
+      <div className="flex items-center justify-center m-2">
+        <Badge
+          variant="outline"
+          className="flex items-center justify-center text-base border-2"
+        >
+          <Badge variant="secondary" className="text-warning">
+            Tab
+          </Badge>
+          <span className="m-1">+</span>
+          <Badge variant="secondary" className="text-warning">
+            Enter
+          </Badge>
+          <span className="m-1">Restart Game</span>
+        </Badge>
+      </div>
+
+      <div className="m-2">
         {currentRaceResult && (
           <Voting
             snippetId={currentRaceResult.snippetId}
@@ -148,39 +168,92 @@ async function AuthenticatedPage({
           />
         )}
       </div>
-      <div className="flex items-center justify-center space-x-2">
-        <Badge variant="outline">
-          <Badge variant="secondary" className="mr-2">
-            tab
-          </Badge>
-          <span>+</span>
-          <Badge variant="secondary" className="mx-2">
-            enter
-          </Badge>
-          <span>restart game</span>
-        </Badge>
+    </div>
+  );
+}
 
-        {/* <span className={buttonVariants()}>tab</span> <span>+</span>
-        <span className={buttonVariants()}>enter</span> <span>-</span> */}
+async function UnauthenticatedPage({ snippetId }: { snippetId: string }) {
+  const currentSnippet = await getSnippetById(snippetId);
+
+  return (
+    <div className="w-auto">
+      <div className="flex flex-col justify-center gap-4 mt-5">
+        <Heading
+          centered
+          title="Your Race Results"
+          description="You did great! View your race results below"
+        />
+      </div>
+      <div className="flex flex-col px-8 rounded-xl">
+        <Tabs defaultValue="Current" className="w-full m-5">
+          <TabsList className="m-5">
+            <TabsTrigger value="Current">Current</TabsTrigger>
+            <TabsTrigger value="Replay">Replay</TabsTrigger>
+            <TabsTrigger value="TopTen">Top 10</TabsTrigger>
+          </TabsList>
+          <TabsContent value="Current">
+            <span className="text-2xl mx-auto text-primary flex-wrap sm:hidden">
+              View in Larger Screen to Unlock Exciting Features!
+            </span>
+            <ParentCurrentChart code={currentSnippet?.code} />
+          </TabsContent>
+          <TabsContent value="Replay">
+            <ReplayCode code={currentSnippet?.code} />
+          </TabsContent>
+          <TabsContent value="TopTen">
+            <TopTable snippet={currentSnippet?.id} />
+            <h1 className="text-lg mx-auto text-muted-foreground">
+              Login to be able to get to the top 10!
+            </h1>
+          </TabsContent>
+        </Tabs>
+      </div>
+      <div className="flex flex-wrap items-center justify-center gap-4 p-2">
+        <Link
+          title="Retry"
+          className={cn(buttonVariants(), "gap-2 text-accent")}
+          href={`/race/practice?snippetId=${snippetId}`}
+        >
+          <Icons.refresh className="w-5 h-5" aria-hidden="true" /> Retry
+        </Link>
+        <Link
+          title="New Race"
+          className={cn(buttonVariants(), "text-accent")}
+          href="/race"
+        >
+          <Icons.chevronRight className="w-5 h-5" aria-hidden="true" /> New Race
+        </Link>
+      </div>
+
+      <div className="flex items-center justify-center m-2">
+        <Badge
+          variant="outline"
+          className="flex items-center justify-center text-base border-2"
+        >
+          <Badge variant="secondary" className="text-warning">
+            Tab
+          </Badge>
+          <span className="m-1">+</span>
+          <Badge variant="secondary" className="text-warning">
+            Enter
+          </Badge>
+          <span className="m-1">Restart Game</span>
+        </Badge>
       </div>
     </div>
   );
 }
 
-function UnauthenticatedPage() {
-  return <>TODO: Results are not implmemented for unauthenticated users yet</>;
-}
-
 export default async function ResultPage({
   searchParams,
 }: {
-  searchParams: { resultId: string };
+  searchParams: { resultId: string; snippetId: string };
 }) {
   const user = await getCurrentUser();
 
   return user ? (
     <AuthenticatedPage user={user} resultId={searchParams.resultId} />
   ) : (
-    <UnauthenticatedPage />
+    <UnauthenticatedPage snippetId={searchParams.snippetId} />
   );
 }

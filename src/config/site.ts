@@ -33,6 +33,7 @@ export const siteConfig = {
   links: {
     github: "https://github.com/webdevcody/code-racer",
     codyTwitter: "https://twitter.com/webdevcody",
+    codyDiscord: "https://discord.gg/sduWx3kp",
   },
   api: {
     github: {
@@ -42,8 +43,21 @@ export const siteConfig = {
       githubStars: "https://api.github.com/repos/webdevcody/code-racer",
       githubWeeklyActivity:
         "https://api.github.com/repos/webdevcody/code-racer/stats/code_frequency",
-      githubContributorActivity: "https://api.github.com/repos/webdevcody/code-racer/stats/contributors",
-      cacheRevalidationInterval: 60,
+      githubContributorActivity:
+        "https://api.github.com/repos/webdevcody/code-racer/stats/contributors",
+      githubListCommit:
+        "https://api.github.com/repos/webdevcody/code-racer/commits",
+      cacheRevalidationInterval: 86400, // 24hrs
     },
   },
+
+  multiplayer: {
+    maxParticipantsPerRace: 4,
+  }
 };
+
+export function getGitHubAuthorizationToken() {
+  return siteConfig.api.github.accessToken
+    ? `Bearer ${siteConfig.api.github.accessToken}`
+    : "";
+}

@@ -3,10 +3,8 @@
 import { Button } from "@/components/ui/button";
 import * as React from "react";
 import type { Snippet } from "@prisma/client";
-import {
-  acquitSnippetAction,
-  deleteSnippetAction,
-} from "@/app/_actions/snippet";
+import { acquitSnippetAction, deleteSnippetAction } from "./actions";
+import { catchError } from "@/lib/utils";
 
 export function ReviewButtons({ snippetId }: { snippetId: Snippet["id"] }) {
   const [isAcquitting, setIsAcquitting] = React.useState(false);
@@ -22,7 +20,7 @@ export function ReviewButtons({ snippetId }: { snippetId: Snippet["id"] }) {
           try {
             await acquitSnippetAction({ id: snippetId });
           } catch (err) {
-            console.log(err);
+            catchError(err);
           } finally {
             setIsAcquitting(false);
           }
@@ -38,7 +36,7 @@ export function ReviewButtons({ snippetId }: { snippetId: Snippet["id"] }) {
           try {
             await deleteSnippetAction({ id: snippetId, path: "/review" });
           } catch (err) {
-            console.log(err);
+            catchError(err);
           } finally {
             setIsDeleting(false);
           }

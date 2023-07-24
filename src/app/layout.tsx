@@ -9,6 +9,7 @@ import { siteConfig } from "@/config/site";
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
 import { bruno_ace_sc, inter } from "@/lib/fonts";
+import { Confetti } from "@/context/confetti";
 
 const domain = process.env.NEXT_PUBLIC_DOMAIN;
 
@@ -52,6 +53,7 @@ export default function RootLayout({
           <Header />
           <div className="container py-2 h-fit md:py-18 grow">{children}</div>
           <Footer />
+          <Confetti />
           <Toaster />
           <TailwindIndicator />
         </ContextProvider>

@@ -4,5 +4,5 @@ node_modules
 **/LICENSE
 **/.vscode
 **/npm-debug.log
-**/.env
 **/dist
+**/.env

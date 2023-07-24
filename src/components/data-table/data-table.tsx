@@ -72,8 +72,8 @@ export function DataTable<TData, TValue>({
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
-  const page = searchParams.get("page") ?? "1";
-  const per_page = searchParams.get("per_page") ?? "5";
+  const page = searchParams?.get("page") ?? "1";
+  const per_page = searchParams?.get("per_page") ?? "5";
   const sort = searchParams?.get("sort");
   const [column, order] = sort?.split(".") ?? [];
 
@@ -201,7 +201,7 @@ export function DataTable<TData, TValue>({
                           `${pathname}?${createQueryString({
                             page: 1,
                             per_page: value,
-                            sort,
+                            sort: sort as string | number | null,
                           })}`,
                         );
                       });
@@ -232,7 +232,7 @@ export function DataTable<TData, TValue>({
                           `${pathname}?${createQueryString({
                             page: 1,
                             per_page,
-                            sort,
+                            sort: sort as string | number | null,
                           })}`,
                         );
                       });
@@ -255,7 +255,7 @@ export function DataTable<TData, TValue>({
                           `${pathname}?${createQueryString({
                             page: Number(page) - 1,
                             per_page,
-                            sort,
+                            sort: sort as string | number | null,
                           })}`,
                         );
                       });
@@ -275,7 +275,7 @@ export function DataTable<TData, TValue>({
                           `${pathname}?${createQueryString({
                             page: Number(page) + 1,
                             per_page,
-                            sort,
+                            sort: sort as string | number | null,
                           })}`,
                         );
                       });
@@ -297,7 +297,7 @@ export function DataTable<TData, TValue>({
                         `${pathname}?${createQueryString({
                           page: pageCount ?? 1,
                           per_page,
-                          sort,
+                          sort: sort as string | number | null,
                         })}`,
                       );
                     }}
