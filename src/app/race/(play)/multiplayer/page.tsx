@@ -27,7 +27,7 @@ async function raceMatchMaking(
     let availableRace = await prisma.race.findMany({
       where: {
         snippet: {
-          id: snippet.id,
+          language: snippet.language,
         },
         AND: [{ startedAt: null }, { endedAt: null }],
         participants: {
@@ -69,7 +69,7 @@ async function raceMatchMaking(
               },
             },
           });
-    console.log("Picked race", race);
+    // console.log("Picked race", race);
     return race;
   } else {
     // For guest user, we choose race if:
@@ -81,7 +81,7 @@ async function raceMatchMaking(
     let availableRace = await prisma.race.findMany({
       where: {
         snippet: {
-          id: snippet.id,
+          language: snippet.language,
         },
         AND: [{ startedAt: null }, { endedAt: null }],
         participants: {
@@ -119,7 +119,7 @@ async function raceMatchMaking(
               },
             },
           });
-    console.log("Picked race", race);
+    // console.log("Picked race", race);
     return race;
   }
 }
