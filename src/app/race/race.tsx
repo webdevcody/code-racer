@@ -79,40 +79,39 @@ export default function Race({
   user?: User;
   snippet: Snippet;
 }) {
-  const [startTime, setStartTime] = useState<Date | null>(null);
   const [input, setInput] = useState("");
   const [textIndicatorPosition, setTextIndicatorPosition] = useState(0);
-  const [submittingResults, setSubmittingResults] = useState(false);
-  const [totalErrors, setTotalErrors] = useState(0);
   const [currentLineNumber, setCurrentLineNumber] = useState(0);
   const [currentCharPosition, setCurrentCharPosition] = useState(0);
-  const router = useRouter();
-  const inputElement = useRef<HTMLInputElement | null>(null);
-  const code = snippet.code.trimEnd();
+  const [currentChar, setCurrentChar] = useState("");
 
+  const [startTime, setStartTime] = useState<Date | null>(null);
+  const [submittingResults, setSubmittingResults] = useState(false);
+  const [totalErrors, setTotalErrors] = useState(0);
+
+  const [raceTimeStamp, setRaceTimeStamp] = useState<RaceTimeStampProps[]>([]);
+  const [replayTimeStamp, setReplayTimeStamp] = useState<
+    ReplayTimeStampProps[]
+  >([]);
+
+  const code = snippet.code.trimEnd();
   const currentText = code.substring(0, input.length);
   const errors = input
     .split("")
     .map((char, index) => (char !== currentText[index] ? index : -1))
     .filter((index) => index !== -1);
 
-  const [currentChar, setCurrentChar] = useState("");
-  const [raceTimeStamp, setRaceTimeStamp] = useState<RaceTimeStampProps[]>([]);
-  const [replayTimeStamp, setReplayTimeStamp] = useState<
-    ReplayTimeStampProps[]
-  >([]);
+  const inputElement = useRef<HTMLInputElement | null>(null);
+  const router = useRouter();
 
   //multiplayer-specific -----------------------------------------------------------------------------------
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [raceStatus, setRaceStatus] = useState<
     "waiting" | "countdown" | "running" | "finished"
   >(Boolean(raceId) ? "waiting" : "running");
-  const [raceStartCountdown, setRaceStartCountdown] = useState<number | null>(
-    null,
-  );
-  const completedInputLength = Math.max(input.length - errors.length, 0);
+  const [raceStartCountdown, setRaceStartCountdown] = useState(0);
   const position = parseFloat(
-    ((completedInputLength / code.length) * 100).toFixed(2),
+    (((input.length - errors.length) / code.length) * 100).toFixed(2),
   );
   const isRaceFinished = raceId ? raceStatus === "finished" : input === code;
   const showRaceTimer = !!startTime && !isRaceFinished;
@@ -452,22 +451,22 @@ export default function Race({
 
   return (
     <>
-      {/* Debug purposes */}
-      {/* <pre className="max-w-sm rounded p-8"> */}
-      {/*     {JSON.stringify( */}
-      {/*         { */}
-      {/*             startTime, */}
-      {/*             raceStartCountdown, */}
-      {/*             raceStatus, */}
-      {/*             participants, */}
-      {/*             position, */}
-      {/*             completedInputLength, */}
-      {/*             errors, */}
-      {/*         }, */}
-      {/*         null, */}
-      {/*         4, */}
-      {/*     )} */}
-      {/* </pre> */}
+      {/* Debug purposes 
+       <pre className="max-w-sm rounded p-8"> 
+           {JSON.stringify( 
+               { 
+                   startTime, 
+                   raceStartCountdown, 
+                   raceStatus, 
+                   participants, 
+                   position, 
+                   inputLength: input.length, 
+                   errors, 
+               }, 
+               null, 
+               4, 
+           )} 
+       </pre>  */}
       <div
         className="relative flex flex-col gap-2 p-4 rounded-md lg:p-8 bg-accent w-3/4 mx-auto"
         onClick={() => {
