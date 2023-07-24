@@ -515,13 +515,12 @@ export default function Race({
             </div>
             <div className="flex ">
               <div className="flex-col px-1 w-10 ">
-                {code.split("\n").map((index, line) => (
+                {code.split("\n").map((_, line) => (
                   <div
                     key={line}
                     className={
                       currentLineNumber === line + 1
-                        ? // && textIndicatorPosition
-                          "text-center bg-slate-600  border-r-2 border-yellow-500"
+                        ? "text-center bg-slate-600 text-white  border-r-2 border-yellow-500"
                         : " text-center border-r-2 border-yellow-500"
                     }
                   >

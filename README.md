@@ -64,15 +64,15 @@ Happy coding and enjoy the race!
 
 ### Run the applications locally
 
-  Pre-requisites - [Docker](https://www.docker.com/) and [Node](https://nodejs.org/) installed.
+1. Run our setup script with `npm run setup`. This will install package dependencies and make sure you have the correct version of [docker](https://www.docker.com) and node installed.
+   a. We recommend using [nvm](https://github.com/nvm-sh/nvm) to manage your node versions.
+2. Get the postgres running - `docker compose up -d`
+3. Run the dev env - `npm run dev`
 
-  1. Create a copy of `.env.example` with name `.env` \ `.env.local`
-  2. Get the Postgres running - `docker compose up -d`
-  3. Run the dev env - `npm run dev`
-
-  Don't forget to turn down the postgres post development - `docker compose down`
+Don't forget to turn down the postgres post development - `docker compose down`
 
 ### Check the logs of Post
-  
-  > Run the command - `docker logs --follow code-racer-postgres`
+
+> Run the command - `docker logs --follow code-racer-postgres`
+
 </details>
