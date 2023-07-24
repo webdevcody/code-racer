@@ -72,12 +72,12 @@ export default function Code({
           <span
             key={index}
             ref={spanRefs.current[index]}
-            className={cn("border", {
+            className={cn("border border-transparent", {
               "text-red-500 opacity-100":
                 code[index] !== " " && errors.includes(index),
               "border-red-500 opacity-100":
                 code[index] === " " && errors.includes(index),
-              "bg-yellow-200 opacity-80 text-black":
+              "dark:bg-yellow-200 bg-yellow-600 opacity-80 text-black":
                 textIndicatorPositionDeterminer(index),
               "opacity-100":
                 userInput.length !== index && userInput[index] === char,
