@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import type { User } from "next-auth";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams} from "next/navigation";
 import type { RaceParticipant, Snippet } from "@prisma/client";
 import {
   Tooltip,
@@ -17,7 +17,7 @@ import Code from "./code";
 import RaceDetails from "./_components/race-details";
 import RaceTimer from "./race-timer";
 import { ReportButton } from "./_components/report-button";
-import { endRaceAction, saveUserResultAction } from "./actions";
+import { endRaceAction, getParticipantUser, saveUserResultAction } from "./actions";
 import { calculateAccuracy, calculateCPM } from "./_helpers/race-helpers";
 import { io, type Socket } from "socket.io-client";
 import {
@@ -28,6 +28,7 @@ import {
   raceParticipantNotificationSchema,
 } from "@/wss/schemas";
 import { SocketEvent, SocketPayload } from "@/wss/events";
+import MultiplayerLoadingLobby from "./_components/multiplayer-loading-lobby";
 
 type Participant = Omit<
   GameStateUpdatePayload["raceState"]["participants"][number],
@@ -119,8 +120,12 @@ export default function Race({
   const isRaceFinished = raceId ? raceStatus === "finished" : input === code;
   const showRaceTimer = !!startTime && !isRaceFinished;
 
+  // Get snippet lanugage from params 
+  const searchParams = useSearchParams();
+  const lang = (searchParams) ? searchParams.get("lang"): "";
+
   function startRaceEventHandlers() {
-    socket.on(`RACE_${raceId}`, (payload: SocketPayload) => {
+    socket.on(`RACE_${raceId}`, async (payload: SocketPayload) => {
       switch (payload.type) {
         case "GAME_STATE_UPDATE":
           // console.log({ payload });
@@ -526,6 +531,21 @@ export default function Race({
     setTotalErrors(0);
   }
 
+  const [lobby, setLobby] = useState<User[]>([])
+
+  useEffect(() => {
+    async function getUsers() {
+      const users = await Promise.all(participants.map(async (participant) => {
+        const userParticipant = await getParticipantUser({ participantId: participant.id })
+        return {
+          ...userParticipant as User
+        };
+      }))
+      setLobby(users)
+    }
+    getUsers()
+  }, [participants])
+
   return (
     <>
       {/* Debug purposes */}
@@ -549,18 +569,24 @@ export default function Race({
         onClick={focusOnLoad}
         role="none" // eslint fix - will remove the semantic meaning of an element while still exposing it to assistive technology
       >
-        <p>participant id: {participantId}</p>
-        {raceId && raceStatus === "waiting" && !startTime && (
-          <div>Waiting for players...</div>
+        {/* <p>participant id: {participantId}</p> */}
+        {raceId && raceStatus != "running" && !startTime && (
+          <MultiplayerLoadingLobby participants={participants}>
+            {raceStatus === "waiting" && (
+              <div className="flex flex-col items-center text-2xl font-bold">
+                <div 
+                  className="w-8 h-8 border-4 border-muted-foreground rounded-full border-t-4 border-t-warning animate-spin"
+                  ></div>
+                Waiting for players
+              </div>
+            )} 
+            {raceStatus === "countdown" && !startTime && Boolean(raceStartCountdown) && (
+              <div className="text-center text-2xl font-bold">
+                Game starting in: {raceStartCountdown}
+              </div>
+            )}
+          </MultiplayerLoadingLobby>
         )}
-        {raceId &&
-          raceStatus === "countdown" &&
-          !startTime &&
-          Boolean(raceStartCountdown) && (
-            <div className="text-center text-2xl font-bold">
-              Game starting in: {raceStartCountdown}
-            </div>
-          )}
         {raceStatus === "running" && (
           <>
             {raceId ? (
@@ -632,7 +658,13 @@ export default function Race({
           </span>
         ) : null}
         {raceStatus === "finished" && (
-          <h2 className="text-2xl p-4">Loading race results, please wait...</h2>
+          // <h2 className="text-2xl p-4">Loading race results, please wait...</h2>
+          <div className="flex flex-col items-center text-2xl font-bold space-y-8">
+            <div 
+              className="w-8 h-8 border-4 border-muted-foreground rounded-full border-t-4 border-t-warning animate-spin"
+              ></div>
+                Loading race results, please wait...
+          </div>
         )}
         <div className="flex justify-between items-center">
           {showRaceTimer && (
