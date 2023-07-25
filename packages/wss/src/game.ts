@@ -1,23 +1,27 @@
 import { RaceParticipant, type Race } from "@prisma/client";
 import { prisma } from "@code-racer/app/src/lib/prisma";
+import { raise } from "@code-racer/app/src/lib/utils";
 import { SocketEvents, SocketPayload } from "./events";
 import { RaceFullException } from "./exceptions";
-import { raise } from "@code-racer/app/src/lib/utils";
 import {
   GameStateUpdatePayload,
   ParticipantRacePayload,
-  participantRacePayloadSchema,
   RaceParticipantNotification,
   RaceParticipantPositionPayload,
+  participantRacePayloadSchema,
   raceParticipantPositionPayloadSchema,
 } from "./schemas";
 import { type Server } from "socket.io";
-import { siteConfig } from "@code-racer/app/src/config/site"
+import { siteConfig } from "@code-racer/app/src/config/site";
 
 type ParticipantsMap = Map<
   //this is the socketId
   string,
-  { id: RaceParticipant["id"]; position: number }
+  {
+    id: RaceParticipant["id"];
+    position: number;
+    finishedAt: number | null;
+  }
 >;
 
 export class Game {
@@ -67,20 +71,19 @@ export class Game {
           // `Race participant position payload: ${parsedPayload}`,
           // )
           this.handleParticipantPositionPayload(parsedPayload);
-        },
+        }
       );
     });
   }
 
-  private serializeParticipants(
-    participants: ParticipantsMap,
-  ): { id: string; socketId: string; position: number }[] {
+  private serializeParticipants(participants: ParticipantsMap) {
     return Array.from(participants.entries()).map(
-      ([socketId, { id, position }]) => ({
+      ([socketId, { id, position, finishedAt }]) => ({
         id,
         socketId,
         position,
-      }),
+        finishedAt,
+      })
     );
   }
 
@@ -96,6 +99,7 @@ export class Game {
         participants: new Map().set(parsedPayload.socketId, {
           id: parsedPayload.participantId,
           position: 0,
+          finishedAt: null,
         }),
       });
     } else if (race.participants.size + 1 > Game.MAX_PARTICIPANTS_PER_RACE) {
@@ -105,6 +109,7 @@ export class Game {
       race.participants.set(parsedPayload.socketId, {
         id: parsedPayload.participantId,
         position: 0,
+        finishedAt: null,
       });
       this.startRaceCountdown(parsedPayload.raceId);
     }
@@ -123,7 +128,7 @@ export class Game {
     } satisfies SocketPayload);
   }
 
-  private async handlePlayerLeaveRace(payload: ParticipantRacePayload) {
+  private handlePlayerLeaveRace(payload: ParticipantRacePayload) {
     const parsedPayload = participantRacePayloadSchema.parse(payload);
     // console.log("Player leaving race: ", parsedPayload)
 
@@ -141,10 +146,11 @@ export class Game {
       } satisfies RaceParticipantNotification,
     } satisfies SocketPayload);
 
-    if (race.participants.size === 0) {
-      await this.endRace(parsedPayload.raceId);
-    }
+    const isRaceEnded = this.isRaceEnded(parsedPayload.raceId);
 
+    if (isRaceEnded) {
+      void this.endRace(parsedPayload.raceId);
+    }
     // console.log("Races: ", this.races)
   }
 
@@ -166,7 +172,6 @@ export class Game {
         }
 
         // console.log("Emitting game loop for race:", raceId)
-
         this.server.emit(`RACE_${raceId}`, {
           type: "GAME_STATE_UPDATE",
           payload: {
@@ -262,7 +267,7 @@ export class Game {
   }
 
   private handleParticipantPositionPayload(
-    payload: RaceParticipantPositionPayload,
+    payload: RaceParticipantPositionPayload
   ) {
     const race = this.races.get(payload.raceId);
 
@@ -278,8 +283,30 @@ export class Game {
 
     participant.position = parsedPayload.position;
 
-    if (parsedPayload.position >= Game.GAME_MAX_POSITION) {
-      this.endRace(parsedPayload.raceId);
+    if (participant.position >= Game.GAME_MAX_POSITION) {
+      if (participant.finishedAt) return;
+      participant.finishedAt = new Date().getTime();
     }
+
+    const isRaceEnded = this.isRaceEnded(parsedPayload.raceId);
+
+    if (isRaceEnded) {
+      void this.endRace(parsedPayload.raceId);
+    }
+  }
+
+  private isRaceEnded(raceId: string) {
+    const race = this.races.get(raceId);
+    if (!race) return true;
+
+    // checks if every participant has finished the race
+    let finishedParticipants = 0;
+    race.participants.forEach((participant) => {
+      if (participant.position >= Game.GAME_MAX_POSITION) {
+        finishedParticipants++;
+      }
+    });
+
+    return finishedParticipants >= race.participants.size;
   }
 }
