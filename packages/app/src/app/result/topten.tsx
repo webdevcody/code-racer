@@ -15,13 +15,15 @@ import { Heading } from "@/components/ui/heading";
 
 export async function TopTable({ snippetId }: { snippetId?: string }) {
   const topten = await getTopTen(snippetId);
-  const usersPlacement = await getUserSnippetPlacement(snippetId);
+  const userPlacement = await getUserSnippetPlacement(snippetId);
 
   return (
     <>
-      <Heading
-        description={`Your current placement among this snippet is #${usersPlacement}.`}
-      />
+      {userPlacement && (
+        <Heading
+          description={`Your current placement among this snippet is #${userPlacement}.`}
+        />
+      )}
       <Table>
         <TableCaption>Top ten list for completed snippet.</TableCaption>
         <TableHeader>
