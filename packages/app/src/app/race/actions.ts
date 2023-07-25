@@ -56,21 +56,6 @@ export const saveUserResultAction = safeAction(
   });
 });
 
-export const endRaceAction = safeAction(
-  z.object({
-    raceId: z.string(),
-  }),
-)(async (input) => {
-  await prisma.race.update({
-    where: {
-      id: input.raceId,
-    },
-    data: {
-      endedAt: new Date(),
-    },
-  });
-});
-
 export const getParticipantUser = safeAction(
   z.object({
     participantId: z.string(),
@@ -99,7 +84,7 @@ export const getParticipantUser = safeAction(
 
 /**
  * This should create a private room for the user
- * Not implemented. Need to decide on the multiplayer architecture
+ * Not implemented
  **/
 export const createPrivateRaceRoom = safeAction(z.object({}))(async (input) => {
   throw new Error("Not implemented");
