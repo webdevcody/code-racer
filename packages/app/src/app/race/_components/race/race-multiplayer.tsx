@@ -26,8 +26,14 @@ import {
   RaceParticipantPositionPayload,
   gameStateUpdatePayloadSchema,
   raceParticipantNotificationSchema,
-} from "../../../../../../wss/src/schemas";
-import { SocketEvent, SocketPayload } from "../../../../../../wss/src/events";
+} from "@code-racer/wss/src/schemas";
+import {
+  SocketEvents,
+  RaceStatus,
+  type SocketPayload,
+  type SocketEvent,
+  type RaceStatusType,
+} from "@code-racer/wss/src/events";
 import MultiplayerLoadingLobby from "../multiplayer-loading-lobby";
 
 type Participant = Omit<
@@ -103,14 +109,16 @@ export default function Race({
 
   //multiplayer-specific -----------------------------------------------------------------------------------
   const [participants, setParticipants] = useState<Participant[]>([]);
-  const [raceStatus, setRaceStatus] = useState<
-    "waiting" | "countdown" | "running" | "finished"
-  >(Boolean(raceId) ? "waiting" : "running");
+  const [raceStatus, setRaceStatus] = useState<RaceStatusType>(
+    Boolean(raceId) ? RaceStatus.WAITING : RaceStatus.RUNNING,
+  );
   const [raceStartCountdown, setRaceStartCountdown] = useState(0);
   const position = parseFloat(
     (((input.length - errors.length) / code.length) * 100).toFixed(2),
   );
-  const isRaceFinished = raceId ? raceStatus === "finished" : input === code;
+  const isRaceFinished = raceId
+    ? raceStatus === RaceStatus.FINISHED
+    : input === code;
   const showRaceTimer = !!startTime && !isRaceFinished;
 
   // Get snippet lanugage from params
@@ -120,7 +128,7 @@ export default function Race({
   function startRaceEventHandlers() {
     socket.on(`RACE_${raceId}`, async (payload: SocketPayload) => {
       switch (payload.type) {
-        case "GAME_STATE_UPDATE":
+        case SocketEvents.GAME_STATE_UPDATE:
           const { raceState } = gameStateUpdatePayloadSchema.parse(
             payload.payload,
           );
@@ -134,7 +142,7 @@ export default function Race({
           }
           break;
 
-        case "USER_RACE_LEAVE":
+        case SocketEvents.USER_RACE_LEAVE:
           const { participantId } = raceParticipantNotificationSchema.parse(
             payload.payload,
           );
@@ -145,7 +153,7 @@ export default function Race({
           );
           break;
 
-        case "USER_RACE_ENTER":
+        case SocketEvents.USER_RACE_ENTER:
           const { participantId: _participantId } =
             raceParticipantNotificationSchema.parse(payload.payload);
           setParticipants((participants) => [
@@ -162,7 +170,7 @@ export default function Race({
     if (!raceId || !participantId) return;
     getSocketConnection().then(() => {
       socket.on("connect", () => {
-        socket.emit("USER_RACE_ENTER", {
+        socket.emit<SocketEvent>(SocketEvents.USER_RACE_ENTER, {
           raceId,
           participantId,
           socketId: socket.id,
@@ -182,7 +190,7 @@ export default function Race({
 
     const gameLoop = setInterval(() => {
       if (raceStatus === "running") {
-        socket.emit("PARTICIPANT_POSITION_UPDATE" as SocketEvent, {
+        socket.emit<SocketEvent>(SocketEvents.PARTICIPANT_POSITION_UPDATE, {
           socketId: socket.id,
           participantId,
           position,
@@ -479,15 +487,15 @@ export default function Race({
         role="none" // eslint fix - will remove the semantic meaning of an element while still exposing it to assistive technology
       >
         {/* <p>participant id: {participantId}</p> */}
-        {raceId && raceStatus != "running" && !startTime && (
+        {raceId && raceStatus != RaceStatus.RUNNING && !startTime && (
           <MultiplayerLoadingLobby participants={participants}>
-            {raceStatus === "waiting" && (
+            {raceStatus === RaceStatus.WAITING && (
               <div className="flex flex-col items-center text-2xl font-bold">
                 <div className="w-8 h-8 border-4 border-muted-foreground rounded-full border-t-4 border-t-warning animate-spin"></div>
                 Waiting for players
               </div>
             )}
-            {raceStatus === "countdown" &&
+            {raceStatus === RaceStatus.COUNTDOWN &&
               !startTime &&
               Boolean(raceStartCountdown) && (
                 <div className="text-center text-2xl font-bold">
@@ -496,7 +504,7 @@ export default function Race({
               )}
           </MultiplayerLoadingLobby>
         )}
-        {raceStatus === "running" && (
+        {raceStatus === RaceStatus.RUNNING && (
           <>
             {raceId ? (
               participants.map((p) => (
@@ -562,7 +570,7 @@ export default function Race({
             You must fix all errors before you can finish the race!
           </span>
         ) : null}
-        {raceStatus === "finished" && (
+        {raceStatus === RaceStatus.FINISHED && (
           // <h2 className="text-2xl p-4">Loading race results, please wait...</h2>
           <div className="flex flex-col items-center text-2xl font-bold space-y-8">
             <div className="w-8 h-8 border-4 border-muted-foreground rounded-full border-t-4 border-t-warning animate-spin"></div>
