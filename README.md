@@ -14,6 +14,7 @@ Code Racer is a multiplayer coding game where developers can compete against eac
 ## Features
 
 - Code snippet games
+- [Multiplayer races](./src/wss/README.md)
 
 ## Technologies Used
 
@@ -61,17 +62,8 @@ Happy coding and enjoy the race!
   <h2>How To(s) - A newbie section</h2>
   </summary>
 
-### Run the applications locally
-
-  Pre-requisites - [Docker](https://www.docker.com/) and [Node](https://nodejs.org/) installed.
-
-  1. Create a copy of `.env.example` with name `.env` \ `.env.local`
-  2. Get the Postgres running - `docker compose up -d`
-  3. Run the dev env - `npm run dev`
-
-  Don't forget to turn down the postgres post devlopment - `docker compose down`
-
 ### Check the logs of Post
-  
-  > Run the command - `docker logs --follow code-racer-postgres`
+
+> Run the command - `docker logs --follow code-racer-postgres`
+
 </details>
