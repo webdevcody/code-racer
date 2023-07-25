@@ -1,10 +1,8 @@
 import { getCurrentUser } from "@/lib/session";
-
 import { getRandomSnippet } from "../loaders";
-
-import NoSnippet from "../../no-snippet";
-import Race from "../../race";
-import { getSnippetById } from "./loaders";
+import NoSnippet from "../../_components/no-snippet";
+import Race from "../../_components/race/race-multiplayer";
+import { getSnippetById } from "../loaders";
 import { CacheBuster } from "@/components/cache-buster";
 
 async function getSearchParamSnippet(snippetId: string | string[]) {

@@ -2,7 +2,7 @@ import { ProgressBar, ProgressIndicator } from "@/components/ui/progress-bar";
 import Image from "next/image";
 import type { User } from "next-auth";
 import React, { useState } from "react";
-import { getParticipantUser } from "./actions";
+import { getParticipantUser } from "../../actions";
 
 export default function RaceTracker({
   user,

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { PauseIcon, PlayIcon, RefreshCcw } from "lucide-react";
-import Code from "../race/code";
+import Code from "../race/_components/race/code";
 
 interface replayTimeStampProps {
   char: string;

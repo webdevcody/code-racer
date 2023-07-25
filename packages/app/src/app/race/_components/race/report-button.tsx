@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import type { Snippet } from "@prisma/client";
-import { getRandomSnippet } from "../(play)/loaders";
+import { getRandomSnippet } from "../../(play)/loaders";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "@/components/ui/use-toast";
 import { Icons } from "@/components/icons";

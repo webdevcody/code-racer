@@ -1,10 +1,9 @@
 import { getCurrentUser } from "@/lib/session";
-import NoSnippet from "../../no-snippet";
-import Race from "../../race";
+import NoSnippet from "../../_components/no-snippet";
+import Race from "../../_components/race/race-multiplayer";
 import { redirect } from "next/navigation";
-import { raceMatchMaking } from "./loaders";
+import { raceMatchMaking, createRaceParticipant } from "../loaders";
 import { getRandomSnippet } from "../loaders";
-import { createRaceParticipant } from "./actions";
 
 export default async function MultiplayerRacePage({
   searchParams,
