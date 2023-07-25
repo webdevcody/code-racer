@@ -184,11 +184,11 @@ export default function Race({
 
   //send updated position to server
   useEffect(() => {
-    if (!participantId || !raceId || raceStatus !== "running" || !position)
+    if (!participantId || !raceId || raceStatus !== RaceStatus.RUNNING || !position)
       return;
 
     const gameLoop = setInterval(() => {
-      if (raceStatus === "running") {
+      if (raceStatus === RaceStatus.RUNNING) {
         socket.emit("PositionUpdate", {
           socketId: socket.id,
           raceParticipantId: participantId,
