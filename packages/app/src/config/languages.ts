@@ -1,4 +1,4 @@
-export const snippetLanguages: { label: string; value: string }[] = [
+export const snippetLanguages = [
   { label: "C++", value: "c++" },
   { label: "C#", value: "c#" },
   { label: "Go", value: "go" },
@@ -10,4 +10,10 @@ export const snippetLanguages: { label: string; value: string }[] = [
   { label: "Ruby", value: "ruby" },
   { label: "Swift", value: "swift" },
   { label: "Typescript", value: "typescript" },
-];
+] as const;
+
+export type Language = typeof snippetLanguages[number]["value"];
+
+export function isValidLanguage(lang:string):boolean {
+    return snippetLanguages.some((l) => l.value === lang);
+}

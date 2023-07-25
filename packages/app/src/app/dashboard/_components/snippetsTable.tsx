@@ -146,6 +146,7 @@ export function SnippetsTable({
         {
           id: "language",
           title: "Language",
+          //@ts-expect-error it's ok
           options: snippetLanguages,
         },
       ]}

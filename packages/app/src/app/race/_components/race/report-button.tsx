@@ -8,6 +8,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { toast } from "@/components/ui/use-toast";
 import { Icons } from "@/components/icons";
 import { downVoteSnippetAction } from "@/app/result/actions";
+import { Language } from "@/config/languages";
 
 export function ReportButton({
   snippetId,
@@ -15,7 +16,7 @@ export function ReportButton({
   handleRestart,
 }: {
   snippetId: string;
-  language: string;
+  language: Language;
   handleRestart: () => void;
 }) {
   const [prevReportedSnippets, setPrevReportedSnippets] = React.useState<

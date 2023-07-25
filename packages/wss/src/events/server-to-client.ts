@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { UserRaceEnterEvent, UserRaceLeaveEvent } from "./common";
+import { Snippet } from "@code-racer/app/src/lib/prisma";
+import { UserRaceEnterPayload, UserRaceLeavePayload } from "./common";
 
 export const gameStateUpdateEvent = z.object({
   raceState: z.object({
@@ -17,11 +18,27 @@ export const gameStateUpdateEvent = z.object({
   }),
 });
 
-export type GameStateUpdateEvent = z.infer<typeof gameStateUpdateEvent>;
+export type GameStateUpdatePayload = z.infer<typeof gameStateUpdateEvent>;
+
+//This is the response to the UserRaceRequest event
+export const userRaceResponseEvent = z.object({
+  snippet: z.object({
+    id: z.string(),
+    code: z.string(),
+    language: z.string(),
+    userId: z.string().nullable(),
+    onReview: z.boolean(),
+    rating: z.number(),
+  }),
+  raceId: z.string(),
+  raceParticipantId: z.string(),
+});
+export type UserRaceResponsePayload = z.infer<typeof userRaceResponseEvent>;
 
 export interface ServerToClientEvents {
-  GameStateUpdate: (payload: GameStateUpdateEvent) => void;
-  UserRaceEnter: (payload: UserRaceEnterEvent) => void;
-  UserRaceLeave: (payload: UserRaceLeaveEvent) => void;
+  GameStateUpdate: (payload: GameStateUpdatePayload) => void;
+  UserRaceEnter: (payload: UserRaceEnterPayload) => void;
+  UserRaceLeave: (payload: UserRaceLeavePayload) => void;
+  UserRaceResponse: (payload: UserRaceResponsePayload) => void;
   UserEnterFullRace: () => void;
 }
