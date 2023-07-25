@@ -1,9 +1,6 @@
-import { prisma } from "@/lib/prisma";
 import { RaceParticipant, type Race } from "@prisma/client";
-
-import { siteConfig } from "@/config/site";
-import { raise } from "@/lib/utils";
-import { type Server } from "socket.io";
+import { prisma } from "@code-racer/app/src/lib/prisma";
+import { raise } from "@code-racer/app/src/lib/utils";
 import { SocketEvents, SocketPayload } from "./events";
 import { RaceFullException } from "./exceptions";
 import {
@@ -14,6 +11,8 @@ import {
   participantRacePayloadSchema,
   raceParticipantPositionPayloadSchema,
 } from "./schemas";
+import { type Server } from "socket.io";
+import { siteConfig } from "@code-racer/app/src/config/site";
 
 type ParticipantsMap = Map<
   //this is the socketId
@@ -72,7 +71,7 @@ export class Game {
           // `Race participant position payload: ${parsedPayload}`,
           // )
           this.handleParticipantPositionPayload(parsedPayload);
-        },
+        }
       );
     });
   }
@@ -84,7 +83,7 @@ export class Game {
         socketId,
         position,
         finishedAt,
-      }),
+      })
     );
   }
 
@@ -268,7 +267,7 @@ export class Game {
   }
 
   private handleParticipantPositionPayload(
-    payload: RaceParticipantPositionPayload,
+    payload: RaceParticipantPositionPayload
   ) {
     const race = this.races.get(payload.raceId);
 

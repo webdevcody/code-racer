@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import type { User } from "next-auth";
 import { Button } from "@/components/ui/button";
-import { useRouter, useSearchParams} from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import type { RaceParticipant, Snippet } from "@prisma/client";
 import {
   Tooltip,
@@ -17,7 +17,7 @@ import Code from "./code";
 import RaceDetails from "./_components/race-details";
 import RaceTimer from "./race-timer";
 import { ReportButton } from "./_components/report-button";
-import { endRaceAction, getParticipantUser, saveUserResultAction } from "./actions";
+import { endRaceAction, saveUserResultAction } from "./actions";
 import { calculateAccuracy, calculateCPM } from "./_helpers/race-helpers";
 import { io, type Socket } from "socket.io-client";
 import {
@@ -26,8 +26,8 @@ import {
   RaceParticipantPositionPayload,
   gameStateUpdatePayloadSchema,
   raceParticipantNotificationSchema,
-} from "@/wss/schemas";
-import { SocketEvent, SocketPayload } from "@/wss/events";
+} from "@code-racer/wss/src/schemas";
+import { SocketEvent, SocketPayload } from "@code-racer/wss/src/events";
 import MultiplayerLoadingLobby from "./_components/multiplayer-loading-lobby";
 
 type Participant = Omit<
@@ -117,9 +117,9 @@ export default function Race({
   const isRaceFinished = raceId ? raceStatus === "finished" : input === code;
   const showRaceTimer = !!startTime && !isRaceFinished;
 
-  // Get snippet lanugage from params 
+  // Get snippet lanugage from params
   const searchParams = useSearchParams();
-  const lang = (searchParams) ? searchParams.get("lang"): "";
+  const lang = searchParams ? searchParams.get("lang") : "";
 
   function startRaceEventHandlers() {
     socket.on(`RACE_${raceId}`, async (payload: SocketPayload) => {
@@ -487,17 +487,17 @@ export default function Race({
           <MultiplayerLoadingLobby participants={participants}>
             {raceStatus === "waiting" && (
               <div className="flex flex-col items-center text-2xl font-bold">
-                <div 
-                  className="w-8 h-8 border-4 border-muted-foreground rounded-full border-t-4 border-t-warning animate-spin"
-                  ></div>
+                <div className="w-8 h-8 border-4 border-muted-foreground rounded-full border-t-4 border-t-warning animate-spin"></div>
                 Waiting for players
               </div>
-            )} 
-            {raceStatus === "countdown" && !startTime && Boolean(raceStartCountdown) && (
-              <div className="text-center text-2xl font-bold">
-                Game starting in: {raceStartCountdown}
-              </div>
             )}
+            {raceStatus === "countdown" &&
+              !startTime &&
+              Boolean(raceStartCountdown) && (
+                <div className="text-center text-2xl font-bold">
+                  Game starting in: {raceStartCountdown}
+                </div>
+              )}
           </MultiplayerLoadingLobby>
         )}
         {raceStatus === "running" && (
@@ -569,10 +569,8 @@ export default function Race({
         {raceStatus === "finished" && (
           // <h2 className="text-2xl p-4">Loading race results, please wait...</h2>
           <div className="flex flex-col items-center text-2xl font-bold space-y-8">
-            <div 
-              className="w-8 h-8 border-4 border-muted-foreground rounded-full border-t-4 border-t-warning animate-spin"
-              ></div>
-                Loading race results, please wait...
+            <div className="w-8 h-8 border-4 border-muted-foreground rounded-full border-t-4 border-t-warning animate-spin"></div>
+            Loading race results, please wait...
           </div>
         )}
         <div className="flex justify-between items-center">
