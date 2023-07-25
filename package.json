@@ -61,6 +61,7 @@
     "react-use": "^17.4.0",
     "recharts": "^2.7.2",
     "server-only": "^0.0.1",
+    "sharp": "^0.32.4",
     "socket.io": "^4.7.1",
     "socket.io-client": "^4.7.1",
     "start-server-and-test": "^2.0.0",
