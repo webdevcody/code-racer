@@ -64,10 +64,16 @@ To get started with Code Racer locally, follow these steps
    docker compose up -d
    ```
 
-8. Finally start your dev server.
+8. Start the app dev server.
 
 ```sh
 npm -w @code-racer/app run dev
+```
+
+9. Start the web socket server.
+
+```sh
+npm -w @code-racer/wss run dev
 ```
 
 Open your browser and visit <http://localhost:3000> to see the application running.
