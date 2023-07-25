@@ -45,8 +45,6 @@ let socket: Socket;
 
 async function getSocketConnection() {
   if (socket) return;
-  //eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore
   socket = io("http://localhost:3001");
   socket.on("connect", () => {
     // console.log("connected");
@@ -170,6 +168,12 @@ export default function Race({
     if (!raceId || !participantId) return;
     getSocketConnection().then(() => {
       socket.on("connect", () => {
+        socket.on<SocketEvent>(SocketEvents.USER_RACE_ENTER_IS_FULL, () => {
+          // make client enter another race
+          router.refresh();
+          return;
+        });
+
         socket.emit<SocketEvent>(SocketEvents.USER_RACE_ENTER, {
           raceId,
           participantId,

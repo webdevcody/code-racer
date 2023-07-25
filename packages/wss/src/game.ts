@@ -91,6 +91,17 @@ export class Game {
     );
   }
 
+  private createRaceWithParticipant(raceId:string, participant:{id:string, socketId:string}){
+      return this.races.set(raceId, {
+        status: "waiting",
+        participants: new Map().set(participant.socketId, {
+          id: participant.id,
+          position: 0,
+          finishedAt: null,
+        }),
+      });
+  }
+
   private async handlePlayerEnterRace(payload: ParticipantRacePayload) {
     const parsedPayload = participantRacePayloadSchema.parse(payload);
 
@@ -98,22 +109,17 @@ export class Game {
     const race = this.races.get(parsedPayload.raceId);
 
     if (!race) {
-      this.races.set(parsedPayload.raceId, {
-        status: "waiting",
-        participants: new Map().set(parsedPayload.socketId, {
-          id: parsedPayload.participantId,
-          position: 0,
-          finishedAt: null,
-        }),
-      });
+      this.createRaceWithParticipant(parsedPayload.raceId, {
+        id: parsedPayload.participantId,
+        socketId: parsedPayload.socketId,
+      })
     } else if (
       race.participants.size + 1 >
       Game.MAX_PARTICIPANTS_PER_RACE
     ) {
-      //TODO: Handle this exception
-      throw new RaceFullException();
+      return this.emitRaceFull(parsedPayload.socketId);
     } else {
-      console.log("Starting a race", parsedPayload.raceId)
+      // console.log("Starting a race", parsedPayload.raceId)
       race.participants.set(parsedPayload.socketId, {
         id: parsedPayload.participantId,
         position: 0,
@@ -123,7 +129,6 @@ export class Game {
     }
 
     // console.log({ raceId: parsedPayload.raceId }, "\n")
-
     // console.log("Races: ", this.races)
 
     // Emit to all players in the room that a new player has joined.
@@ -134,6 +139,10 @@ export class Game {
         socketId: parsedPayload.socketId,
       } satisfies RaceParticipantNotification,
     } satisfies SocketPayload);
+  }
+
+  private emitRaceFull(socketId:string){
+    this.server.sockets.sockets.get(socketId)?.emit(SocketEvents.USER_RACE_ENTER_IS_FULL, {})
   }
 
   private handlePlayerLeaveRace(payload: ParticipantRacePayload) {
