@@ -1,7 +1,7 @@
 import { Heading } from "@/components/ui/heading";
-import PracticeRace from "./_components/practice-race";
-import MultiplayerRace from "./_components/multiplayer-race";
-import FriendsRace from "./_components/friends-race";
+import PracticeRaceCard from "./_components/cards/practice-race-card";
+import MultiplayerRaceCard from "./_components/cards/multiplayer-race-card";
+import FriendsRaceCard from "./_components/cards/friends-race-card";
 import { env } from "@/env.mjs";
 
 export default function RacePage() {
@@ -13,9 +13,9 @@ export default function RacePage() {
         centered
       />
       <div className="grid grid-cols-1 gap-8 my-10 lg:grid-cols-3">
-        <PracticeRace />
-        <MultiplayerRace enabled={env.MULTIPLAYER} />
-        <FriendsRace enabled={env.MULTIPLAYER} />
+        <PracticeRaceCard />
+        <MultiplayerRaceCard enabled={env.MULTIPLAYER} />
+        <FriendsRaceCard enabled={env.MULTIPLAYER} />
       </div>
     </main>
   );

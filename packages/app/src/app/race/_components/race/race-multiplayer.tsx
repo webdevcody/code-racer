@@ -14,11 +14,11 @@ import {
 import { Heading } from "@/components/ui/heading";
 import RaceTracker from "./race-tracker";
 import Code from "./code";
-import RaceDetails from "./_components/race-details";
+import RaceDetails from "./race-details";
 import RaceTimer from "./race-timer";
-import { ReportButton } from "./_components/report-button";
-import { endRaceAction, saveUserResultAction } from "./actions";
-import { calculateAccuracy, calculateCPM } from "./_helpers/race-helpers";
+import { ReportButton } from "./report-button";
+import { endRaceAction, saveUserResultAction } from "../../actions";
+import { calculateAccuracy, calculateCPM } from "./utils";
 import { io, type Socket } from "socket.io-client";
 import {
   GameStateUpdatePayload,
@@ -26,9 +26,9 @@ import {
   RaceParticipantPositionPayload,
   gameStateUpdatePayloadSchema,
   raceParticipantNotificationSchema,
-} from "@code-racer/wss/src/schemas";
-import { SocketEvent, SocketPayload } from "@code-racer/wss/src/events";
-import MultiplayerLoadingLobby from "./_components/multiplayer-loading-lobby";
+} from "../../../../../../wss/src/schemas";
+import { SocketEvent, SocketPayload } from "../../../../../../wss/src/events";
+import MultiplayerLoadingLobby from "../multiplayer-loading-lobby";
 
 type Participant = Omit<
   GameStateUpdatePayload["raceState"]["participants"][number],

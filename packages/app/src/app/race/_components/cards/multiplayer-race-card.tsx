@@ -9,7 +9,7 @@ import LanguageDropDown from "@/app/add-snippet/_components/language-dropdown";
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
 
-export default function MultiplayerRace({ enabled }: { enabled: boolean }) {
+export default function MultiplayerRaceCard({ enabled }: { enabled: boolean }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");

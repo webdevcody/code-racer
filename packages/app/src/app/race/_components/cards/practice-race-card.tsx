@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import LanguageDropDown from "@/app/add-snippet/_components/language-dropdown";
 import { bruno_ace_sc } from "@/lib/fonts";
 
-export default function PracticeRace() {
+export default function PracticeRaceCard() {
   const [selectedPracticeLanguage, setSelectedPracticeLanguage] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
