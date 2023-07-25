@@ -20,35 +20,27 @@ import { ReportButton } from "./report-button";
 import { endRaceAction, saveUserResultAction } from "../../actions";
 import { calculateAccuracy, calculateCPM } from "./utils";
 import { io, type Socket } from "socket.io-client";
-import {
-  GameStateUpdatePayload,
-  ParticipantRacePayload,
-  RaceParticipantPositionPayload,
-  gameStateUpdatePayloadSchema,
-  raceParticipantNotificationSchema,
-} from "@code-racer/wss/src/schemas";
-import {
-  SocketEvents,
-  RaceStatus,
-  type SocketPayload,
-  type SocketEvent,
-  type RaceStatusType,
-} from "@code-racer/wss/src/events";
+
+import { type RaceStatusType, RaceStatus } from "@code-racer/wss/src/types";
 import MultiplayerLoadingLobby from "../multiplayer-loading-lobby";
+import {
+  GameStateUpdateEvent,
+  gameStateUpdateEvent,
+  type ServerToClientEvents,
+} from "@code-racer/wss/src/events/server-to-client";
+import { type ClientToServerEvents } from "@code-racer/wss/src/events/client-to-server";
+import { userRacePresenceEvent } from "@code-racer/wss/src/events/common";
 
 type Participant = Omit<
-  GameStateUpdatePayload["raceState"]["participants"][number],
+  GameStateUpdateEvent["raceState"]["participants"][number],
   "socketId"
 >;
 
-let socket: Socket;
+let socket: Socket<ServerToClientEvents, ClientToServerEvents>;
 
 async function getSocketConnection() {
   if (socket) return;
   socket = io("http://localhost:3001");
-  socket.on("connect", () => {
-    // console.log("connected");
-  });
   // console.log({ socket });
 }
 
@@ -124,42 +116,37 @@ export default function Race({
   const lang = searchParams ? searchParams.get("lang") : "";
 
   function startRaceEventHandlers() {
-    socket.on(`RACE_${raceId}`, async (payload: SocketPayload) => {
-      switch (payload.type) {
-        case SocketEvents.GAME_STATE_UPDATE:
-          const { raceState } = gameStateUpdatePayloadSchema.parse(
-            payload.payload,
-          );
-          setParticipants(raceState.participants);
-          setRaceStatus(raceState.status);
+    socket.on("UserEnterFullRace", () => {
+      // make client enter another race
+      router.refresh();
+      return;
+    });
 
-          if (raceState.countdown) {
-            setRaceStartCountdown(raceState.countdown);
-          } else if (raceState.countdown === 0) {
-            setStartTime(new Date());
-          }
-          break;
+    socket.on("GameStateUpdate", (payload) => {
+      const { raceState } = gameStateUpdateEvent.parse(payload);
+      setParticipants(raceState.participants);
+      setRaceStatus(raceState.status);
 
-        case SocketEvents.USER_RACE_LEAVE:
-          const { participantId } = raceParticipantNotificationSchema.parse(
-            payload.payload,
-          );
-          setParticipants((participants) =>
-            participants.filter(
-              (participant) => participant.id !== participantId,
-            ),
-          );
-          break;
-
-        case SocketEvents.USER_RACE_ENTER:
-          const { participantId: _participantId } =
-            raceParticipantNotificationSchema.parse(payload.payload);
-          setParticipants((participants) => [
-            ...participants,
-            { id: _participantId, position: 0, finishedAt: null },
-          ]);
-          break;
+      if (raceState.countdown) {
+        setRaceStartCountdown(raceState.countdown);
+      } else if (raceState.countdown === 0) {
+        setStartTime(new Date());
       }
+    });
+
+    socket.on("UserRaceEnter", (payload) => {
+      const { participantId } = userRacePresenceEvent.parse(payload);
+      setParticipants((participants) => [
+        ...participants,
+        { id: participantId, position: 0, finishedAt: null },
+      ]);
+    });
+
+    socket.on("UserRaceLeave", (payload) => {
+      const { participantId } = userRacePresenceEvent.parse(payload);
+      setParticipants((participants) =>
+        participants.filter((participant) => participant.id !== participantId),
+      );
     });
   }
 
@@ -168,19 +155,13 @@ export default function Race({
     if (!raceId || !participantId) return;
     getSocketConnection().then(() => {
       socket.on("connect", () => {
-        socket.on<SocketEvent>(SocketEvents.USER_RACE_ENTER_IS_FULL, () => {
-          // make client enter another race
-          router.refresh();
-          return;
-        });
+        startRaceEventHandlers();
 
-        socket.emit<SocketEvent>(SocketEvents.USER_RACE_ENTER, {
+        socket.emit("UserRaceEnter", {
           raceId,
           participantId,
           socketId: socket.id,
-        } satisfies ParticipantRacePayload);
-
-        startRaceEventHandlers();
+        });
       });
     });
     return () => {
@@ -194,12 +175,12 @@ export default function Race({
 
     const gameLoop = setInterval(() => {
       if (raceStatus === "running") {
-        socket.emit<SocketEvent>(SocketEvents.PARTICIPANT_POSITION_UPDATE, {
+        socket.emit("PositionUpdate", {
           socketId: socket.id,
           participantId,
           position,
           raceId,
-        } satisfies RaceParticipantPositionPayload);
+        });
       }
     }, 200);
     return () => clearInterval(gameLoop);
