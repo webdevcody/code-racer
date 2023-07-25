@@ -28,6 +28,7 @@ export const gameStateUpdatePayloadSchema = z.object({
         id: z.string(),
         socketId: z.string(),
         position: z.number(),
+        finishedAt: z.number().nullable(),
       }),
     ),
     countdown: z.number().int().optional(),
