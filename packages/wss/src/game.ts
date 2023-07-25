@@ -1,7 +1,11 @@
-import { RaceParticipant, type Race } from "@prisma/client";
+import type { Race, RaceParticipant } from "@code-racer/app/src/lib/prisma";
 import { prisma } from "@code-racer/app/src/lib/prisma";
-import { SocketEvent, SocketEvents, SocketPayload } from "./events";
-import { RaceFullException } from "./exceptions";
+import {
+  RaceStatusType,
+  SocketEvent,
+  SocketEvents,
+  SocketPayload,
+} from "./events";
 import {
   GameStateUpdatePayload,
   ParticipantRacePayload,
@@ -12,10 +16,6 @@ import {
 } from "./schemas";
 import { type Server } from "socket.io";
 import { siteConfig } from "@code-racer/app/src/config/site";
-
-export function raise(message: string): never {
-  throw new Error(message);
-}
 
 type ParticipantsMap = Map<
   //this is the socketId
@@ -38,7 +38,7 @@ export class Game {
   private races = new Map<
     Race["id"],
     {
-      status: "waiting" | "countdown" | "running" | "finished";
+      status: RaceStatusType;
       participants: ParticipantsMap;
     }
   >();
@@ -90,6 +90,17 @@ export class Game {
     );
   }
 
+  private createRaceWithParticipant(raceId:string, participant:{id:string, socketId:string}){
+      return this.races.set(raceId, {
+        status: "waiting",
+        participants: new Map().set(participant.socketId, {
+          id: participant.id,
+          position: 0,
+          finishedAt: null,
+        }),
+      });
+  }
+
   private async handlePlayerEnterRace(payload: ParticipantRacePayload) {
     const parsedPayload = participantRacePayloadSchema.parse(payload);
 
@@ -97,18 +108,17 @@ export class Game {
     const race = this.races.get(parsedPayload.raceId);
 
     if (!race) {
-      this.races.set(parsedPayload.raceId, {
-        status: "waiting",
-        participants: new Map().set(parsedPayload.socketId, {
-          id: parsedPayload.participantId,
-          position: 0,
-          finishedAt: null,
-        }),
-      });
-    } else if (race.participants.size + 1 > Game.MAX_PARTICIPANTS_PER_RACE) {
-      //TODO: Handle this exception
-      throw new RaceFullException();
+      this.createRaceWithParticipant(parsedPayload.raceId, {
+        id: parsedPayload.participantId,
+        socketId: parsedPayload.socketId,
+      })
+    } else if (
+      race.participants.size + 1 >
+      Game.MAX_PARTICIPANTS_PER_RACE
+    ) {
+      return this.emitRaceFull(parsedPayload.socketId);
     } else {
+      // console.log("Starting a race", parsedPayload.raceId)
       race.participants.set(parsedPayload.socketId, {
         id: parsedPayload.participantId,
         position: 0,
@@ -118,7 +128,6 @@ export class Game {
     }
 
     // console.log({ raceId: parsedPayload.raceId }, "\n")
-
     // console.log("Races: ", this.races)
 
     // Emit to all players in the room that a new player has joined.
@@ -131,13 +140,24 @@ export class Game {
     } satisfies SocketPayload);
   }
 
+  private emitRaceFull(socketId:string){
+    this.server.sockets.sockets.get(socketId)?.emit(SocketEvents.USER_RACE_ENTER_IS_FULL, {})
+  }
+
   private handlePlayerLeaveRace(payload: ParticipantRacePayload) {
     const parsedPayload = participantRacePayloadSchema.parse(payload);
     // console.log("Player leaving race: ", parsedPayload)
 
-    const race =
-      this.races.get(parsedPayload.raceId) ??
-      raise("Yippity iuppity this server is a pile of poopity");
+    const race = this.races.get(parsedPayload.raceId);
+
+    if (!race) {
+      console.warn("Player left a race that doesn't exist.", {
+        raceId: parsedPayload.raceId,
+        participantId: parsedPayload.participantId,
+        time: new Date(),
+      });
+      return;
+    }
 
     race.participants.delete(parsedPayload.socketId);
 
@@ -158,41 +178,52 @@ export class Game {
   }
 
   private startRace(raceId: string) {
-    const interval = setInterval(async () => {
+    const interval = setInterval(() => {
       const race = this.races.get(raceId);
-      if (race) {
-        if (race.status !== "running") {
-          race.status = "running";
-          // console.log("Started race: ", raceId)
-          await prisma.race.update({
-            where: {
-              id: raceId,
-            },
-            data: {
-              startedAt: new Date(),
-            },
-          });
-        }
-
-        // console.log("Emitting game loop for race:", raceId)
-        this.server.emit(`RACE_${raceId}`, {
-          type: "GAME_STATE_UPDATE",
-          payload: {
-            raceState: {
-              id: raceId,
-              status: race.status,
-              participants: this.serializeParticipants(race.participants),
-            },
-          } satisfies GameStateUpdatePayload,
-        } satisfies SocketPayload);
-      } else {
+      if (!race) {
         clearInterval(interval);
+        return;
       }
+
+      if (race.status !== "running") {
+        race.status = "running";
+        // console.log("Started race: ", raceId)
+        void prisma.race.update({
+          where: {
+            id: raceId,
+          },
+          data: {
+            startedAt: new Date(),
+          },
+        });
+      }
+
+      // console.log("Emitting game loop for race:", raceId)
+      this.server.emit(`RACE_${raceId}`, {
+        type: "GAME_STATE_UPDATE",
+        payload: {
+          raceState: {
+            id: raceId,
+            status: race.status,
+            participants: this.serializeParticipants(
+              race.participants
+            ),
+          },
+        } satisfies GameStateUpdatePayload,
+      } satisfies SocketPayload);
     }, Game.GAME_LOOP_INTERVAL);
   }
 
-  private async endRace(raceId: string) {
-    const race = this.races.get(raceId) ?? raise("Why tf would this happen?");
+  private endRace(raceId: string) {
+    const race = this.races.get(raceId);
+
+    if (!race) {
+      console.warn("Trying to end a race that doesn't exist.", {
+        raceId,
+        time: new Date(),
+      });
+      return;
+    }
 
     race.status = "finished";
 
@@ -208,7 +239,8 @@ export class Game {
     } satisfies SocketPayload);
 
     this.races.delete(raceId);
-    await prisma.race.update({
+
+    void prisma.race.update({
       where: {
         id: raceId,
       },
@@ -223,16 +255,29 @@ export class Game {
       return;
     }
 
-    const countdownPromise = new Promise<void>((resolve) => {
+    const countdownPromise = new Promise<void>((resolve, reject) => {
       let countdown = Game.START_GAME_COUNTDOWN;
-      const race = this.races.get(raceId) ?? raise("Bruh ☠️");
+      const race = this.races.get(raceId);
+
+      if (!race) {
+        console.warn(
+          "Trying to start a countdown for a race that doesn't exist.",
+          {
+            raceId,
+            time: new Date(),
+          }
+        );
+        return reject();
+      }
 
       const interval = setInterval(() => {
         this.server.emit(`RACE_${raceId}`, {
           type: "GAME_STATE_UPDATE",
           payload: {
             raceState: {
-              participants: this.serializeParticipants(race.participants),
+              participants: this.serializeParticipants(
+                race.participants
+              ),
               status: "countdown",
               id: raceId,
               countdown,
@@ -249,7 +294,9 @@ export class Game {
             type: "GAME_STATE_UPDATE",
             payload: {
               raceState: {
-                participants: this.serializeParticipants(race.participants),
+                participants: this.serializeParticipants(
+                  race.participants
+                ),
                 status: "countdown",
                 id: raceId,
                 countdown,
@@ -262,7 +309,7 @@ export class Game {
           resolve();
         }
       }, 1000);
-    }).then(() => {
+    }).finally(() => {
       this.activeCountdowns.delete(raceId);
     });
 
@@ -274,15 +321,32 @@ export class Game {
   ) {
     const race = this.races.get(payload.raceId);
 
-    //TODO: Log a warning or handle exception
-    if (!race) return;
+    if (!race) {
+      console.warn(
+        "Trying to update a participant position on a race that doesn't exist.",
+        {
+          raceId: payload.raceId,
+          participant: payload.participantId,
+          time: new Date(),
+        }
+      );
+      return;
+    }
 
-    const parsedPayload = raceParticipantPositionPayloadSchema.parse(payload);
+    const parsedPayload =
+      raceParticipantPositionPayloadSchema.parse(payload);
 
     const participant = race.participants.get(parsedPayload.socketId);
 
     //TODO: Log a warning or handle exception
-    if (!participant) return;
+    if (!participant) {
+      console.warn("Trying to update a participant that doesn't exist.", {
+        raceId: parsedPayload.raceId,
+        participant: parsedPayload.participantId,
+        time: new Date(),
+      });
+      return;
+    }
 
     participant.position = parsedPayload.position;
 
@@ -294,7 +358,7 @@ export class Game {
     const isRaceEnded = this.isRaceEnded(parsedPayload.raceId);
 
     if (isRaceEnded) {
-      void this.endRace(parsedPayload.raceId);
+      this.endRace(parsedPayload.raceId);
     }
   }
 
@@ -304,11 +368,11 @@ export class Game {
 
     // checks if every participant has finished the race
     let finishedParticipants = 0;
-    race.participants.forEach((participant) => {
+    for (const participant of race.participants.values()) {
       if (participant.position >= Game.GAME_MAX_POSITION) {
         finishedParticipants++;
       }
-    });
+    }
 
     return finishedParticipants >= race.participants.size;
   }
