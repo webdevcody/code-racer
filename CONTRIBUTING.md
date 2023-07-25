@@ -48,9 +48,9 @@ To get started with Code Racer locally, follow these steps
    cd code-racer
    ```
 
-4. Create a .env file inside the project's root directory.
+4. Create a .env file inside the project's packages/app directory.
 
-5. Copy and paste variables from `.env.example` into `.env`
+5. Copy and paste variables from `packages/app/.env.example` into `packages/app/.env`
 
 6. Install NPM packages
 
@@ -58,28 +58,22 @@ To get started with Code Racer locally, follow these steps
    npm i
    ```
 
-7. Generate a version of Prisma Client that is tailored to the models.
-
-   ```js
-   npx prisma generate
-   ```
-
-8. Open Docker Desktop Application and go back to your VSCode terminal and run this command:
+7. Open Docker Desktop Application and go back to your VSCode terminal and run this command:
 
    ```sh
    docker compose up -d
    ```
 
-9. Once your database is ready, push your prisma schema to the database.
-
-   ```sh
-   npx prisma db push
-   ```
-
-10. Finally start your dev server.
+8. Start the app dev server.
 
 ```sh
-npm run dev
+npm -w @code-racer/app run dev
+```
+
+9. Start the web socket server.
+
+```sh
+npm -w @code-racer/wss run dev
 ```
 
 Open your browser and visit <http://localhost:3000> to see the application running.
