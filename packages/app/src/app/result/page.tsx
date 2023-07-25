@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils";
 import { User } from "next-auth";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ReplayCode } from "./replay-timestamps";
-import { getSnippetById } from "../race/(play)/practice/loaders";
+import { getSnippetById } from "../race/(play)/loaders";
 import { TopTable } from "./topten";
 import { notFound } from "next/navigation";
 import { RaceAchievementBadges } from "./race-achievement-badges";

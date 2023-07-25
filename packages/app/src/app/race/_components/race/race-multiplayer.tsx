@@ -20,31 +20,27 @@ import { ReportButton } from "./report-button";
 import { endRaceAction, saveUserResultAction } from "../../actions";
 import { calculateAccuracy, calculateCPM } from "./utils";
 import { io, type Socket } from "socket.io-client";
-import {
-  GameStateUpdatePayload,
-  ParticipantRacePayload,
-  RaceParticipantPositionPayload,
-  gameStateUpdatePayloadSchema,
-  raceParticipantNotificationSchema,
-} from "../../../../../../wss/src/schemas";
-import { SocketEvent, SocketPayload } from "../../../../../../wss/src/events";
+
+import { type RaceStatusType, RaceStatus } from "@code-racer/wss/src/types";
 import MultiplayerLoadingLobby from "../multiplayer-loading-lobby";
+import {
+  GameStateUpdateEvent,
+  gameStateUpdateEvent,
+  type ServerToClientEvents,
+} from "@code-racer/wss/src/events/server-to-client";
+import { type ClientToServerEvents } from "@code-racer/wss/src/events/client-to-server";
+import { userRacePresenceEvent } from "@code-racer/wss/src/events/common";
 
 type Participant = Omit<
-  GameStateUpdatePayload["raceState"]["participants"][number],
+  GameStateUpdateEvent["raceState"]["participants"][number],
   "socketId"
 >;
 
-let socket: Socket;
+let socket: Socket<ServerToClientEvents, ClientToServerEvents>;
 
 async function getSocketConnection() {
   if (socket) return;
-  //eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore
   socket = io("http://localhost:3001");
-  socket.on("connect", () => {
-    // console.log("connected");
-  });
   // console.log({ socket });
 }
 
@@ -103,14 +99,16 @@ export default function Race({
 
   //multiplayer-specific -----------------------------------------------------------------------------------
   const [participants, setParticipants] = useState<Participant[]>([]);
-  const [raceStatus, setRaceStatus] = useState<
-    "waiting" | "countdown" | "running" | "finished"
-  >(Boolean(raceId) ? "waiting" : "running");
+  const [raceStatus, setRaceStatus] = useState<RaceStatusType>(
+    Boolean(raceId) ? RaceStatus.WAITING : RaceStatus.RUNNING,
+  );
   const [raceStartCountdown, setRaceStartCountdown] = useState(0);
   const position = parseFloat(
     (((input.length - errors.length) / code.length) * 100).toFixed(2),
   );
-  const isRaceFinished = raceId ? raceStatus === "finished" : input === code;
+  const isRaceFinished = raceId
+    ? raceStatus === RaceStatus.FINISHED
+    : input === code;
   const showRaceTimer = !!startTime && !isRaceFinished;
 
   // Get snippet lanugage from params
@@ -118,42 +116,37 @@ export default function Race({
   const lang = searchParams ? searchParams.get("lang") : "";
 
   function startRaceEventHandlers() {
-    socket.on(`RACE_${raceId}`, async (payload: SocketPayload) => {
-      switch (payload.type) {
-        case "GAME_STATE_UPDATE":
-          const { raceState } = gameStateUpdatePayloadSchema.parse(
-            payload.payload,
-          );
-          setParticipants(raceState.participants);
-          setRaceStatus(raceState.status);
+    socket.on("UserEnterFullRace", () => {
+      // make client enter another race
+      router.refresh();
+      return;
+    });
 
-          if (raceState.countdown) {
-            setRaceStartCountdown(raceState.countdown);
-          } else if (raceState.countdown === 0) {
-            setStartTime(new Date());
-          }
-          break;
+    socket.on("GameStateUpdate", (payload) => {
+      const { raceState } = gameStateUpdateEvent.parse(payload);
+      setParticipants(raceState.participants);
+      setRaceStatus(raceState.status);
 
-        case "USER_RACE_LEAVE":
-          const { participantId } = raceParticipantNotificationSchema.parse(
-            payload.payload,
-          );
-          setParticipants((participants) =>
-            participants.filter(
-              (participant) => participant.id !== participantId,
-            ),
-          );
-          break;
-
-        case "USER_RACE_ENTER":
-          const { participantId: _participantId } =
-            raceParticipantNotificationSchema.parse(payload.payload);
-          setParticipants((participants) => [
-            ...participants,
-            { id: _participantId, position: 0, finishedAt: null },
-          ]);
-          break;
+      if (raceState.countdown) {
+        setRaceStartCountdown(raceState.countdown);
+      } else if (raceState.countdown === 0) {
+        setStartTime(new Date());
       }
+    });
+
+    socket.on("UserRaceEnter", (payload) => {
+      const { participantId } = userRacePresenceEvent.parse(payload);
+      setParticipants((participants) => [
+        ...participants,
+        { id: participantId, position: 0, finishedAt: null },
+      ]);
+    });
+
+    socket.on("UserRaceLeave", (payload) => {
+      const { participantId } = userRacePresenceEvent.parse(payload);
+      setParticipants((participants) =>
+        participants.filter((participant) => participant.id !== participantId),
+      );
     });
   }
 
@@ -162,13 +155,13 @@ export default function Race({
     if (!raceId || !participantId) return;
     getSocketConnection().then(() => {
       socket.on("connect", () => {
-        socket.emit("USER_RACE_ENTER", {
+        startRaceEventHandlers();
+
+        socket.emit("UserRaceEnter", {
           raceId,
           participantId,
           socketId: socket.id,
-        } satisfies ParticipantRacePayload);
-
-        startRaceEventHandlers();
+        });
       });
     });
     return () => {
@@ -182,12 +175,12 @@ export default function Race({
 
     const gameLoop = setInterval(() => {
       if (raceStatus === "running") {
-        socket.emit("PARTICIPANT_POSITION_UPDATE" as SocketEvent, {
+        socket.emit("PositionUpdate", {
           socketId: socket.id,
           participantId,
           position,
           raceId,
-        } satisfies RaceParticipantPositionPayload);
+        });
       }
     }, 200);
     return () => clearInterval(gameLoop);
@@ -479,15 +472,15 @@ export default function Race({
         role="none" // eslint fix - will remove the semantic meaning of an element while still exposing it to assistive technology
       >
         {/* <p>participant id: {participantId}</p> */}
-        {raceId && raceStatus != "running" && !startTime && (
+        {raceId && raceStatus != RaceStatus.RUNNING && !startTime && (
           <MultiplayerLoadingLobby participants={participants}>
-            {raceStatus === "waiting" && (
+            {raceStatus === RaceStatus.WAITING && (
               <div className="flex flex-col items-center text-2xl font-bold">
                 <div className="w-8 h-8 border-4 border-muted-foreground rounded-full border-t-4 border-t-warning animate-spin"></div>
                 Waiting for players
               </div>
             )}
-            {raceStatus === "countdown" &&
+            {raceStatus === RaceStatus.COUNTDOWN &&
               !startTime &&
               Boolean(raceStartCountdown) && (
                 <div className="text-center text-2xl font-bold">
@@ -496,7 +489,7 @@ export default function Race({
               )}
           </MultiplayerLoadingLobby>
         )}
-        {raceStatus === "running" && (
+        {raceStatus === RaceStatus.RUNNING && (
           <>
             {raceId ? (
               participants.map((p) => (
@@ -562,7 +555,7 @@ export default function Race({
             You must fix all errors before you can finish the race!
           </span>
         ) : null}
-        {raceStatus === "finished" && (
+        {raceStatus === RaceStatus.FINISHED && (
           // <h2 className="text-2xl p-4">Loading race results, please wait...</h2>
           <div className="flex flex-col items-center text-2xl font-bold space-y-8">
             <div className="w-8 h-8 border-4 border-muted-foreground rounded-full border-t-4 border-t-warning animate-spin"></div>
