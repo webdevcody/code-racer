@@ -1,21 +1,25 @@
-import type { Race, RaceParticipant } from "@code-racer/app/src/lib/prisma";
+import type {
+  Race,
+  RaceParticipant,
+  Snippet,
+} from "@code-racer/app/src/lib/prisma";
 import { prisma } from "@code-racer/app/src/lib/prisma";
-import {
-  RaceStatusType,
-  SocketEvent,
-  SocketEvents,
-  SocketPayload,
-} from "./events";
-import {
-  GameStateUpdatePayload,
-  ParticipantRacePayload,
-  RaceParticipantNotification,
-  RaceParticipantPositionPayload,
-  participantRacePayloadSchema,
-  raceParticipantPositionPayloadSchema,
-} from "./schemas";
+import { RaceStatusType } from "./types";
 import { type Server } from "socket.io";
 import { siteConfig } from "@code-racer/app/src/config/site";
+import {
+  PositionUpdatePayload,
+  type ClientToServerEvents,
+  positionUpdateEvent,
+} from "./events/client-to-server";
+import { type ServerToClientEvents } from "./events/server-to-client";
+import {
+  UserRaceEnterPayload,
+  UserRaceLeavePayload,
+  userRacePresenceEvent,
+} from "./events/common";
+import { raceMatchMaking } from "./match-making";
+import { Language } from "@code-racer/app/src/config/languages";
 
 type ParticipantsMap = Map<
   //this is the socketId
@@ -28,7 +32,7 @@ type ParticipantsMap = Map<
 >;
 
 export class Game {
-  private static readonly START_GAME_COUNTDOWN = 5;
+  private static readonly START_GAME_COUNTDOWN = 10;
   private static readonly MAX_PARTICIPANTS_PER_RACE =
     siteConfig.multiplayer.maxParticipantsPerRace;
   private static readonly GAME_LOOP_INTERVAL = 500;
@@ -43,39 +47,52 @@ export class Game {
     }
   >();
 
-  constructor(private server: Server) {
+  constructor(
+    private server: Server<ClientToServerEvents, ServerToClientEvents>,
+  ) {
     this.initialize();
   }
 
   private initialize() {
     this.server.on("connection", (socket) => {
-      socket.on<SocketEvent>(SocketEvents.USER_RACE_ENTER, (payload) => {
+      socket.on("UserRaceRequest", async (payload) => {
+        const { race, raceParticipantId, snippet } = await raceMatchMaking(
+          payload.language as Language,
+          payload.userId,
+        );
+        socket.emit("UserRaceResponse", {
+          raceParticipantId,
+          raceId: race.id,
+          snippet,
+        });
+      });
+
+      socket.on("UserRaceEnter", (payload) => {
+        socket.join(`RACE_${payload.raceId}`);
         this.handlePlayerEnterRace(payload);
       });
+
       socket.on("disconnect", () => {
         for (const [raceId, race] of this.races.entries()) {
           const participant = race.participants.get(socket.id);
           if (participant) {
             this.handlePlayerLeaveRace({
-              participantId: participant.id,
+              raceParticipantId: participant.id,
               raceId,
               socketId: socket.id,
             });
           }
         }
       });
-      socket.on<SocketEvent>(
-        SocketEvents.PARTICIPANT_POSITION_UPDATE,
-        (payload: RaceParticipantPositionPayload) => {
-          // console.log("Received payload: ", payload)
-          const parsedPayload =
-            raceParticipantPositionPayloadSchema.parse(payload);
-          // console.log(
-          // `Race participant position payload: ${parsedPayload}`,
-          // )
-          this.handleParticipantPositionPayload(parsedPayload);
-        }
-      );
+
+      socket.on("PositionUpdate", (payload: PositionUpdatePayload) => {
+        // console.log("Received payload: ", payload)
+        const parsedPayload = positionUpdateEvent.parse(payload);
+        // console.log(
+        // `Race participant position payload: ${parsedPayload}`,
+        // )
+        this.handleParticipantPositionPayload(parsedPayload);
+      });
     });
   }
 
@@ -86,41 +103,52 @@ export class Game {
         socketId,
         position,
         finishedAt,
-      })
+      }),
     );
   }
 
-  private createRaceWithParticipant(raceId:string, participant:{id:string, socketId:string}){
-      return this.races.set(raceId, {
-        status: "waiting",
-        participants: new Map().set(participant.socketId, {
-          id: participant.id,
-          position: 0,
-          finishedAt: null,
-        }),
-      });
+  private createRaceWithParticipant(
+    raceId: string,
+    participant: { id: string; socketId: string },
+  ) {
+    return this.races.set(raceId, {
+      status: "waiting",
+      participants: new Map().set(participant.socketId, {
+        id: participant.id,
+        position: 0,
+        finishedAt: null,
+      }),
+    });
   }
 
-  private async handlePlayerEnterRace(payload: ParticipantRacePayload) {
-    const parsedPayload = participantRacePayloadSchema.parse(payload);
+  private async deleteRaceParticipant(raceParticipantId: string) {
+    return await prisma.raceParticipant.delete({
+      where: {
+        id: raceParticipantId,
+      },
+    });
+  }
+
+  private async handlePlayerEnterRace(payload: UserRaceEnterPayload) {
+    const parsedPayload = userRacePresenceEvent.parse(payload);
 
     // console.log("Player entering race:", payload)
     const race = this.races.get(parsedPayload.raceId);
 
     if (!race) {
       this.createRaceWithParticipant(parsedPayload.raceId, {
-        id: parsedPayload.participantId,
+        id: parsedPayload.raceParticipantId,
         socketId: parsedPayload.socketId,
-      })
-    } else if (
-      race.participants.size + 1 >
-      Game.MAX_PARTICIPANTS_PER_RACE
-    ) {
-      return this.emitRaceFull(parsedPayload.socketId);
+      });
+    } else if (race.participants.size + 1 > Game.MAX_PARTICIPANTS_PER_RACE) {
+      return this.handleParticipantJoinedFullRace(
+        parsedPayload.socketId,
+        parsedPayload.raceParticipantId,
+      );
     } else {
       // console.log("Starting a race", parsedPayload.raceId)
       race.participants.set(parsedPayload.socketId, {
-        id: parsedPayload.participantId,
+        id: parsedPayload.raceParticipantId,
         position: 0,
         finishedAt: null,
       });
@@ -131,21 +159,22 @@ export class Game {
     // console.log("Races: ", this.races)
 
     // Emit to all players in the room that a new player has joined.
-    this.server.emit(`RACE_${parsedPayload.raceId}`, {
-      type: SocketEvents.USER_RACE_ENTER,
-      payload: {
-        participantId: parsedPayload.participantId,
-        socketId: parsedPayload.socketId,
-      } satisfies RaceParticipantNotification,
-    } satisfies SocketPayload);
+    this.server
+      .to(`RACE_${parsedPayload.raceId}`)
+      .emit("UserRaceEnter", parsedPayload);
   }
 
-  private emitRaceFull(socketId:string){
-    this.server.sockets.sockets.get(socketId)?.emit(SocketEvents.USER_RACE_ENTER_IS_FULL, {})
+  private handleParticipantJoinedFullRace(
+    socketId: string,
+    raceParticipantId: string,
+  ) {
+    this.server.sockets.sockets.get(socketId)?.emit("UserEnterFullRace");
+
+    void this.deleteRaceParticipant(raceParticipantId);
   }
 
-  private handlePlayerLeaveRace(payload: ParticipantRacePayload) {
-    const parsedPayload = participantRacePayloadSchema.parse(payload);
+  private handlePlayerLeaveRace(payload: UserRaceLeavePayload) {
+    const parsedPayload = userRacePresenceEvent.parse(payload);
     // console.log("Player leaving race: ", parsedPayload)
 
     const race = this.races.get(parsedPayload.raceId);
@@ -153,24 +182,37 @@ export class Game {
     if (!race) {
       console.warn("Player left a race that doesn't exist.", {
         raceId: parsedPayload.raceId,
-        participantId: parsedPayload.participantId,
+        participantId: parsedPayload.raceParticipantId,
         time: new Date(),
       });
       return;
     }
 
+    const participant = race.participants.get(parsedPayload.socketId);
+    // participant left before completing the race
+    if (participant && !participant.finishedAt) {
+      void this.deleteRaceParticipant(parsedPayload.raceParticipantId);
+    }
+
     race.participants.delete(parsedPayload.socketId);
 
-    this.server.emit(`RACE_${parsedPayload.raceId}`, {
-      type: SocketEvents.USER_RACE_LEAVE,
-      payload: {
-        participantId: parsedPayload.participantId,
-        socketId: parsedPayload.socketId,
-      } satisfies RaceParticipantNotification,
-    } satisfies SocketPayload);
+    this.server
+      .to(`RACE_${parsedPayload.raceId}`)
+      .emit("UserRaceLeave", parsedPayload);
+
+    // console.log(
+    //   `Player: ${parsedPayload.raceParticipantId} left the race: ${parsedPayload.raceId}`,
+    //   {
+    //     activeRaces: this.races,
+    //   },
+    // );
+
+    if (race.participants.size === 0 && race.status === "countdown") {
+      this.activeCountdowns.delete(parsedPayload.raceId);
+      return;
+    }
 
     const isRaceEnded = this.isRaceEnded(parsedPayload.raceId);
-
     if (isRaceEnded) {
       void this.endRace(parsedPayload.raceId);
     }
@@ -186,35 +228,32 @@ export class Game {
       }
 
       if (race.status !== "running") {
+        // console.log("Started race: ", raceId);
         race.status = "running";
-        // console.log("Started race: ", raceId)
-        void prisma.race.update({
-          where: {
-            id: raceId,
-          },
-          data: {
-            startedAt: new Date(),
-          },
-        });
+        void prisma.race
+          .update({
+            where: {
+              id: raceId,
+            },
+            data: {
+              startedAt: new Date(),
+            },
+          })
+          .then(() => {});
       }
 
       // console.log("Emitting game loop for race:", raceId)
-      this.server.emit(`RACE_${raceId}`, {
-        type: "GAME_STATE_UPDATE",
-        payload: {
-          raceState: {
-            id: raceId,
-            status: race.status,
-            participants: this.serializeParticipants(
-              race.participants
-            ),
-          },
-        } satisfies GameStateUpdatePayload,
-      } satisfies SocketPayload);
+      this.server.to(`RACE_${raceId}`).emit("GameStateUpdate", {
+        raceState: {
+          id: raceId,
+          status: race.status,
+          participants: this.serializeParticipants(race.participants),
+        },
+      });
     }, Game.GAME_LOOP_INTERVAL);
   }
 
-  private endRace(raceId: string) {
+  private async endRace(raceId: string) {
     const race = this.races.get(raceId);
 
     if (!race) {
@@ -227,20 +266,17 @@ export class Game {
 
     race.status = "finished";
 
-    this.server.emit(`RACE_${raceId}`, {
-      type: "GAME_STATE_UPDATE",
-      payload: {
-        raceState: {
-          id: raceId,
-          status: race.status,
-          participants: this.serializeParticipants(race.participants),
-        },
-      } satisfies GameStateUpdatePayload,
-    } satisfies SocketPayload);
+    this.server.to(`RACE_${raceId}`).emit("GameStateUpdate", {
+      raceState: {
+        id: raceId,
+        status: race.status,
+        participants: this.serializeParticipants(race.participants),
+      },
+    });
 
     this.races.delete(raceId);
 
-    void prisma.race.update({
+    await prisma.race.update({
       where: {
         id: raceId,
       },
@@ -265,44 +301,35 @@ export class Game {
           {
             raceId,
             time: new Date(),
-          }
+          },
         );
         return reject();
       }
 
+      race.status = "countdown";
+
       const interval = setInterval(() => {
-        this.server.emit(`RACE_${raceId}`, {
-          type: "GAME_STATE_UPDATE",
-          payload: {
+        this.server.to(`RACE_${raceId}`).emit("GameStateUpdate", {
+          raceState: {
+            participants: this.serializeParticipants(race.participants),
+            status: "countdown",
+            id: raceId,
+            countdown,
+          },
+        });
+
+        // console.log(`Race: ${raceId} Countdown: ${countdown}`)
+        countdown--;
+
+        if (countdown === 0) {
+          this.server.to(`RACE_${raceId}`).emit("GameStateUpdate", {
             raceState: {
-              participants: this.serializeParticipants(
-                race.participants
-              ),
+              participants: this.serializeParticipants(race.participants),
               status: "countdown",
               id: raceId,
               countdown,
             },
-          },
-        } satisfies SocketPayload);
-
-        // console.log(`Race: ${raceId} Countdown: ${countdown}`)
-
-        countdown--;
-
-        if (countdown === 0) {
-          this.server.emit(`RACE_${raceId}`, {
-            type: "GAME_STATE_UPDATE",
-            payload: {
-              raceState: {
-                participants: this.serializeParticipants(
-                  race.participants
-                ),
-                status: "countdown",
-                id: raceId,
-                countdown,
-              },
-            },
-          } satisfies SocketPayload);
+          });
 
           this.startRace(raceId);
           clearInterval(interval);
@@ -316,9 +343,7 @@ export class Game {
     this.activeCountdowns.set(raceId, countdownPromise);
   }
 
-  private handleParticipantPositionPayload(
-    payload: RaceParticipantPositionPayload
-  ) {
+  private handleParticipantPositionPayload(payload: PositionUpdatePayload) {
     const race = this.races.get(payload.raceId);
 
     if (!race) {
@@ -326,15 +351,14 @@ export class Game {
         "Trying to update a participant position on a race that doesn't exist.",
         {
           raceId: payload.raceId,
-          participant: payload.participantId,
+          participant: payload.raceParticipantId,
           time: new Date(),
-        }
+        },
       );
       return;
     }
 
-    const parsedPayload =
-      raceParticipantPositionPayloadSchema.parse(payload);
+    const parsedPayload = positionUpdateEvent.parse(payload);
 
     const participant = race.participants.get(parsedPayload.socketId);
 
@@ -342,7 +366,7 @@ export class Game {
     if (!participant) {
       console.warn("Trying to update a participant that doesn't exist.", {
         raceId: parsedPayload.raceId,
-        participant: parsedPayload.participantId,
+        participant: parsedPayload.raceParticipantId,
         time: new Date(),
       });
       return;
@@ -358,7 +382,7 @@ export class Game {
     const isRaceEnded = this.isRaceEnded(parsedPayload.raceId);
 
     if (isRaceEnded) {
-      this.endRace(parsedPayload.raceId);
+      void this.endRace(parsedPayload.raceId);
     }
   }
 

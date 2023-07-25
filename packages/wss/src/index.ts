@@ -2,6 +2,8 @@ import express from "express";
 import http from "http";
 import { Server } from "socket.io";
 import { Game } from "./game";
+import { ClientToServerEvents } from "./events/client-to-server";
+import { ServerToClientEvents } from "./events/server-to-client";
 
 const PORT = process.env.PORT
 
@@ -11,16 +13,16 @@ if (!PORT) {
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST"],
-  },
+const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
+    cors: {
+        origin: "http://localhost:3000",
+        methods: ["GET", "POST"],
+    },
 });
 
 
 new Game(io);
 
 server.listen(PORT, () => {
-  console.log(`listening on *:${PORT}`);
+    console.log(`listening on *:${PORT}`);
 });
