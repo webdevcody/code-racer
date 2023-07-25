@@ -6,7 +6,6 @@ import {
   SocketEvents,
   SocketPayload,
 } from "./events";
-import { RaceFullException } from "./exceptions";
 import {
   GameStateUpdatePayload,
   ParticipantRacePayload,
