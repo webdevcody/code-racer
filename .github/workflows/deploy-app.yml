@@ -7,7 +7,7 @@ on:
     branches:
       - main
 jobs:
-  Deploy-Production:
+  deploy-app:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
