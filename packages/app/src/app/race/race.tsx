@@ -39,13 +39,9 @@ let socket: Socket;
 
 async function getSocketConnection() {
   if (socket) return;
-
-  await fetch("/api/socket");
   //eslint-disable-next-line @typescript-eslint/ban-ts-comment
   //@ts-ignore
-  socket = io(undefined, {
-    path: "/api/socket_io",
-  });
+  socket = io("http://localhost:3001");
   socket.on("connect", () => {
     // console.log("connected");
   });

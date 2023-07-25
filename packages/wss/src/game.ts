@@ -1,6 +1,5 @@
 import { RaceParticipant, type Race } from "@prisma/client";
 import { prisma } from "@code-racer/app/src/lib/prisma";
-import { raise } from "@code-racer/app/src/lib/utils";
 import { SocketEvents, SocketPayload } from "./events";
 import { RaceFullException } from "./exceptions";
 import {
@@ -13,6 +12,10 @@ import {
 } from "./schemas";
 import { type Server } from "socket.io";
 import { siteConfig } from "@code-racer/app/src/config/site";
+
+export function raise(message: string): never {
+  throw new Error(message);
+}
 
 type ParticipantsMap = Map<
   //this is the socketId
