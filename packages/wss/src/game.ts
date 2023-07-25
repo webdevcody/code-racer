@@ -1,9 +1,8 @@
 import { RaceParticipant, type Race } from "@prisma/client";
-import { prisma } from "@/lib/prisma";
-
+import { prisma } from "@code-racer/app/src/lib/prisma";
 import { SocketEvents, SocketPayload } from "./events";
 import { RaceFullException } from "./exceptions";
-import { raise } from "@/lib/utils";
+import { raise } from "@code-racer/app/src/lib/utils";
 import {
   GameStateUpdatePayload,
   ParticipantRacePayload,
@@ -13,7 +12,7 @@ import {
   raceParticipantPositionPayloadSchema,
 } from "./schemas";
 import { type Server } from "socket.io";
-import { siteConfig } from "@/config/site";
+import { siteConfig } from "@code-racer/app/src/config/site"
 
 type ParticipantsMap = Map<
   //this is the socketId

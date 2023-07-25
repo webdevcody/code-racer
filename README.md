@@ -62,15 +62,6 @@ Happy coding and enjoy the race!
   <h2>How To(s) - A newbie section</h2>
   </summary>
 
-### Run the applications locally
-
-1. Run our setup script with `npm run setup`. This will install package dependencies and make sure you have the correct version of [docker](https://www.docker.com) and node installed.
-   a. We recommend using [nvm](https://github.com/nvm-sh/nvm) to manage your node versions.
-2. Get the postgres running - `docker compose up -d`
-3. Run the dev env - `npm run dev`
-
-Don't forget to turn down the postgres post development - `docker compose down`
-
 ### Check the logs of Post
 
 > Run the command - `docker logs --follow code-racer-postgres`

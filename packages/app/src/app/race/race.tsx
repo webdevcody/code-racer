@@ -26,8 +26,8 @@ import {
   RaceParticipantPositionPayload,
   gameStateUpdatePayloadSchema,
   raceParticipantNotificationSchema,
-} from "@/wss/schemas";
-import { SocketEvent, SocketPayload } from "@/wss/events";
+} from "@code-racer/wss/src/schemas";
+import { SocketEvent, SocketPayload } from "@code-racer/wss/src/events";
 
 type Participant = Omit<
   GameStateUpdatePayload["raceState"]["participants"][number],
