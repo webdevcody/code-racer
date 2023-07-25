@@ -32,6 +32,7 @@ import {
 } from "@code-racer/wss/src/events/server-to-client";
 import { RaceStatus, type RaceStatusType } from "@code-racer/wss/src/types";
 import MultiplayerLoadingLobby from "../multiplayer-loading-lobby";
+import { env } from "@/env.mjs";
 
 type Participant = Omit<
   GameStateUpdatePayload["raceState"]["participants"][number],
@@ -42,7 +43,7 @@ let socket: Socket<ServerToClientEvents, ClientToServerEvents>;
 
 async function getSocketConnection() {
   if (socket) return;
-  socket = io("http://localhost:3001");
+  socket = io(env.NEXT_PUBLIC_WSS_URL);
   // console.log({ socket });
 }
 

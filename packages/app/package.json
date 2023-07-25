@@ -12,6 +12,7 @@
     "start": "next start",
     "lint": "next lint",
     "cypress": "cypress open",
+    "db:push": "prisma db push",
     "e2e": "start-server-and-test dev http://localhost:3000 \"cypress open --e2e\"",
     "type-check": "tsc --noEmit",
     "db:generate": "prisma generate",
