@@ -29,7 +29,7 @@ export const gameStateUpdatePayloadSchema = z.object({
         socketId: z.string(),
         position: z.number(),
         finishedAt: z.number().nullable(),
-      }),
+      })
     ),
     countdown: z.number().int().optional(),
   }),
@@ -44,7 +44,7 @@ export const raceParticipantPositionPayloadSchema =
     z.object({
       raceId: z.string(),
       position: z.number(),
-    }),
+    })
   );
 
 export type RaceParticipantPositionPayload = z.infer<

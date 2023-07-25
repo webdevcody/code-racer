@@ -1,6 +1,6 @@
 import { RaceParticipant, type Race } from "@prisma/client";
 import { prisma } from "@code-racer/app/src/lib/prisma";
-import { SocketEvents, SocketPayload } from "./events";
+import { SocketEvent, SocketEvents, SocketPayload } from "./events";
 import { RaceFullException } from "./exceptions";
 import {
   GameStateUpdatePayload,
@@ -49,7 +49,7 @@ export class Game {
 
   private initialize() {
     this.server.on("connection", (socket) => {
-      socket.on(SocketEvents.USER_RACE_ENTER, (payload) => {
+      socket.on<SocketEvent>(SocketEvents.USER_RACE_ENTER, (payload) => {
         this.handlePlayerEnterRace(payload);
       });
       socket.on("disconnect", () => {
@@ -64,7 +64,7 @@ export class Game {
           }
         }
       });
-      socket.on(
+      socket.on<SocketEvent>(
         SocketEvents.PARTICIPANT_POSITION_UPDATE,
         (payload: RaceParticipantPositionPayload) => {
           // console.log("Received payload: ", payload)
@@ -123,7 +123,7 @@ export class Game {
 
     // Emit to all players in the room that a new player has joined.
     this.server.emit(`RACE_${parsedPayload.raceId}`, {
-      type: "USER_RACE_ENTER",
+      type: SocketEvents.USER_RACE_ENTER,
       payload: {
         participantId: parsedPayload.participantId,
         socketId: parsedPayload.socketId,
@@ -142,7 +142,7 @@ export class Game {
     race.participants.delete(parsedPayload.socketId);
 
     this.server.emit(`RACE_${parsedPayload.raceId}`, {
-      type: "USER_RACE_LEAVE",
+      type: SocketEvents.USER_RACE_LEAVE,
       payload: {
         participantId: parsedPayload.participantId,
         socketId: parsedPayload.socketId,
