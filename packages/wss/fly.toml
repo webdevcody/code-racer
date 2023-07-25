@@ -1,10 +1,10 @@
-# fly.toml app configuration file generated for code-racer on 2023-07-24T22:29:46-04:00
+# fly.toml app configuration file generated for code-racer-wss on 2023-07-25T13:35:49-04:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = "code-racer"
-primary_region = "iad"
+app = "code-racer-wss"
+primary_region = "atl"
 
 [http_service]
   internal_port = 3000

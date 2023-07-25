@@ -11,14 +11,6 @@ jobs:
       - uses: superfly/flyctl-actions/setup-flyctl@master
       - name: "Install Dependencies"
         run: npm i
-      - name: "Update Database"
-        run: DATABASE_URL=${{ secrets.DATABASE_URL }} npx prisma db push
-      - run: "flyctl deploy --remote-only
-          --build-arg DATABASE_URL=${{ secrets.DATABASE_URL }}
-          --build-arg GITHUB_CLIENT_ID=${{ secrets._GITHUB_CLIENT_ID }}
-          --build-arg GITHUB_CLIENT_SECRET=${{ secrets._GITHUB_CLIENT_SECRET }}
-          --build-arg NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}
-          --build-arg NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
-          --build-arg OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}"
+      - run: "fly deploy --build-arg DATABASE_URL=${{ secrets.DATABASE_URL }} --config packages/wss/fly.toml --dockerfile packages/wss/Dockerfile"
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

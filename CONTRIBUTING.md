@@ -58,23 +58,23 @@ To get started with Code Racer locally, follow these steps
    npm i
    ```
 
-7. Open Docker Desktop Application and go back to your VSCode terminal and run this command:
+7. Start the database
 
    ```sh
-   docker compose up -d
+   npm run db
    ```
 
 8. Start the app dev server.
 
-```sh
-npm -w @code-racer/app run dev
-```
+   ```sh
+   npm run dev:app
+   ```
 
 9. Start the web socket server.
 
-```sh
-npm -w @code-racer/wss run dev
-```
+   ```sh
+   npm run dev:wss
+   ```
 
 Open your browser and visit <http://localhost:3000> to see the application running.
 
