@@ -13,7 +13,7 @@ export const achievements: Achievement[] = [
   },
   {
     type: "FIFTH_RACE",
-    image: "/static/fift.png",
+    image: "/static/fifth.png",
     name: "Fifth Race",
   },
 ];
