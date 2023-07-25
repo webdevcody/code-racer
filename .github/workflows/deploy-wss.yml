@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy WSS
 on:
   push:
     branches:
@@ -9,8 +9,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - name: "Install Dependencies"
-        run: npm i
       - run: "fly deploy --build-arg DATABASE_URL=${{ secrets.DATABASE_URL }} --config packages/wss/fly.toml --dockerfile packages/wss/Dockerfile"
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
