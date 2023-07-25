@@ -531,21 +531,6 @@ export default function Race({
     setTotalErrors(0);
   }
 
-  const [lobby, setLobby] = useState<User[]>([])
-
-  useEffect(() => {
-    async function getUsers() {
-      const users = await Promise.all(participants.map(async (participant) => {
-        const userParticipant = await getParticipantUser({ participantId: participant.id })
-        return {
-          ...userParticipant as User
-        };
-      }))
-      setLobby(users)
-    }
-    getUsers()
-  }, [participants])
-
   return (
     <>
       {/* Debug purposes */}
