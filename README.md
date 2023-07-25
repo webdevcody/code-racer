@@ -1,5 +1,5 @@
 <div align="center" >
-  <img src="./public/static/logo.png" width="60">
+  <img src="./packages/app/public/static/logo.png" width="60" alt="">
   <br/>
   <h1>Code Racer</h1>
 </div>
