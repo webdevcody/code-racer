@@ -47,7 +47,7 @@ export const siteConfig = {
         "https://api.github.com/repos/webdevcody/code-racer/stats/contributors",
       githubListCommit:
         "https://api.github.com/repos/webdevcody/code-racer/commits",
-      cacheRevalidationInterval: 86400, // 24hrs
+      cacheRevalidationInterval: 86401, // 24hrs
     },
   },
 
