@@ -270,7 +270,11 @@ export default function RacePractice({
       }}
       role="none"
     >
-      <RaceTracker user={user} position={textIndicatorPosition} codeLength={code.length} />
+      <RaceTracker
+        user={user}
+        position={textIndicatorPosition}
+        codeLength={code.length}
+      />
       <Header user={user} snippet={snippet} handleRestart={handleRestart} />
       <section className="flex">
         <LineNumbers code={code} currentLineNumber={currentLineNumber} />

@@ -107,12 +107,6 @@ export default function RaceMultiplayer({
       setSnippet(snippet);
       setRaceId(raceId);
       setParticipantId(raceParticipantId);
-
-      socket.emit("UserRaceEnter", {
-        raceParticipantId: raceParticipantId,
-        raceId,
-        socketId: socket.id,
-      });
     });
 
     socket.on("GameStateUpdate", (payload) => {
@@ -483,7 +477,11 @@ export default function RaceMultiplayer({
                 />
               ))
             ) : position && code ? (
-              <RaceTracker position={position} user={user} codeLength={code.length} />
+              <RaceTracker
+                position={position}
+                user={user}
+                codeLength={code.length}
+              />
             ) : null}
             <div className="flex justify-between mb-2 md:mb-4">
               <Heading

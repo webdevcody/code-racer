@@ -61,16 +61,20 @@ export class Game {
           payload.language as Language,
           payload.userId,
         );
+
+        socket.join(Game.Room(race.id));
+
+        this.handlePlayerEnterRace({
+          raceId: race.id,
+          raceParticipantId,
+          socketId: socket.id,
+        });
+
         socket.emit("UserRaceResponse", {
           raceParticipantId,
           raceId: race.id,
           snippet,
         });
-      });
-
-      socket.on("UserRaceEnter", (payload) => {
-        socket.join(Game.Room(payload.raceId));
-        this.handlePlayerEnterRace(payload);
       });
 
       socket.on("disconnect", () => {
