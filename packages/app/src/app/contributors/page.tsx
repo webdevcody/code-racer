@@ -139,6 +139,7 @@ export default async function ContributorsPage({
   const sliceStartIndex = (parsed_page - 1) * parsed_per_page;
   const sliceEndIndex = sliceStartIndex + parsed_per_page;
   const contributors = await getContributors();
+  const totalPage = Math.ceil(contributors.length / parsed_per_page);
   const contributorCommitActivities = await getContributorsActivity(
     contributors,
   );
@@ -184,12 +185,14 @@ export default async function ContributorsPage({
           </div>
           <PaginationBar
             className="mt-3"
-            nextURL={`/contributors?page=${
-              parsed_page + 1
-            }&per_page=${parsed_per_page}`}
-            prevURL={`/contributors?page=${
-              parsed_page - 1 < 1 ? 1 : parsed_page - 1
-            }&per_page=${parsed_per_page}`}
+            nextURL={`/contributors?page=${Math.min(
+              parsed_page + 1,
+              totalPage,
+            )}&per_page=${parsed_per_page}`}
+            prevURL={`/contributors?page=${Math.max(
+              parsed_page - 1,
+              1,
+            )}&per_page=${parsed_per_page}`}
           />
         </div>
       </div>
