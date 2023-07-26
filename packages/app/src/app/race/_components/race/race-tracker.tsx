@@ -1,7 +1,7 @@
 import { ProgressBar, ProgressIndicator } from "@/components/ui/progress-bar";
 import Image from "next/image";
 import type { User } from "next-auth";
-import React, { useState } from "react";
+import React from "react";
 import { getParticipantUser } from "../../actions";
 
 export default function RaceTracker({
@@ -31,6 +31,7 @@ export default function RaceTracker({
     <div className="relative mb-5 flex items-center">
       <ProgressBar>
         <ProgressIndicator progress={position}>
+          {console.log(position)}
           <Image
             className="absolute left-0 top-[-50%] border-2 border-monochrome rounded-full transition-all duration-300 ease-in-out"
             src={
@@ -41,7 +42,7 @@ export default function RaceTracker({
             }
             height={30}
             width={30}
-            style={{ left: `${position - 0.4}%` }}
+            style={{ left: `${position}%` }}
           />
         </ProgressIndicator>
       </ProgressBar>

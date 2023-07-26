@@ -28,6 +28,7 @@ export default function RacePractice({
 }) {
   const [input, setInput] = useState("");
   const [textIndicatorPosition, setTextIndicatorPosition] = useState(0);
+  const [progress, setProgress] = useState((input.length * 100) / snippet.code.trimEnd().length);
   const [currentLineNumber, setCurrentLineNumber] = useState(0);
 
   const [startTime, setStartTime] = useState<Date | null>(null);
@@ -39,6 +40,7 @@ export default function RacePractice({
   >([]);
 
   const code = snippet.code.trimEnd();
+  
   const currentText = code.substring(0, input.length);
   const errors = input
     .split("")
@@ -196,6 +198,8 @@ export default function RacePractice({
       (prevTextIndicatorPosition) => prevTextIndicatorPosition - 1,
     );
 
+    setProgress((progress) => progress = (input.length * 100) / code.length);
+
     if (raceTimeStamp.length > 0 && errors.length == 0) {
       setRaceTimeStamp((prev) => prev.slice(0, -1));
     }
@@ -203,10 +207,12 @@ export default function RacePractice({
 
   function Enter() {
     if (code.charAt(input.length) !== "\n") {
+      setProgress((progress) => progress = (input.length * 100) / code.length);
       setInput(input + "\n");
       setTextIndicatorPosition((prevTextIndicatorPosition) => {
         return prevTextIndicatorPosition + 1;
       });
+      
     }
 
     const lines = input.split("\n");
@@ -223,6 +229,7 @@ export default function RacePractice({
       setTextIndicatorPosition((prevTextIndicatorPosition) => {
         return prevTextIndicatorPosition + 1 + indent.length;
       });
+      setProgress((progress) => progress = (input.length * 100) / code.length);
     }
   }
 
@@ -246,6 +253,7 @@ export default function RacePractice({
     }
 
     setInput((prevInput) => prevInput + e.key);
+    setProgress((progress) => progress = (input.length * 100) / code.length);
     setTextIndicatorPosition(
       (prevTextIndicatorPosition) => prevTextIndicatorPosition + 1,
     );
@@ -256,6 +264,7 @@ export default function RacePractice({
     setInput("");
     setTextIndicatorPosition(0);
     setTotalErrors(0);
+    setProgress(0);
   }
 
   return (
@@ -266,7 +275,7 @@ export default function RacePractice({
       }}
       role="none"
     >
-      <RaceTracker user={user} position={textIndicatorPosition} />
+      <RaceTracker user={user} position={progress} />
       <Header user={user} snippet={snippet} handleRestart={handleRestart} />
       <section className="flex">
         <LineNumbers code={code} currentLineNumber={currentLineNumber} />
