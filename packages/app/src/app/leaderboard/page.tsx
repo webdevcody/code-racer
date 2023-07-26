@@ -64,11 +64,13 @@ export default async function LeaderboardPage({
 
   const user = await getCurrentUser();
   const allUsers = await getAllUsersWithResults();
+  const currUserIsRanked =
+    user !== undefined && allUsers.some((u) => u.id === user.id);
 
   return (
     <div className="pt-12">
       <Heading title="Leaderboard" description="Find your competition" />
-      {user !== undefined ? (
+      {currUserIsRanked ? (
         <UserRankings currentUser={user} allUsers={allUsers} />
       ) : null}
       <UsersTable data={users} pageCount={pageCount} />
