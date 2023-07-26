@@ -74,18 +74,18 @@ export const ReplayCode = ({ code }: { code?: string }) => {
         {isPlaying ? (
           <PauseIcon
             onClick={handlePlayPause}
-            className="w-12 h-12 text-primary"
+            className="w-12 h-12 text-primary cursor-pointer"
           />
         ) : (
           <PlayIcon
             onClick={handlePlayPause}
-            className="w-12 h-12 text-primary"
+            className="w-12 h-12 text-primary cursor-pointer"
           />
         )}
 
         <RefreshCcw
           onClick={handleRestart}
-          className="w-12 h-12 text-primary"
+          className="w-12 h-12 text-primary cursor-pointer"
         />
       </div>
       <Code
