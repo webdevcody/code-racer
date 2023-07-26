@@ -9,6 +9,7 @@ on:
 jobs:
   deploy-app:
     runs-on: ubuntu-latest
+    env: 
     steps:
       - uses: actions/checkout@v2
       - name: "Install Dependencies"
@@ -22,4 +23,4 @@ jobs:
       - name: Build Project Artifacts
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
       - name: Deploy Project Artifacts to Vercel
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel deploy --force --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
