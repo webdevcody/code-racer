@@ -151,7 +151,7 @@ export default async function ContributorsPage({
   return (
     <div className="pt-12 pb-12">
       <Heading
-        title="Contributors"
+        title="Contributors!"
         description="All the project contributors"
       />
       <br />
