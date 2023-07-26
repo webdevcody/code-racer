@@ -53,7 +53,7 @@ export default function PracticeRaceCard() {
             <LanguageDropDown
               className={cn(
                 "w-full",
-                buttonVariants({ variant: "black" }),
+                buttonVariants({ variant: "ghost" }),
                 error && "border-red-500",
               )}
               codeLanguage={selectedPracticeLanguage}
