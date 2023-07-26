@@ -9,6 +9,8 @@ import CountingAnimation from "./_components/counting-animation";
 import PaginationBar from "./_components/pagination-bar";
 import { redirect } from "next/navigation";
 
+const PER_PAGE_MAX = 15;
+
 type GitHubRepoCommitActivity = number[];
 
 async function getContributorsActivity(
@@ -132,10 +134,10 @@ export default async function ContributorsPage({
   }
   const parsed_page = page ? parseInt(page) : 1;
   const parsed_per_page = per_page
-    ? parseInt(per_page) >= 30
-      ? 30
+    ? parseInt(per_page) >= PER_PAGE_MAX
+      ? PER_PAGE_MAX
       : parseInt(per_page)
-    : 30; // Limit to only 30 per page to avoid hitting rate limit
+    : PER_PAGE_MAX; // Limit to only 30 per page to avoid hitting rate limit
   const sliceStartIndex = (parsed_page - 1) * parsed_per_page;
   const sliceEndIndex = sliceStartIndex + parsed_per_page;
   const contributors = await getContributors();
