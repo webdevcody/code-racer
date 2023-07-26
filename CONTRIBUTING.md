@@ -61,7 +61,7 @@ To get started with Code Racer locally, follow these steps
 7. Start the database
 
    ```sh
-   npm run db
+   npm run dev:db
    ```
 
 8. Start the app dev server.
