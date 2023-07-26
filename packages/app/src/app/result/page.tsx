@@ -78,7 +78,7 @@ async function AuthenticatedPage({
   ];
 
   return (
-    <div className="w-auto mb-14 sm:mb-32">
+    <div className="w-auto mb-32 lg:mb-40">
       <div className="flex flex-col justify-center gap-4 mt-5">
         <RaceAchievementBadges />
         <Heading
@@ -176,7 +176,7 @@ async function UnauthenticatedPage({ snippetId }: { snippetId: string }) {
   const currentSnippet = await getSnippetById(snippetId);
 
   return (
-    <div className="w-auto">
+    <div className="w-auto mb-32 lg:mb-40">
       <div className="flex flex-col justify-center gap-4 mt-5">
         <Heading
           centered
