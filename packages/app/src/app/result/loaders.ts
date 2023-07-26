@@ -2,7 +2,7 @@ import { achievements } from "@/config/achievements";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { formatDate } from "@/lib/utils";
-import { Result } from "@prisma/client";
+import { Result, Snippet } from "@prisma/client";
 import { redirect } from "next/navigation";
 import "server-only";
 
@@ -132,4 +132,50 @@ export async function getSnippetVote(snippetId: string) {
       },
     },
   });
+}
+
+export async function getTopTen(snippet: string | undefined) {
+  const result = await prisma.result.findMany({
+    where: {
+      snippetId: snippet,
+    },
+    orderBy: {
+      cpm: "desc",
+    },
+    take: 10,
+    distinct: ["userId"],
+    include: {
+      user: true,
+    },
+  });
+  return result;
+}
+
+export async function getUserSnippetPlacement(snippetId?: Snippet["id"]) {
+  const user = await getCurrentUser();
+
+  if (!user) return null;
+
+  const allResults = await prisma.result.findMany({
+    where: {
+      snippetId,
+    },
+    orderBy: {
+      cpm: "desc",
+    },
+  });
+
+  const usersResult = await prisma.result.findFirst({
+    where: {
+      snippetId,
+      userId: user.id,
+    },
+    orderBy: {
+      cpm: "desc",
+    },
+  });
+
+  if (!usersResult) return null
+
+  return allResults.findIndex((r) => r.id === usersResult.id) + 1;
 }

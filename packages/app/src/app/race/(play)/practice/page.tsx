@@ -4,6 +4,8 @@ import NoSnippet from "../../_components/no-snippet";
 import Race from "../../_components/race/race-multiplayer";
 import { getSnippetById } from "../loaders";
 import { CacheBuster } from "@/components/cache-buster";
+import { Language, isValidLanguage } from "@/config/languages";
+import { redirect } from "next/navigation";
 
 async function getSearchParamSnippet(snippetId: string | string[]) {
   if (typeof snippetId === "string") {
@@ -21,17 +23,22 @@ export default async function PracticeRacePage({
   };
 }) {
   const user = await getCurrentUser();
+  const language = searchParams.lang as Language;
+  const isValidLang = isValidLanguage(language);
+  if (!isValidLang) {
+    redirect("/race");
+  }
+
   const snippet =
     (await getSearchParamSnippet(searchParams.snippetId)) ??
-    (await getRandomSnippet({ language: searchParams.lang }));
-  const language = searchParams.lang;
+    (await getRandomSnippet({ language: language }));
 
   return (
     <main>
       <CacheBuster />
       {snippet && (
         <div className="pt-8">
-          <Race snippet={snippet} user={user} />
+          <Race practiceSnippet={snippet} language={language} user={user} />
         </div>
       )}
       {!snippet && (

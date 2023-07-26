@@ -122,7 +122,7 @@ async function AuthenticatedPage({
             <ReplayCode code={currentSnippet?.code} />
           </TabsContent>
           <TabsContent value="TopTen">
-            <TopTable snippet={currentSnippet?.id} />
+            <TopTable snippetId={currentSnippet?.id} />
           </TabsContent>
         </Tabs>
       </div>
@@ -201,7 +201,7 @@ async function UnauthenticatedPage({ snippetId }: { snippetId: string }) {
             <ReplayCode code={currentSnippet?.code} />
           </TabsContent>
           <TabsContent value="TopTen">
-            <TopTable snippet={currentSnippet?.id} />
+            <TopTable snippetId={currentSnippet?.id} />
             <h1 className="text-lg mx-auto text-muted-foreground">
               Login to be able to get to the top 10!
             </h1>

@@ -1,38 +1,41 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import type { User } from "next-auth";
 import { Button } from "@/components/ui/button";
-import { useRouter, useSearchParams } from "next/navigation";
-import type { RaceParticipant, Snippet } from "@prisma/client";
+import { Heading } from "@/components/ui/heading";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Heading } from "@/components/ui/heading";
-import RaceTracker from "./race-tracker";
+import type { Snippet } from "@prisma/client";
+import type { User } from "next-auth";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useRef, useState } from "react";
+import { io, type Socket } from "socket.io-client";
+import { saveUserResultAction } from "../../actions";
 import Code from "./code";
 import RaceDetails from "./race-details";
 import RaceTimer from "./race-timer";
+import RaceTracker from "./race-tracker";
 import { ReportButton } from "./report-button";
-import { endRaceAction, saveUserResultAction } from "../../actions";
 import { calculateAccuracy, calculateCPM } from "./utils";
-import { io, type Socket } from "socket.io-client";
 
-import { type RaceStatusType, RaceStatus } from "@code-racer/wss/src/types";
-import MultiplayerLoadingLobby from "../multiplayer-loading-lobby";
-import {
-  GameStateUpdateEvent,
-  gameStateUpdateEvent,
-  type ServerToClientEvents,
-} from "@code-racer/wss/src/events/server-to-client";
+import { Language } from "@/config/languages";
 import { type ClientToServerEvents } from "@code-racer/wss/src/events/client-to-server";
 import { userRacePresenceEvent } from "@code-racer/wss/src/events/common";
+import {
+  GameStateUpdatePayload,
+  gameStateUpdateEvent,
+  userRaceResponseEvent,
+  type ServerToClientEvents,
+} from "@code-racer/wss/src/events/server-to-client";
+import { RaceStatus, type RaceStatusType } from "@code-racer/wss/src/types";
+import MultiplayerLoadingLobby from "../multiplayer-loading-lobby";
+import { env } from "@/env.mjs";
 
 type Participant = Omit<
-  GameStateUpdateEvent["raceState"]["participants"][number],
+  GameStateUpdatePayload["raceState"]["participants"][number],
   "socketId"
 >;
 
@@ -40,7 +43,7 @@ let socket: Socket<ServerToClientEvents, ClientToServerEvents>;
 
 async function getSocketConnection() {
   if (socket) return;
-  socket = io("http://localhost:3001");
+  socket = io(env.NEXT_PUBLIC_WSS_URL);
   // console.log({ socket });
 }
 
@@ -63,21 +66,23 @@ interface ReplayTimeStampProps {
 
 export default function Race({
   user,
-  snippet,
-  participantId,
-  raceId,
+  practiceSnippet,
+  language,
 }: {
-  participantId?: RaceParticipant["id"];
-  raceId?: string;
   user?: User;
-  snippet: Snippet;
+  practiceSnippet?: Snippet;
+  language: Language;
 }) {
   const [input, setInput] = useState("");
   const [textIndicatorPosition, setTextIndicatorPosition] = useState(0);
   const [currentLineNumber, setCurrentLineNumber] = useState(0);
   const [currentCharPosition, setCurrentCharPosition] = useState(0);
   const [currentChar, setCurrentChar] = useState("");
-
+  const [raceStatus, setRaceStatus] = useState<RaceStatusType>(
+    //if the practiceSnippet is present, it means that the race is a practice race
+    Boolean(practiceSnippet) ? RaceStatus.RUNNING : RaceStatus.WAITING,
+  );
+  const [snippet, setSnippet] = useState<Snippet | undefined>(practiceSnippet);
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [submittingResults, setSubmittingResults] = useState(false);
   const [totalErrors, setTotalErrors] = useState(0);
@@ -87,11 +92,11 @@ export default function Race({
     ReplayTimeStampProps[]
   >([]);
 
-  const code = snippet.code.trimEnd();
-  const currentText = code.substring(0, input.length);
+  const code = snippet?.code.trimEnd();
+  const currentText = code?.substring(0, input.length);
   const errors = input
     .split("")
-    .map((char, index) => (char !== currentText[index] ? index : -1))
+    .map((char, index) => (char !== currentText?.[index] ? index : -1))
     .filter((index) => index !== -1);
 
   const inputElement = useRef<HTMLInputElement | null>(null);
@@ -99,27 +104,32 @@ export default function Race({
 
   //multiplayer-specific -----------------------------------------------------------------------------------
   const [participants, setParticipants] = useState<Participant[]>([]);
-  const [raceStatus, setRaceStatus] = useState<RaceStatusType>(
-    Boolean(raceId) ? RaceStatus.WAITING : RaceStatus.RUNNING,
-  );
   const [raceStartCountdown, setRaceStartCountdown] = useState(0);
-  const position = parseFloat(
-    (((input.length - errors.length) / code.length) * 100).toFixed(2),
-  );
-  const isRaceFinished = raceId
-    ? raceStatus === RaceStatus.FINISHED
-    : input === code;
+  const [raceId, setRaceId] = useState<string | null>(null);
+  const [participantId, setParticipantId] = useState<string | null>(null);
+  const position = code
+    ? parseFloat(
+        (((input.length - errors.length) / code.length) * 100).toFixed(2),
+      )
+    : null;
+  const isRaceFinished = practiceSnippet
+    ? input === code
+    : raceStatus === RaceStatus.FINISHED;
   const showRaceTimer = !!startTime && !isRaceFinished;
 
-  // Get snippet lanugage from params
-  const searchParams = useSearchParams();
-  const lang = searchParams ? searchParams.get("lang") : "";
-
   function startRaceEventHandlers() {
-    socket.on("UserEnterFullRace", () => {
-      // make client enter another race
-      router.refresh();
-      return;
+    socket.on("UserRaceResponse", (payload) => {
+      const { snippet, raceParticipantId, raceId } =
+        userRaceResponseEvent.parse(payload);
+      setSnippet(snippet);
+      setRaceId(raceId);
+      setParticipantId(raceParticipantId);
+
+      socket.emit("UserRaceEnter", {
+        raceParticipantId: raceParticipantId,
+        raceId,
+        socketId: socket.id,
+      });
     });
 
     socket.on("GameStateUpdate", (payload) => {
@@ -134,8 +144,13 @@ export default function Race({
       }
     });
 
+    socket.on("UserEnterFullRace", () => {
+      router.refresh();
+    });
+
     socket.on("UserRaceEnter", (payload) => {
-      const { participantId } = userRacePresenceEvent.parse(payload);
+      const { raceParticipantId: participantId } =
+        userRacePresenceEvent.parse(payload);
       setParticipants((participants) => [
         ...participants,
         { id: participantId, position: 0, finishedAt: null },
@@ -143,7 +158,8 @@ export default function Race({
     });
 
     socket.on("UserRaceLeave", (payload) => {
-      const { participantId } = userRacePresenceEvent.parse(payload);
+      const { raceParticipantId: participantId } =
+        userRacePresenceEvent.parse(payload);
       setParticipants((participants) =>
         participants.filter((participant) => participant.id !== participantId),
       );
@@ -152,15 +168,13 @@ export default function Race({
 
   // Connection to wss
   useEffect(() => {
-    if (!raceId || !participantId) return;
+    if (practiceSnippet) return;
     getSocketConnection().then(() => {
       socket.on("connect", () => {
         startRaceEventHandlers();
-
-        socket.emit("UserRaceEnter", {
-          raceId,
-          participantId,
-          socketId: socket.id,
+        socket.emit("UserRaceRequest", {
+          language,
+          userId: user?.id,
         });
       });
     });
@@ -171,29 +185,24 @@ export default function Race({
 
   //send updated position to server
   useEffect(() => {
-    if (!participantId || !raceId || raceStatus !== "running") return;
+    if (!participantId || !raceId || raceStatus !== RaceStatus.RUNNING || !position)
+      return;
 
     const gameLoop = setInterval(() => {
-      if (raceStatus === "running") {
+      if (raceStatus === RaceStatus.RUNNING) {
         socket.emit("PositionUpdate", {
           socketId: socket.id,
-          participantId,
+          raceParticipantId: participantId,
           position,
           raceId,
         });
       }
     }, 200);
     return () => clearInterval(gameLoop);
-  }, [raceStatus, position]);
+  }, [raceStatus, position, participantId, raceId]);
   //end of multiplayer-specific -----------------------------------------------------------------------------------
 
   async function endRace() {
-    //TODO: find a way to only trigger this once, not by every player in the race.
-    if (raceId) {
-      await endRaceAction({
-        raceId,
-      });
-    }
     if (!startTime) return;
     const endTime = new Date();
     const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
@@ -227,9 +236,13 @@ export default function Race({
       ]),
     );
 
+    if (!snippet || !code) {
+      setSubmittingResults(false);
+      return;
+    }
+
     if (user) {
       // console.log("saving user result");
-
       const result = await saveUserResultAction({
         timeTaken,
         errors: totalErrors,
@@ -331,7 +344,7 @@ export default function Race({
           Backspace();
           break;
         case "Enter":
-          if (input !== code.slice(0, input.length)) {
+          if (input !== code?.slice(0, input.length)) {
             return;
           }
           Enter();
@@ -340,7 +353,7 @@ export default function Race({
           }
           break;
         default:
-          if (input !== code.slice(0, input.length)) {
+          if (input !== code?.slice(0, input.length)) {
             return;
           }
           Key(e);
@@ -382,14 +395,14 @@ export default function Race({
   }
 
   function Enter() {
-    const lines = code.split("\n");
+    const lines = code?.split("\n");
     if (
-      input === code.slice(0, input.length) &&
+      input === code?.slice(0, input.length) &&
       code.charAt(input.length) === "\n"
     ) {
       let indent = "";
       let i = 0;
-      while (lines[currentLineNumber].charAt(i) === " ") {
+      while (lines?.[currentLineNumber].charAt(i) === " ") {
         indent += " ";
         i++;
       }
@@ -415,11 +428,15 @@ export default function Race({
   }
 
   function Key(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key !== code.slice(input.length, input.length + 1)) {
+    if (e.key !== code?.slice(input.length, input.length + 1)) {
       setTotalErrors((prevTotalErrors) => prevTotalErrors + 1);
     }
 
-    if (e.key === code[input.length] && errors.length === 0 && e.key !== " ") {
+    if (
+      e.key === code?.[input.length] &&
+      errors.length === 0 &&
+      e.key !== " "
+    ) {
       const currTime = Date.now();
       const timeTaken = startTime ? (currTime - startTime.getTime()) / 1000 : 0;
       setRaceTimeStamp((prev) => [
@@ -499,26 +516,26 @@ export default function Race({
                   participantId={p.id}
                 />
               ))
-            ) : (
+            ) : position ? (
               <RaceTracker position={position} user={user} />
-            )}
+            ) : null}
             <div className="mb-2 md:mb-4 flex justify-between">
               <Heading
                 title="Type this code"
                 description="Start typing to get racing"
               />
-              {user && (
+              {user && snippet && (
                 <ReportButton
                   snippetId={snippet.id}
                   // userId={user.id}
-                  language={snippet.language}
+                  language={snippet.language as Language}
                   handleRestart={handleRestart}
                 />
               )}
             </div>
             <div className="flex ">
               <div className="flex-col px-1 w-10 ">
-                {code.split("\n").map((_, line) => (
+                {code?.split("\n").map((_, line) => (
                   <div
                     key={line}
                     className={
@@ -532,12 +549,14 @@ export default function Race({
                 ))}
               </div>
 
-              <Code
-                code={code}
-                userInput={input}
-                textIndicatorPosition={textIndicatorPosition}
-                errors={errors}
-              />
+              {code && (
+                <Code
+                  code={code}
+                  userInput={input}
+                  textIndicatorPosition={textIndicatorPosition}
+                  errors={errors}
+                />
+              )}
               <input
                 type="text"
                 defaultValue={input}
