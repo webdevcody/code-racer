@@ -54,7 +54,7 @@ async function getSocketConnection() {
   // console.log({ socket });
 }
 
-export default function Race({
+export default function RaceMultiplayer({
   user,
   practiceSnippet,
   language,
