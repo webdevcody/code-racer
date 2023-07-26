@@ -1,5 +1,5 @@
 "use client";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ArrowRight, Loader2, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -69,7 +69,11 @@ export default function MultiplayerRaceCard({ enabled }: { enabled: boolean }) {
             <>
               <div className="flex flex-col">
                 <LanguageDropDown
-                  className={cn("w-full", error && "border-red-500")}
+                  className={cn(
+                    "w-full",
+                    buttonVariants({ variant: "ghost" }),
+                    error && "border-red-500",
+                  )}
                   codeLanguage={selectedMultiplayerLanguage}
                   setCodeLanguage={handleSetCodeLanguage}
                 />
