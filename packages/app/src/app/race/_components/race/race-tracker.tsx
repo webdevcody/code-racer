@@ -8,7 +8,7 @@ export default function RaceTracker({
   user,
   position,
   participantId,
-  codeLength,
+  codeLength
 }: {
   position: number;
   user?: User;
@@ -19,7 +19,7 @@ export default function RaceTracker({
     User | undefined
   >(undefined);
 
-  const getRelativePosition = (position: number) => {
+  const getRelativePosition = () => {
     return position * (100 / codeLength)
   }
 
@@ -36,7 +36,7 @@ export default function RaceTracker({
   return (
     <div className="relative flex items-center mb-5">
       <ProgressBar>
-        <ProgressIndicator progress={getRelativePosition(position)}>
+        <ProgressIndicator progress={getRelativePosition()}>
           <Image
             className="absolute left-0 top-[-50%] border-2 border-monochrome rounded-full transition-all duration-100"
             src={
@@ -47,7 +47,7 @@ export default function RaceTracker({
             }
             height={30}
             width={30}
-            style={{ left: `${getRelativePosition(position)}%` }}
+            style={{ left: `${getRelativePosition()}%` }}
           />
         </ProgressIndicator>
       </ProgressBar>
