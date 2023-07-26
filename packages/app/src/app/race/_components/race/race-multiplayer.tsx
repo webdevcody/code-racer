@@ -43,7 +43,7 @@ let socket: Socket<ServerToClientEvents, ClientToServerEvents>;
 
 async function getSocketConnection() {
   if (socket) return;
-  socket = io(process.env.NEXT_PUBLIC_WSS_URL!);
+  socket = io(process.env.NEXT_PUBLIC_WSS_URL!); // KEEP AS IS
   // console.log({ socket });
 }
 
