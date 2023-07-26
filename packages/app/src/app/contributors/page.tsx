@@ -9,6 +9,8 @@ import CountingAnimation from "./_components/counting-animation";
 import PaginationBar from "./_components/pagination-bar";
 import { redirect } from "next/navigation";
 
+const PER_PAGE_MAX = 15;
+
 type GitHubRepoCommitActivity = number[];
 
 async function getContributorsActivity(
@@ -132,13 +134,14 @@ export default async function ContributorsPage({
   }
   const parsed_page = page ? parseInt(page) : 1;
   const parsed_per_page = per_page
-    ? parseInt(per_page) >= 30
-      ? 30
+    ? parseInt(per_page) >= PER_PAGE_MAX
+      ? PER_PAGE_MAX
       : parseInt(per_page)
-    : 30; // Limit to only 30 per page to avoid hitting rate limit
+    : PER_PAGE_MAX; // Limit to only 30 per page to avoid hitting rate limit
   const sliceStartIndex = (parsed_page - 1) * parsed_per_page;
   const sliceEndIndex = sliceStartIndex + parsed_per_page;
   const contributors = await getContributors();
+  const totalPage = Math.ceil(contributors.length / parsed_per_page);
   const contributorCommitActivities = await getContributorsActivity(
     contributors,
   );
@@ -151,7 +154,7 @@ export default async function ContributorsPage({
   return (
     <div className="pt-12 pb-12">
       <Heading
-        title="Contributors"
+        title="Contributors!"
         description="All the project contributors"
       />
       <br />
@@ -184,12 +187,14 @@ export default async function ContributorsPage({
           </div>
           <PaginationBar
             className="mt-3"
-            nextURL={`/contributors?page=${
-              parsed_page + 1
-            }&per_page=${parsed_per_page}`}
-            prevURL={`/contributors?page=${
-              parsed_page - 1 < 1 ? 1 : parsed_page - 1
-            }&per_page=${parsed_per_page}`}
+            nextURL={`/contributors?page=${Math.min(
+              parsed_page + 1,
+              totalPage,
+            )}&per_page=${parsed_per_page}`}
+            prevURL={`/contributors?page=${Math.max(
+              parsed_page - 1,
+              1,
+            )}&per_page=${parsed_per_page}`}
           />
         </div>
       </div>

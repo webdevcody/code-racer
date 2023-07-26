@@ -70,22 +70,22 @@ export const ReplayCode = ({ code }: { code?: string }) => {
   return (
     <div className="py-2 w-full bg-accent text-2xl text-primary relative group">
       {/* Buttons */}
-      <div className="opacity-0 group-hover:opacity-100 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex space-x-2">
+      <div className="opacity-0 group-hover:opacity-100 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex space-x-2  z-10">
         {isPlaying ? (
           <PauseIcon
             onClick={handlePlayPause}
-            className="w-12 h-12 text-primary"
+            className="w-12 h-12 text-primary cursor-pointer"
           />
         ) : (
           <PlayIcon
             onClick={handlePlayPause}
-            className="w-12 h-12 text-primary"
+            className="w-12 h-12 text-primary cursor-pointer"
           />
         )}
 
         <RefreshCcw
           onClick={handleRestart}
-          className="w-12 h-12 text-primary"
+          className="w-12 h-12 text-primary cursor-pointer"
         />
       </div>
       <Code
