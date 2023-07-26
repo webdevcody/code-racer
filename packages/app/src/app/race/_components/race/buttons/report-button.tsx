@@ -3,22 +3,24 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import type { Snippet } from "@prisma/client";
-import { getRandomSnippet } from "../../(play)/loaders";
+import { getRandomSnippet } from "../../../(play)/loaders";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "@/components/ui/use-toast";
 import { Icons } from "@/components/icons";
 import { downVoteSnippetAction } from "@/app/result/actions";
 import { Language } from "@/config/languages";
 
+type ButtonProps = {
+  snippetId: string;
+  language: Language;
+  handleRestart: () => void;
+};
+
 export function ReportButton({
   snippetId,
   language,
   handleRestart,
-}: {
-  snippetId: string;
-  language: Language;
-  handleRestart: () => void;
-}) {
+}: ButtonProps) {
   const [prevReportedSnippets, setPrevReportedSnippets] = React.useState<
     Snippet["id"][]
   >([]);
