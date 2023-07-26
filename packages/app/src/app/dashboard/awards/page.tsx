@@ -6,6 +6,10 @@ import { redirect } from "next/navigation";
 import { Heading } from "@/components/ui/heading";
 import Shell from "@/components/shell";
 import { getUserResultsCount, getUserSnippetCount } from "./loaders";
+import AchievementProgress from "../_components/achievementProgress";
+import { prisma } from "@/lib/prisma";
+import { findUserAchievements } from "@/app/users/(user-profile)/[userId]/actions";
+import { achievements } from "@/config/achievements";
 
 export default async function AwardsPage({}) {
   const user = await getCurrentUser();
@@ -18,6 +22,14 @@ export default async function AwardsPage({}) {
     getUserResultsCount(),
     getUserSnippetCount(),
   ]);
+
+  const allAchievements = achievements;
+
+  const userAchievements = await prisma.achievement.findMany({
+    where: {
+      userId: user.id,
+    },
+  });
 
   const userRank = 1;
 
@@ -47,6 +59,7 @@ export default async function AwardsPage({}) {
           value={totalUserSnippets}
         />
       </div>
+      <AchievementProgress userAchievements={userAchievements} allAchievements={allAchievements} />
     </Shell>
   );
 }
