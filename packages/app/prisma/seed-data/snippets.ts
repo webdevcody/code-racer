@@ -1,9 +1,9 @@
-import { Snippet } from "@prisma/client";
+export interface Snippet {
+  code: string;
+  language: string;
+}
 
-export const snippets: {
-  code: Snippet["code"];
-  language: Snippet["language"];
-}[] = [
+const snippets: Snippet[] = [
   {
     code: `void main() {
   printf("Hello, World!");
