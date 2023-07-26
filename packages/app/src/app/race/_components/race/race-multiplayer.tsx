@@ -160,7 +160,6 @@ export default function RaceMultiplayer({
     if (practiceSnippet) return;
     getSocketConnection().then(() => {
       socket.on("connect", () => {
-        console.log("Connected: ", { socket })
         startRaceEventHandlers();
         socket.emit("UserRaceRequest", {
           language,
