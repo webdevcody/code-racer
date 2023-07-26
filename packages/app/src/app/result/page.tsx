@@ -78,7 +78,7 @@ async function AuthenticatedPage({
   ];
 
   return (
-    <div className="w-auto">
+    <div className="w-auto mb-14 sm:mb-32">
       <div className="flex flex-col justify-center gap-4 mt-5">
         <RaceAchievementBadges />
         <Heading

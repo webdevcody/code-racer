@@ -342,6 +342,10 @@ export default function RaceMultiplayer({
   }
 
   function Backspace() {
+    if (input.length === 0) {
+      return;
+    }
+
     if (textIndicatorPosition === input.length) {
       setInput((prevInput) => prevInput.slice(0, -1));
     }
