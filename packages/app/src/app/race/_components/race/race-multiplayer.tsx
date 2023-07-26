@@ -1,45 +1,39 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { saveUserResultAction } from "../../actions";
-import { userRacePresenceEvent } from "@code-racer/wss/src/events/common";
-import { io } from "socket.io-client";
 import { Language } from "@/config/languages";
-import {
-  GameStateUpdatePayload,
-  gameStateUpdateEvent,
-  userRaceResponseEvent,
-} from "@code-racer/wss/src/events/server-to-client";
+import { GameStateUpdatePayload } from "@code-racer/wss/src/events/server-to-client";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useRef, useState } from "react";
+import { io } from "socket.io-client";
+import { saveUserResultAction } from "../../actions";
 
 // utils
 import { calculateAccuracy, calculateCPM, noopKeys } from "./utils";
 
 // Components
-import MultiplayerLoadingLobby from "../multiplayer-loading-lobby";
-import RaceTracker from "./race-tracker";
-import Code from "./code";
-import RaceDetails from "./race-details";
-import { Heading } from "@/components/ui/heading";
 import { Button } from "@/components/ui/button";
-import { ReportButton } from "./buttons/report-button";
-import RaceTimer from "./race-timer";
+import { Heading } from "@/components/ui/heading";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import MultiplayerLoadingLobby from "../multiplayer-loading-lobby";
+import { ReportButton } from "./buttons/report-button";
+import Code from "./code";
+import RaceDetails from "./race-details";
+import RaceTimer from "./race-timer";
+import RaceTracker from "./race-tracker";
 
 // Types
-import { RaceStatus } from "@code-racer/wss/src/types";
-import { RaceTimeStampProps, ReplayTimeStampProps } from "./types";
+import type { ClientToServerEvents } from "@code-racer/wss/src/events/client-to-server";
+import type { ServerToClientEvents } from "@code-racer/wss/src/events/server-to-client";
+import { type RaceStatus, raceStatus } from "@code-racer/wss/src/types";
+import type { Snippet } from "@prisma/client";
 import type { User } from "next-auth";
 import type { Socket } from "socket.io-client";
-import type { Snippet } from "@prisma/client";
-import type { ClientToServerEvents } from "@code-racer/wss/src/events/client-to-server";
-import type { RaceStatusType } from "@code-racer/wss/src/types";
-import type { ServerToClientEvents } from "@code-racer/wss/src/events/server-to-client";
+import { RaceTimeStampProps, ReplayTimeStampProps } from "./types";
 
 type Participant = Omit<
   GameStateUpdatePayload["raceState"]["participants"][number],
@@ -68,9 +62,9 @@ export default function RaceMultiplayer({
   const [currentLineNumber, setCurrentLineNumber] = useState(0);
   const [currentCharPosition, setCurrentCharPosition] = useState(0);
   const [currentChar, setCurrentChar] = useState("");
-  const [raceStatus, setRaceStatus] = useState<RaceStatusType>(
+  const [currentRaceStatus, setCurrentRaceStatus] = useState<RaceStatus>(
     //if the practiceSnippet is present, it means that the race is a practice race
-    Boolean(practiceSnippet) ? RaceStatus.RUNNING : RaceStatus.WAITING,
+    Boolean(practiceSnippet) ? raceStatus.RUNNING : raceStatus.WAITING,
   );
   const [snippet, setSnippet] = useState<Snippet | undefined>(practiceSnippet);
   const [startTime, setStartTime] = useState<Date | null>(null);
@@ -104,13 +98,12 @@ export default function RaceMultiplayer({
     : null;
   const isRaceFinished = practiceSnippet
     ? input === code
-    : raceStatus === RaceStatus.FINISHED;
+    : currentRaceStatus === raceStatus.FINISHED;
   const showRaceTimer = !!startTime && !isRaceFinished;
 
   function startRaceEventHandlers() {
     socket.on("UserRaceResponse", (payload) => {
-      const { snippet, raceParticipantId, raceId } =
-        userRaceResponseEvent.parse(payload);
+      const { snippet, raceParticipantId, raceId } = payload;
       setSnippet(snippet);
       setRaceId(raceId);
       setParticipantId(raceParticipantId);
@@ -123,9 +116,9 @@ export default function RaceMultiplayer({
     });
 
     socket.on("GameStateUpdate", (payload) => {
-      const { raceState } = gameStateUpdateEvent.parse(payload);
+      const { raceState } = payload;
       setParticipants(raceState.participants);
-      setRaceStatus(raceState.status);
+      setCurrentRaceStatus(raceState.status);
 
       if (raceState.countdown) {
         setRaceStartCountdown(raceState.countdown);
@@ -139,8 +132,7 @@ export default function RaceMultiplayer({
     });
 
     socket.on("UserRaceEnter", (payload) => {
-      const { raceParticipantId: participantId } =
-        userRacePresenceEvent.parse(payload);
+      const { raceParticipantId: participantId } = payload;
       setParticipants((participants) => [
         ...participants,
         { id: participantId, position: 0, finishedAt: null },
@@ -148,8 +140,7 @@ export default function RaceMultiplayer({
     });
 
     socket.on("UserRaceLeave", (payload) => {
-      const { raceParticipantId: participantId } =
-        userRacePresenceEvent.parse(payload);
+      const { raceParticipantId: participantId } = payload;
       setParticipants((participants) =>
         participants.filter((participant) => participant.id !== participantId),
       );
@@ -178,13 +169,13 @@ export default function RaceMultiplayer({
     if (
       !participantId ||
       !raceId ||
-      raceStatus !== RaceStatus.RUNNING ||
+      currentRaceStatus !== raceStatus.RUNNING ||
       !position
     )
       return;
 
     const gameLoop = setInterval(() => {
-      if (raceStatus === RaceStatus.RUNNING) {
+      if (currentRaceStatus === raceStatus.RUNNING) {
         socket.emit("PositionUpdate", {
           socketId: socket.id,
           raceParticipantId: participantId,
@@ -194,7 +185,7 @@ export default function RaceMultiplayer({
       }
     }, 200);
     return () => clearInterval(gameLoop);
-  }, [raceStatus, position, participantId, raceId]);
+  }, [currentRaceStatus, position, participantId, raceId]);
   //end of multiplayer-specific -----------------------------------------------------------------------------------
 
   async function endRace() {
@@ -459,15 +450,15 @@ export default function RaceMultiplayer({
         role="none" // eslint fix - will remove the semantic meaning of an element while still exposing it to assistive technology
       >
         {/* <p>participant id: {participantId}</p> */}
-        {raceId && raceStatus != RaceStatus.RUNNING && !startTime && (
+        {raceId && currentRaceStatus != raceStatus.RUNNING && !startTime && (
           <MultiplayerLoadingLobby participants={participants}>
-            {raceStatus === RaceStatus.WAITING && (
+            {currentRaceStatus === raceStatus.WAITING && (
               <div className="flex flex-col items-center text-2xl font-bold">
                 <div className="w-8 h-8 border-4 border-muted-foreground rounded-full border-t-4 border-t-warning animate-spin"></div>
                 Waiting for players
               </div>
             )}
-            {raceStatus === RaceStatus.COUNTDOWN &&
+            {currentRaceStatus === raceStatus.COUNTDOWN &&
               !startTime &&
               Boolean(raceStartCountdown) && (
                 <div className="text-center text-2xl font-bold">
@@ -476,7 +467,7 @@ export default function RaceMultiplayer({
               )}
           </MultiplayerLoadingLobby>
         )}
-        {raceStatus === RaceStatus.RUNNING && (
+        {currentRaceStatus === raceStatus.RUNNING && (
           <>
             {raceId ? (
               participants.map((p) => (
@@ -543,7 +534,7 @@ export default function RaceMultiplayer({
             You must fix all errors before you can finish the race!
           </span>
         ) : null}
-        {raceStatus === RaceStatus.FINISHED && (
+        {currentRaceStatus === raceStatus.FINISHED && (
           <div className="flex flex-col items-center text-2xl font-bold space-y-8">
             <div className="w-8 h-8 border-4 border-muted-foreground rounded-full border-t-4 border-t-warning animate-spin"></div>
             Loading race results, please wait...
