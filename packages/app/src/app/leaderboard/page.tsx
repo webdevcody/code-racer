@@ -1,14 +1,15 @@
-import React from "react";
-
-import { UsersTable } from "./users-table";
-import { User } from "@prisma/client";
 import { Heading } from "@/components/ui/heading";
+import { getCurrentUser } from "@/lib/session.js";
+import { User } from "@prisma/client";
 import {
+  getAllUsersWithResults,
   getTotalUsers,
   getUsersWithResultCounts,
   getUsersWithResults,
   isFieldInUser,
 } from "./loaders";
+import { UserRankings } from "./user-rankings";
+import { UsersTable } from "./users-table";
 
 export default async function LeaderboardPage({
   searchParams,
@@ -59,12 +60,17 @@ export default async function LeaderboardPage({
   }
 
   const totalUsers = await getTotalUsers();
-
   const pageCount = totalUsers === 0 ? 1 : Math.ceil(totalUsers / take);
+
+  const user = await getCurrentUser();
+  const allUsers = await getAllUsersWithResults();
 
   return (
     <div className="pt-12">
       <Heading title="Leaderboard" description="Find your competition" />
+      {user !== undefined ? (
+        <UserRankings currentUser={user} allUsers={allUsers} />
+      ) : null}
       <UsersTable data={users} pageCount={pageCount} />
     </div>
   );
