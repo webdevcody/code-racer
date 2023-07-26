@@ -43,7 +43,7 @@ export function RecentRacesTable({
       },
       {
         accessorKey: "snippet",
-        header: "Code",
+        header: "Language",
         cell: ({ cell }) => {
           const snippet = cell.getValue() as Snippet;
             return (
