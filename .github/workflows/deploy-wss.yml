@@ -9,10 +9,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: |
-          flyctl deploy --remote-only \
-          --build-arg DATABASE_URL=${{ secrets.DATABASE_URL }} \
-          --build-arg CORS_ORIGIN=https://code-racer-eight.vercel.app \
+      - run: >
+          flyctl deploy --remote-only
+          --build-arg DATABASE_URL=${{ secrets.DATABASE_URL }}
+          --build-arg CORS_ORIGIN=https://code-racer-eight.vercel.app
           --config packages/wss/fly.toml --dockerfile packages/wss/Dockerfile"
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
