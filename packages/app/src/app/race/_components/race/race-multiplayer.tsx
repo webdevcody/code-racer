@@ -1,38 +1,45 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import React, { useState, useEffect, useRef } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { saveUserResultAction } from "../../actions";
+import { userRacePresenceEvent } from "@code-racer/wss/src/events/common";
+import { io } from "socket.io-client";
+import { Language } from "@/config/languages";
+import {
+  GameStateUpdatePayload,
+  gameStateUpdateEvent,
+  userRaceResponseEvent,
+} from "@code-racer/wss/src/events/server-to-client";
+
+// utils
+import { calculateAccuracy, calculateCPM, noopKeys } from "./utils";
+
+// Components
+import MultiplayerLoadingLobby from "../multiplayer-loading-lobby";
+import RaceTracker from "./race-tracker";
+import Code from "./code";
+import RaceDetails from "./race-details";
 import { Heading } from "@/components/ui/heading";
+import { Button } from "@/components/ui/button";
+import { ReportButton } from "./buttons/report-button";
+import RaceTimer from "./race-timer";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { Snippet } from "@prisma/client";
-import type { User } from "next-auth";
-import { useRouter } from "next/navigation";
-import React, { useEffect, useRef, useState } from "react";
-import { io, type Socket } from "socket.io-client";
-import { saveUserResultAction } from "../../actions";
-import Code from "./code";
-import RaceDetails from "./race-details";
-import RaceTimer from "./race-timer";
-import RaceTracker from "./race-tracker";
-import { ReportButton } from "./report-button";
-import { calculateAccuracy, calculateCPM } from "./utils";
 
-import { Language } from "@/config/languages";
-import { type ClientToServerEvents } from "@code-racer/wss/src/events/client-to-server";
-import { userRacePresenceEvent } from "@code-racer/wss/src/events/common";
-import {
-  GameStateUpdatePayload,
-  gameStateUpdateEvent,
-  userRaceResponseEvent,
-  type ServerToClientEvents,
-} from "@code-racer/wss/src/events/server-to-client";
-import { RaceStatus, type RaceStatusType } from "@code-racer/wss/src/types";
-import MultiplayerLoadingLobby from "../multiplayer-loading-lobby";
-import { env } from "@/env.mjs";
+// Types
+import { RaceStatus } from "@code-racer/wss/src/types";
+import { RaceTimeStampProps, ReplayTimeStampProps } from "./types";
+import type { User } from "next-auth";
+import type { Socket } from "socket.io-client";
+import type { Snippet } from "@prisma/client";
+import type { ClientToServerEvents } from "@code-racer/wss/src/events/client-to-server";
+import type { RaceStatusType } from "@code-racer/wss/src/types";
+import type { ServerToClientEvents } from "@code-racer/wss/src/events/server-to-client";
 
 type Participant = Omit<
   GameStateUpdatePayload["raceState"]["participants"][number],
@@ -47,24 +54,7 @@ async function getSocketConnection() {
   // console.log({ socket });
 }
 
-interface RaceTimeStampProps {
-  char: string;
-  accuracy: number;
-  cpm: number;
-  time: number;
-}
-
-interface ReplayTimeStampProps {
-  char: string;
-  textIndicatorPosition: number | number[];
-  currentLineNumber: number;
-  currentCharPosition: number;
-  errors: number[];
-  totalErrors: number;
-  time: number;
-}
-
-export default function Race({
+export default function RaceMultiplayer({
   user,
   practiceSnippet,
   language,
@@ -185,7 +175,12 @@ export default function Race({
 
   //send updated position to server
   useEffect(() => {
-    if (!participantId || !raceId || raceStatus !== RaceStatus.RUNNING || !position)
+    if (
+      !participantId ||
+      !raceId ||
+      raceStatus !== RaceStatus.RUNNING ||
+      !position
+    )
       return;
 
     const gameLoop = setInterval(() => {
@@ -242,7 +237,6 @@ export default function Race({
     }
 
     if (user) {
-      // console.log("saving user result");
       const result = await saveUserResultAction({
         timeTaken,
         errors: totalErrors,
@@ -265,7 +259,6 @@ export default function Race({
 
   useEffect(() => {
     if (isRaceFinished) {
-      // console.log("Race Finished");
       endRace();
     }
   }, [isRaceFinished]);
@@ -312,29 +305,6 @@ export default function Race({
     if (e.ctrlKey && e.altKey) {
       e.preventDefault();
     }
-
-    const noopKeys = [
-      "Alt",
-      "ArrowUp",
-      "ArrowDown",
-      "Control",
-      "Meta",
-      "CapsLock",
-      "Shift",
-      "altGraphKey", // - Please confirm I am unable to test this
-      "AltGraph", // - Please confirm I am unable to test this
-      "ContextMenu",
-      "Insert",
-      "Delete",
-      "PageUp",
-      "PageDown",
-      "Home",
-      "OS",
-      "NumLock",
-      "Tab",
-      "ArrowRight",
-      "ArrowLeft",
-    ];
 
     if (noopKeys.includes(e.key)) {
       e.preventDefault();
@@ -527,7 +497,6 @@ export default function Race({
               {user && snippet && (
                 <ReportButton
                   snippetId={snippet.id}
-                  // userId={user.id}
                   language={snippet.language as Language}
                   handleRestart={handleRestart}
                 />
@@ -575,7 +544,6 @@ export default function Race({
           </span>
         ) : null}
         {raceStatus === RaceStatus.FINISHED && (
-          // <h2 className="text-2xl p-4">Loading race results, please wait...</h2>
           <div className="flex flex-col items-center text-2xl font-bold space-y-8">
             <div className="w-8 h-8 border-4 border-muted-foreground rounded-full border-t-4 border-t-warning animate-spin"></div>
             Loading race results, please wait...

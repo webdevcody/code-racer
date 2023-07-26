@@ -1,7 +1,7 @@
 import { getCurrentUser } from "@/lib/session";
 import { getRandomSnippet } from "../loaders";
 import NoSnippet from "../../_components/no-snippet";
-import Race from "../../_components/race/race-multiplayer";
+import RacePractice from "../../_components/race/race-practice";
 import { getSnippetById } from "../loaders";
 import { CacheBuster } from "@/components/cache-buster";
 import { Language, isValidLanguage } from "@/config/languages";
@@ -38,7 +38,7 @@ export default async function PracticeRacePage({
       <CacheBuster />
       {snippet && (
         <div className="pt-8">
-          <Race practiceSnippet={snippet} language={language} user={user} />
+          <RacePractice snippet={snippet} user={user} />
         </div>
       )}
       {!snippet && (
