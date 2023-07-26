@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import type { Result } from "@prisma/client";
+import type { Result, Snippet } from "@prisma/client";
 
 import { type ColumnDef } from "unstyled-table";
 import Link from "next/link";
@@ -39,6 +39,18 @@ export function RecentRacesTable({
               Practice
             </Link>
           );
+        },
+      },
+      {
+        accessorKey: "snippet",
+        header: "Code",
+        cell: ({ cell }) => {
+          const snippet = cell.getValue() as Snippet;
+            return (
+                <>
+                    {snippet.language}
+                </>
+            )
         },
       },
       {
