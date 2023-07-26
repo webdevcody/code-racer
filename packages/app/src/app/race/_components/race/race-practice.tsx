@@ -198,7 +198,7 @@ export default function RacePractice({
       (prevTextIndicatorPosition) => prevTextIndicatorPosition - 1,
     );
 
-    setProgress((progress) => progress = (input.length * 100) / code.length);
+    setProgress((progress) => progress = Math.round((input.length * 100) / code.length));
 
     if (raceTimeStamp.length > 0 && errors.length == 0) {
       setRaceTimeStamp((prev) => prev.slice(0, -1));
@@ -207,7 +207,7 @@ export default function RacePractice({
 
   function Enter() {
     if (code.charAt(input.length) !== "\n") {
-      setProgress((progress) => progress = (input.length * 100) / code.length);
+      setProgress((progress) => progress = Math.round((input.length * 100) / code.length));
       setInput(input + "\n");
       setTextIndicatorPosition((prevTextIndicatorPosition) => {
         return prevTextIndicatorPosition + 1;
@@ -229,7 +229,7 @@ export default function RacePractice({
       setTextIndicatorPosition((prevTextIndicatorPosition) => {
         return prevTextIndicatorPosition + 1 + indent.length;
       });
-      setProgress((progress) => progress = (input.length * 100) / code.length);
+      setProgress((progress) => progress = Math.round((input.length * 100) / code.length));
     }
   }
 
@@ -253,7 +253,7 @@ export default function RacePractice({
     }
 
     setInput((prevInput) => prevInput + e.key);
-    setProgress((progress) => progress = (input.length * 100) / code.length);
+    setProgress((progress) => progress = Math.ceil((input.length * 100) / code.length));
     setTextIndicatorPosition(
       (prevTextIndicatorPosition) => prevTextIndicatorPosition + 1,
     );
