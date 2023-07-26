@@ -15,6 +15,7 @@ import {
 import { Icons } from "@/components/icons";
 import { cn, formatDate } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
+import { snippetLanguages } from "@/config/languages";
 
 export function RecentRacesTable({
   data,
@@ -46,11 +47,13 @@ export function RecentRacesTable({
         header: "Language",
         cell: ({ cell }) => {
           const snippet = cell.getValue() as Snippet;
-            return (
-                <>
-                    {snippet.language}
-                </>
-            )
+          const language = snippetLanguages.find((language) => {
+              if (language.value === snippet.language) {
+                    return language.label
+              }
+          })
+          
+          return language?.label;
         },
       },
       {
