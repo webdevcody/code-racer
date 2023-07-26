@@ -31,7 +31,6 @@ export default function RaceTracker({
     <div className="relative mb-5 flex items-center">
       <ProgressBar>
         <ProgressIndicator progress={position}>
-          {console.log(position)}
           <Image
             className="absolute left-0 top-[-50%] border-2 border-monochrome rounded-full transition-all duration-300 ease-in-out"
             src={
