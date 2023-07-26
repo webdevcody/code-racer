@@ -49,7 +49,6 @@ type Participant = Omit<
 let socket: Socket<ServerToClientEvents, ClientToServerEvents>;
 
 async function getSocketConnection() {
-  if (socket) return;
   socket = io(process.env.NEXT_PUBLIC_WSS_URL!); // KEEP AS IS
   // console.log({ socket });
 }
@@ -99,8 +98,8 @@ export default function RaceMultiplayer({
   const [participantId, setParticipantId] = useState<string | null>(null);
   const position = code
     ? parseFloat(
-        (((input.length - errors.length) / code.length) * 100).toFixed(2),
-      )
+      (((input.length - errors.length) / code.length) * 100).toFixed(2),
+    )
     : null;
   const isRaceFinished = practiceSnippet
     ? input === code
@@ -161,6 +160,7 @@ export default function RaceMultiplayer({
     if (practiceSnippet) return;
     getSocketConnection().then(() => {
       socket.on("connect", () => {
+        console.log("Connected: ", { socket })
         startRaceEventHandlers();
         socket.emit("UserRaceRequest", {
           language,
@@ -170,6 +170,7 @@ export default function RaceMultiplayer({
     });
     return () => {
       socket.disconnect();
+      socket.off("connect");
     };
   }, []);
 
