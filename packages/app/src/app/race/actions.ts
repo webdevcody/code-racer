@@ -30,11 +30,11 @@ export const saveUserResultAction = safeAction(
         cpm: input.cpm,
         accuracy: new Prisma.Decimal(input.accuracy),
         snippetId: input.snippetId,
-        RaceParticipant: {
+        RaceParticipant: input.raceParticipantId ? {
           connect: {
             id: input.raceParticipantId,
           }
-        }
+        } : undefined
       },
     });
 
