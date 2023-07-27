@@ -54,6 +54,9 @@ jobs:
       - name: Setup Continuous Integration
         uses: ./.github/actions/ci-setup
 
+      - name: Copy Env File
+        run: cp ./packages/app/.env.example ./packages/app/.env
+
       - name: Prisma Generate
         run: npm run generate --workspace @code-racer/app
 
