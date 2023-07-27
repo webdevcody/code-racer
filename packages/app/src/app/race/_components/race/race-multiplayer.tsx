@@ -477,12 +477,6 @@ export default function RaceMultiplayer({
                   participantId={p.id}
                 />
               ))
-            ) : position && code ? (
-              <RaceTracker
-                position={position}
-                user={user}
-                codeLength={code.length}
-              />
             ) : null}
             <div className="flex justify-between mb-2 md:mb-4">
               <Heading
