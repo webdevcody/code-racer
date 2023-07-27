@@ -101,6 +101,4 @@ export const getParticipantUser = safeAction(
  * This should create a private room for the user
  * Not implemented. Need to decide on the multiplayer architecture
  **/
-export const createPrivateRaceRoom = safeAction(z.object({}))(async (input) => {
-  throw new Error("Not implemented");
-});
+
