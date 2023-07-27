@@ -8,20 +8,20 @@ export default function RaceTracker({
   user,
   position,
   participantId,
-  codeLength
+  codeLength,
 }: {
   position: number;
   user?: User;
   participantId?: string;
-  codeLength: number
+  codeLength: number;
 }) {
   const [participantUser, setParticipantUser] = React.useState<
     User | undefined
   >(undefined);
 
   const getRelativePosition = () => {
-    return position * (100 / codeLength)
-  }
+    return position * (100 / codeLength);
+  };
 
   async function fetchParticipantUser() {
     if (participantId) {

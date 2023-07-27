@@ -72,7 +72,7 @@ export async function getAvailableRace(snippet: Snippet, userId?: User["id"]) {
   return race;
 }
 
-export async function getRaceParticipant(
+export async function createRaceParticipant(
   raceToJoin: Prisma.RaceGetPayload<Record<string, never>>,
   userId?: User["id"],
 ) {
@@ -100,7 +100,7 @@ export async function raceMatchMaking(
 ): Promise<{ race: Race; snippet: Snippet; raceParticipantId: string }> {
   const snippet = await getRandomSnippet({ language });
   const race = await getAvailableRace(snippet, userId);
-  const raceParticipant = await getRaceParticipant(race, userId);
+  const raceParticipant = await createRaceParticipant(race, userId);
   return {
     race,
     snippet,

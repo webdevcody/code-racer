@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "db:studio": "npm run db:studio --workspace @code-racer/app",
     "dev:app": "npm run dev --workspace @code-racer/app",
     "dev:db": "npm run db --workspace @code-racer/app",
     "dev:wss": "PORT=3001 npm run dev --workspace @code-racer/wss",

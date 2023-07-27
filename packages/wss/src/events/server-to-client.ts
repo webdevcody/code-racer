@@ -1,44 +1,32 @@
-import { z } from "zod";
+import { UserRacePresencePayload } from "./common";
 import { Snippet } from "@code-racer/app/src/lib/prisma";
-import { UserRaceEnterPayload, UserRaceLeavePayload } from "./common";
 
-export const gameStateUpdateEvent = z.object({
-  raceState: z.object({
-    id: z.string(),
-    status: z.enum(["waiting", "countdown", "running", "finished"]),
-    participants: z.array(
-      z.object({
-        id: z.string(),
-        socketId: z.string(),
-        position: z.number(),
-        finishedAt: z.number().nullable(),
-      }),
-    ),
-    countdown: z.number().int().optional(),
-  }),
-});
+type Timestamp = number;
 
-export type GameStateUpdatePayload = z.infer<typeof gameStateUpdateEvent>;
+export type GameStateUpdatePayload = {
+  raceState: {
+    id: string;
+    status: "waiting" | "countdown" | "running" | "finished";
+    participants: {
+      id: string;
+      socketId: string;
+      position: number;
+      finishedAt: Timestamp | null;
+    }[];
+    countdown?: number;
+  };
+};
 
-//This is the response to the UserRaceRequest event
-export const userRaceResponseEvent = z.object({
-  snippet: z.object({
-    id: z.string(),
-    code: z.string(),
-    language: z.string(),
-    userId: z.string().nullable(),
-    onReview: z.boolean(),
-    rating: z.number(),
-  }),
-  raceId: z.string(),
-  raceParticipantId: z.string(),
-});
-export type UserRaceResponsePayload = z.infer<typeof userRaceResponseEvent>;
+export type UserRaceResponsePayload = {
+  snippet: Snippet;
+  raceId: string;
+  raceParticipantId: string;
+};
 
 export interface ServerToClientEvents {
   GameStateUpdate: (payload: GameStateUpdatePayload) => void;
-  UserRaceEnter: (payload: UserRaceEnterPayload) => void;
-  UserRaceLeave: (payload: UserRaceLeavePayload) => void;
+  UserRaceEnter: (payload: UserRacePresencePayload) => void;
+  UserRaceLeave: (payload: UserRacePresencePayload) => void;
   UserRaceResponse: (payload: UserRaceResponsePayload) => void;
   UserEnterFullRace: () => void;
 }

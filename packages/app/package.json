@@ -7,6 +7,7 @@
     "seed": "ts-node prisma/seed.ts",
     "setup": "ts-node ./src/scripts/setup.ts",
     "db": "docker compose up -d",
+    "db:studio": "prisma studio",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
