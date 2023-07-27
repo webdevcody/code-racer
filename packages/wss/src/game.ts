@@ -106,9 +106,10 @@ export class Game {
       const socketId = race.participants[i];
       const participant = this.participants.get(socketId);
       if (participant) {
-        //@ts-expect-error ok
+        // TODO : make typescipt happy
+        //@ts-expect-error oks
         participant.socketId = socketId;
-        //@ts-expect-error ok
+        //@ts-expect-error oks
         participants.push(participant);
       }
     }
