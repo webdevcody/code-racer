@@ -106,8 +106,8 @@ module.exports = {
           "100%": { background: "hsl(var(--warning-light))", color: "#878c8e" },
         },
         fade: {
-          "0%": { opacity: 0.5, transform: "translateX(0)" },
-          "100%": { opacity: 1, transform: "odd:translateX(25%) even:translateX(-25%)" },
+          "0%": { opacity: 0.5 },
+          "100%": { opacity: 1 },
         },
       },
       animation: {
@@ -117,7 +117,7 @@ module.exports = {
         "gear-rotate-right": "gear-rotate-right 5s linear infinite",
         dash: "dash linear infinite",
         blink: "blink 1.5s ease infinite",
-        fade: "fade 1s ease-in-out"
+        fade: "fade 1s ease-in-out",
       },
     },
   },
