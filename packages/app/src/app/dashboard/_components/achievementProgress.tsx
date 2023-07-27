@@ -32,7 +32,6 @@ export default function AchievementProgress({
     ];
 
     const timelineRef = useRef<HTMLDivElement>(null);
-    const [scrolledEnd, setScrolledEnd] = useState(0);
     const [animatedItems, setAnimatedItems] = useState<string[]>([]);
 
     useEffect(() => {
@@ -60,28 +59,6 @@ export default function AchievementProgress({
             if (timelineItems) {
                 timelineItems.forEach((item) => observer.unobserve(item));
             }
-        };
-    }, []);
-
-    useEffect(() => {
-        // Function to check if the user has scrolled till the end
-        const handleScroll = () => {
-            const scrollPosition = window.innerHeight + window.scrollY;
-            const bodyHeight = document.body.scrollHeight;
-
-            if (scrollPosition === bodyHeight) {
-                setScrolledEnd(100);
-            } else {
-                setScrolledEnd(0);
-            }
-        };
-
-        // Attach event listener for scroll
-        window.addEventListener("scroll", handleScroll);
-
-        // Cleanup the event listener when the component unmounts
-        return () => {
-            window.removeEventListener("scroll", handleScroll);
         };
     }, []);
 

@@ -31,9 +31,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    /* Center the content horizontally */
     text-align: center;
-    /* Center the text */
 }
 
 .timeline-content p {
@@ -41,7 +39,6 @@
     padding-left: 3px;
 }
 
-/* Optional: If you want to add a vertical line connecting the items */
 .timeline-item::before {
     content: "";
     position: absolute;
@@ -52,27 +49,21 @@
 
 .timeline-item:nth-child(even)::before {
     left: 0;
-    /* For even items, align the line to the right */
     transform: translateX(-50%);
-    /* For even items, move the line to the left */
 }
 
 .timeline-item:nth-child(odd)::before {
     right: 0;
-    /* For odd items, align the line to the left */
     transform: translateX(50%);
-    /* For odd items, move the line to the right */
 }
 
 /* Float the items alternately */
 .timeline-item:nth-child(even) {
     margin-left: 50%;
-    /* Push even items to the right */
     transform: translateX(-25%);
 }
 
 .timeline-item:nth-child(odd) {
     margin-right: 50%;
-    /* Push odd items to the left */
     transform: translateX(25%);
 }
