@@ -1,10 +1,10 @@
 name: Pull Request
 
-# on:
-#   pull_request:
-#     types: [opened, synchronize]
+on:
+  pull_request:
+    types: [opened, synchronize]
 
-on: push
+# on: push
 
 env:
   NODE_VERSION: 18.16.0
