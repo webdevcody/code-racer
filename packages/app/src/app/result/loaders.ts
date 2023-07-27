@@ -175,7 +175,7 @@ export async function getUserSnippetPlacement(snippetId?: Snippet["id"]) {
     },
   });
 
-  if (!usersResult) return null
+  if (!usersResult) return null;
 
   return allResults.findIndex((r) => r.id === usersResult.id) + 1;
 }

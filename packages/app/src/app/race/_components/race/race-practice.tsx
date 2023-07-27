@@ -264,13 +264,17 @@ export default function RacePractice({
 
   return (
     <div
-      className="relative flex flex-col gap-2 p-4 rounded-md lg:p-8 bg-accent w-3/4 mx-auto"
+      className="relative flex flex-col w-3/4 gap-2 p-4 mx-auto rounded-md lg:p-8 bg-accent"
       onClick={() => {
         inputElement.current?.focus();
       }}
       role="none"
     >
-      <RaceTracker user={user} position={textIndicatorPosition} />
+      <RaceTracker
+        user={user}
+        position={textIndicatorPosition}
+        codeLength={code.length}
+      />
       <Header user={user} snippet={snippet} handleRestart={handleRestart} />
       <section className="flex">
         <LineNumbers code={code} currentLineNumber={currentLineNumber} />

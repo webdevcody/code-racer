@@ -12,8 +12,8 @@ export const snippetLanguages = [
   { label: "Typescript", value: "typescript" },
 ] as const;
 
-export type Language = typeof snippetLanguages[number]["value"];
+export type Language = (typeof snippetLanguages)[number]["value"];
 
-export function isValidLanguage(lang:string):boolean {
-    return snippetLanguages.some((l) => l.value === lang);
+export function isValidLanguage(lang: string): boolean {
+  return snippetLanguages.some((l) => l.value === lang);
 }

@@ -30,6 +30,21 @@ export async function getUsersWithResultCounts({
   });
 }
 
+export async function getAllUsersWithResults() {
+  return await prisma.user.findMany({
+    include: {
+      results: true,
+    },
+    where: {
+      achievements: {
+        some: {
+          achievementType: "FIFTH_RACE",
+        },
+      },
+    },
+  });
+}
+
 export async function getUsersWithResults({
   take,
   skip,

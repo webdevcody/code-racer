@@ -1,26 +1,19 @@
-import { z } from "zod";
-import { UserRaceEnterPayload, UserRaceLeavePayload, userRacePresenceEvent } from "./common";
 import { snippetLanguages } from "@code-racer/app/src/config/languages";
+import { UserRacePresencePayload } from "./common";
 
-export const positionUpdateEvent = userRacePresenceEvent.merge(
-  z.object({
-    raceId: z.string(),
-    position: z.number(),
-  }),
-);
-export type PositionUpdatePayload = z.infer<typeof positionUpdateEvent>;
+export type PositionUpdatePayload = UserRacePresencePayload & {
+  raceId: string;
+  position: number;
+};
 
-export const userRaceRequestEvent = z.object({
-    language: z.string().refine((value) => {
-        return snippetLanguages.some((language) => language.value === value);
-    }),
-    userId: z.string().optional(),
-})
-export type UserRaceRequestPayload = z.infer<typeof userRaceRequestEvent>
+export type UserRaceRequestPayload = {
+  language: string;
+  userId?: string;
+};
 
 export interface ClientToServerEvents {
   PositionUpdate: (payload: PositionUpdatePayload) => void;
-  UserRaceEnter: (payload: UserRaceEnterPayload) => void;
-  UserRaceLeave: (payload: UserRaceLeavePayload) => void;
+  UserRaceEnter: (payload: UserRacePresencePayload) => void;
+  UserRaceLeave: (payload: UserRacePresencePayload) => void;
   UserRaceRequest: (payload: UserRaceRequestPayload) => void;
 }
