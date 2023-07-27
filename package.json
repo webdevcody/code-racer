@@ -6,7 +6,7 @@
   "scripts": {
     "dev:app": "npm run dev --workspace @code-racer/app",
     "dev:db": "npm run db --workspace @code-racer/app",
-    "dev:wss": "PORT=3001 npm run dev --workspace @code-racer/wss",
+    "dev:wss": "cross-env PORT=3001 npm run dev --workspace @code-racer/wss",
     "deploy:wss": "source packages/wss/.env && fly deploy --build-arg DATABASE_URL=$DATABASE_URL --config packages/wss/fly.toml --dockerfile packages/wss/Dockerfile"
   },
   "repository": {
@@ -25,6 +25,7 @@
   ],
   "devDependencies": {
     "@flydotio/dockerfile": "^0.4.0",
+    "cross-env": "^7.0.3",
     "husky": "^8.0.3"
   }
 }
