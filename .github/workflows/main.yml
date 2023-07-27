@@ -54,6 +54,9 @@ jobs:
       - name: Setup Continuous Integration
         uses: ./.github/actions/ci-setup
 
+      - name: Prisma Generate
+        run: npm run db:generate --workspace @code-racer/app
+
       - name: Build Application
         run: npm run build --workspace @code-racer/app
 
