@@ -91,7 +91,6 @@ export class Game {
       });
 
       socket.on("PositionUpdate", (payload: PositionUpdatePayload) => {
-        // console.log("Received payload: ", payload)
         this.handleParticipantPositionPayload(payload);
       });
     });
@@ -233,7 +232,6 @@ export class Game {
       }
 
       if (race.status !== "running") {
-        // console.log("Started race: ", raceId);
         race.status = "running";
         void prisma.race
           .update({
@@ -327,7 +325,6 @@ export class Game {
           },
         });
 
-        // console.log(`Race: ${raceId} Countdown: ${countdown}`)
         countdown--;
 
         if (countdown === 0) {
