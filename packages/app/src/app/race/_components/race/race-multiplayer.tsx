@@ -351,6 +351,10 @@ export default function RaceMultiplayer({
   }
 
   function Backspace() {
+    if (input.length === 0) {
+      return;
+    }
+
     if (textIndicatorPosition === input.length) {
       setInput((prevInput) => prevInput.slice(0, -1));
     }
@@ -437,7 +441,7 @@ export default function RaceMultiplayer({
   return (
     <>
       {/* Debug purposes */}
-      {/* <pre className="max-w-sm rounded p-8"> */}
+      {/* <pre className="max-w-sm p-8 rounded"> */}
       {/*   {JSON.stringify( */}
       {/*     { */}
       {/*       participantId, */}
@@ -452,7 +456,7 @@ export default function RaceMultiplayer({
       {/*   )} */}
       {/* </pre> */}
       <div
-        className="relative flex flex-col gap-2 p-4 rounded-md lg:p-8 bg-accent w-3/4 mx-auto"
+        className="relative flex flex-col w-3/4 gap-2 p-4 mx-auto rounded-md lg:p-8 bg-accent"
         onClick={() => {
           inputElement.current?.focus();
         }}
@@ -463,14 +467,14 @@ export default function RaceMultiplayer({
           <MultiplayerLoadingLobby participants={participants}>
             {raceStatus === RaceStatus.WAITING && (
               <div className="flex flex-col items-center text-2xl font-bold">
-                <div className="w-8 h-8 border-4 border-muted-foreground rounded-full border-t-4 border-t-warning animate-spin"></div>
+                <div className="w-8 h-8 border-4 border-t-4 rounded-full border-muted-foreground border-t-warning animate-spin"></div>
                 Waiting for players
               </div>
             )}
             {raceStatus === RaceStatus.COUNTDOWN &&
               !startTime &&
               Boolean(raceStartCountdown) && (
-                <div className="text-center text-2xl font-bold">
+                <div className="text-2xl font-bold text-center">
                   Game starting in: {raceStartCountdown}
                 </div>
               )}
@@ -478,18 +482,19 @@ export default function RaceMultiplayer({
         )}
         {raceStatus === RaceStatus.RUNNING && (
           <>
-            {raceId ? (
+            {raceId && code ? (
               participants.map((p) => (
                 <RaceTracker
                   key={p.id}
                   position={p.position}
                   participantId={p.id}
+                  codeLength={code.length}
                 />
               ))
-            ) : position ? (
-              <RaceTracker position={position} user={user} />
+            ) : position && code ? (
+              <RaceTracker position={position} user={user} codeLength={code.length} />
             ) : null}
-            <div className="mb-2 md:mb-4 flex justify-between">
+            <div className="flex justify-between mb-2 md:mb-4">
               <Heading
                 title="Type this code"
                 description="Start typing to get racing"
@@ -503,7 +508,7 @@ export default function RaceMultiplayer({
               )}
             </div>
             <div className="flex ">
-              <div className="flex-col px-1 w-10 ">
+              <div className="flex-col w-10 px-1 ">
                 {code?.split("\n").map((_, line) => (
                   <div
                     key={line}
@@ -544,12 +549,12 @@ export default function RaceMultiplayer({
           </span>
         ) : null}
         {raceStatus === RaceStatus.FINISHED && (
-          <div className="flex flex-col items-center text-2xl font-bold space-y-8">
-            <div className="w-8 h-8 border-4 border-muted-foreground rounded-full border-t-4 border-t-warning animate-spin"></div>
+          <div className="flex flex-col items-center space-y-8 text-2xl font-bold">
+            <div className="w-8 h-8 border-4 border-t-4 rounded-full border-muted-foreground border-t-warning animate-spin"></div>
             Loading race results, please wait...
           </div>
         )}
-        <div className="flex justify-between items-center">
+        <div className="flex items-center justify-between">
           {showRaceTimer && (
             <>
               <RaceTimer />
