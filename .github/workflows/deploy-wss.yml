@@ -1,8 +1,8 @@
 name: Deploy WSS
 on:
   push:
-    branches:
-      - main
+    branches:    
+      - 'releases/**'
 jobs:
   deploy-wss:
     runs-on: ubuntu-latest
