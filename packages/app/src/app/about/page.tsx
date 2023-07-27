@@ -17,30 +17,30 @@ const page = () => {
       </p>
       <section className="text-left mt-6 text-sm lg:text-md">
         <h2 className="text-xl font-semibold">How It Works</h2>
-        <p className="mb-2">
+        <p className="mb-4">
           Playing Code Racer is simple. Here&apos;s how you can get started
         </p>
 
-        <h3 className=" font-semibold">Join a Race:</h3>
+        <h3 className="mt-2 font-bold">Join a Race:</h3>
         <p className="mb-2">
           Choose a race that suits your skill level or create a new one. You can
           invite friends or compete against random players from the community.
         </p>
 
-        <h3 className=" font-semibold">Get Ready:</h3>
+        <h3 className="mt-2  font-bold">Get Ready:</h3>
         <p className="mb-2">
           Once the race starts, you will be presented with code snippets in your
           chosen programming language.
         </p>
 
-        <h3 className="font-semibold">Type Like the Wind:</h3>
+        <h3 className="mt-2 font-bold">Type Like the Wind:</h3>
         <p className="mb-2">
           Your mission is to type out the presented code snippet as quickly and
           accurately as you can. Watch out for tricky syntax and special
           characters!
         </p>
 
-        <h3 className="font-semibold">Climb the Leaderboard:</h3>
+        <h3 className="mt-2 font-bold">Climb the Leaderboard:</h3>
         <p className="mb-2">
           Each completed code snippet adds to your score. Compete against others
           to climb the leaderboard and prove your typing supremacy.
