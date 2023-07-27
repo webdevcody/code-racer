@@ -42,8 +42,8 @@ const page = () => {
 
         <h3 className="mt-2 font-bold">Climb the Leaderboard:</h3>
         <p className="mb-2">
-          Each completed code snippet adds to your score. Compete against others
-          to climb the leaderboard and prove your typing supremacy.
+          Each completed code snippet adds to your score. Compete against other
+          racers to climb the leaderboard and prove your typing supremacy.
         </p>
       </section>
       <section className="text-left mt-6 text-sm lg:text-md">
