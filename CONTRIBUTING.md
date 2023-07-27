@@ -39,7 +39,7 @@ To get started with Code Racer locally, follow these steps
 2. Clone your fork
 
    ```sh
-    git clone https://github.com/webdevcody/code-racer.git
+    git clone https://github.com/<YOUR_GITHUB_ACCOUNT_NAME>/code-racer.git
    ```
 
 3. Navigate to the project directory
