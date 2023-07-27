@@ -23,8 +23,8 @@ jobs:
       - name: Lint Application
         run: npm run lint --workspace @code-racer/app
 
-      # - name: Lint Socker Server
-      #   run: npm run lint --workspace @code-racer/wss
+      - name: Lint Socket Server
+        run: npm run lint --workspace @code-racer/wss
 
   type-check:
     name: Types
@@ -41,8 +41,8 @@ jobs:
           npm run db:generate --workspace @code-racer/app &&
           npm run type-check --workspace @code-racer/app
 
-      # - name: Check Socket Server Types
-      #   run: npm run type-check --workspace @code-racer/wss
+      - name: Check Socket Server Types
+        run: npm run type-check --workspace @code-racer/wss
 
   build:
     name: Build

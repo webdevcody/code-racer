@@ -1,0 +1,26 @@
+{
+  "env": {
+    "es2021": true,
+    "node": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "**/tsconfig.json"
+  },
+  "plugins": ["@typescript-eslint"],
+  "rules": {
+    "quotes": ["error", "double", { "allowTemplateLiterals": true }],
+    "no-unused-vars": "warn",
+    "@typescript-eslint/no-empty-interface": "warn",
+    "@typescript-eslint/no-unused-vars": "warn",
+
+    "import/extensions": 0,
+    "import/no-extraneous-dependencies": 0,
+    "import/prefer-default-export": 0
+  }
+}
