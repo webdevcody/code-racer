@@ -1,9 +1,12 @@
+"use client"
+
+import React, { useEffect, useRef, useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { BanIcon } from "lucide-react";
 import { Achievement as PrsimaAchievement } from "@prisma/client";
 import { Achievement } from "@/types/achievement";
-import React from "react";
-import { BanIcon } from "lucide-react";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import "../timeline.css";
 
 interface Props {
     userAchievements: PrsimaAchievement[];
@@ -14,28 +17,105 @@ export default function AchievementProgress({
     userAchievements,
     allAchievements,
 }: Props) {
+    const updatedAllAch = [
+        ...allAchievements,
+        {
+            type: "MORE_TO_COME",
+            image: "/static/first.png",
+            name: "More to come!",
+        },
+        {
+            type: "MORE_TO_COME_2",
+            image: "/static/first.png",
+            name: "More to come!",
+        },
+    ];
+
+    const timelineRef = useRef<HTMLDivElement>(null);
+    const [scrolledEnd, setScrolledEnd] = useState(0);
+    const [animatedItems, setAnimatedItems] = useState<string[]>([]);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                const inViewItems = entries
+                    .filter((entry) => entry.isIntersecting)
+                    .map((entry) => entry.target.id);
+
+                setAnimatedItems((prevItems) => [...prevItems, ...inViewItems]);
+            },
+            {
+                root: null,
+                rootMargin: "0px",
+                threshold: 0.5, // Adjust this threshold as per your needs
+            }
+        );
+
+        const timelineItems = timelineRef.current?.querySelectorAll(".timeline-item");
+        if (timelineItems) {
+            timelineItems.forEach((item) => observer.observe(item));
+        }
+
+        return () => {
+            if (timelineItems) {
+                timelineItems.forEach((item) => observer.unobserve(item));
+            }
+        };
+    }, []);
+
+    useEffect(() => {
+        // Function to check if the user has scrolled till the end
+        const handleScroll = () => {
+            const scrollPosition = window.innerHeight + window.scrollY;
+            const bodyHeight = document.body.scrollHeight;
+
+            if (scrollPosition === bodyHeight) {
+                setScrolledEnd(100);
+            } else {
+                setScrolledEnd(0);
+            }
+        };
+
+        // Attach event listener for scroll
+        window.addEventListener("scroll", handleScroll);
+
+        // Cleanup the event listener when the component unmounts
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+        };
+    }, []);
+
+
     return (
-        <ScrollArea className="rounded-md h-max border-2 border-primary p-4">
+        <ScrollArea className="rounded-md h-[300px] border-2 border-primary p-4">
             <h3 className="text-primary font-special">Achievement Progress</h3>
-            <div className="flex flex-col gap-5 items-center justify-center">
-                {allAchievements.map((achievement) => {
+            <div className="timeline" ref={timelineRef}>
+                {updatedAllAch.map((achievement) => {
                     const isUnlocked = userAchievements.some(
                         (userAchievement) => userAchievement.achievementType === achievement.type
                     );
 
+                    const itemId = `achievement-${achievement.type}`;
+
                     return (
                         <div
                             key={achievement.type}
-                            className={`flex self-center ${isUnlocked ? "unlocked" : "locked"}`}
+                            id={itemId}
+                            className={`timeline-item 
+                                ${isUnlocked ? "unlocked" : "locked"
+                                } shadow-lg shadow-accent opacity-100 
+                                ${animatedItems.includes(itemId) ? "animate-fadeIn" : ""} hover:animate-[bounce_1s] hover:cursor-pointer`}
                         >
-                            {isUnlocked ? (
-                                <Avatar>
-                                    <AvatarImage src={achievement.image} />
-                                </Avatar>
-                            ) : (
-                                <BanIcon className="text-primary" />
-                            )}
-                            <p className="mt-2 self-center text-center">{achievement.name}</p>
+                            <div className="timeline-content">
+                                {isUnlocked ? (
+                                    <Avatar>
+                                        <AvatarImage src={achievement.image} />
+                                    </Avatar>
+                                ) : (
+                                    <BanIcon className="text-primary" />
+                                )}
+                                <p>{achievement.name}</p>
+                            </div>
                         </div>
                     );
                 })}
