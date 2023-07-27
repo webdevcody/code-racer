@@ -89,7 +89,7 @@ export default function RaceMultiplayer({
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [raceStartCountdown, setRaceStartCountdown] = useState(0);
   const [raceId, setRaceId] = useState<string | null>(null);
-  const [participantId, setParticipantId] = useState<string | null>(null);
+  const [participantId, setParticipantId] = useState<string | undefined>(undefined);
   const position = code
     ? parseFloat(
       (((input.length - errors.length) / code.length) * 100).toFixed(2),
@@ -223,6 +223,7 @@ export default function RaceMultiplayer({
 
     if (user) {
       const result = await saveUserResultAction({
+        raceParticipantId: participantId,
         timeTaken,
         errors: totalErrors,
         cpm: calculateCPM(code.length - 1, timeTaken),

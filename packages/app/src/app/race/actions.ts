@@ -9,6 +9,7 @@ import { getCurrentUser } from "@/lib/session";
 
 export const saveUserResultAction = safeAction(
   z.object({
+    raceParticipantId: z.string().optional(),
     timeTaken: z.union([z.string(), z.number()]),
     errors: z.number().nullable(),
     cpm: z.number(),
@@ -29,6 +30,11 @@ export const saveUserResultAction = safeAction(
         cpm: input.cpm,
         accuracy: new Prisma.Decimal(input.accuracy),
         snippetId: input.snippetId,
+        RaceParticipant: {
+          connect: {
+            id: input.raceParticipantId,
+          }
+        }
       },
     });
 

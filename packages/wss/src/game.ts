@@ -91,7 +91,6 @@ export class Game {
       });
 
       socket.on("PositionUpdate", (payload: PositionUpdatePayload) => {
-        // console.log("Received payload: ", payload)
         this.handleParticipantPositionPayload(payload);
       });
     });
@@ -232,9 +231,8 @@ export class Game {
         return;
       }
 
-      if (race.status !== "running") {
-        // console.log("Started race: ", raceId);
-        race.status = "running";
+      if (race.status !== raceStatus.RUNNING) {
+        race.status = raceStatus.RUNNING;
         void prisma.race
           .update({
             where: {
@@ -269,7 +267,7 @@ export class Game {
       return;
     }
 
-    race.status = "finished";
+    race.status = raceStatus.FINISHED;
 
     this.server.to(Game.Room(raceId)).emit("GameStateUpdate", {
       raceState: {
@@ -315,26 +313,25 @@ export class Game {
         return reject();
       }
 
-      race.status = "countdown";
+      race.status = raceStatus.COUNTDOWN;
 
       const interval = setInterval(() => {
         this.server.to(Game.Room(raceId)).emit("GameStateUpdate", {
           raceState: {
             participants: this.getRaceParticipants(race),
-            status: "countdown",
+            status: race.status,
             id: raceId,
             countdown,
           },
         });
 
-        // console.log(`Race: ${raceId} Countdown: ${countdown}`)
         countdown--;
 
         if (countdown === 0) {
           this.server.to(Game.Room(raceId)).emit("GameStateUpdate", {
             raceState: {
               participants: this.getRaceParticipants(race),
-              status: "countdown",
+              status: race.status,
               id: raceId,
               countdown,
             },
