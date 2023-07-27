@@ -88,9 +88,6 @@ jobs:
       - name: Migrate Database
         run: npm run migrate --workspace @code-racer/app
 
-      - name: Build Application
-        run: npm run build --workspace @code-racer/app
-
       # - name: Start Socket Server
       #   run: npm run dev --workspace @code-racer/wss
 
