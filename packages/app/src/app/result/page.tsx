@@ -131,6 +131,7 @@ async function AuthenticatedPage({
           title="Retry"
           className={cn(buttonVariants(), "gap-2 text-accent")}
           href={`/race/practice?snippetId=${currentRaceResult.snippetId}`}
+          data-cy="race-button"
         >
           <Icons.refresh className="w-5 h-5" aria-hidden="true" /> Retry
         </Link>

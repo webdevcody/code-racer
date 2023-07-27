@@ -14,7 +14,10 @@ export default function Code({
 }) {
   return (
     <>
-      <pre className="text-monochrome mb-4 overflow-auto font-medium px-2 w-full">
+      <pre
+        className="text-monochrome mb-4 overflow-auto font-medium px-2 w-full"
+        data-cy="code-snippet-preformatted"
+      >
         {code.split("").map((char, index) => (
           <span
             key={index}

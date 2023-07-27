@@ -61,6 +61,7 @@ const LanguageDropDown = ({
             placeholder="Search a Language..."
             value={search}
             onValueChange={setSearch}
+            data-cy="search-language-input"
           />
           <CommandEmpty>No language found.</CommandEmpty>
           <CommandGroup className="overflow-y-auto">
@@ -82,6 +83,7 @@ const LanguageDropDown = ({
                     );
                     setOpen(false);
                   }}
+                  data-cy={`${language.value}-value`}
                 >
                   <Check
                     className={cn(

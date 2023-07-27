@@ -26,6 +26,7 @@ export default function HeroBanner() {
             title="Start Racing"
             prefetch
             className="px-4 py-2 font-black text-black  tracking-wider flex items-center gap-2 w-fit transition-colors bg-warning rounded-md md:text-2xl ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus:bg-accent hover:bg-accent hover:text-accent-foreground"
+            data-cy="start-racing-button"
           >
             Start Racing <ArrowRight />
           </Link>

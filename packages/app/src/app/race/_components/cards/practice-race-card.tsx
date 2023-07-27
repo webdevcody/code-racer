@@ -65,6 +65,7 @@ export default function PracticeRaceCard() {
             disabled={selectedPracticeLanguage === ""}
             variant="black"
             className="relative justify-start border"
+            data-cy="practice-button"
           >
             Practice{" "}
             <ArrowRight
