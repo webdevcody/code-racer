@@ -40,7 +40,8 @@ Please ensure that your code adheres to the project's coding standards and conve
 ## License
 
 The Code Racer project is licensed under the MIT License. Feel free to use, modify, and distribute the code as per the terms of the license.
-Acknowledgements
+
+## Acknowledgements
 
 Code Racer wouldn't be possible without the valuable contributions and support from the open-source community. We would like to express our gratitude to all the contributors and acknowledge the following libraries and resources used in this project.
 
