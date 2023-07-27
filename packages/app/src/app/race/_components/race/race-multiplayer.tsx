@@ -34,6 +34,7 @@ import type { Snippet } from "@prisma/client";
 import type { User } from "next-auth";
 import type { Socket } from "socket.io-client";
 import { RaceTimeStampProps, ReplayTimeStampProps } from "./types";
+import RaceTrackerMultiplayer from "./race-tracker-mutliplayer";
 
 type Participant = Omit<
   GameStateUpdatePayload["raceState"]["participants"][number],
@@ -470,19 +471,12 @@ export default function RaceMultiplayer({
           <>
             {raceId && code ? (
               participants.map((p) => (
-                <RaceTracker
+                <RaceTrackerMultiplayer
                   key={p.id}
                   position={p.position}
                   participantId={p.id}
-                  codeLength={code.length}
                 />
               ))
-            ) : position && code ? (
-              <RaceTracker
-                position={position}
-                user={user}
-                codeLength={code.length}
-              />
             ) : null}
             <div className="flex justify-between mb-2 md:mb-4">
               <Heading
