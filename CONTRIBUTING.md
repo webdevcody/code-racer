@@ -36,7 +36,7 @@ To get started with Code Racer locally, follow these steps
 
 1. Fork the repo
 
-2. clone your fork
+2. Clone your fork
 
    ```sh
     git clone https://github.com/webdevcody/code-racer.git
@@ -64,13 +64,13 @@ To get started with Code Racer locally, follow these steps
    npm run dev:db
    ```
 
-8. Start the app dev server.
+8. Start the app dev server
 
    ```sh
    npm run dev:app
    ```
 
-9. Start the web socket server.
+9. Start the web socket server
 
    ```sh
    npm run dev:wss
