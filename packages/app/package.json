@@ -5,6 +5,7 @@
   "scripts": {
     "predev": "prisma generate && prisma db push && npm run seed",
     "migrate": "prisma generate && prisma db push && npm run seed",
+    "generate": "prisma generate",
     "test": "npx cypress run --config video=false",
     "seed": "ts-node prisma/seed.ts",
     "setup": "ts-node ./src/scripts/setup.ts",

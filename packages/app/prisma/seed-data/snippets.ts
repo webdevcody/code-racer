@@ -1,4 +1,4 @@
-import { Snippet } from "@prisma/client";
+import type { Snippet } from "@prisma/client";
 
 export const snippets: {
   code: Snippet["code"];
