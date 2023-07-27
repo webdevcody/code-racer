@@ -54,11 +54,11 @@ export default async function GitHubCommitDisplay({
   const commitList = await getContributorCommitList(contributor, displayLast);
   return (
     <>
-      <p className="font-bold texxt-center p-2">Last {displayLast} commits</p>
-      <ol className="flex-col justify-start items-stretch gap-2 w-full">
+      <p className="p-2 font-bold texxt-center">Last {displayLast} commits</p>
+      <ol className="flex-col items-stretch justify-start w-full gap-2">
         {commitList.map((c, index) => (
-          <a key={index} href={c.html_url}>
-            <li className="hover:bg-secondary rounded-lg p-2 cursor-pointer">
+          <a key={index} href={c.html_url} target="_blank">
+            <li className="p-2 rounded-lg cursor-pointer hover:bg-secondary">
               <p className="text-md">
                 {c.commit.message.slice(0, MAX_MESSAGE_SIZE)}...
               </p>
