@@ -76,8 +76,8 @@ jobs:
       # - name: Setup Continuous Integration
       #   uses: ./.github/actions/ci-setup
 
-      - name: Npm Install
-        run: npm install
+      - name: Npm Clean Install
+        run: npm ci
 
       - name: Copy Env File
         run: cp ./packages/app/.env.example ./packages/app/.env
@@ -101,6 +101,13 @@ jobs:
       #   run: npm run cypress install --workspace @code-racer/app
 
       - name: Run Cypress Tests
-        run: |
-          npm run start --workspace @code-racer/app & 
-          npm run test --workspace @code-racer/app
+        uses: cypress-io/github-action@v5
+        with:
+          headed: true
+          browser: chrome
+          project: ./packages/app/
+          record: false
+          install: false
+          build: npm run build -w @code-racer/app
+          start: npm run start -w @code-racer/app
+          wait-on: "http://localhost:3000"
