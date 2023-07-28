@@ -34,7 +34,11 @@ export default function Contributor({
       <HoverCard>
         <HoverCardTrigger asChild>
           <Card className="w-full transition-colors duration-100 hover:bg-secondary border-primary">
-            <a href={contributor.html_url} target="_blank">
+            <a
+              href={contributor.html_url}
+              target="_blank"
+              data-cy="contributor-card"
+            >
               <CardContent className="inline-flex py-4 items-center top-[20%] w-full">
                 <div className="">
                   <Avatar className="w-11 h-11">
@@ -48,7 +52,10 @@ export default function Contributor({
                   </Avatar>
                 </div>
                 <div className="flex flex-col w-full ml-4">
-                  <p className="text-base font-medium leading-none">
+                  <p
+                    className="text-base font-medium leading-none"
+                    data-cy="contributor-name"
+                  >
                     {contributor.login}
                   </p>
                   <p className="mt-1 text-base text-muted-foreground">
