@@ -3,6 +3,8 @@ beforeEach(() => {
   cy.visit("http://localhost:3000/");
 });
 
+const TIME_TO_WAIT = 1000;
+
 it("can successfully completed a practice race", () => {
   const TIMEOUT = 10000;
   const LANGUAGE_SNIPPET = "c#";
@@ -10,12 +12,15 @@ it("can successfully completed a practice race", () => {
 
   // Find Race Navigation and click on it
   cy.get("nav").contains("Race", { matchCase: false }).click();
+  cy.wait(TIME_TO_WAIT)
 
   // Find language selection and enter typescript
   cy.get(
     '[data-cy="practice-card"] [data-cy="language-dropdown"]',
   ).scrollIntoView();
   cy.get('[data-cy="practice-card"] [data-cy="language-dropdown"]').click();
+  
+  cy.wait(TIME_TO_WAIT)
   cy.get("input").type(LANGUAGE_SNIPPET);
 
   // Find typescript selection and click on it
@@ -51,6 +56,7 @@ it("can successfully completed a practice race", () => {
         waitForAnimations: true,
       });
     });
+  cy.wait(TIME_TO_WAIT)
 
   cy.url().should("include", "http://localhost:3000/result");
 });
