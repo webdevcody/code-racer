@@ -118,6 +118,19 @@ export default async function ContributorsPage({
             />
           ))}
       </ul>
+      <div>
+        <PaginationBar
+          className="flex justify-center mt-6 w-full"
+          nextURL={`/contributors?page=${Math.min(
+            page + 1,
+            totalPage,
+          )}&per_page=${per_page}`}
+          prevURL={`/contributors?page=${Math.max(
+            page - 1,
+            1,
+          )}&per_page=${per_page}`}
+        />
+      </div>
     </div>
   );
 }
