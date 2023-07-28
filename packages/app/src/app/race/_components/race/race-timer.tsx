@@ -1,29 +1,34 @@
-import { useEffect, useState } from "react";
-import prettyMilliseconds from "pretty-ms";
+import { useEffect, useRef, useState } from "react";
 
 const DEFAULT_UPDATE_INTERVAL_MS = 100;
 
-export default function RaceTimer() {
-  const [startTime] = useState<Date>(new Date());
-  const [elapsedTime, setElapsedTime] = useState<number>(0);
+export default function RaceTimer({
+  stopTimer = false,
+}: {
+  stopTimer?: boolean;
+}) {
+  const [elapsedTime, setElapsedTime] = useState("0");
+  const interval = useRef<NodeJS.Timer>();
 
   useEffect(() => {
     function updateElapsedTime() {
-      setElapsedTime(Date.now() - startTime.getTime());
+      setElapsedTime((previousTime) =>
+        (+previousTime + DEFAULT_UPDATE_INTERVAL_MS / 1000).toFixed(1),
+      );
     }
 
-    const interval = setInterval(() => {
+    interval.current = setInterval(() => {
       updateElapsedTime();
     }, DEFAULT_UPDATE_INTERVAL_MS);
 
     return () => {
-      clearInterval(interval);
+      clearInterval(interval.current);
     };
-  }, [startTime]);
+  }, []);
 
-  function displayElapsedTime(elapsedTime: number): string {
-    return prettyMilliseconds(elapsedTime, { unitCount: 2 });
-  }
+  useEffect(() => {
+    if (stopTimer) clearInterval(interval.current);
+  }, [stopTimer]);
 
-  return <p>Elapsed Time: {displayElapsedTime(elapsedTime)}</p>;
+  return <p>Elapsed Time: {`${elapsedTime}s`}</p>;
 }

@@ -55,7 +55,6 @@
     "nextjs-toploader": "^1.4.2",
     "openai": "^3.3.0",
     "postcss": "8.4.25",
-    "pretty-ms": "^8.0.0",
     "react": "18.2.0",
     "react-confetti": "^6.1.0",
     "react-dom": "18.2.0",
