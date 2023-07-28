@@ -1,9 +1,9 @@
 import * as React from "react";
 
-interface CreatePageProps {}
+interface CreateRoomPageProps {}
 
-const CreatePage: React.FC<CreatePageProps> = ({}) => {
+const CreateRoomPage: React.FC<CreateRoomPageProps> = ({}) => {
   return <div>Hello</div>;
 };
 
-export default CreatePage;
+export default CreateRoomPage;
