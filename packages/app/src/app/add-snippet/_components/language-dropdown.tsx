@@ -46,6 +46,7 @@ const LanguageDropDown = ({
           role="combobox"
           aria-expanded={open}
           className={cn("justify-between w-full px-4 py-3", className)}
+          data-cy="language-dropdown"
         >
           {codeLanguage
             ? snippetLanguages.find(

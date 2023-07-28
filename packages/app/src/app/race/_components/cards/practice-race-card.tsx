@@ -29,7 +29,10 @@ export default function PracticeRaceCard() {
   }
 
   return (
-    <Card className="flex flex-col justify-between flex-1 border-2 border-warning">
+    <Card
+      className="flex flex-col justify-between flex-1 border-2 border-warning"
+      data-cy="practice-card"
+    >
       <CardHeader>
         <div className="grid text-center place-content-center">
           <Target className="justify-self-center" size={40} />
