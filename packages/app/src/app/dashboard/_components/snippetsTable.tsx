@@ -107,11 +107,14 @@ export function SnippetsTable({
       {
         accessorKey: "language",
         header: "Language",
-        enableSorting: false,
-        filterFn: (row, columnId, filterValue) => {
-          const value = row.getValue(columnId) as Snippet["language"];
-
-          return filterValue.includes(value);
+        cell: ({ cell }) => {
+          const language = cell.getValue() as Snippet["language"];
+          const findLanguageLabel = snippetLanguages.find((snippetLanguage) => {
+              if (snippetLanguage.value === language) {
+                    return snippetLanguage
+              }
+          })
+          return findLanguageLabel?.label;
         },
       },
     ],
