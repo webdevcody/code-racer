@@ -291,6 +291,7 @@ export default function RacePractice({
           onKeyDown={handleKeyboardDownEvent}
           className="absolute inset-y-0 left-0 w-full h-full p-8 rounded-md -z-40 focus:outline outline-blue-500 cursor-none"
           onPaste={(e) => e.preventDefault()}
+          data-cy="race-practice-input"
         />
       </section>
       <Footer

@@ -24,7 +24,6 @@ import { ReportButton } from "./buttons/report-button";
 import Code from "./code";
 import RaceDetails from "./race-details";
 import RaceTimer from "./race-timer";
-import RaceTracker from "./race-tracker";
 
 // Types
 import type { ClientToServerEvents } from "@code-racer/wss/src/events/client-to-server";
@@ -35,6 +34,8 @@ import type { User } from "next-auth";
 import type { Socket } from "socket.io-client";
 import { RaceTimeStampProps, ReplayTimeStampProps } from "./types";
 import RaceTrackerMultiplayer from "./race-tracker-mutliplayer";
+import { getSnippetById } from "../../(play)/loaders";
+import { useToast } from "@/components/ui/use-toast";
 
 type Participant = Omit<
   GameStateUpdatePayload["raceState"]["participants"][number],
@@ -45,7 +46,6 @@ let socket: Socket<ServerToClientEvents, ClientToServerEvents>;
 
 async function getSocketConnection() {
   socket = io(process.env.NEXT_PUBLIC_WSS_URL!); // KEEP AS IS
-  // console.log({ socket });
 }
 
 export default function RaceMultiplayer({
@@ -57,6 +57,7 @@ export default function RaceMultiplayer({
   practiceSnippet?: Snippet;
   language: Language;
 }) {
+  const { toast } = useToast()
   const [input, setInput] = useState("");
   const [textIndicatorPosition, setTextIndicatorPosition] = useState(0);
   const [currentLineNumber, setCurrentLineNumber] = useState(0);
@@ -102,10 +103,19 @@ export default function RaceMultiplayer({
   const showRaceTimer = !!startTime && !isRaceFinished;
 
   function startRaceEventHandlers() {
-    socket.on("UserRaceResponse", (payload) => {
-      const { snippet, raceParticipantId, raceId } = payload;
+    socket.on("UserRaceResponse", async (payload) => {
+      const { race, raceParticipantId } = payload;
+      const snippet = await getSnippetById(race.snippetId)
+      if (!snippet) {
+        toast({
+          title: "Error",
+          description: "Snippet not found",
+        })
+        return;
+      };
+
       setSnippet(snippet);
-      setRaceId(raceId);
+      setRaceId(race.id);
       setParticipantId(raceParticipantId);
     });
 
@@ -541,7 +551,7 @@ export default function RaceMultiplayer({
         <div className="flex items-center justify-between">
           {showRaceTimer && (
             <>
-              <RaceTimer />
+              <RaceTimer stopTimer={isRaceFinished} />
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
