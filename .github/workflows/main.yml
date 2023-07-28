@@ -108,4 +108,4 @@ jobs:
           build: npm run build -w @code-racer/app
           start: npm run start -w @code-racer/app
           wait-on: "http://localhost:3000"
-          config: video=false
+          config: video=false,screenshotOnRunFailure=false
