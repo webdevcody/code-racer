@@ -541,7 +541,7 @@ export default function RaceMultiplayer({
         <div className="flex items-center justify-between">
           {showRaceTimer && (
             <>
-              <RaceTimer />
+              <RaceTimer stopTimer={isRaceFinished} />
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
