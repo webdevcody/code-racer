@@ -1,83 +1,72 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import type { User } from "next-auth";
+import { Language } from "@/config/languages";
+import { GameStateUpdatePayload } from "@code-racer/wss/src/events/server-to-client";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useRef, useState } from "react";
+import { io } from "socket.io-client";
+import { saveUserResultAction } from "../../actions";
+
+// utils
+import { calculateAccuracy, calculateCPM, noopKeys } from "./utils";
+
+// Components
 import { Button } from "@/components/ui/button";
-import { useRouter, useSearchParams } from "next/navigation";
-import type { RaceParticipant, Snippet } from "@prisma/client";
+import { Heading } from "@/components/ui/heading";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Heading } from "@/components/ui/heading";
-import RaceTracker from "./race-tracker";
+import MultiplayerLoadingLobby from "../multiplayer-loading-lobby";
+import { ReportButton } from "./buttons/report-button";
 import Code from "./code";
 import RaceDetails from "./race-details";
 import RaceTimer from "./race-timer";
-import { ReportButton } from "./report-button";
-import { endRaceAction, saveUserResultAction } from "../../actions";
-import { calculateAccuracy, calculateCPM } from "./utils";
-import { io, type Socket } from "socket.io-client";
+import RaceTracker from "./race-tracker";
 
-import { type RaceStatusType, RaceStatus } from "@code-racer/wss/src/types";
-import MultiplayerLoadingLobby from "../multiplayer-loading-lobby";
-import {
-  GameStateUpdateEvent,
-  gameStateUpdateEvent,
-  type ServerToClientEvents,
-} from "@code-racer/wss/src/events/server-to-client";
-import { type ClientToServerEvents } from "@code-racer/wss/src/events/client-to-server";
-import { userRacePresenceEvent } from "@code-racer/wss/src/events/common";
+// Types
+import type { ClientToServerEvents } from "@code-racer/wss/src/events/client-to-server";
+import type { ServerToClientEvents } from "@code-racer/wss/src/events/server-to-client";
+import { type RaceStatus, raceStatus } from "@code-racer/wss/src/types";
+import type { Snippet } from "@prisma/client";
+import type { User } from "next-auth";
+import type { Socket } from "socket.io-client";
+import { RaceTimeStampProps, ReplayTimeStampProps } from "./types";
+import RaceTrackerMultiplayer from "./race-tracker-mutliplayer";
 
 type Participant = Omit<
-  GameStateUpdateEvent["raceState"]["participants"][number],
+  GameStateUpdatePayload["raceState"]["participants"][number],
   "socketId"
 >;
 
 let socket: Socket<ServerToClientEvents, ClientToServerEvents>;
 
 async function getSocketConnection() {
-  if (socket) return;
-  socket = io("http://localhost:3001");
+  socket = io(process.env.NEXT_PUBLIC_WSS_URL!); // KEEP AS IS
   // console.log({ socket });
 }
 
-interface RaceTimeStampProps {
-  char: string;
-  accuracy: number;
-  cpm: number;
-  time: number;
-}
-
-interface ReplayTimeStampProps {
-  char: string;
-  textIndicatorPosition: number | number[];
-  currentLineNumber: number;
-  currentCharPosition: number;
-  errors: number[];
-  totalErrors: number;
-  time: number;
-}
-
-export default function Race({
+export default function RaceMultiplayer({
   user,
-  snippet,
-  participantId,
-  raceId,
+  practiceSnippet,
+  language,
 }: {
-  participantId?: RaceParticipant["id"];
-  raceId?: string;
   user?: User;
-  snippet: Snippet;
+  practiceSnippet?: Snippet;
+  language: Language;
 }) {
   const [input, setInput] = useState("");
   const [textIndicatorPosition, setTextIndicatorPosition] = useState(0);
   const [currentLineNumber, setCurrentLineNumber] = useState(0);
   const [currentCharPosition, setCurrentCharPosition] = useState(0);
   const [currentChar, setCurrentChar] = useState("");
-
+  const [currentRaceStatus, setCurrentRaceStatus] = useState<RaceStatus>(
+    //if the practiceSnippet is present, it means that the race is a practice race
+    Boolean(practiceSnippet) ? raceStatus.RUNNING : raceStatus.WAITING,
+  );
+  const [snippet, setSnippet] = useState<Snippet | undefined>(practiceSnippet);
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [submittingResults, setSubmittingResults] = useState(false);
   const [totalErrors, setTotalErrors] = useState(0);
@@ -87,11 +76,11 @@ export default function Race({
     ReplayTimeStampProps[]
   >([]);
 
-  const code = snippet.code.trimEnd();
-  const currentText = code.substring(0, input.length);
+  const code = snippet?.code.trimEnd();
+  const currentText = code?.substring(0, input.length);
   const errors = input
     .split("")
-    .map((char, index) => (char !== currentText[index] ? index : -1))
+    .map((char, index) => (char !== currentText?.[index] ? index : -1))
     .filter((index) => index !== -1);
 
   const inputElement = useRef<HTMLInputElement | null>(null);
@@ -99,33 +88,31 @@ export default function Race({
 
   //multiplayer-specific -----------------------------------------------------------------------------------
   const [participants, setParticipants] = useState<Participant[]>([]);
-  const [raceStatus, setRaceStatus] = useState<RaceStatusType>(
-    Boolean(raceId) ? RaceStatus.WAITING : RaceStatus.RUNNING,
-  );
   const [raceStartCountdown, setRaceStartCountdown] = useState(0);
-  const position = parseFloat(
-    (((input.length - errors.length) / code.length) * 100).toFixed(2),
-  );
-  const isRaceFinished = raceId
-    ? raceStatus === RaceStatus.FINISHED
-    : input === code;
+  const [raceId, setRaceId] = useState<string | null>(null);
+  const [participantId, setParticipantId] = useState<string | undefined>(undefined);
+  const position = code
+    ? parseFloat(
+      (((input.length - errors.length) / code.length) * 100).toFixed(2),
+    )
+    : null;
+  const isRaceFinished = practiceSnippet
+    ? input === code
+    : currentRaceStatus === raceStatus.FINISHED;
   const showRaceTimer = !!startTime && !isRaceFinished;
 
-  // Get snippet lanugage from params
-  const searchParams = useSearchParams();
-  const lang = searchParams ? searchParams.get("lang") : "";
-
   function startRaceEventHandlers() {
-    socket.on("UserEnterFullRace", () => {
-      // make client enter another race
-      router.refresh();
-      return;
+    socket.on("UserRaceResponse", (payload) => {
+      const { snippet, raceParticipantId, raceId } = payload;
+      setSnippet(snippet);
+      setRaceId(raceId);
+      setParticipantId(raceParticipantId);
     });
 
     socket.on("GameStateUpdate", (payload) => {
-      const { raceState } = gameStateUpdateEvent.parse(payload);
+      const { raceState } = payload;
       setParticipants(raceState.participants);
-      setRaceStatus(raceState.status);
+      setCurrentRaceStatus(raceState.status);
 
       if (raceState.countdown) {
         setRaceStartCountdown(raceState.countdown);
@@ -134,8 +121,12 @@ export default function Race({
       }
     });
 
+    socket.on("UserEnterFullRace", () => {
+      router.refresh();
+    });
+
     socket.on("UserRaceEnter", (payload) => {
-      const { participantId } = userRacePresenceEvent.parse(payload);
+      const { raceParticipantId: participantId } = payload;
       setParticipants((participants) => [
         ...participants,
         { id: participantId, position: 0, finishedAt: null },
@@ -143,7 +134,7 @@ export default function Race({
     });
 
     socket.on("UserRaceLeave", (payload) => {
-      const { participantId } = userRacePresenceEvent.parse(payload);
+      const { raceParticipantId: participantId } = payload;
       setParticipants((participants) =>
         participants.filter((participant) => participant.id !== participantId),
       );
@@ -152,48 +143,47 @@ export default function Race({
 
   // Connection to wss
   useEffect(() => {
-    if (!raceId || !participantId) return;
+    if (practiceSnippet) return;
     getSocketConnection().then(() => {
       socket.on("connect", () => {
         startRaceEventHandlers();
-
-        socket.emit("UserRaceEnter", {
-          raceId,
-          participantId,
-          socketId: socket.id,
+        socket.emit("UserRaceRequest", {
+          language,
+          userId: user?.id,
         });
       });
     });
     return () => {
       socket.disconnect();
+      socket.off("connect");
     };
   }, []);
 
   //send updated position to server
   useEffect(() => {
-    if (!participantId || !raceId || raceStatus !== "running") return;
+    if (
+      !participantId ||
+      !raceId ||
+      currentRaceStatus !== raceStatus.RUNNING ||
+      !position
+    )
+      return;
 
     const gameLoop = setInterval(() => {
-      if (raceStatus === "running") {
+      if (currentRaceStatus === raceStatus.RUNNING) {
         socket.emit("PositionUpdate", {
           socketId: socket.id,
-          participantId,
+          raceParticipantId: participantId,
           position,
           raceId,
         });
       }
     }, 200);
     return () => clearInterval(gameLoop);
-  }, [raceStatus, position]);
+  }, [currentRaceStatus, position, participantId, raceId]);
   //end of multiplayer-specific -----------------------------------------------------------------------------------
 
   async function endRace() {
-    //TODO: find a way to only trigger this once, not by every player in the race.
-    if (raceId) {
-      await endRaceAction({
-        raceId,
-      });
-    }
     if (!startTime) return;
     const endTime = new Date();
     const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
@@ -227,10 +217,14 @@ export default function Race({
       ]),
     );
 
-    if (user) {
-      // console.log("saving user result");
+    if (!snippet || !code) {
+      setSubmittingResults(false);
+      return;
+    }
 
+    if (user) {
       const result = await saveUserResultAction({
+        raceParticipantId: participantId,
         timeTaken,
         errors: totalErrors,
         cpm: calculateCPM(code.length - 1, timeTaken),
@@ -252,7 +246,6 @@ export default function Race({
 
   useEffect(() => {
     if (isRaceFinished) {
-      // console.log("Race Finished");
       endRace();
     }
   }, [isRaceFinished]);
@@ -300,29 +293,6 @@ export default function Race({
       e.preventDefault();
     }
 
-    const noopKeys = [
-      "Alt",
-      "ArrowUp",
-      "ArrowDown",
-      "Control",
-      "Meta",
-      "CapsLock",
-      "Shift",
-      "altGraphKey", // - Please confirm I am unable to test this
-      "AltGraph", // - Please confirm I am unable to test this
-      "ContextMenu",
-      "Insert",
-      "Delete",
-      "PageUp",
-      "PageDown",
-      "Home",
-      "OS",
-      "NumLock",
-      "Tab",
-      "ArrowRight",
-      "ArrowLeft",
-    ];
-
     if (noopKeys.includes(e.key)) {
       e.preventDefault();
     } else {
@@ -331,7 +301,7 @@ export default function Race({
           Backspace();
           break;
         case "Enter":
-          if (input !== code.slice(0, input.length)) {
+          if (input !== code?.slice(0, input.length)) {
             return;
           }
           Enter();
@@ -340,7 +310,7 @@ export default function Race({
           }
           break;
         default:
-          if (input !== code.slice(0, input.length)) {
+          if (input !== code?.slice(0, input.length)) {
             return;
           }
           Key(e);
@@ -368,6 +338,10 @@ export default function Race({
   }
 
   function Backspace() {
+    if (input.length === 0) {
+      return;
+    }
+
     if (textIndicatorPosition === input.length) {
       setInput((prevInput) => prevInput.slice(0, -1));
     }
@@ -382,14 +356,14 @@ export default function Race({
   }
 
   function Enter() {
-    const lines = code.split("\n");
+    const lines = code?.split("\n");
     if (
-      input === code.slice(0, input.length) &&
+      input === code?.slice(0, input.length) &&
       code.charAt(input.length) === "\n"
     ) {
       let indent = "";
       let i = 0;
-      while (lines[currentLineNumber].charAt(i) === " ") {
+      while (lines?.[currentLineNumber].charAt(i) === " ") {
         indent += " ";
         i++;
       }
@@ -415,11 +389,15 @@ export default function Race({
   }
 
   function Key(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key !== code.slice(input.length, input.length + 1)) {
+    if (e.key !== code?.slice(input.length, input.length + 1)) {
       setTotalErrors((prevTotalErrors) => prevTotalErrors + 1);
     }
 
-    if (e.key === code[input.length] && errors.length === 0 && e.key !== " ") {
+    if (
+      e.key === code?.[input.length] &&
+      errors.length === 0 &&
+      e.key !== " "
+    ) {
       const currTime = Date.now();
       const timeTaken = startTime ? (currTime - startTime.getTime()) / 1000 : 0;
       setRaceTimeStamp((prev) => [
@@ -450,7 +428,7 @@ export default function Race({
   return (
     <>
       {/* Debug purposes */}
-      {/* <pre className="max-w-sm rounded p-8"> */}
+      {/* <pre className="max-w-sm p-8 rounded"> */}
       {/*   {JSON.stringify( */}
       {/*     { */}
       {/*       participantId, */}
@@ -465,60 +443,57 @@ export default function Race({
       {/*   )} */}
       {/* </pre> */}
       <div
-        className="relative flex flex-col gap-2 p-4 rounded-md lg:p-8 bg-accent w-3/4 mx-auto"
+        className="relative flex flex-col w-3/4 gap-2 p-4 mx-auto rounded-md lg:p-8 bg-accent"
         onClick={() => {
           inputElement.current?.focus();
         }}
         role="none" // eslint fix - will remove the semantic meaning of an element while still exposing it to assistive technology
       >
         {/* <p>participant id: {participantId}</p> */}
-        {raceId && raceStatus != RaceStatus.RUNNING && !startTime && (
+        {raceId && currentRaceStatus != raceStatus.RUNNING && !startTime && (
           <MultiplayerLoadingLobby participants={participants}>
-            {raceStatus === RaceStatus.WAITING && (
+            {currentRaceStatus === raceStatus.WAITING && (
               <div className="flex flex-col items-center text-2xl font-bold">
-                <div className="w-8 h-8 border-4 border-muted-foreground rounded-full border-t-4 border-t-warning animate-spin"></div>
+                <div className="w-8 h-8 border-4 border-t-4 rounded-full border-muted-foreground border-t-warning animate-spin"></div>
                 Waiting for players
               </div>
             )}
-            {raceStatus === RaceStatus.COUNTDOWN &&
+            {currentRaceStatus === raceStatus.COUNTDOWN &&
               !startTime &&
               Boolean(raceStartCountdown) && (
-                <div className="text-center text-2xl font-bold">
+                <div className="text-2xl font-bold text-center">
                   Game starting in: {raceStartCountdown}
                 </div>
               )}
           </MultiplayerLoadingLobby>
         )}
-        {raceStatus === RaceStatus.RUNNING && (
+        {currentRaceStatus === raceStatus.RUNNING && (
           <>
-            {raceId ? (
+            {raceId && code ? (
               participants.map((p) => (
-                <RaceTracker
+                <RaceTrackerMultiplayer
                   key={p.id}
                   position={p.position}
                   participantId={p.id}
                 />
               ))
-            ) : (
-              <RaceTracker position={position} user={user} />
-            )}
-            <div className="mb-2 md:mb-4 flex justify-between">
+            ) : null}
+            <div className="flex justify-between mb-2 md:mb-4">
               <Heading
                 title="Type this code"
                 description="Start typing to get racing"
               />
-              {user && (
+              {user && snippet && (
                 <ReportButton
                   snippetId={snippet.id}
-                  // userId={user.id}
-                  language={snippet.language}
+                  language={snippet.language as Language}
                   handleRestart={handleRestart}
                 />
               )}
             </div>
             <div className="flex ">
-              <div className="flex-col px-1 w-10 ">
-                {code.split("\n").map((_, line) => (
+              <div className="flex-col w-10 px-1 ">
+                {code?.split("\n").map((_, line) => (
                   <div
                     key={line}
                     className={
@@ -532,12 +507,14 @@ export default function Race({
                 ))}
               </div>
 
-              <Code
-                code={code}
-                userInput={input}
-                textIndicatorPosition={textIndicatorPosition}
-                errors={errors}
-              />
+              {code && (
+                <Code
+                  code={code}
+                  userInput={input}
+                  textIndicatorPosition={textIndicatorPosition}
+                  errors={errors}
+                />
+              )}
               <input
                 type="text"
                 defaultValue={input}
@@ -555,14 +532,13 @@ export default function Race({
             You must fix all errors before you can finish the race!
           </span>
         ) : null}
-        {raceStatus === RaceStatus.FINISHED && (
-          // <h2 className="text-2xl p-4">Loading race results, please wait...</h2>
-          <div className="flex flex-col items-center text-2xl font-bold space-y-8">
-            <div className="w-8 h-8 border-4 border-muted-foreground rounded-full border-t-4 border-t-warning animate-spin"></div>
+        {currentRaceStatus === raceStatus.FINISHED && (
+          <div className="flex flex-col items-center space-y-8 text-2xl font-bold">
+            <div className="w-8 h-8 border-4 border-t-4 rounded-full border-muted-foreground border-t-warning animate-spin"></div>
             Loading race results, please wait...
           </div>
         )}
-        <div className="flex justify-between items-center">
+        <div className="flex items-center justify-between">
           {showRaceTimer && (
             <>
               <RaceTimer />

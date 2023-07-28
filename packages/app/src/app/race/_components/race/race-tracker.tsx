@@ -1,47 +1,32 @@
 import { ProgressBar, ProgressIndicator } from "@/components/ui/progress-bar";
 import Image from "next/image";
 import type { User } from "next-auth";
-import React, { useState } from "react";
-import { getParticipantUser } from "../../actions";
+import React from "react";
 
-export default function RaceTracker({
-  user,
-  position,
-  participantId,
-}: {
+export default function RaceTracker({ codeLength, user, position }: {
   position: number;
   user?: User;
-  participantId?: string;
+  codeLength: number;
 }) {
-  const [participantUser, setParticipantUser] = React.useState<
-    User | undefined
-  >(undefined);
-
-  async function fetchParticipantUser() {
-    if (participantId) {
-      const user = await getParticipantUser({ participantId });
-      if (user) {
-        setParticipantUser(user as User);
-      }
-    }
-  }
-  React.useEffect(() => void fetchParticipantUser(), [participantId]);
+  const getRelativePosition = () => {
+    return position * (100 / codeLength);
+  };
 
   return (
-    <div className="relative mb-5 flex items-center">
+    <div className="relative flex items-center mb-5">
       <ProgressBar>
-        <ProgressIndicator progress={position}>
+        <ProgressIndicator progress={getRelativePosition()}>
           <Image
-            className="absolute left-0 top-[-50%] border-2 border-monochrome rounded-full transition-all duration-300 ease-in-out"
+            className="absolute left-0 top-[-50%] border-2 border-monochrome rounded-full transition-all duration-100"
             src={
-              participantUser?.image ?? user?.image ?? "/placeholder-image.jpg"
+              user?.image ?? "/placeholder-image.jpg"
             }
             alt={
-              `${participantUser?.name ?? user?.name} avatar` ?? "user avatar"
+              `${user?.name} avatar` ?? "user avatar"
             }
             height={30}
             width={30}
-            style={{ left: `${position - 0.4}%` }}
+            style={{ left: `${getRelativePosition()}%` }}
           />
         </ProgressIndicator>
       </ProgressBar>

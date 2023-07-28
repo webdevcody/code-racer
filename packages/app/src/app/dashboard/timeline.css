@@ -1,0 +1,69 @@
+/* timeline.css */
+.timeline {
+    position: relative;
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.timeline-item {
+    position: relative;
+    padding: 20px 40px;
+    width: 25%;
+    border-radius: 5px;
+    border: 2px solid hsl(var(--primary));
+    margin-bottom: 20px;
+}
+
+.timeline-item.unlocked {
+    border-color: #7ac70c;
+    /* Green color for unlocked achievements */
+}
+
+.timeline-item.locked {
+    border-color: #f44336;
+    /* Red color for locked achievements */
+}
+
+.timeline-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.timeline-content p {
+    margin: 0;
+    padding-left: 3px;
+}
+
+.timeline-item::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    height: 100%;
+    border-left: 4px solid hsl(var(--primary));
+}
+
+.timeline-item:nth-child(even)::before {
+    left: 0;
+    transform: translateX(-50%);
+}
+
+.timeline-item:nth-child(odd)::before {
+    right: 0;
+    transform: translateX(50%);
+}
+
+/* Float the items alternately */
+.timeline-item:nth-child(even) {
+    margin-left: 50%;
+    transform: translateX(-25%);
+}
+
+.timeline-item:nth-child(odd) {
+    margin-right: 50%;
+    transform: translateX(25%);
+}

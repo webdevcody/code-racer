@@ -1,27 +1,32 @@
-import { z } from "zod";
-import { UserRaceEnterEvent, UserRaceLeaveEvent } from "./common";
+import { UserRacePresencePayload } from "./common";
+import { Snippet } from "@code-racer/app/src/lib/prisma";
 
-export const gameStateUpdateEvent = z.object({
-  raceState: z.object({
-    id: z.string(),
-    status: z.enum(["waiting", "countdown", "running", "finished"]),
-    participants: z.array(
-      z.object({
-        id: z.string(),
-        socketId: z.string(),
-        position: z.number(),
-        finishedAt: z.number().nullable(),
-      }),
-    ),
-    countdown: z.number().int().optional(),
-  }),
-});
+type Timestamp = number;
 
-export type GameStateUpdateEvent = z.infer<typeof gameStateUpdateEvent>;
+export type GameStateUpdatePayload = {
+  raceState: {
+    id: string;
+    status: "waiting" | "countdown" | "running" | "finished";
+    participants: {
+      id: string;
+      socketId: string;
+      position: number;
+      finishedAt: Timestamp | null;
+    }[];
+    countdown?: number;
+  };
+};
+
+export type UserRaceResponsePayload = {
+  snippet: Snippet;
+  raceId: string;
+  raceParticipantId: string;
+};
 
 export interface ServerToClientEvents {
-  GameStateUpdate: (payload: GameStateUpdateEvent) => void;
-  UserRaceEnter: (payload: UserRaceEnterEvent) => void;
-  UserRaceLeave: (payload: UserRaceLeaveEvent) => void;
+  GameStateUpdate: (payload: GameStateUpdatePayload) => void;
+  UserRaceEnter: (payload: UserRacePresencePayload) => void;
+  UserRaceLeave: (payload: UserRacePresencePayload) => void;
+  UserRaceResponse: (payload: UserRaceResponsePayload) => void;
   UserEnterFullRace: () => void;
 }

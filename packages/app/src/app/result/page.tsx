@@ -78,7 +78,7 @@ async function AuthenticatedPage({
   ];
 
   return (
-    <div className="w-auto">
+    <div className="w-auto mb-32 lg:mb-40">
       <div className="flex flex-col justify-center gap-4 mt-5">
         <RaceAchievementBadges />
         <Heading
@@ -122,7 +122,7 @@ async function AuthenticatedPage({
             <ReplayCode code={currentSnippet?.code} />
           </TabsContent>
           <TabsContent value="TopTen">
-            <TopTable snippet={currentSnippet?.id} />
+            <TopTable snippetId={currentSnippet?.id} />
           </TabsContent>
         </Tabs>
       </div>
@@ -131,6 +131,7 @@ async function AuthenticatedPage({
           title="Retry"
           className={cn(buttonVariants(), "gap-2 text-accent")}
           href={`/race/practice?snippetId=${currentRaceResult.snippetId}`}
+          data-cy="race-button"
         >
           <Icons.refresh className="w-5 h-5" aria-hidden="true" /> Retry
         </Link>
@@ -176,7 +177,7 @@ async function UnauthenticatedPage({ snippetId }: { snippetId: string }) {
   const currentSnippet = await getSnippetById(snippetId);
 
   return (
-    <div className="w-auto">
+    <div className="w-auto mb-32 lg:mb-40">
       <div className="flex flex-col justify-center gap-4 mt-5">
         <Heading
           centered
@@ -201,7 +202,7 @@ async function UnauthenticatedPage({ snippetId }: { snippetId: string }) {
             <ReplayCode code={currentSnippet?.code} />
           </TabsContent>
           <TabsContent value="TopTen">
-            <TopTable snippet={currentSnippet?.id} />
+            <TopTable snippetId={currentSnippet?.id} />
             <h1 className="text-lg mx-auto text-muted-foreground">
               Login to be able to get to the top 10!
             </h1>

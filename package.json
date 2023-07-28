@@ -4,7 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "prepare": "husky install"
+    "db:studio": "npm run db:studio --workspace @code-racer/app",
+    "dev:app": "npm run dev --workspace @code-racer/app",
+    "dev:db": "npm run db --workspace @code-racer/app",
+    "dev:wss": "cross-env PORT=3001 npm run dev --workspace @code-racer/wss",
+    "deploy:wss": "source packages/wss/.env && fly deploy --build-arg DATABASE_URL=$DATABASE_URL --config packages/wss/fly.toml --dockerfile packages/wss/Dockerfile",
+    "pr:precheck": "npm run lint -w @code-racer/app && npm run type-check -w @code-racer/app && npm run build -w @code-racer/app"
   },
   "repository": {
     "type": "git",
@@ -21,6 +26,8 @@
     "packages/*"
   ],
   "devDependencies": {
+    "@flydotio/dockerfile": "^0.4.0",
+    "cross-env": "^7.0.3",
     "husky": "^8.0.3"
   }
 }

@@ -9,6 +9,7 @@ import { getCurrentUser } from "@/lib/session";
 
 export const saveUserResultAction = safeAction(
   z.object({
+    raceParticipantId: z.string().optional(),
     timeTaken: z.union([z.string(), z.number()]),
     errors: z.number().nullable(),
     cpm: z.number(),
@@ -29,6 +30,11 @@ export const saveUserResultAction = safeAction(
         cpm: input.cpm,
         accuracy: new Prisma.Decimal(input.accuracy),
         snippetId: input.snippetId,
+        RaceParticipant: input.raceParticipantId ? {
+          connect: {
+            id: input.raceParticipantId,
+          }
+        } : undefined
       },
     });
 
@@ -53,21 +59,6 @@ export const saveUserResultAction = safeAction(
     });
 
     return result;
-  });
-});
-
-export const endRaceAction = safeAction(
-  z.object({
-    raceId: z.string(),
-  }),
-)(async (input) => {
-  await prisma.race.update({
-    where: {
-      id: input.raceId,
-    },
-    data: {
-      endedAt: new Date(),
-    },
   });
 });
 
@@ -99,6 +90,6 @@ export const getParticipantUser = safeAction(
 
 /**
  * This should create a private room for the user
- * Not implemented. Need to decide on the multiplayer architecture
+ * Not implemented
  **/
 

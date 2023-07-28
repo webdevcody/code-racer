@@ -1,227 +1,290 @@
-import type { Race, RaceParticipant } from "@code-racer/app/src/lib/prisma";
-import { prisma } from "@code-racer/app/src/lib/prisma";
-import { RaceStatusType } from "./types";
-import { type Server } from "socket.io";
+import { Language } from "@code-racer/app/src/config/languages";
 import { siteConfig } from "@code-racer/app/src/config/site";
+import type { RaceParticipant } from "@code-racer/app/src/lib/prisma";
+import { prisma } from "@code-racer/app/src/lib/prisma";
+import { type Server } from "socket.io";
 import {
-  PositionUpdateEvent,
+  PositionUpdatePayload,
   type ClientToServerEvents,
-  positionUpdateEvent,
 } from "./events/client-to-server";
+import { UserRacePresencePayload } from "./events/common";
 import { type ServerToClientEvents } from "./events/server-to-client";
-import {
-  UserRaceEnterEvent,
-  UserRaceLeaveEvent,
-  userRacePresenceEvent,
-} from "./events/common";
+import { raceMatchMaking } from "./match-making";
+import { RaceStatus, raceStatus } from "./types";
 
-type ParticipantsMap = Map<
-  //this is the socketId
-  string,
-  {
-    id: RaceParticipant["id"];
-    position: number;
-    finishedAt: number | null;
-  }
->;
+type SocketId = string;
+type RaceId = string;
+type Timestamp = number;
+
+type Participant = {
+  id: RaceParticipant["id"];
+  raceId: RaceId;
+  position: number;
+  finishedAt: Timestamp | null;
+};
+
+type Race = {
+  participants: SocketId[];
+  status: RaceStatus;
+};
 
 export class Game {
-  private static readonly START_GAME_COUNTDOWN = 5;
+  private static readonly START_GAME_COUNTDOWN = 10;
   private static readonly MAX_PARTICIPANTS_PER_RACE =
     siteConfig.multiplayer.maxParticipantsPerRace;
   private static readonly GAME_LOOP_INTERVAL = 500;
   private static readonly GAME_MAX_POSITION = 100;
-  private activeCountdowns = new Map<Race["id"], Promise<void>>();
 
-  private races = new Map<
-    Race["id"],
-    {
-      status: RaceStatusType;
-      participants: ParticipantsMap;
-    }
-  >();
+  /**
+   * Race socket room name
+   */
+  private static Room(raceId: string) {
+    return `RACE_${raceId}`;
+  }
+
+  private activeCountdowns = new Map<RaceId, Promise<void>>();
+
+  private races = new Map<RaceId, Race>();
+
+  private participants = new Map<SocketId, Participant>();
 
   constructor(
-    private server: Server<ClientToServerEvents, ServerToClientEvents>,
+    private server: Server<ClientToServerEvents, ServerToClientEvents>
   ) {
     this.initialize();
   }
 
   private initialize() {
     this.server.on("connection", (socket) => {
-      socket.on("UserRaceEnter", (payload) => {
-        socket.join(`RACE_${payload.raceId}`)
-        this.handlePlayerEnterRace(payload);
+      socket.on("UserRaceRequest", async (payload) => {
+        const { race, raceParticipantId, snippet } = await raceMatchMaking(
+          payload.language as Language,
+          payload.userId
+        );
+
+        socket.join(Game.Room(race.id));
+
+        this.handlePlayerEnterRace({
+          raceId: race.id,
+          raceParticipantId,
+          socketId: socket.id,
+        });
+
+        socket.emit("UserRaceResponse", {
+          raceParticipantId,
+          raceId: race.id,
+          snippet,
+        });
       });
+
       socket.on("disconnect", () => {
-        for (const [raceId, race] of this.races.entries()) {
-          const participant = race.participants.get(socket.id);
-          if (participant) {
-            this.handlePlayerLeaveRace({
-              participantId: participant.id,
-              raceId,
-              socketId: socket.id,
-            });
-          }
-        }
+        const participant = this.participants.get(socket.id);
+
+        //this happens if the race ended successfully
+        if (!participant) return;
+
+        this.handlePlayerLeaveRace({
+          raceId: participant.raceId,
+          raceParticipantId: participant.id,
+          socketId: socket.id,
+        });
       });
-      socket.on("PositionUpdate", (payload: PositionUpdateEvent) => {
-        // console.log("Received payload: ", payload)
-        const parsedPayload = positionUpdateEvent.parse(payload);
-        // console.log(
-        // `Race participant position payload: ${parsedPayload}`,
-        // )
-        this.handleParticipantPositionPayload(parsedPayload);
+
+      socket.on("PositionUpdate", (payload: PositionUpdatePayload) => {
+        this.handleParticipantPositionPayload(payload);
       });
     });
   }
 
-  private serializeParticipants(participants: ParticipantsMap) {
-    return Array.from(participants.entries()).map(
-      ([socketId, { id, position, finishedAt }]) => ({
-        id,
-        socketId,
-        position,
-        finishedAt,
-      }),
-    );
+  private getRaceParticipants(
+    race: Race
+  ): (Participant & { socketId: string })[] {
+    const participants: (Participant & { socketId: string })[] = [];
+    //Leave this as a raw for loop, .map will create more memory and will have possibly undefined values that will need to be filtered out
+    for (let i = 0; race.participants.length > i; i++) {
+      const socketId = race.participants[i];
+      const participant = this.participants.get(socketId);
+      if (participant) {
+        // TODO : make typescipt happy
+        //@ts-expect-error oks
+        participant.socketId = socketId;
+        //@ts-expect-error oks
+        participants.push(participant);
+      }
+    }
+
+    return participants;
   }
 
   private createRaceWithParticipant(
     raceId: string,
-    participant: { id: string; socketId: string },
+    participant: { id: string; socketId: string }
   ) {
+    this.participants.set(participant.socketId, {
+      id: participant.id,
+      raceId,
+      position: 0,
+      finishedAt: null,
+    });
     return this.races.set(raceId, {
-      status: "waiting",
-      participants: new Map().set(participant.socketId, {
-        id: participant.id,
-        position: 0,
-        finishedAt: null,
-      }),
+      status: raceStatus.WAITING,
+      participants: [participant.socketId],
     });
   }
 
-  private async handlePlayerEnterRace(payload: UserRaceEnterEvent) {
-    const parsedPayload = userRacePresenceEvent.parse(payload);
+  private async deleteRaceParticipant(raceParticipantId: string) {
+    return await prisma.raceParticipant.delete({
+      where: {
+        id: raceParticipantId,
+      },
+    });
+  }
 
-    // console.log("Player entering race:", payload)
-    const race = this.races.get(parsedPayload.raceId);
+  private async handlePlayerEnterRace(payload: UserRacePresencePayload) {
+    const race = this.races.get(payload.raceId);
 
     if (!race) {
-      this.createRaceWithParticipant(parsedPayload.raceId, {
-        id: parsedPayload.participantId,
-        socketId: parsedPayload.socketId,
+      this.createRaceWithParticipant(payload.raceId, {
+        id: payload.raceParticipantId,
+        socketId: payload.socketId,
       });
-    } else if (race.participants.size + 1 > Game.MAX_PARTICIPANTS_PER_RACE) {
-      return this.emitRaceFull(parsedPayload.socketId);
+    } else if (race.participants.length + 1 > Game.MAX_PARTICIPANTS_PER_RACE) {
+      return this.handleParticipantJoinedFullRace(
+        payload.socketId,
+        payload.raceParticipantId
+      );
     } else {
-      // console.log("Starting a race", parsedPayload.raceId)
-      race.participants.set(parsedPayload.socketId, {
-        id: parsedPayload.participantId,
+      this.participants.set(payload.socketId, {
+        id: payload.raceParticipantId,
+        raceId: payload.raceId,
         position: 0,
         finishedAt: null,
       });
-      this.startRaceCountdown(parsedPayload.raceId);
+      race.participants.push(payload.socketId);
+      this.startRaceCountdown(payload.raceId);
     }
 
-    // console.log({ raceId: parsedPayload.raceId }, "\n")
-    // console.log("Races: ", this.races)
-
     // Emit to all players in the room that a new player has joined.
-    this.server
-      .to(`RACE_${parsedPayload.raceId}`)
-      .emit("UserRaceEnter", parsedPayload);
+    this.server.to(Game.Room(payload.raceId)).emit("UserRaceEnter", payload);
   }
 
-  private emitRaceFull(socketId: string) {
+  private handleParticipantJoinedFullRace(
+    socketId: string,
+    raceParticipantId: string
+  ) {
     this.server.sockets.sockets.get(socketId)?.emit("UserEnterFullRace");
+
+    void this.deleteRaceParticipant(raceParticipantId);
   }
 
-  private handlePlayerLeaveRace(payload: UserRaceLeaveEvent) {
-    const parsedPayload = userRacePresenceEvent.parse(payload);
-    // console.log("Player leaving race: ", parsedPayload)
-
-    const race = this.races.get(parsedPayload.raceId);
+  private handlePlayerLeaveRace(payload: UserRacePresencePayload) {
+    const race = this.races.get(payload.raceId);
 
     if (!race) {
       console.warn("Player left a race that doesn't exist.", {
-        raceId: parsedPayload.raceId,
-        participantId: parsedPayload.participantId,
+        raceId: payload.raceId,
+        participantId: payload.raceParticipantId,
         time: new Date(),
+        level: "warn",
       });
       return;
     }
 
-    race.participants.delete(parsedPayload.socketId);
+    const participant = this.participants.get(payload.socketId);
 
-    this.server
-      .to(`RACE_${parsedPayload.raceId}`)
-      .emit("UserRaceLeave", parsedPayload);
-
-    const isRaceEnded = this.isRaceEnded(parsedPayload.raceId);
-
-    if (isRaceEnded) {
-      void this.endRace(parsedPayload.raceId);
+    //Participant left before completing the race
+    if (participant && !participant.finishedAt) {
+      void this.deleteRaceParticipant(payload.raceParticipantId);
     }
-    // console.log("Races: ", this.races)
+
+    this.participants.delete(payload.socketId);
+
+    //Removes the race participant in place.
+    //Array.filter could be used but that would create more memory
+    for (let i = race.participants.length - 1; i >= 0; i--) {
+      if (race.participants[i] === payload.socketId) {
+        race.participants.splice(i, 1);
+      }
+    }
+
+    this.server.to(Game.Room(payload.raceId)).emit("UserRaceLeave", payload);
+
+    if (
+      race.participants.length === 0 &&
+      race.status === raceStatus.COUNTDOWN
+    ) {
+      this.activeCountdowns.delete(payload.raceId);
+      return;
+    }
+
+    const isRaceEnded = this.isRaceEnded(race);
+    if (isRaceEnded) {
+      void this.endRace(payload.raceId);
+    }
   }
 
   private startRace(raceId: string) {
     const interval = setInterval(() => {
       const race = this.races.get(raceId);
+      //This means that the race is finished
       if (!race) {
         clearInterval(interval);
         return;
       }
 
-      if (race.status !== "running") {
-        race.status = "running";
-        // console.log("Started race: ", raceId)
-        void prisma.race.update({
-          where: {
-            id: raceId,
-          },
-          data: {
-            startedAt: new Date(),
-          },
-        });
+      if (race.status !== raceStatus.RUNNING) {
+        race.status = raceStatus.RUNNING;
+        void prisma.race
+          .update({
+            where: {
+              id: raceId,
+            },
+            data: {
+              startedAt: new Date(),
+            },
+          })
+          .then(() => {});
       }
 
-      // console.log("Emitting game loop for race:", raceId)
-      this.server.to(`RACE_${raceId}`).emit("GameStateUpdate", {
+      this.server.to(Game.Room(raceId)).emit("GameStateUpdate", {
         raceState: {
           id: raceId,
           status: race.status,
-          participants: this.serializeParticipants(race.participants),
+          participants: this.getRaceParticipants(race),
         },
       });
     }, Game.GAME_LOOP_INTERVAL);
   }
 
-  private endRace(raceId: string) {
+  private async endRace(raceId: string) {
     const race = this.races.get(raceId);
 
     if (!race) {
       console.warn("Trying to end a race that doesn't exist.", {
         raceId,
         time: new Date(),
+        level: "warn",
       });
       return;
     }
 
-    race.status = "finished";
+    race.status = raceStatus.FINISHED;
 
-    this.server.to(`RACE_${raceId}`).emit("GameStateUpdate", {
+    this.server.to(Game.Room(raceId)).emit("GameStateUpdate", {
       raceState: {
         id: raceId,
         status: race.status,
-        participants: this.serializeParticipants(race.participants),
+        participants: this.getRaceParticipants(race),
       },
     });
 
+    for (const socketId of race.participants) {
+      this.participants.delete(socketId);
+    }
+
     this.races.delete(raceId);
 
-    void prisma.race.update({
+    await prisma.race.update({
       where: {
         id: raceId,
       },
@@ -246,29 +309,30 @@ export class Game {
           {
             raceId,
             time: new Date(),
-          },
+          }
         );
         return reject();
       }
 
+      race.status = raceStatus.COUNTDOWN;
+
       const interval = setInterval(() => {
-        this.server.to(`RACE_${raceId}`).emit("GameStateUpdate", {
+        this.server.to(Game.Room(raceId)).emit("GameStateUpdate", {
           raceState: {
-            participants: this.serializeParticipants(race.participants),
-            status: "countdown",
+            participants: this.getRaceParticipants(race),
+            status: race.status,
             id: raceId,
             countdown,
           },
         });
 
-        // console.log(`Race: ${raceId} Countdown: ${countdown}`)
         countdown--;
 
         if (countdown === 0) {
-          this.server.to(`RACE_${raceId}`).emit("GameStateUpdate", {
+          this.server.to(Game.Room(raceId)).emit("GameStateUpdate", {
             raceState: {
-              participants: this.serializeParticipants(race.participants),
-              status: "countdown",
+              participants: this.getRaceParticipants(race),
+              status: race.status,
               id: raceId,
               countdown,
             },
@@ -286,9 +350,7 @@ export class Game {
     this.activeCountdowns.set(raceId, countdownPromise);
   }
 
-  private handleParticipantPositionPayload(
-    payload: PositionUpdateEvent,
-  ) {
+  private handleParticipantPositionPayload(payload: PositionUpdatePayload) {
     const race = this.races.get(payload.raceId);
 
     if (!race) {
@@ -296,53 +358,48 @@ export class Game {
         "Trying to update a participant position on a race that doesn't exist.",
         {
           raceId: payload.raceId,
-          participant: payload.participantId,
+          participant: payload.raceParticipantId,
           time: new Date(),
-        },
+        }
       );
       return;
     }
 
-    const parsedPayload = positionUpdateEvent.parse(payload);
+    const participant = this.participants.get(payload.socketId);
 
-    const participant = race.participants.get(parsedPayload.socketId);
-
-    //TODO: Log a warning or handle exception
     if (!participant) {
       console.warn("Trying to update a participant that doesn't exist.", {
-        raceId: parsedPayload.raceId,
-        participant: parsedPayload.participantId,
+        raceId: payload.raceId,
+        participant: payload.raceParticipantId,
         time: new Date(),
       });
       return;
     }
 
-    participant.position = parsedPayload.position;
+    participant.position = payload.position;
 
     if (participant.position >= Game.GAME_MAX_POSITION) {
       if (participant.finishedAt) return;
       participant.finishedAt = new Date().getTime();
     }
 
-    const isRaceEnded = this.isRaceEnded(parsedPayload.raceId);
+    const isRaceEnded = this.isRaceEnded(race);
 
     if (isRaceEnded) {
-      this.endRace(parsedPayload.raceId);
+      void this.endRace(payload.raceId);
     }
   }
 
-  private isRaceEnded(raceId: string) {
-    const race = this.races.get(raceId);
-    if (!race) return true;
-
-    // checks if every participant has finished the race
+  // checks if every participant has finished the race
+  private isRaceEnded(race: Race) {
     let finishedParticipants = 0;
-    for (const participant of race.participants.values()) {
-      if (participant.position >= Game.GAME_MAX_POSITION) {
+    const participants = this.getRaceParticipants(race);
+    for (let i = 0; i < participants.length; i++) {
+      if (participants[i].finishedAt) {
         finishedParticipants++;
       }
     }
 
-    return finishedParticipants >= race.participants.size;
+    return finishedParticipants >= race.participants.length;
   }
 }
