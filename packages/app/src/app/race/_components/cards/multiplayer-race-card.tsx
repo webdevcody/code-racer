@@ -74,8 +74,8 @@ export default function MultiplayerRaceCard({ enabled }: { enabled: boolean }) {
                     buttonVariants({ variant: "ghost" }),
                     error && "border-red-500",
                   )}
-                  codeLanguage={selectedMultiplayerLanguage}
-                  setCodeLanguage={handleSetCodeLanguage}
+                  value={selectedMultiplayerLanguage}
+                  onChange={handleSetCodeLanguage}
                 />
                 <span className="text-red-500">{error}</span>
               </div>

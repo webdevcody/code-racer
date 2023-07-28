@@ -19,14 +19,14 @@ import {
 } from "@/components/ui/popover";
 import { snippetLanguages } from "@/config/languages";
 
-const LanguageDropDown = ({
-  codeLanguage,
-  setCodeLanguage,
+const LanguageDropdown = ({
   className,
+  value,
+  onChange,
 }: {
-  codeLanguage: string;
-  setCodeLanguage: (event: string) => void;
   className?: string;
+  value: string;
+  onChange: (props: React.SetStateAction<string>) => void;
 }) => {
   const [open, setOpen] = React.useState(false);
   const [search, setSearch] = React.useState("");
@@ -34,10 +34,9 @@ const LanguageDropDown = ({
   useEffect(() => {
     const savedCodeLanguage = window.localStorage.getItem("codeLanguage");
     if (savedCodeLanguage) {
-      setCodeLanguage(savedCodeLanguage);
+      onChange(savedCodeLanguage);
     }
   }, []);
-
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -48,10 +47,9 @@ const LanguageDropDown = ({
           className={cn("justify-between w-full px-4 py-3", className)}
           data-cy="language-dropdown"
         >
-          {codeLanguage
-            ? snippetLanguages.find(
-                (language) => language.value === codeLanguage,
-              )?.label
+          {value
+            ? snippetLanguages.find((language) => language.value === value)
+                ?.label
             : "Select language..."}
           <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
         </Button>
@@ -76,8 +74,8 @@ const LanguageDropDown = ({
                   value={language.value}
                   onSelect={(currentValue) => {
                     const newCodeLanguage =
-                      currentValue === codeLanguage ? "" : currentValue;
-                    setCodeLanguage(newCodeLanguage);
+                      currentValue === value ? "" : currentValue;
+                    onChange(newCodeLanguage);
                     window.localStorage.setItem(
                       "codeLanguage",
                       newCodeLanguage,
@@ -89,9 +87,7 @@ const LanguageDropDown = ({
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      codeLanguage === language.value
-                        ? "opacity-100"
-                        : "opacity-0",
+                      value === language.value ? "opacity-100" : "opacity-0",
                     )}
                   />
                   {language.label}
@@ -104,4 +100,6 @@ const LanguageDropDown = ({
   );
 };
 
-export default LanguageDropDown;
+LanguageDropdown.displayName = "LanguageDropdown";
+
+export default LanguageDropdown;
