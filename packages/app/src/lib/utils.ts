@@ -57,6 +57,6 @@ export function camelCaseToCapitalized(str: string) {
   }
 
   // Insert space before each capital letter using a regular expression
-  const capitalizedStr = str.replace(/([A-Z])/g, ' $1');
+  const capitalizedStr = str.replace(/([A-Z])/g, " $1");
   return capitalizedStr.charAt(0).toUpperCase() + capitalizedStr.slice(1);
 }
