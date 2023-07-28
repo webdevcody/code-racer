@@ -1,5 +1,5 @@
+import { Race, RaceParticipant } from "@code-racer/app/src/lib/prisma";
 import { UserRacePresencePayload } from "./common";
-import { Snippet } from "@code-racer/app/src/lib/prisma";
 
 type Timestamp = number;
 
@@ -18,9 +18,8 @@ export type GameStateUpdatePayload = {
 };
 
 export type UserRaceResponsePayload = {
-  snippet: Snippet;
-  raceId: string;
-  raceParticipantId: string;
+  race: Race
+  raceParticipantId: RaceParticipant["id"];
 };
 
 export interface ServerToClientEvents {

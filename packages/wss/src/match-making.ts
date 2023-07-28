@@ -4,7 +4,6 @@ import { siteConfig } from "@code-racer/app/src/config/site";
 import {
   type Prisma,
   prisma,
-  type Race,
   type User,
   Snippet,
 } from "@code-racer/app/src/lib/prisma";
@@ -21,19 +20,19 @@ import {
  * 3. all participants are guest user
  * 4. race's participants has not reached maxiumum capacity
  */
-export async function getAvailableRace(snippet: Snippet, userId?: User["id"]) {
+export async function getAvailableRace(language: Language, userId?: User["id"]) {
   let availableRace = await prisma.race.findMany({
     where: {
       snippet: {
-        language: snippet.language,
+        language,
       },
       AND: [{ startedAt: null }, { endedAt: null }],
       participants: {
         every: {
           user: userId
             ? {
-                isNot: null,
-              }
+              isNot: null,
+            }
             : null,
         },
       },
@@ -56,20 +55,24 @@ export async function getAvailableRace(snippet: Snippet, userId?: User["id"]) {
 
   // TODO: sort races based on participant stats most suitable to current user
   // for now we pick first one, if there isn't any create one instead
-  const race =
-    availableRace.length > 0
-      ? availableRace[0]
-      : await prisma.race.create({
-          data: {
-            snippet: {
-              connect: {
-                id: snippet.id,
-              },
-            },
-          },
-        });
+  if (!availableRace[0]) {
+    const randomSnippet = await getRandomSnippet({ language });
+    return await createRace(randomSnippet)
+  }
 
-  return race;
+  return availableRace[0];
+}
+
+async function createRace(snippet: Snippet) {
+  return await prisma.race.create({
+    data: {
+      snippet: {
+        connect: {
+          id: snippet.id,
+        },
+      },
+    },
+  });
 }
 
 export async function createRaceParticipant(
@@ -80,10 +83,10 @@ export async function createRaceParticipant(
     data: {
       user: userId
         ? {
-            connect: {
-              id: userId,
-            },
-          }
+          connect: {
+            id: userId,
+          },
+        }
         : undefined,
       Race: {
         connect: {
@@ -97,13 +100,11 @@ export async function createRaceParticipant(
 export async function raceMatchMaking(
   language: Language,
   userId?: User["id"],
-): Promise<{ race: Race; snippet: Snippet; raceParticipantId: string }> {
-  const snippet = await getRandomSnippet({ language });
-  const race = await getAvailableRace(snippet, userId);
+) {
+  const race = await getAvailableRace(language, userId);
   const raceParticipant = await createRaceParticipant(race, userId);
   return {
     race,
-    snippet,
     raceParticipantId: raceParticipant.id,
   };
 }

@@ -57,7 +57,7 @@ export class Game {
   private initialize() {
     this.server.on("connection", (socket) => {
       socket.on("UserRaceRequest", async (payload) => {
-        const { race, raceParticipantId, snippet } = await raceMatchMaking(
+        const { race, raceParticipantId } = await raceMatchMaking(
           payload.language as Language,
           payload.userId
         );
@@ -71,9 +71,8 @@ export class Game {
         });
 
         socket.emit("UserRaceResponse", {
+          race,
           raceParticipantId,
-          raceId: race.id,
-          snippet,
         });
       });
 
@@ -243,7 +242,7 @@ export class Game {
               startedAt: new Date(),
             },
           })
-          .then(() => {});
+          .then(() => { });
       }
 
       this.server.to(Game.Room(raceId)).emit("GameStateUpdate", {
