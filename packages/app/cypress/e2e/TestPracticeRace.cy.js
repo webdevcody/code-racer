@@ -10,6 +10,8 @@ beforeEach(() => {
   cy.visit("/");
 });
 
+const TIME_TO_WAIT = 1000;
+
 it("can successfully completed a practice race", () => {
   const LANGUAGE_SNIPPET = "html";
   const NEW_LINE = "⏎\n";
@@ -62,6 +64,7 @@ it("can successfully completed a practice race", () => {
         waitForAnimations: true,
       });
     });
+  cy.wait(TIME_TO_WAIT)
 
   cy.url().should("include", "/result");
 });
