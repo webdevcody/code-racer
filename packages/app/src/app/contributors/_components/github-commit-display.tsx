@@ -14,12 +14,17 @@ export default async function GitHubCommitDisplay({
 }: GitHubCommitProps) {
   const commitList = await getContributorCommitList(contributor, displayLast);
   return (
-    <>
+    <span data-cy="github-commit-display">
       <p className="p-2 font-bold texxt-center">Last {displayLast} commits</p>
       <ol className="flex-col items-stretch justify-start w-full gap-2">
         {commitList.length > 0 &&
           commitList.map((c, index) => (
-            <a key={index} href={c.html_url} target="_blank">
+            <a
+              key={index}
+              href={c.html_url}
+              target="_blank"
+              data-cy="github-commit-link"
+            >
               <li className="p-2 rounded-lg cursor-pointer hover:bg-secondary">
                 <p className="text-md">
                   {c.commit.message.slice(0, MAX_MESSAGE_SIZE)}...
@@ -31,6 +36,6 @@ export default async function GitHubCommitDisplay({
           <p className="p-2 font-bold texxt-center">No Commits History</p>
         )}
       </ol>
-    </>
+    </span>
   );
 }

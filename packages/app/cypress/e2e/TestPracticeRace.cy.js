@@ -1,24 +1,31 @@
+import { siteConfig } from "../../src/config/site";
+
+const headerLinks = siteConfig.getHeaderLinks();
+
+const TIMEOUT = 10000;
+Cypress.config("defaultCommandTimeout", TIMEOUT);
+
 beforeEach(() => {
   // Go to Home Page
-  cy.visit("http://localhost:3000/");
+  cy.visit("/");
 });
 
 it("can successfully completed a practice race", () => {
-  const TIMEOUT = 10000;
-  const LANGUAGE_SNIPPET = "c#";
+  const LANGUAGE_SNIPPET = "html";
   const NEW_LINE = "⏎\n";
 
   // Find Race Navigation and click on it
-  cy.get("nav").contains("Race", { matchCase: false }).click();
-
-  // Find language selection and enter typescript
   cy.get(
-    '[data-cy="practice-card"] [data-cy="language-dropdown"]',
-  ).scrollIntoView();
-  cy.get('[data-cy="practice-card"] [data-cy="language-dropdown"]').click();
-  cy.get("input").type(LANGUAGE_SNIPPET);
+    `[data-cy="${
+      headerLinks.find((e) => e.title.includes("Race"))?.title ?? "Race"
+    }-main-nav-link"]`,
+  ).click();
 
-  // Find typescript selection and click on it
+  // Find language selection and type snippet language
+  cy.get('[data-cy="practice-card"] [data-cy="language-dropdown"]').click();
+  cy.get('[data-cy="search-language-input"]').type(LANGUAGE_SNIPPET);
+
+  // Find target language selection and click on it
   cy.contains(LANGUAGE_SNIPPET, { matchCase: false }).click();
 
   // Find practice button to start practice race
@@ -33,6 +40,8 @@ it("can successfully completed a practice race", () => {
       for (let i = 0; i < spans.length; i++) {
         const char = spans[i].innerText;
         if (char !== " " && isIndentWhiteSpace) {
+          // Encounter non-whitespace character when isIndentWhiteSpace=true
+          // Unset isIndentWhiteSpace back to false
           isIndentWhiteSpace = false;
         }
         if (char === " " && isIndentWhiteSpace) {
@@ -40,17 +49,19 @@ it("can successfully completed a practice race", () => {
         }
         code += char === NEW_LINE ? "\n" : char;
         if (char === NEW_LINE) {
+          // When we encounter new line, the following whitespace up to
+          // encounting non-whitespace character will be considered indent whitespace.
+          // Since our app auto indent, we don't type it
           isIndentWhiteSpace = true;
         }
       }
-      cy.get("input", { timeout: TIMEOUT }).type(code, {
+      cy.get('[data-cy="race-practice-input"]').type(code, {
         force: true,
-        timeout: TIMEOUT,
         parseSpecialCharSequences: false,
         delay: 30,
         waitForAnimations: true,
       });
     });
 
-  cy.url().should("include", "http://localhost:3000/result");
+  cy.url().should("include", "/result");
 });
