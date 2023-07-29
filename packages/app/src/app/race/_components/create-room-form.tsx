@@ -1,12 +1,9 @@
 import * as React from "react";
-import { nanoid } from "nanoid";
+import { v4 as uuidv4 } from "uuid";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
 
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
@@ -18,21 +15,34 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { createRoomSchema } from "@/lib/validations/room";
+import LanguageDropDown from "@/app/add-snippet/_components/language-dropdown";
+import { snippetLanguages } from "@/config/languages";
+import LanguageDropdown from "@/app/add-snippet/_components/language-dropdown";
+import CopyButton from "@/components/ui/copy-button";
+import { Icons } from "@/components/icons";
 // import CopyButton from '@/components/CopyButton'
-
-const getDefaultLanguage = () => {
-  return "Typescript";
-};
 
 type CreateRoomForm = z.infer<typeof createRoomSchema>;
 
-export const CreateRoomForm = ({ roomId }: { roomId: string }) => {
+export const CreateRoomForm = () => {
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  const roomId = uuidv4();
+
   const form = useForm<CreateRoomForm>({
     resolver: zodResolver(createRoomSchema),
     defaultValues: {
-      language: getDefaultLanguage(),
+      language: localStorage.getItem("codeLanguage") ?? "",
     },
   });
 
@@ -54,14 +64,14 @@ export const CreateRoomForm = ({ roomId }: { roomId: string }) => {
             <FormItem>
               <FormLabel className="text-foreground">Language</FormLabel>
               <FormControl>
-                <Input placeholder="johndoe" {...field} />
+                <LanguageDropdown {...field} />
               </FormControl>
               <FormMessage className="text-xs" />
             </FormItem>
           )}
         />
 
-        {/* <div>
+        <div>
           <p className="mb-2 text-sm font-medium">Room ID</p>
 
           <div className="flex h-10 w-full items-center justify-between rounded-md border bg-background px-3 py-2 text-sm text-muted-foreground">
@@ -72,11 +82,11 @@ export const CreateRoomForm = ({ roomId }: { roomId: string }) => {
 
         <Button type="submit" className="mt-2 w-full">
           {isLoading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
+            <Icons.spinner className="h-4 w-4 animate-spin" />
           ) : (
             "Create a Room"
           )}
-        </Button> */}
+        </Button>
       </form>
     </Form>
   );
