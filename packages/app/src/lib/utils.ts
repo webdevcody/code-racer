@@ -60,3 +60,9 @@ export function camelCaseToCapitalized(str: string) {
   const capitalizedStr = str.replace(/([A-Z])/g, " $1");
   return capitalizedStr.charAt(0).toUpperCase() + capitalizedStr.slice(1);
 }
+
+export function isValidUUID(value: string) {
+  const uuidv4Regex =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return uuidv4Regex.test(value);
+}
