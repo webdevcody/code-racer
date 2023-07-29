@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import Header from "@/components/header";
 
 interface PaginationBarProps {
   nextURL: string;
