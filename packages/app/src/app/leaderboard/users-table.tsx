@@ -111,6 +111,24 @@ export function UsersTable({
         },
         header: "Races played",
       },
+      {
+        accessorFn: (user) => {
+          return user.topLanguages;
+        },
+        header: "Top languages",
+        cell: ({ cell }) => {
+          const topLanguages = cell.getValue() as String[];
+          return (
+            <div>
+              {topLanguages.length > 0 ? (
+                <span className="capitalize">{topLanguages.join(", ")}</span>
+              ) : (
+                <span className="capitalize">N/A</span>
+              )}
+            </div>
+          );
+        },
+      },
     ],
     [],
   );

@@ -21,6 +21,34 @@ export const saveUserResultAction = safeAction(
 
   if (!user) throw new UnauthorizedError();
 
+  const userData = await prisma.user.findUnique({
+    where: { id: user.id },
+    include: { results: true },
+  });
+
+  if (!userData) throw new Error("User not found");
+
+  let languagesMap: object = {};
+
+  if (userData.languagesMap) {
+    languagesMap = JSON.parse(userData.languagesMap);
+  }
+
+  const snippetLanguage = await prisma.snippet.findUnique({
+    select: { language: true },
+    where: { id: input.snippetId },
+  });
+
+  if (snippetLanguage.language in languagesMap) {
+    languagesMap[snippetLanguage.language] += 1;
+  } else {
+    languagesMap[snippetLanguage.language] = 1;
+  }
+
+  let topLanguages = Object.keys(languagesMap)
+    .sort((a, b) => languagesMap[b] - languagesMap[a])
+    .splice(0, 3);
+
   return await prisma.$transaction(async (tx) => {
     const result = await tx.result.create({
       data: {
@@ -55,6 +83,8 @@ export const saveUserResultAction = safeAction(
       data: {
         averageAccuracy: avgValues._avg.accuracy ?? 0,
         averageCpm: avgValues._avg.cpm ?? 0,
+        languagesMap: JSON.stringify(languagesMap),
+        topLanguages: topLanguages,
       },
     });
 
