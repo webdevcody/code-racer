@@ -100,6 +100,8 @@ export default async function ContributorsPage({
               page - 1,
               1,
             )}&per_page=${per_page}`}
+            pages={page}
+            totalPages={totalPage}
           />
         </div>
       </div>
@@ -129,6 +131,8 @@ export default async function ContributorsPage({
           page - 1,
           1,
         )}&per_page=${per_page}`}
+        pages={page}
+        totalPages={totalPage}
       />
     </div>
   );
