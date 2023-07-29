@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CreateRoomForm } from "../../_components/create-room-form";
+import { JoinRoomForm } from "../../_components/join-room-form";
 import { NoHistoryButton } from "@/components/no-history-button";
 
 export default function JoinRoomModal() {
@@ -27,8 +27,8 @@ export default function JoinRoomModal() {
             </CardHeader>
 
             <CardContent className="flex flex-col space-y-4">
-              <CreateRoomForm />
-              <NoHistoryButton path="/race/create">Create Room</NoHistoryButton>
+              <JoinRoomForm />
+              <NoHistoryButton variant={"ghost"} path="/race/create">Create Room</NoHistoryButton>
             </CardContent>
           </Card>
         </div>

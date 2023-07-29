@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 import { v4 as uuidv4 } from "uuid";
 
@@ -84,7 +86,7 @@ export const CreateRoomForm = () => {
           {isLoading ? (
             <Icons.spinner className="h-4 w-4 animate-spin" />
           ) : (
-            "Create a Room"
+            "Create a room"
           )}
         </Button>
       </form>

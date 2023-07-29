@@ -29,7 +29,9 @@ export default function CreateRoomModal() {
             <CardContent className="flex flex-col space-y-4">
               <CreateRoomForm />
 
-              <NoHistoryButton path="/race/join"> Join Room</NoHistoryButton>
+              <NoHistoryButton variant={"ghost"} path="/race/join">
+                Join a Room
+              </NoHistoryButton>
             </CardContent>
           </Card>
         </div>
