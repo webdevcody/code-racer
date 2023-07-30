@@ -26,7 +26,7 @@ export default function PaginationBar({
     <div className={cn("flex flex-col", "gap-2", "items-center", className)} >
       <div className={cn("flex flex-row", "gap-2", className)}>
         {pages === 1 ? (
-          <div className="p-8">
+          <div className={cn("flex", "gap-2")}>
             <Button variant="outline" size="icon" className="w-8 h-8" disabled>
               <Icons.chevronsLeft className="w-5 h-5" aria-hidden="true" />
               <span className="sr-only">Previous page</span>
@@ -37,7 +37,7 @@ export default function PaginationBar({
             </Button>
           </div>
         ) : (
-          <div className="p-8">
+          <div className={cn("flex", "gap-2")}>
             <Link href={firstURL}>
               <Button variant="outline" size="icon" className="w-8 h-8" disabled={false}>
                 <Icons.chevronsLeft className="w-5 h-5" aria-hidden="true" />
@@ -54,7 +54,7 @@ export default function PaginationBar({
         )}
 
         {pages === totalPages ? (
-          <div className="p-8">
+          <div className={cn("flex", "gap-2")}>
             <Button variant="outline" size="icon" className="w-8 h-8" disabled>
               <Icons.chevronRight className="w-5 h-5" aria-hidden="true" />
               <span className="sr-only">Next page</span>
@@ -65,20 +65,20 @@ export default function PaginationBar({
             </Button>
           </div>
         ) : (
-          <div className="p-8">
-          <Link href={nextURL}>
-            <Button variant="outline" size="icon" className="w-8 h-8">
-              <Icons.chevronRight className="w-5 h-5" aria-hidden="true" />
-              <span className="sr-only">Next page</span>
-            </Button>
-          </Link>
-          <Link href={lastURL}>
-            <Button variant="outline" size="icon" className="w-8 h-8">
-              <Icons.chevronsRight className="w-5 h-5" aria-hidden="true" />
-              <span className="sr-only">Last page</span>
-            </Button>
-          </Link>
-        </div>
+          <div className={cn("flex", "gap-2")}>
+            <Link href={nextURL}>
+              <Button variant="outline" size="icon" className="w-8 h-8">
+                <Icons.chevronRight className="w-5 h-5" aria-hidden="true" />
+                <span className="sr-only">Next page</span>
+              </Button>
+            </Link>
+            <Link href={lastURL}>
+              <Button variant="outline" size="icon" className="w-8 h-8">
+                <Icons.chevronsRight className="w-5 h-5" aria-hidden="true" />
+                <span className="sr-only">Last page</span>
+              </Button>
+            </Link>
+          </div>
         )}
         
       </div>
