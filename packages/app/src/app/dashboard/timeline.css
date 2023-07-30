@@ -60,10 +60,8 @@
 /* Float the items alternately */
 .timeline-item:nth-child(even) {
     margin-left: 50%;
-    transform: translateX(-25%);
 }
 
 .timeline-item:nth-child(odd) {
     margin-right: 50%;
-    transform: translateX(25%);
 }
