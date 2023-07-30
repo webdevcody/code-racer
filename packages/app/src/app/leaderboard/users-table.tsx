@@ -43,7 +43,7 @@ export function UsersTable({
         header: "Place", // Header title for the new column
         cell: ({ cell }) => {
           const racerPlace = cell.getValue() as number;
-          return <span>{racerPlace}</span>;
+          return <span className="ml-2">{racerPlace}</span>;
         },
       },
       {
