@@ -31,22 +31,16 @@ import type { ServerToClientEvents } from "@code-racer/wss/src/events/server-to-
 import { type RaceStatus, raceStatus } from "@code-racer/wss/src/types";
 import type { Snippet } from "@prisma/client";
 import type { User } from "next-auth";
-import type { Socket } from "socket.io-client";
 import { RaceTimeStampProps, ReplayTimeStampProps } from "./types";
 import RaceTrackerMultiplayer from "./race-tracker-mutliplayer";
 import { getSnippetById } from "../../(play)/loaders";
 import { useToast } from "@/components/ui/use-toast";
+import { socket } from "@/lib/socket";
 
 type Participant = Omit<
   GameStateUpdatePayload["raceState"]["participants"][number],
   "socketId"
 >;
-
-let socket: Socket<ServerToClientEvents, ClientToServerEvents>;
-
-async function getSocketConnection() {
-  socket = io(process.env.NEXT_PUBLIC_WSS_URL!); // KEEP AS IS
-}
 
 export default function RaceMultiplayer({
   user,
@@ -57,7 +51,7 @@ export default function RaceMultiplayer({
   practiceSnippet?: Snippet;
   language: Language;
 }) {
-  const { toast } = useToast()
+  const { toast } = useToast();
   const [input, setInput] = useState("");
   const [textIndicatorPosition, setTextIndicatorPosition] = useState(0);
   const [currentLineNumber, setCurrentLineNumber] = useState(0);
@@ -91,11 +85,13 @@ export default function RaceMultiplayer({
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [raceStartCountdown, setRaceStartCountdown] = useState(0);
   const [raceId, setRaceId] = useState<string | null>(null);
-  const [participantId, setParticipantId] = useState<string | undefined>(undefined);
+  const [participantId, setParticipantId] = useState<string | undefined>(
+    undefined,
+  );
   const position = code
     ? parseFloat(
-      (((input.length - errors.length) / code.length) * 100).toFixed(2),
-    )
+        (((input.length - errors.length) / code.length) * 100).toFixed(2),
+      )
     : null;
   const isRaceFinished = practiceSnippet
     ? input === code
@@ -105,14 +101,14 @@ export default function RaceMultiplayer({
   function startRaceEventHandlers() {
     socket.on("UserRaceResponse", async (payload) => {
       const { race, raceParticipantId } = payload;
-      const snippet = await getSnippetById(race.snippetId)
+      const snippet = await getSnippetById(race.snippetId);
       if (!snippet) {
         toast({
           title: "Error",
           description: "Snippet not found",
-        })
+        });
         return;
-      };
+      }
 
       setSnippet(snippet);
       setRaceId(race.id);
@@ -154,15 +150,14 @@ export default function RaceMultiplayer({
   // Connection to wss
   useEffect(() => {
     if (practiceSnippet) return;
-    getSocketConnection().then(() => {
-      socket.on("connect", () => {
-        startRaceEventHandlers();
-        socket.emit("UserRaceRequest", {
-          language,
-          userId: user?.id,
-        });
+    socket.on("connect", () => {
+      startRaceEventHandlers();
+      socket.emit("UserRaceRequest", {
+        language,
+        userId: user?.id,
       });
     });
+
     return () => {
       socket.disconnect();
       socket.off("connect");
@@ -479,15 +474,15 @@ export default function RaceMultiplayer({
         )}
         {currentRaceStatus === raceStatus.RUNNING && (
           <>
-            {raceId && code ? (
-              participants.map((p) => (
-                <RaceTrackerMultiplayer
-                  key={p.id}
-                  position={p.position}
-                  participantId={p.id}
-                />
-              ))
-            ) : null}
+            {raceId && code
+              ? participants.map((p) => (
+                  <RaceTrackerMultiplayer
+                    key={p.id}
+                    position={p.position}
+                    participantId={p.id}
+                  />
+                ))
+              : null}
             <div className="flex justify-between mb-2 md:mb-4">
               <Heading
                 title="Type this code"

@@ -19,11 +19,12 @@ import {
 import { joinRoomSchema } from "@/lib/validations/room";
 import { Icons } from "@/components/icons";
 import { Input } from "@/components/ui/input";
+import type { User } from "next-auth";
 // import CopyButton from '@/components/CopyButton'
 
 type JoinRoomForm = z.infer<typeof joinRoomSchema>;
 
-export const JoinRoomForm = () => {
+export const JoinRoomForm = ({user}: {user: User}) => {
   const [isLoading, setIsLoading] = React.useState(false);
 
   const form = useForm<JoinRoomForm>({

@@ -7,10 +7,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { JoinRoomForm } from "../../_components/join-room-form";
+import { JoinRoomForm } from "@/app/race/_components/join-room-form";
 import { NoHistoryButton } from "@/components/no-history-button";
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/session";
 
-export default function JoinRoomModal() {
+export default async function JoinRoomModal() {
+  const user = await getCurrentUser()
+
+  if (!user) redirect("/auth");
+
   return (
     <div className="fixed inset-0 z-10">
       <div className="container flex items-center h-full max-w-lg mx-auto relative">
@@ -27,7 +33,7 @@ export default function JoinRoomModal() {
             </CardHeader>
 
             <CardContent className="flex flex-col space-y-4">
-              <JoinRoomForm />
+              <JoinRoomForm user={user}/>
               <NoHistoryButton variant={"ghost"} path="/race/create">Create Room</NoHistoryButton>
             </CardContent>
           </Card>

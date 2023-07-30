@@ -7,7 +7,6 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -17,29 +16,24 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { createRoomSchema } from "@/lib/validations/room";
-import LanguageDropDown from "@/app/add-snippet/_components/language-dropdown";
-import { snippetLanguages } from "@/config/languages";
 import LanguageDropdown from "@/app/add-snippet/_components/language-dropdown";
 import CopyButton from "@/components/ui/copy-button";
 import { Icons } from "@/components/icons";
+import type { User } from "next-auth";
+import { socket } from "@/lib/socket";
+import { useRouter } from "next/navigation";
+
 // import CopyButton from '@/components/CopyButton'
 
 type CreateRoomForm = z.infer<typeof createRoomSchema>;
 
-export const CreateRoomForm = () => {
+export const CreateRoomForm = ({ user }: { user: User }) => {
   const [isLoading, setIsLoading] = React.useState(false);
 
   const roomId = uuidv4();
+
+  const router = useRouter();
 
   const form = useForm<CreateRoomForm>({
     resolver: zodResolver(createRoomSchema),
@@ -49,9 +43,21 @@ export const CreateRoomForm = () => {
   });
 
   function onSubmit({ language }: CreateRoomForm) {
-    // setIsLoading(true);
-    // socket.emit("create-room", { roomId, username });
+    setIsLoading(true);
+    socket.emit("UserCreateRoom", {
+      roomId,
+      // TODO: make typescript happy
+      language: language as any,
+      userId: user.id,
+    });
   }
+
+  React.useEffect(() => {
+    socket.on("RoomJoined", (payload) => {
+      console.log(payload);
+      router.push(`/race/${payload.roomId}`);
+    });
+  });
 
   return (
     <Form {...form}>

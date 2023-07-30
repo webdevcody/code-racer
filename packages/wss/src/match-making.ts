@@ -20,7 +20,10 @@ import {
  * 3. all participants are guest user
  * 4. race's participants has not reached maxiumum capacity
  */
-export async function getAvailableRace(language: Language, userId?: User["id"]) {
+export async function getAvailableRace(
+  language: Language,
+  userId?: User["id"],
+) {
   let availableRace = await prisma.race.findMany({
     where: {
       snippet: {
@@ -31,8 +34,8 @@ export async function getAvailableRace(language: Language, userId?: User["id"]) 
         every: {
           user: userId
             ? {
-              isNot: null,
-            }
+                isNot: null,
+              }
             : null,
         },
       },
@@ -57,21 +60,30 @@ export async function getAvailableRace(language: Language, userId?: User["id"]) 
   // for now we pick first one, if there isn't any create one instead
   if (!availableRace[0]) {
     const randomSnippet = await getRandomSnippet({ language });
-    return await createRace(randomSnippet)
+    return await createRace(randomSnippet);
   }
 
   return availableRace[0];
 }
 
-async function createRace(snippet: Snippet) {
-  return await prisma.race.create({
-    data: {
-      snippet: {
-        connect: {
-          id: snippet.id,
-        },
+export async function createRace(snippet: Snippet, id?: string) {
+  let data = {
+    snippet: {
+      connect: {
+        id: snippet.id,
       },
     },
+  };
+
+  if (id) {
+    data = {
+      ...data,
+      id,
+    } as any;
+  }
+
+  return await prisma.race.create({
+    data,
   });
 }
 
@@ -83,10 +95,10 @@ export async function createRaceParticipant(
     data: {
       user: userId
         ? {
-          connect: {
-            id: userId,
-          },
-        }
+            connect: {
+              id: userId,
+            },
+          }
         : undefined,
       Race: {
         connect: {
@@ -97,10 +109,7 @@ export async function createRaceParticipant(
   });
 }
 
-export async function raceMatchMaking(
-  language: Language,
-  userId?: User["id"],
-) {
+export async function raceMatchMaking(language: Language, userId?: User["id"]) {
   const race = await getAvailableRace(language, userId);
   const raceParticipant = await createRaceParticipant(race, userId);
   return {
