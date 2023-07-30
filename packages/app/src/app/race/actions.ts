@@ -26,27 +26,28 @@ export const saveUserResultAction = safeAction(
     include: { results: true },
   });
 
-  if (!userData) throw new Error("User not found");
+  if (userData == null) throw new Error("User not found");
 
-  let languagesMap = userData.languagesMap;
+  let languagesMap: { [key: string]: number};
 
-  if (!languagesMap) {
+  if (userData.languagesMap == null) {
     languagesMap = {};
-    let results = userData.results;
+    const results = userData.results;
     results.forEach(async (result) => {
-      let raceSnippet = await prisma.snippet.findUnique({
+      const raceSnippet = await prisma.snippet.findUnique({
         select: { language: true },
         where: { id: result.snippetId },
       });
 
-      if (raceSnippet.language in languagesMap) {
-        languagesMap[raceSnippet.language] += 1;
+      if (Object.keys(languagesMap).includes(raceSnippet!.language)) {
+        languagesMap[raceSnippet!.language] += 1;
       } else {
-        languagesMap[raceSnippet.language] = 1;
+        languagesMap[raceSnippet!.language] = 1;
       }
+
     });
   } else {
-    languagesMap = JSON.parse(userData.languagesMap);
+      languagesMap = JSON.parse(userData.languagesMap as string);
   }
 
   const snippetData = await prisma.snippet.findUnique({
@@ -54,13 +55,13 @@ export const saveUserResultAction = safeAction(
     where: { id: input.snippetId },
   });
 
-  if (snippetData.language in languagesMap) {
-    languagesMap[snippetData.language] += 1;
+  if (Object.keys(languagesMap).includes(snippetData!.language!)) {
+    languagesMap[snippetData!.language!] += 1;
   } else {
-    languagesMap[snippetData.language] = 1;
+    languagesMap[snippetData!.language!] = 1;
   }
 
-  let topLanguages = Object.keys(languagesMap)
+  const topLanguages = Object.keys(languagesMap)
     .sort((a, b) => languagesMap[b] - languagesMap[a])
     .splice(0, 3);
 

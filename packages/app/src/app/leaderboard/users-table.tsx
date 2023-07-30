@@ -117,7 +117,7 @@ export function UsersTable({
         },
         header: "Top languages",
         cell: ({ cell }) => {
-          const topLanguages = cell.getValue() as String[];
+          const topLanguages = cell.getValue() as string[];
           return (
             <div>
               {topLanguages.length > 0 ? (
