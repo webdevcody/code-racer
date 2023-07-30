@@ -123,7 +123,7 @@ export function UsersTable({
               {topLanguages.length > 0 ? (
                 <span className="capitalize">{topLanguages.join(", ")}</span>
               ) : (
-                <span className="capitalize">N/A</span>
+                <span className="capitalize text-gray-400">---</span>
               )}
             </div>
           );
