@@ -15,7 +15,7 @@ export default function Code({
   return (
     <>
       <pre
-        className="text-monochrome mb-4 overflow-auto font-medium px-2 w-full"
+        className="text-monochrome mb-4 overflow-auto font-medium px-2 w-full whitespace-break-spaces"
         data-cy="code-snippet-preformatted"
       >
         {code.split("").map((char, index) => (
