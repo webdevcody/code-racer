@@ -8,7 +8,7 @@ import * as React from "react";
 const ModalCatchAllFix = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
 
-  if (!pathname.includes("/create" || "join")) {
+  if (!(pathname.includes("/create") || pathname.includes("/join"))) {
     return null;
   }
 

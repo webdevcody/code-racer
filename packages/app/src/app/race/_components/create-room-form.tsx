@@ -53,8 +53,7 @@ export const CreateRoomForm = ({ user }: { user: User }) => {
   }
 
   React.useEffect(() => {
-    socket.on("RoomJoined", (payload) => {
-      console.log(payload);
+    socket.on("RoomCreated", (payload) => {
       router.push(`/race/${payload.roomId}`);
     });
   });

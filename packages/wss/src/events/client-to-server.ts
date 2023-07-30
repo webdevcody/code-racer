@@ -3,6 +3,7 @@ import {
   snippetLanguages,
 } from "@code-racer/app/src/config/languages";
 import { UserRacePresencePayload } from "./common";
+import { Socket } from "socket.io";
 
 export type PositionUpdatePayload = UserRacePresencePayload & {
   raceId: string;
@@ -31,4 +32,6 @@ export interface ClientToServerEvents {
   UserRaceRequest: (payload: UserRaceRequestPayload) => void;
   UserCreateRoom: (payload: UserCreateRoomPayload) => void;
   UserRoomRaceRequest: (payload: UserRoomRaceRequestPayload) => void;
+  UserJoinRoom: (payload: { raceId: string; userId: string }) => void;
+  UserLeaveRoom: (payload: { raceId: string; userId: string }) => void;
 }

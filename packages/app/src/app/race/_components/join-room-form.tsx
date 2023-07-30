@@ -20,20 +20,24 @@ import { joinRoomSchema } from "@/lib/validations/room";
 import { Icons } from "@/components/icons";
 import { Input } from "@/components/ui/input";
 import type { User } from "next-auth";
+import { socket } from "@/lib/socket";
+import { useRouter } from "next/navigation";
 // import CopyButton from '@/components/CopyButton'
 
 type JoinRoomForm = z.infer<typeof joinRoomSchema>;
 
-export const JoinRoomForm = ({user}: {user: User}) => {
+export const JoinRoomForm = ({ user }: { user: User }) => {
   const [isLoading, setIsLoading] = React.useState(false);
+
+  const router = useRouter();
 
   const form = useForm<JoinRoomForm>({
     resolver: zodResolver(joinRoomSchema),
   });
 
   function onSubmit({ roomId }: JoinRoomForm) {
-    // setIsLoading(true);
-    // socket.emit("join-room", { roomId, username });
+    setIsLoading(true);
+    router.push(`/race/${roomId}`);
   }
 
   return (
@@ -49,7 +53,7 @@ export const JoinRoomForm = ({user}: {user: User}) => {
             <FormItem>
               <FormLabel className="text-foreground">Room id</FormLabel>
               <FormControl>
-                <Input {...field}/>
+                <Input {...field} />
               </FormControl>
               <FormMessage className="text-xs" />
             </FormItem>

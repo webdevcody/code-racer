@@ -13,11 +13,11 @@ import { createRace, getAvailableRace, raceMatchMaking } from "./match-making";
 import { RaceStatus, raceStatus } from "./types";
 import { getRandomSnippet } from "@code-racer/app/src/app/race/(play)/loaders";
 
-type SocketId = string;
+export type SocketId = string;
 type RaceId = string;
 type Timestamp = number;
 
-type Participant = {
+export type Participant = {
   id: RaceParticipant["id"];
   raceId: RaceId;
   position: number;
@@ -62,32 +62,69 @@ export class Game {
         // race id is associated with the room id
         const race = await createRace(snippet, payload.roomId);
 
-        const res = this.createRaceWithParticipant(race.id, {
-          id: payload.userId,
-          socketId: socket.id,
-        });
-
-        console.log(res);
-
-        this.joinRoom(race.id, {
-          socket: socket,
-          userId: payload.userId,
+        socket.emit("RoomCreated", {
+          roomId: race.id,
         });
       });
 
-      socket.on("UserRoomRaceRequest", async (payload) => {
-        const race = this.races.get(payload.raceId);
+      socket.on("UserJoinRoom", async (payload) => {
+        const { raceId: roomId, userId } = payload;
 
-        if (!race) {
-          return socket.emit("SendNotification", {
-            message: "Something went wrong",
-            title: "Try again later",
-          });
-        }
+        socket.join(roomId);
 
-        socket.emit("UserRoomRaceResponse", {
-          race,
+        const participant = await prisma.raceParticipant.upsert({
+          where: {
+            id: `${roomId}-${userId}`,
+          },
+          update: {
+            raceId: roomId,
+            userId,
+          },
+          create: {
+            id: `${roomId}-${userId}`,
+            raceId: roomId,
+            userId,
+          },
+          include: {
+            Race: {
+              include: {
+                participants: true,
+              },
+            },
+          },
         });
+
+        socket.emit("RoomJoined", {
+          race: participant.Race,
+          roomId,
+          participantId: participant.id,
+        });
+
+        console.log("here");
+
+        socket.to(roomId).emit("UpdateParticipants", {
+          participants: participant.Race.participants,
+        });
+      });
+
+      // socket.on("RaceStart", (payload) => {
+        
+      // })
+
+      socket.on("UserRoomRaceRequest", async (payload) => {
+        const race = this.races.get(payload.raceId) as Race;
+
+        console.log(this.races);
+        console.log(race);
+
+        // if (!race) {
+        //   return socket.emit("SendNotification", {
+        //     message: "Something went wrong",
+        //     title: "Try again later",
+        //   });
+        // }
+
+        socket.emit("UserRoomRaceResponse", { race });
       });
 
       socket.on("UserRaceRequest", async (payload) => {
@@ -110,6 +147,16 @@ export class Game {
         });
       });
 
+      socket.on("UserLeaveRoom", async (payload) => {
+        socket.leave(payload.raceId);
+
+        await prisma.raceParticipant.delete({
+          where: {
+            id: `${payload.raceId}-${payload.userId}`,
+          },
+        });
+      });
+
       socket.on("disconnect", () => {
         const participant = this.participants.get(socket.id);
 
@@ -129,40 +176,7 @@ export class Game {
     });
   }
 
-  private joinRoom(
-    roomId: string,
-    {
-      socket,
-      userId,
-    }: {
-      socket: Socket;
-      userId: string;
-    },
-  ) {
-    socket.join(roomId);
-
-    this.handlePlayerEnterRace({
-      raceId: roomId,
-      raceParticipantId: userId,
-      socketId: socket.id,
-    });
-
-    const race = this.races.get(roomId) as Race;
-
-    const participants = this.getRaceParticipants(race);
-
-    socket.emit("RoomJoined", { userId, roomId, participants });
-    socket.emit("UserRaceResponse", {
-      race,
-      raceParticipantId: userId,
-    });
-    // socket.to(roomId).emit("UpdateParticipants", { participants });
-    // socket.to(roomId).emit("SendNotification", {
-    //   title: "New member arrived!",
-    //   message: `${userId} joined the party`,
-    // });
-  }
-
+ 
   private getRaceParticipants(
     race: Race,
   ): (Participant & { socketId: string })[] {

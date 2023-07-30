@@ -1,5 +1,14 @@
-import { Prisma, Race, RaceParticipant } from "@code-racer/app/src/lib/prisma";
+import { Prisma, RaceParticipant } from "@code-racer/app/src/lib/prisma";
 import { UserRacePresencePayload } from "./common";
+import { SocketId } from "@/game";
+import { RaceStatus } from "@/types";
+
+type NewType = {
+  participants: SocketId[];
+  status: RaceStatus;
+};
+
+type Race = NewType;
 
 type Timestamp = number;
 
@@ -20,18 +29,22 @@ export type GameStateUpdatePayload = {
 };
 
 export type UserRaceResponsePayload = {
-  race: Race;
+  race: Prisma.RaceGetPayload<Record<string, never>>;
   raceParticipantId: RaceParticipant["id"];
 };
 
 export type RoomJoinedResponsePayload = {
-  userId: string;
+  race: Prisma.RaceGetPayload<{ include: { participants: true } }>;
   roomId: string;
-  participants: Participant[];
+  participantId: string;
 };
 
 export type UpdateParticipantsPayload = {
-  participants: Participant[];
+  participants: Prisma.RaceParticipantGetPayload<Record<string, never>>[];
+};
+
+export type UserRoomRaceResponsePayload = {
+  race: Race;
 };
 
 export interface ServerToClientEvents {
@@ -41,7 +54,8 @@ export interface ServerToClientEvents {
   UserRaceResponse: (payload: UserRaceResponsePayload) => void;
   UserEnterFullRace: () => void;
   RoomJoined: (payload: RoomJoinedResponsePayload) => void;
+  RoomCreated: (payload: { roomId: string }) => void;
   UpdateParticipants: (payload: UpdateParticipantsPayload) => void;
   SendNotification: (payload: { title: string; message: string }) => void;
-  UserRoomRaceResponse: (payload: { race: Race }) => void;
+  UserRoomRaceResponse: (payload: UserRoomRaceResponsePayload) => void;
 }
