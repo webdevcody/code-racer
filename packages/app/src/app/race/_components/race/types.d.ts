@@ -1,16 +1,12 @@
-export interface RaceTimeStampProps {
+export interface ReplayTimeStamp {
   char: string;
-  accuracy: number;
-  cpm: number;
+  textIndicatorPosition: number;
   time: number;
 }
 
-export interface ReplayTimeStampProps {
+export interface ChartTimeStamp {
   char: string;
-  textIndicatorPosition: number | number[];
-  currentLineNumber: number;
-  currentCharPosition: number;
-  errors: number[];
-  totalErrors: number;
+  accuracy: number;
+  cpm: number;
   time: number;
 }

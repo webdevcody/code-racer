@@ -15,60 +15,40 @@ import Code from "./code";
 import Footer from "./footer";
 
 // Types
-import { RaceTimeStampProps, ReplayTimeStampProps } from "./types";
 import type { Snippet } from "@prisma/client";
 import type { User } from "next-auth";
+import type { ChartTimeStamp } from "./types";
+import type { ReplayTimeStamp } from "./types";
 
-export default function RacePractice({
-  user,
-  snippet,
-}: {
+type RacePracticeProps = {
   user?: User;
   snippet: Snippet;
-}) {
+};
+
+export default function RacePractice({ user, snippet }: RacePracticeProps) {
   const [input, setInput] = useState("");
   const [textIndicatorPosition, setTextIndicatorPosition] = useState(0);
-  const [currentLineNumber, setCurrentLineNumber] = useState(0);
-
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [totalErrors, setTotalErrors] = useState(0);
-
-  const [raceTimeStamp, setRaceTimeStamp] = useState<RaceTimeStampProps[]>([]);
-  const [replayTimeStamp, setReplayTimeStamp] = useState<
-    ReplayTimeStampProps[]
-  >([]);
-
-  const code = snippet.code.trimEnd();
-  const currentText = code.substring(0, input.length);
-  const errors = input
-    .split("")
-    .map((char, index) => (char !== currentText[index] ? index : -1))
-    .filter((index) => index !== -1);
+  const [chartTimeStamp, setChartTimeStamp] = useState<ChartTimeStamp[]>([]);
+  const [replayTimeStamp, setReplayTimeStamp] = useState<ReplayTimeStamp[]>([]);
 
   const inputElement = useRef<HTMLInputElement | null>(null);
+  const code = snippet.code.trimEnd();
   const router = useRouter();
 
   useEffect(() => {
-    // Focus Input
     inputElement.current?.focus();
 
-    // Calculate the current line and cursor position in that line
-    const lines = input.split("\n");
-    setCurrentLineNumber(lines.length);
     setReplayTimeStamp((prev) => [
       ...prev,
       {
         char: input.slice(-1),
         textIndicatorPosition,
-        currentLineNumber,
-        currentCharPosition: input.length - 1,
-        errors,
-        totalErrors,
         time: Date.now(),
       },
     ]);
 
-    // End Race
     if (input === code) {
       endRace();
     }
@@ -82,7 +62,7 @@ export default function RacePractice({
     localStorage.setItem(
       "raceTimeStamp",
       JSON.stringify([
-        ...raceTimeStamp,
+        ...chartTimeStamp,
         {
           char: input.slice(-1),
           accuracy: calculateAccuracy(input.length, totalErrors),
@@ -99,10 +79,6 @@ export default function RacePractice({
         {
           char: input.slice(-1),
           textIndicatorPosition,
-          currentLineNumber,
-          currentCharPosition: input.length - 1,
-          errors,
-          totalErrors,
           time: Date.now(),
         },
       ]),
@@ -171,17 +147,25 @@ export default function RacePractice({
           break;
       }
     }
-    const lines = input.split("\n");
-    setCurrentLineNumber(lines.length);
+
+    if (e.key === code[input.length - 1] && e.key !== " ") {
+      const currTime = Date.now();
+      const timeTaken = startTime ? (currTime - startTime.getTime()) / 1000 : 0;
+      setChartTimeStamp((prev) => [
+        ...prev,
+        {
+          char: e.key,
+          accuracy: calculateAccuracy(input.length, totalErrors),
+          cpm: calculateCPM(input.length, timeTaken),
+          time: currTime,
+        },
+      ]);
+    }
     setReplayTimeStamp((prev) => [
       ...prev,
       {
         char: input.slice(-1),
         textIndicatorPosition,
-        currentLineNumber,
-        currentCharPosition: input.length - 1,
-        errors,
-        totalErrors,
         time: Date.now(),
       },
     ]);
@@ -200,8 +184,8 @@ export default function RacePractice({
       (prevTextIndicatorPosition) => prevTextIndicatorPosition - 1,
     );
 
-    if (raceTimeStamp.length > 0 && errors.length == 0) {
-      setRaceTimeStamp((prev) => prev.slice(0, -1));
+    if (chartTimeStamp.length > 0) {
+      setChartTimeStamp((prev) => prev.slice(0, -1));
     }
   }
 
@@ -223,10 +207,6 @@ export default function RacePractice({
         indent += " ";
         i++;
       }
-      while (nextLine.charAt(i) === "\t") {
-        indent += "\t";
-        i++;
-      }
       setInput(input + "\n" + indent);
       setTextIndicatorPosition((prevTextIndicatorPosition) => {
         return prevTextIndicatorPosition + 1 + indent.length;
@@ -237,20 +217,6 @@ export default function RacePractice({
   function Key(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key !== code.slice(input.length, input.length + 1)) {
       setTotalErrors((prevTotalErrors) => prevTotalErrors + 1);
-    }
-
-    if (e.key === code[input.length] && errors.length === 0 && e.key !== " " && e.key !== "\t") {
-      const currTime = Date.now();
-      const timeTaken = startTime ? (currTime - startTime.getTime()) / 1000 : 0;
-      setRaceTimeStamp((prev) => [
-        ...prev,
-        {
-          char: e.key,
-          accuracy: calculateAccuracy(input.length, totalErrors),
-          cpm: calculateCPM(input.length, timeTaken),
-          time: currTime,
-        },
-      ]);
     }
 
     setInput((prevInput) => prevInput + e.key);
@@ -281,18 +247,18 @@ export default function RacePractice({
       />
       <Header user={user} snippet={snippet} handleRestart={handleRestart} />
       <section className="flex">
-        <LineNumbers code={code} currentLineNumber={currentLineNumber} />
+        <LineNumbers code={code} currentLineNumber={input.split("\n").length} />
         <Code
           code={code}
-          userInput={input}
+          input={input}
           textIndicatorPosition={textIndicatorPosition}
-          errors={errors}
         />
         <input
           type="text"
           defaultValue={input}
           ref={inputElement}
           onKeyDown={handleKeyboardDownEvent}
+          disabled={input === code}
           className="absolute inset-y-0 left-0 w-full h-full p-8 rounded-md -z-40 focus:outline outline-blue-500 cursor-none"
           onPaste={(e) => e.preventDefault()}
           data-cy="race-practice-input"
