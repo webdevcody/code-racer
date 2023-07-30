@@ -100,6 +100,8 @@ export default async function ContributorsPage({
               page - 1,
               1,
             )}&per_page=${per_page}`}
+            pages={page}
+            totalPages={totalPage}
           />
         </div>
       </div>
@@ -118,6 +120,20 @@ export default async function ContributorsPage({
             />
           ))}
       </ul>
+
+      <PaginationBar
+        className="flex justify-center mt-6 w-full"
+        nextURL={`/contributors?page=${Math.min(
+          page + 1,
+          totalPage,
+        )}&per_page=${per_page}`}
+        prevURL={`/contributors?page=${Math.max(
+          page - 1,
+          1,
+        )}&per_page=${per_page}`}
+        pages={page}
+        totalPages={totalPage}
+      />
     </div>
   );
 }

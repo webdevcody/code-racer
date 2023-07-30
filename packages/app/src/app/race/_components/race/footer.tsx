@@ -14,6 +14,8 @@ export default function Footer({
   startTime,
   handleRestart,
 }: Props) {
+  const isRaceFinished = input === code;
+
   return (
     <>
       {input !== code.slice(0, input.length) && (
@@ -22,7 +24,7 @@ export default function Footer({
         </span>
       )}
 
-      {input === code && (
+      {isRaceFinished && (
         <div className="flex flex-col items-center text-2xl font-bold space-y-8">
           <div className="w-8 h-8 border-4 border-muted-foreground rounded-full border-t-4 border-t-warning animate-spin"></div>
           Loading race results, please wait...
@@ -32,7 +34,7 @@ export default function Footer({
       <div className="flex justify-between items-center">
         {startTime !== null && (
           <>
-            <RaceTimer />
+            <RaceTimer stopTimer={isRaceFinished} />
             <RestartButton handleRestart={handleRestart} />
           </>
         )}

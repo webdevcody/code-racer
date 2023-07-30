@@ -34,6 +34,9 @@ model User {
     // followers     String[]
     // following     String[]
 
+    topLanguages  String[]
+    languagesMap  Json?
+
     averageAccuracy Decimal @default(0) @db.Decimal(5, 2)
     averageCpm      Decimal @default(0) @db.Decimal(6, 2)
 

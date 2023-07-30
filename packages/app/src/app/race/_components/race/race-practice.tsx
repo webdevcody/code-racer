@@ -223,6 +223,10 @@ export default function RacePractice({
         indent += " ";
         i++;
       }
+      while (nextLine.charAt(i) === "\t") {
+        indent += "\t";
+        i++;
+      }
       setInput(input + "\n" + indent);
       setTextIndicatorPosition((prevTextIndicatorPosition) => {
         return prevTextIndicatorPosition + 1 + indent.length;
@@ -235,7 +239,7 @@ export default function RacePractice({
       setTotalErrors((prevTotalErrors) => prevTotalErrors + 1);
     }
 
-    if (e.key === code[input.length] && errors.length === 0 && e.key !== " ") {
+    if (e.key === code[input.length] && errors.length === 0 && e.key !== " " && e.key !== "\t") {
       const currTime = Date.now();
       const timeTaken = startTime ? (currTime - startTime.getTime()) / 1000 : 0;
       setRaceTimeStamp((prev) => [
@@ -291,6 +295,7 @@ export default function RacePractice({
           onKeyDown={handleKeyboardDownEvent}
           className="absolute inset-y-0 left-0 w-full h-full p-8 rounded-md -z-40 focus:outline outline-blue-500 cursor-none"
           onPaste={(e) => e.preventDefault()}
+          data-cy="race-practice-input"
         />
       </section>
       <Footer
