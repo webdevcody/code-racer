@@ -81,7 +81,7 @@ export default function AchievementProgress({
                             className={`timeline-item 
                                 ${isUnlocked ? "unlocked" : "locked"
                                 } shadow-lg shadow-accent opacity-100 
-                                ${animatedItems.includes(itemId) ? "animate-fade" : ""} hover:animate-[bounce_1s] hover:cursor-pointer`}
+                                ${animatedItems.includes(itemId) ? "animate-fade" : ""} hover:animate-bounce hover:cursor-pointer`}
                         >
                             <div className="timeline-content">
                                 {isUnlocked ? (
