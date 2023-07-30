@@ -16,7 +16,7 @@ import {
 import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
 
-type UserWithResults = User & { results: Result[] };
+type UserWithResults = User & { results: Result[]; place?: number }; // Adding "place" property to the type
 
 export function UsersTable({
   data,
@@ -25,8 +25,27 @@ export function UsersTable({
   data: UserWithResults[];
   pageCount: number;
 }) {
+  // Calculates the "place" property for each user based on "averageCpm"
+  const sortedData = [...data].sort(
+    (a, b) => Number(a.averageCpm) - Number(b.averageCpm),
+  );
+
+  sortedData.forEach((user, index) => {
+    user.place = index + 1;
+  });
+
   const columns = React.useMemo<ColumnDef<UserWithResults, unknown>[]>(
     () => [
+      {
+        accessorFn: (user) => {
+          return user.place; // Display the "place" property in the table cell
+        },
+        header: "Place", // Header title for the new column
+        cell: ({ cell }) => {
+          const racerPlace = cell.getValue() as number;
+          return <span>{racerPlace}</span>;
+        },
+      },
       {
         accessorFn: (user) => {
           return {
@@ -137,11 +156,11 @@ export function UsersTable({
     <>
       <DataTable
         columns={columns}
-        data={data}
+        data={sortedData}
         pageCount={pageCount}
         defaultSorting={{
           prop: "averageCpm",
-          val: "desc",
+          val: "asc",
         }}
       />
       <p className="text-sm md:text-base mt-1 text-muted-foreground">
