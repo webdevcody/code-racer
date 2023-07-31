@@ -27,7 +27,7 @@ export function UsersTable({
 }) {
   // Calculates the "place" property for each user based on "averageCpm"
   const sortedData = [...data].sort(
-    (a, b) => Number(a.averageCpm) - Number(b.averageCpm),
+    (a, b) => Number(b.averageCpm) - Number(a.averageCpm),
   );
 
   sortedData.forEach((user, index) => {
