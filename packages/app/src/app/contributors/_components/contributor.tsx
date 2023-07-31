@@ -33,15 +33,15 @@ export default function Contributor({
     <li key={contributor.id} className="flex gap-4 p-1 rounded-full">
       <HoverCard>
         <HoverCardTrigger asChild>
-          <Card className="w-full transition-colors duration-100 hover:bg-secondary border-primary">
+          <Card className="w-full transition-colors duration-100 hover:bg-secondary dark:hover:bg-secondary">
             <a
               href={contributor.html_url}
               target="_blank"
               data-cy="contributor-card"
             >
-              <CardContent className="inline-flex py-4 items-center top-[20%] w-full">
-                <div className="">
-                  <Avatar className="w-11 h-11">
+              <CardContent className="inline-flex py-4 top-[20%] w-full">
+                <div>
+                  <Avatar className="w-14 h-14">
                     <AvatarImage
                       src={contributor.avatar_url}
                       alt={contributor.login}
@@ -51,25 +51,29 @@ export default function Contributor({
                     </AvatarFallback>
                   </Avatar>
                 </div>
-                <div className="flex flex-col w-full ml-4">
-                  <p
-                    className="text-base font-medium leading-none"
-                    data-cy="contributor-name"
-                  >
-                    {contributor.login}
-                  </p>
-                  <p className="mt-1 text-base text-muted-foreground">
-                    {displayNumber(contributor.contributions)} contributions
-                  </p>
-                  <AdditionsDeletions
-                    additions={additions}
-                    deletions={deletions}
-                  />
-                  <ProportionBarChart
-                    a={additions}
-                    b={deletions}
-                    className="w-full h-3 mt-1"
-                  />
+                <div className="flex flex-col w-full ml-4 gap-y-2">
+                  <div>
+                    <p
+                      className="text-base font-medium leading-none"
+                      data-cy="contributor-name"
+                    >
+                      {contributor.login}
+                    </p>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      {displayNumber(contributor.contributions)} contributions
+                    </p>
+                  </div>
+                  <div>
+                    <AdditionsDeletions
+                      additions={additions}
+                      deletions={deletions}
+                    />
+                    <ProportionBarChart
+                      a={additions}
+                      b={deletions}
+                      className="w-full h-1 mt-1"
+                    />
+                  </div>
                 </div>
               </CardContent>
             </a>
