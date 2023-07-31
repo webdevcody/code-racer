@@ -26,9 +26,11 @@ export default async function PracticeRacePage({
 }: PracticeRacePageProps) {
   const user = await getCurrentUser();
   const language = searchParams.lang as Language;
-  const isValidLang = isValidLanguage(language);
-  if (!isValidLang) {
-    redirect("/race");
+  if (language) {
+    const isValidLang = isValidLanguage(language);
+    if (!isValidLang) {
+      redirect("/race");
+    }
   }
 
   const snippet =
