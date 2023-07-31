@@ -1,15 +1,16 @@
 import { getCurrentUser } from "@/lib/session";
 import { notFound } from "next/navigation";
-import ReviewButtons from "./review-buttons";
 import { Heading } from "@/components/ui/heading";
 import { getSnippetsInReview } from "./loaders";
+import ReviewCard from "./_components/review-card";
+import { type Snippet } from "@/lib/prisma";
 
 export default async function ReviewPage() {
   const user = await getCurrentUser();
 
   if (user?.role !== "ADMIN") notFound();
 
-  const downvotedSnippets = await getSnippetsInReview();
+  const downvotedSnippets = (await getSnippetsInReview()) as Snippet[];
 
   return (
     <div className="container flex flex-col items-center p-4 space-y-4">
@@ -21,20 +22,9 @@ export default async function ReviewPage() {
       {downvotedSnippets.length === 0 ? (
         <div>No downvoted snippets to review</div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {downvotedSnippets.map((s) => (
-            <div
-              className="flex flex-col justify-between gap-4 p-8 border rounded overflow-hidden min-h-[100px]"
-              key={s.id}
-            >
-              <pre className="text-sm md:text-base whitespace-pre-wrap text-muted-foreground">
-                {s.code}
-              </pre>
-              <span className="text-sm mt-auto">
-                Total characters: {s.code.length}
-              </span>
-              <ReviewButtons snippetId={s.id} />
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-8 w-full">
+          {downvotedSnippets.map((s, index) => (
+            <ReviewCard key={index} snippet={s} />
           ))}
         </div>
       )}
