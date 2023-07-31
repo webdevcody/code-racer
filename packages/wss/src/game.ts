@@ -49,7 +49,7 @@ export class Game {
   private participants = new Map<SocketId, Participant>();
 
   constructor(
-    private server: Server<ClientToServerEvents, ServerToClientEvents>
+    private server: Server<ClientToServerEvents, ServerToClientEvents>,
   ) {
     this.initialize();
   }
@@ -59,7 +59,7 @@ export class Game {
       socket.on("UserRaceRequest", async (payload) => {
         const { race, raceParticipantId } = await raceMatchMaking(
           payload.language as Language,
-          payload.userId
+          payload.userId,
         );
 
         socket.join(Game.Room(race.id));
@@ -96,7 +96,7 @@ export class Game {
   }
 
   private getRaceParticipants(
-    race: Race
+    race: Race,
   ): (Participant & { socketId: string })[] {
     const participants: (Participant & { socketId: string })[] = [];
     //Leave this as a raw for loop, .map will create more memory and will have possibly undefined values that will need to be filtered out
@@ -117,7 +117,7 @@ export class Game {
 
   private createRaceWithParticipant(
     raceId: string,
-    participant: { id: string; socketId: string }
+    participant: { id: string; socketId: string },
   ) {
     this.participants.set(participant.socketId, {
       id: participant.id,
@@ -150,7 +150,7 @@ export class Game {
     } else if (race.participants.length + 1 > Game.MAX_PARTICIPANTS_PER_RACE) {
       return this.handleParticipantJoinedFullRace(
         payload.socketId,
-        payload.raceParticipantId
+        payload.raceParticipantId,
       );
     } else {
       this.participants.set(payload.socketId, {
@@ -169,7 +169,7 @@ export class Game {
 
   private handleParticipantJoinedFullRace(
     socketId: string,
-    raceParticipantId: string
+    raceParticipantId: string,
   ) {
     this.server.sockets.sockets.get(socketId)?.emit("UserEnterFullRace");
 
@@ -242,7 +242,7 @@ export class Game {
               startedAt: new Date(),
             },
           })
-          .then(() => { });
+          .then(() => {});
       }
 
       this.server.to(Game.Room(raceId)).emit("GameStateUpdate", {
@@ -308,7 +308,7 @@ export class Game {
           {
             raceId,
             time: new Date(),
-          }
+          },
         );
         return reject();
       }
@@ -359,7 +359,7 @@ export class Game {
           raceId: payload.raceId,
           participant: payload.raceParticipantId,
           time: new Date(),
-        }
+        },
       );
       return;
     }
