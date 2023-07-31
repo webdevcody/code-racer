@@ -100,6 +100,8 @@ export default async function ContributorsPage({
               page - 1,
               1,
             )}&per_page=${per_page}`}
+            firstURL={`/contributors?page=1&per_page=${per_page}`}
+            lastURL={`/contributors?page=${totalPage}&per_page=${per_page}`}
             pages={page}
             totalPages={totalPage}
           />
@@ -131,6 +133,8 @@ export default async function ContributorsPage({
           page - 1,
           1,
         )}&per_page=${per_page}`}
+        firstURL={`/contributors?page=1&per_page=${per_page}`}
+        lastURL={`/contributors?page=${totalPage}&per_page=${per_page}`}
         pages={page}
         totalPages={totalPage}
       />
