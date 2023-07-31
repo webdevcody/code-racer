@@ -7,6 +7,34 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 
+export const updateSnippetCodeAction = safeAction(
+  z.object({
+    id: z.string(),
+    snippet: z.object({
+      code: z.string(),
+    }),
+  }),
+)(async ({ id, snippet: { code } }) => {
+  const user = await getCurrentUser();
+
+  if (user?.role !== "ADMIN") {
+    throw new UnauthorizedError();
+  }
+
+  await prisma.snippet.update({
+    data: {
+      rating: 0,
+      onReview: false,
+      code: code,
+    },
+    where: {
+      id,
+    },
+  });
+
+  revalidatePath("/review");
+});
+
 export const acquitSnippetAction = safeAction(
   z.object({
     id: z.string(),
