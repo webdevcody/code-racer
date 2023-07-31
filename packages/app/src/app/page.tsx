@@ -1,14 +1,15 @@
 import HeroBanner from "./hero-banner";
 import BannerSvg from "./banner-svg";
-import { siteConfig } from "@/config/site";
+import { siteConfig, getGitHubAuthorizationToken } from "@/config/site";
 
 async function getGitHubStars(): Promise<string | null> {
   try {
+    const headers = {
+      Accept: "application/vnd.github+json",
+      Authorization: getGitHubAuthorizationToken(),
+    };
     const response = await fetch(siteConfig.api.github.githubStars, {
-      headers: {
-        Accept: "application/vnd.github+json",
-        Authorization: `Bearer ${siteConfig.api.github.accessToken}`,
-      },
+      headers,
       next: {
         revalidate: 60,
       },
