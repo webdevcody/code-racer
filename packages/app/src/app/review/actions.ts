@@ -7,6 +7,24 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 
+export const deleteSnippetResultAction = safeAction(
+  z.object({
+    snippetId: z.string(),
+  }),
+)(async ({ snippetId: id }) => {
+  const user = await getCurrentUser();
+
+  if (user?.role !== "ADMIN") {
+    throw new UnauthorizedError();
+  }
+
+  await prisma.result.deleteMany({
+    where: {
+      snippetId: id,
+    },
+  });
+});
+
 export const updateSnippetCodeAction = safeAction(
   z.object({
     id: z.string(),

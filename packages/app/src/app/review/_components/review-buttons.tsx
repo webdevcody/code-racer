@@ -7,6 +7,7 @@ import {
   acquitSnippetAction,
   deleteSnippetAction,
   updateSnippetCodeAction,
+  deleteSnippetResultAction,
 } from "../actions";
 import { catchError } from "@/lib/utils";
 
@@ -37,6 +38,9 @@ export function ReviewButtons({
               await updateSnippetCodeAction({
                 id: snippetId,
                 snippet: { code },
+              });
+              await deleteSnippetResultAction({
+                snippetId: snippetId,
               });
             } catch (err) {
               catchError(err);
