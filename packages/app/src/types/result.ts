@@ -1,6 +1,6 @@
 import { ParsedRacesResult } from "@/app/result/loaders";
 
-export type ResultChartLineProps = {
+export type ResultChartLine = {
   dataKey: keyof ParsedRacesResult;
   stroke: string;
 };

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import { saveUserResultAction } from "../../actions";
+import { getSnippetById } from "../../(play)/loaders";
 
 // utils
 import { calculateAccuracy, calculateCPM, noopKeys } from "./utils";
@@ -24,6 +25,8 @@ import { ReportButton } from "./buttons/report-button";
 import Code from "./code";
 import RaceDetails from "./race-details";
 import RaceTimer from "./race-timer";
+import { useToast } from "@/components/ui/use-toast";
+import RaceTrackerMultiplayer from "./race-tracker-mutliplayer";
 
 // Types
 import type { ClientToServerEvents } from "@code-racer/wss/src/events/client-to-server";
@@ -32,10 +35,7 @@ import { type RaceStatus, raceStatus } from "@code-racer/wss/src/types";
 import type { Snippet } from "@prisma/client";
 import type { User } from "next-auth";
 import type { Socket } from "socket.io-client";
-import { RaceTimeStampProps, ReplayTimeStampProps } from "./types";
-import RaceTrackerMultiplayer from "./race-tracker-mutliplayer";
-import { getSnippetById } from "../../(play)/loaders";
-import { useToast } from "@/components/ui/use-toast";
+import { ChartTimeStamp, ReplayTimeStamp } from "./types";
 
 type Participant = Omit<
   GameStateUpdatePayload["raceState"]["participants"][number],
@@ -57,12 +57,9 @@ export default function RaceMultiplayer({
   practiceSnippet?: Snippet;
   language: Language;
 }) {
-  const { toast } = useToast()
+  const { toast } = useToast();
   const [input, setInput] = useState("");
   const [textIndicatorPosition, setTextIndicatorPosition] = useState(0);
-  const [currentLineNumber, setCurrentLineNumber] = useState(0);
-  const [currentCharPosition, setCurrentCharPosition] = useState(0);
-  const [currentChar, setCurrentChar] = useState("");
   const [currentRaceStatus, setCurrentRaceStatus] = useState<RaceStatus>(
     //if the practiceSnippet is present, it means that the race is a practice race
     Boolean(practiceSnippet) ? raceStatus.RUNNING : raceStatus.WAITING,
@@ -72,10 +69,8 @@ export default function RaceMultiplayer({
   const [submittingResults, setSubmittingResults] = useState(false);
   const [totalErrors, setTotalErrors] = useState(0);
 
-  const [raceTimeStamp, setRaceTimeStamp] = useState<RaceTimeStampProps[]>([]);
-  const [replayTimeStamp, setReplayTimeStamp] = useState<
-    ReplayTimeStampProps[]
-  >([]);
+  const [raceTimeStamp, setRaceTimeStamp] = useState<ChartTimeStamp[]>([]);
+  const [replayTimeStamp, setReplayTimeStamp] = useState<ReplayTimeStamp[]>([]);
 
   const code = snippet?.code.trimEnd();
   const currentText = code?.substring(0, input.length);
@@ -87,15 +82,16 @@ export default function RaceMultiplayer({
   const inputElement = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
 
-  //multiplayer-specific -----------------------------------------------------------------------------------
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [raceStartCountdown, setRaceStartCountdown] = useState(0);
   const [raceId, setRaceId] = useState<string | null>(null);
-  const [participantId, setParticipantId] = useState<string | undefined>(undefined);
+  const [participantId, setParticipantId] = useState<string | undefined>(
+    undefined,
+  );
   const position = code
     ? parseFloat(
-      (((input.length - errors.length) / code.length) * 100).toFixed(2),
-    )
+        (((input.length - errors.length) / code.length) * 100).toFixed(2),
+      )
     : null;
   const isRaceFinished = practiceSnippet
     ? input === code
@@ -105,14 +101,14 @@ export default function RaceMultiplayer({
   function startRaceEventHandlers() {
     socket.on("UserRaceResponse", async (payload) => {
       const { race, raceParticipantId } = payload;
-      const snippet = await getSnippetById(race.snippetId)
+      const snippet = await getSnippetById(race.snippetId);
       if (!snippet) {
         toast({
           title: "Error",
           description: "Snippet not found",
-        })
+        });
         return;
-      };
+      }
 
       setSnippet(snippet);
       setRaceId(race.id);
@@ -191,7 +187,6 @@ export default function RaceMultiplayer({
     }, 200);
     return () => clearInterval(gameLoop);
   }, [currentRaceStatus, position, participantId, raceId]);
-  //end of multiplayer-specific -----------------------------------------------------------------------------------
 
   async function endRace() {
     if (!startTime) return;
@@ -203,7 +198,7 @@ export default function RaceMultiplayer({
       JSON.stringify([
         ...raceTimeStamp,
         {
-          char: currentChar,
+          char: input.slice(-1),
           accuracy: calculateAccuracy(input.length, totalErrors),
           cpm: calculateCPM(input.length, timeTaken),
           time: Date.now(),
@@ -216,12 +211,8 @@ export default function RaceMultiplayer({
       JSON.stringify([
         ...replayTimeStamp,
         {
-          char: currentChar,
+          char: input.slice(-1),
           textIndicatorPosition,
-          currentLineNumber,
-          currentCharPosition,
-          errors,
-          totalErrors,
           time: Date.now(),
         },
       ]),
@@ -261,22 +252,13 @@ export default function RaceMultiplayer({
   }, [isRaceFinished]);
 
   useEffect(() => {
-    // Focus Input
     inputElement.current?.focus();
 
-    // Calculate the current line and cursor position in that line
-    const lines = input.split("\n");
-    setCurrentLineNumber(lines.length);
-    setCurrentCharPosition(lines[lines.length - 1].length);
     setReplayTimeStamp((prev) => [
       ...prev,
       {
-        char: currentChar,
+        char: input.slice(-1),
         textIndicatorPosition,
-        currentLineNumber,
-        currentCharPosition,
-        errors,
-        totalErrors,
         time: Date.now(),
       },
     ]);
@@ -330,18 +312,11 @@ export default function RaceMultiplayer({
           break;
       }
     }
-    const lines = input.split("\n");
-    setCurrentLineNumber(lines.length);
-    setCurrentCharPosition(lines[lines.length - 1].length);
     setReplayTimeStamp((prev) => [
       ...prev,
       {
-        char: currentChar,
+        char: input.slice(-1),
         textIndicatorPosition,
-        currentLineNumber,
-        currentCharPosition,
-        errors,
-        totalErrors,
         time: Date.now(),
       },
     ]);
@@ -373,7 +348,7 @@ export default function RaceMultiplayer({
     ) {
       let indent = "";
       let i = 0;
-      while (lines?.[currentLineNumber].charAt(i) === " ") {
+      while (lines?.[input.split("\n").length].charAt(i) === " ") {
         indent += " ";
         i++;
       }
@@ -419,7 +394,6 @@ export default function RaceMultiplayer({
           time: currTime,
         },
       ]);
-      setCurrentChar("");
     }
 
     setInput((prevInput) => prevInput + e.key);
@@ -457,9 +431,8 @@ export default function RaceMultiplayer({
         onClick={() => {
           inputElement.current?.focus();
         }}
-        role="none" // eslint fix - will remove the semantic meaning of an element while still exposing it to assistive technology
+        role="none"
       >
-        {/* <p>participant id: {participantId}</p> */}
         {raceId && currentRaceStatus != raceStatus.RUNNING && !startTime && (
           <MultiplayerLoadingLobby participants={participants}>
             {currentRaceStatus === raceStatus.WAITING && (
@@ -479,15 +452,15 @@ export default function RaceMultiplayer({
         )}
         {currentRaceStatus === raceStatus.RUNNING && (
           <>
-            {raceId && code ? (
-              participants.map((p) => (
-                <RaceTrackerMultiplayer
-                  key={p.id}
-                  position={p.position}
-                  participantId={p.id}
-                />
-              ))
-            ) : null}
+            {raceId && code
+              ? participants.map((p) => (
+                  <RaceTrackerMultiplayer
+                    key={p.id}
+                    position={p.position}
+                    participantId={p.id}
+                  />
+                ))
+              : null}
             <div className="flex justify-between mb-2 md:mb-4">
               <Heading
                 title="Type this code"
@@ -507,7 +480,7 @@ export default function RaceMultiplayer({
                   <div
                     key={line}
                     className={
-                      currentLineNumber === line + 1
+                      input.split("\n").length === line + 1
                         ? "text-center bg-slate-600 text-white  border-r-2 border-yellow-500"
                         : " text-center border-r-2 border-yellow-500"
                     }
@@ -520,9 +493,8 @@ export default function RaceMultiplayer({
               {code && (
                 <Code
                   code={code}
-                  userInput={input}
+                  input={input}
                   textIndicatorPosition={textIndicatorPosition}
-                  errors={errors}
                 />
               )}
               <input
