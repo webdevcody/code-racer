@@ -36,6 +36,7 @@ import type { Snippet } from "@prisma/client";
 import type { User } from "next-auth";
 import type { Socket } from "socket.io-client";
 import { ChartTimeStamp, ReplayTimeStamp } from "./types";
+import { catchError } from "@/lib/utils";
 
 type Participant = Omit<
   GameStateUpdatePayload["raceState"]["participants"][number],
@@ -97,7 +98,7 @@ export default function RaceMultiplayer({
     : currentRaceStatus === raceStatus.FINISHED;
   const showRaceTimer = !!startTime && !isRaceFinished;
 
-  function startRaceEventHandlers() {
+  const startRaceEventHandlers = React.useCallback(() => {
     socket.on("UserRaceResponse", async (payload) => {
       const { race, raceParticipantId } = payload;
       const snippet = await getSnippetById(race.snippetId);
@@ -144,7 +145,7 @@ export default function RaceMultiplayer({
         participants.filter((participant) => participant.id !== participantId),
       );
     });
-  }
+  }, [snippet, raceId, participantId, participants, currentRaceStatus, raceStatus, raceStartCountdown, startTime]);
 
   // Connection to wss
   useEffect(() => {
@@ -187,7 +188,7 @@ export default function RaceMultiplayer({
     return () => clearInterval(gameLoop);
   }, [currentRaceStatus, position, participantId, raceId]);
 
-  async function endRace() {
+  const endRace = React.useCallback(() => {
     if (!startTime) return;
     const endTime = new Date();
     const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
@@ -223,26 +224,29 @@ export default function RaceMultiplayer({
     }
 
     if (user) {
-      const result = await saveUserResultAction({
+      saveUserResultAction({
         raceParticipantId: participantId,
         timeTaken,
         errors: totalErrors,
         cpm: calculateCPM(code.length - 1, timeTaken),
         accuracy: calculateAccuracy(code.length - 1, totalErrors),
         snippetId: snippet.id,
+      }).then(result => {
+        if (!result) {
+          return router.refresh();
+        }
+
+        router.push(`/result?resultId=${result.id}`);
+      }).catch(error => {
+        catchError(error);
       });
 
-      if (!result) {
-        return router.refresh();
-      }
-
-      router.push(`/result?resultId=${result.id}`);
     } else {
       router.push(`/result?snippetId=${snippet.id}`);
     }
 
     setSubmittingResults(false);
-  }
+  }, [submittingResults, replayTimeStamp, raceTimeStamp, startTime, input, totalErrors]);
 
   useEffect(() => {
     if (isRaceFinished) {

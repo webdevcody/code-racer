@@ -20,6 +20,7 @@ import type { User } from "next-auth";
 import type { ChartTimeStamp } from "./types";
 import type { ReplayTimeStamp } from "./types";
 import { useCheckForUserNavigator } from "@/lib/user-system";
+import { toast } from "@/components/ui/use-toast";
 
 type RacePracticeProps = {
   user?: User;
@@ -39,24 +40,8 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
   const code = snippet.code.trimEnd();
   const router = useRouter();
 
-  useEffect(() => {
-    inputElement.current?.focus();
 
-    setReplayTimeStamp((prev) => [
-      ...prev,
-      {
-        char: input.slice(-1),
-        textIndicatorPosition: input.length,
-        time: Date.now(),
-      },
-    ]);
-
-    if (input === code) {
-      endRace();
-    }
-  }, [input, code, endRace]);
-
-  async function endRace() {
+  const endRace = React.useCallback(() => {
     if (!startTime) return;
     const endTime = new Date();
     const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
@@ -87,19 +72,42 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
     );
 
     if (user) {
-      const result = await saveUserResultAction({
+      saveUserResultAction({
         timeTaken,
         errors: totalErrors,
         cpm: calculateCPM(code.length - 1, timeTaken),
         accuracy: calculateAccuracy(code.length - 1, totalErrors),
         snippetId: snippet.id,
+      }).then(result => {
+        router.push(`/result?resultId=${result.id}`)
+      }).catch(error => {
+        toast({
+          title: "Something went wrong",
+          description: error.message
+        })
       });
-
-      router.push(`/result?resultId=${result.id}`);
     } else {
       router.push(`/result?snippetId=${snippet.id}`);
     }
-  }
+  }, [replayTimeStamp, chartTimeStamp, input, totalErrors]);
+
+
+  useEffect(() => {
+    inputElement.current?.focus();
+
+    setReplayTimeStamp((prev) => [
+      ...prev,
+      {
+        char: input.slice(-1),
+        textIndicatorPosition: input.length,
+        time: Date.now(),
+      },
+    ]);
+
+    if (input === code) {
+      endRace();
+    }
+  }, [input, code, endRace]);
 
   function handleInputEvent(e: React.FormEvent<HTMLInputElement>) {
     if (!isUserOnAdroid) return;
