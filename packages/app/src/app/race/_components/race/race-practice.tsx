@@ -51,7 +51,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
       if (!startTime) return;
       const endTime = new Date();
       const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
-  
+
       localStorage.setItem(
         "raceTimeStamp",
         JSON.stringify([
@@ -64,7 +64,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
           },
         ]),
       );
-  
+
       localStorage.setItem(
         "replayTimeStamp",
         JSON.stringify([
@@ -76,7 +76,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
           },
         ]),
       );
-  
+
       if (user) {
         saveUserResultAction({
           timeTaken,
@@ -93,20 +93,29 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
     }
   });
 
-  function handleInputEvent(e: React.FormEvent<HTMLInputElement>) {
+  function handleInputEvent(e: any /** React.FormEvent<HTMLInputElement>*/) {
+    console.log(e)
     if (!isUserOnAdroid) return;
-    // so, if the user has errors, also check if the new value to be set is greater than the current value.
-    // This is to know if the user is trying to delete a character, since we don't want to allow a user from
-    // inserting anything, however, if we fully disable them from changing the input, then they won't be able to
-    // delete a character. Thus, one way to check if they are clicking the Backspace button on their phones is
-    // to compare the lengths of the current input and the new input;
-    if (input !== code.slice(0, input.length) && e.currentTarget.value.length > input.length) {
+    const data = e.nativeEvent.data;
+    console.log(data);
+    // undefined is returned if user pressed enter button on mobile.
+    // If it's backspace, then null is returned.
+    if (input !== code.slice(0, input.length) && (data === undefined || data)) {
+      console.log("running")
       e.preventDefault();
       return;
     };
-
+    console.log(data);
     // if (e.currentTarget.value)
-    setInput(e.currentTarget.value);
+    if (data) {
+      setInput((prevInput) => prevInput + data);
+    } else if (data === null) {
+      // if the user pressed backspace on mobile, data is null
+      Backspace();
+    } else {
+      Enter();
+    }
+    changeTimeStamps(e);
   };
 
   function handleKeyboardDownEvent(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -114,13 +123,9 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
     // since the enter button on a mobile keyboard/keypad actually
     // returns a e.key of "Enter", we just set a condition for that.
     if (isUserOnAdroid) {
-      // The code below causes bugs, please review them. For now, just return
       switch (e.key) {
         case "Enter":
           handleInputEvent(e);
-          break;
-        default:
-          e.preventDefault();
           break;
       }
       return;
@@ -174,13 +179,41 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
       }
     }
 
-    if (e.key === code[input.length - 1] && e.key !== " ") {
+    changeTimeStamps(e);
+  }
+  console.log(replayTimeStamp)
+  // since this logic of setting timestamps will be reused
+  function changeTimeStamps(e: any) {
+    let value: string;
+    console.log(e)
+    // if keyboardDown event is the one that calls this
+    if (e.key) {
+      value = e.key;
+      // so, this is where we can access the value of the key pressed on mobile
+    } else {
+      // check if the user pressed backspace (it's null)
+      const data = e.nativeEvent.data;
+
+      if (!data) {
+        // the 2nd to the last character
+        const latestValue = input[input.length - 2];
+        if (!latestValue) {
+          value = "";
+        } else {
+          value = latestValue;
+        }
+      } else {
+        value = data;
+      }
+    }
+
+    if (value === code[input.length - 1] && value !== " ") {
       const currTime = Date.now();
       const timeTaken = startTime ? (currTime - startTime.getTime()) / 1000 : 0;
       setChartTimeStamp((prev) => [
         ...prev,
         {
-          char: e.key,
+          char: value,
           accuracy: calculateAccuracy(input.length, totalErrors),
           cpm: calculateCPM(input.length, timeTaken),
           time: currTime,
@@ -195,7 +228,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
         time: Date.now(),
       },
     ]);
-  }
+  };
 
   function Backspace() {
     if (input.length === 0) {
