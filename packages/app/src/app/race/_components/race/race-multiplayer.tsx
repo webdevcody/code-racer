@@ -194,7 +194,7 @@ export default function RaceMultiplayer({
     const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
 
     localStorage.setItem(
-      "raceTimeStamp",
+      "chartTimeStamp",
       JSON.stringify([
         ...raceTimeStamp,
         {

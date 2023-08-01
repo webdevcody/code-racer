@@ -60,7 +60,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
     const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
 
     localStorage.setItem(
-      "raceTimeStamp",
+      "chartTimeStamp",
       JSON.stringify([
         ...chartTimeStamp,
         {
