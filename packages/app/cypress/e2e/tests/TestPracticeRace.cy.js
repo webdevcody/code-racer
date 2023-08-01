@@ -17,11 +17,11 @@ const TIME_TO_WAIT = 1000;
 
 it("can successfully completed a practice race", () => {
   // Find Race Navigation and click on it
-  navbarComponent.race().click();
+  navbarComponent.race().should('be.visible').click();
 
   // Find language selection and type snippet language
-  racePage.languageDropdown().click();
-  racePage.htmlLanguageOption().click();
+  racePage.languageDropdown().should('be.visible').click();
+  racePage.htmlLanguageOption().should('be.visible').click();
 
   // Find practice button to start practice race
   racePage.practiceButton().click();
