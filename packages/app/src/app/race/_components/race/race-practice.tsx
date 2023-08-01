@@ -112,7 +112,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
     }
     // Reload Control + r
     if (e.ctrlKey && e.key === "r") {
-      e.preventDefault;
+      e.preventDefault();
       return;
     }
     // Catch Alt Gr - Please confirm I am unable to test this
