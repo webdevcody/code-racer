@@ -45,6 +45,7 @@ model User {
     snippets        Snippet[]
     snippetVotes    SnippetVote[]
     RaceParticipant RaceParticipant[]
+    notifications   Notification[]
 
     @@map("users")
 }
@@ -176,4 +177,17 @@ model SnippetVote {
 
     @@id([userId, snippetId])
     @@map("snippet_votes")
+}
+
+model Notification {
+    id          String @id @default(cuid())
+    title       String
+    description  String
+    ctaUrl      String? @map("cta_url") // URL to redirect when user click on notification
+    read        Boolean @default(false)
+    userId      String @map("user_id")
+
+    user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@map("notification")
 }
