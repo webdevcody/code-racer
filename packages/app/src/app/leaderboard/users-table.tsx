@@ -15,18 +15,34 @@ import {
 } from "@/components/ui/tooltip";
 import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
+import { sortFilters } from "./sort-filters";
 
 type UserWithResults = User & { results: Result[] };
 
 export function UsersTable({
   data,
   pageCount,
+  ranks,
+  field = sortFilters.AverageCPM,
 }: {
   data: UserWithResults[];
   pageCount: number;
+  ranks: {[key: string]: { [key: string]: { [key: string]: number | boolean }}};
+  field: string;
 }) {
   const columns = React.useMemo<ColumnDef<UserWithResults, unknown>[]>(
     () => [
+      {
+        accessorFn: (user) => {
+          return user.id; // Display the "place" property in the table cell
+        },
+        header: "Place", // Header title for the new column
+        cell: ({ cell }) => {
+          const userId = cell.getValue() as string;
+          console.log(ranks)
+          return <span className="ml-2">{ranks[userId][field]["rank"]}</span>;
+        },
+      },
       {
         accessorFn: (user) => {
           return {
