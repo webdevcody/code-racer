@@ -54,7 +54,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
     if (input === code) {
       endRace();
     }
-  }, [input]);
+  }, [input, code, endRace]);
 
   async function endRace() {
     if (!startTime) return;

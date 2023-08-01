@@ -59,7 +59,6 @@ export default function RaceMultiplayer({
 }) {
   const { toast } = useToast();
   const [input, setInput] = useState("");
-  const [textIndicatorPosition, setTextIndicatorPosition] = useState(0);
   const [currentRaceStatus, setCurrentRaceStatus] = useState<RaceStatus>(
     //if the practiceSnippet is present, it means that the race is a practice race
     Boolean(practiceSnippet) ? raceStatus.RUNNING : raceStatus.WAITING,
@@ -90,8 +89,8 @@ export default function RaceMultiplayer({
   );
   const position = code
     ? parseFloat(
-        (((input.length - errors.length) / code.length) * 100).toFixed(2),
-      )
+      (((input.length - errors.length) / code.length) * 100).toFixed(2),
+    )
     : null;
   const isRaceFinished = practiceSnippet
     ? input === code
@@ -163,7 +162,7 @@ export default function RaceMultiplayer({
       socket.disconnect();
       socket.off("connect");
     };
-  }, []);
+  }, [practiceSnippet, language, startRaceEventHandlers, user?.id]);
 
   //send updated position to server
   useEffect(() => {
@@ -212,7 +211,7 @@ export default function RaceMultiplayer({
         ...replayTimeStamp,
         {
           char: input.slice(-1),
-          textIndicatorPosition,
+          textIndicatorPosition: input.length,
           time: Date.now(),
         },
       ]),
@@ -249,7 +248,7 @@ export default function RaceMultiplayer({
     if (isRaceFinished) {
       endRace();
     }
-  }, [isRaceFinished]);
+  }, [isRaceFinished, endRace]);
 
   useEffect(() => {
     inputElement.current?.focus();
@@ -258,7 +257,7 @@ export default function RaceMultiplayer({
       ...prev,
       {
         char: input.slice(-1),
-        textIndicatorPosition,
+        textIndicatorPosition: input.length,
         time: Date.now(),
       },
     ]);
@@ -316,7 +315,7 @@ export default function RaceMultiplayer({
       ...prev,
       {
         char: input.slice(-1),
-        textIndicatorPosition,
+        textIndicatorPosition: input.length,
         time: Date.now(),
       },
     ]);
@@ -327,13 +326,7 @@ export default function RaceMultiplayer({
       return;
     }
 
-    if (textIndicatorPosition === input.length) {
-      setInput((prevInput) => prevInput.slice(0, -1));
-    }
-
-    setTextIndicatorPosition(
-      (prevTextIndicatorPosition) => prevTextIndicatorPosition - 1,
-    );
+    setInput((prevInput) => prevInput.slice(0, -1));
 
     if (raceTimeStamp.length > 0 && errors.length == 0) {
       setRaceTimeStamp((prev) => prev.slice(0, -1));
@@ -353,23 +346,9 @@ export default function RaceMultiplayer({
         i++;
       }
 
-      setInput(input + "\n" + indent);
-      setTextIndicatorPosition((prevTextIndicatorPosition) => {
-        if (typeof prevTextIndicatorPosition === "number") {
-          return prevTextIndicatorPosition + 1 + indent.length;
-        } else {
-          return prevTextIndicatorPosition;
-        }
-      });
+      setInput((prevInput) => prevInput + "\n" + indent);
     } else {
-      setInput(input + "\n");
-      setTextIndicatorPosition((prevTextIndicatorPosition) => {
-        if (typeof prevTextIndicatorPosition === "number") {
-          return prevTextIndicatorPosition + 1;
-        } else {
-          return prevTextIndicatorPosition;
-        }
-      });
+      setInput((prevInput) => prevInput + "\n");
     }
   }
 
@@ -397,15 +376,11 @@ export default function RaceMultiplayer({
     }
 
     setInput((prevInput) => prevInput + e.key);
-    setTextIndicatorPosition(
-      (prevTextIndicatorPosition) => prevTextIndicatorPosition + 1,
-    );
   }
 
   function handleRestart() {
     setStartTime(null);
     setInput("");
-    setTextIndicatorPosition(0);
     setTotalErrors(0);
   }
 
@@ -454,12 +429,12 @@ export default function RaceMultiplayer({
           <>
             {raceId && code
               ? participants.map((p) => (
-                  <RaceTrackerMultiplayer
-                    key={p.id}
-                    position={p.position}
-                    participantId={p.id}
-                  />
-                ))
+                <RaceTrackerMultiplayer
+                  key={p.id}
+                  position={p.position}
+                  participantId={p.id}
+                />
+              ))
               : null}
             <div className="flex justify-between mb-2 md:mb-4">
               <Heading
