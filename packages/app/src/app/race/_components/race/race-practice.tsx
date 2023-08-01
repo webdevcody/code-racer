@@ -94,22 +94,20 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
   });
 
   function handleInputEvent(e: any /** React.FormEvent<HTMLInputElement>*/) {
-
     if (!isUserOnAdroid) return;
+    if (!startTime) {
+      setStartTime(new Date());
+    };
     const data = e.nativeEvent.data;
 
-    // undefined is returned if user pressed enter button on mobile.
-    // If it's backspace, then null is returned.
-    if (input !== code.slice(0, input.length) && (data === undefined || data)) {
-
+    if (input !== code.slice(0, input.length) && e.nativeEvent.inputType !== "deleteContentBackward") {
       e.preventDefault();
       return;
     };
 
-    // if (e.currentTarget.value)
-    if (data) {
+    if (e.nativeEvent.inputType === "insertText") {
       setInput((prevInput) => prevInput + data);
-    } else if (data === null) {
+    } else if (e.nativeEvent.inputType === "deleteContentBackward") {
       // if the user pressed backspace on mobile, data is null
       Backspace();
     } else {
@@ -125,6 +123,9 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
     if (isUserOnAdroid) {
       switch (e.key) {
         case "Enter":
+          if (!startTime) {
+            setStartTime(new Date());
+          }
           handleInputEvent(e);
           break;
       }
@@ -194,7 +195,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
       // check if the user pressed backspace (it's null)
       const data = e.nativeEvent.data;
 
-      if (!data) {
+      if (e.nativeEvent.inputType === "deleteContentBackward") {
         // the 2nd to the last character
         const latestValue = input[input.length - 2];
         if (!latestValue) {
@@ -202,8 +203,10 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
         } else {
           value = latestValue;
         }
-      } else {
+      } else if (e.nativeEvent.inputType === "insertText") {
         value = data;
+      } else {
+        value = "Enter";
       }
     }
 
@@ -301,7 +304,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
           type="text"
           value={input}
           ref={inputElement}
-          onKeyDown={handleKeyboardDownEvent}
+          onKeyUp={handleKeyboardDownEvent}
           onInput={handleInputEvent}
           disabled={input === code}
           className="absolute inset-y-0 left-0 w-full h-full p-8 rounded-md -z-40 focus:outline outline-blue-500 cursor-none"
