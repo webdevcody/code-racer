@@ -199,9 +199,9 @@ function CurrentChart(props: CurrentChartProps) {
       <ResponsiveContainer height={300}>
         <LineChart data={raceTimeStamp} margin={{ right: 25, top: 10 }}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="char" tick={{ fontSize: 0 }} />
-          <YAxis yAxisId="left" />
-          <YAxis yAxisId="right" orientation="right" />
+          <XAxis dataKey="char" tick={{ fontSize: 0 }} label="Time" />
+          <YAxis yAxisId="left" label={{value: "Accuracy", angle: -90, dx: -14}} />
+          <YAxis yAxisId="right" orientation="right" label={{ value: "Cpm", offset: 30, angle: -90, dx: 20}} />
           <Line
             type="monotone"
             dataKey="accuracy"
