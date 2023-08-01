@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 
 // utils
 import { calculateAccuracy, calculateCPM, noopKeys } from "./utils";
+import { catchError } from "@/lib/utils";
 
 // Componenets
 import RaceTracker from "./race-tracker";
@@ -20,7 +21,6 @@ import type { User } from "next-auth";
 import type { ChartTimeStamp } from "./types";
 import type { ReplayTimeStamp } from "./types";
 import { useCheckForUserNavigator } from "@/lib/user-system";
-import { toast } from "@/components/ui/use-toast";
 
 type RacePracticeProps = {
   user?: User;
@@ -81,10 +81,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
       }).then(result => {
         router.push(`/result?resultId=${result.id}`)
       }).catch(error => {
-        toast({
-          title: "Something went wrong",
-          description: error.message
-        })
+        catchError(error);
       });
     } else {
       router.push(`/result?snippetId=${snippet.id}`);
