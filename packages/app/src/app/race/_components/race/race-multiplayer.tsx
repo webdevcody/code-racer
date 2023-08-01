@@ -37,6 +37,7 @@ import type { Snippet } from "@prisma/client";
 import type { User } from "next-auth";
 import type { Socket } from "socket.io-client";
 import { ChartTimeStamp, ReplayTimeStamp } from "./types";
+import { useCheckForUserNavigator } from "@/lib/user-system";
 
 type Participant = Omit<
   GameStateUpdatePayload["raceState"]["participants"][number],
@@ -97,6 +98,7 @@ export default function RaceMultiplayer({
     ? input === code
     : currentRaceStatus === raceStatus.FINISHED;
   const showRaceTimer = !!startTime && !isRaceFinished;
+  const isUserOnAdroid = useCheckForUserNavigator("android");
 
   const startRaceEventHandlers = React.useCallback(() => {
     socket.on("UserRaceResponse", async (payload) => {
@@ -262,7 +264,46 @@ export default function RaceMultiplayer({
     // ]);
   }, []);
 
-  function handleKeyboardDownEvent(e: React.KeyboardEvent<HTMLInputElement>) {
+
+  function handleInputEvent(e: any /** React.FormEvent<HTMLInputElement>*/) {
+    if (!isUserOnAdroid) return;
+    if (!startTime) {
+      setStartTime(new Date());
+    };
+    const data = e.nativeEvent.data;
+
+    if (input !== code?.slice(0, input.length) && e.nativeEvent.inputType !== "deleteContentBackward") {
+      e.preventDefault();
+      return;
+    };
+
+    if (e.nativeEvent.inputType === "insertText") {
+      setInput((prevInput) => prevInput + data);
+    } else if (e.nativeEvent.inputType === "deleteContentBackward") {
+      // if the user pressed backspace on mobile, data is null
+      Backspace();
+    } else {
+      Enter();
+    }
+    changeTimeStamps();
+  };
+
+  function handleKeyboardUpEvent(e: React.KeyboardEvent<HTMLInputElement>) {
+     // For ANDROID.
+    // since the enter button on a mobile keyboard/keypad actually
+    // returns a e.key of "Enter", we just set a condition for that.
+    if (isUserOnAdroid) {
+      switch (e.key) {
+        case "Enter":
+          if (!startTime) {
+            setStartTime(new Date());
+          }
+          handleInputEvent(e);
+          break;
+      }
+      return;
+    };
+
     // Restart
     if (e.key === "Escape") {
       handleRestart();
@@ -310,6 +351,10 @@ export default function RaceMultiplayer({
           break;
       }
     }
+    changeTimeStamps();
+  }
+
+  function changeTimeStamps() {
     setReplayTimeStamp((prev) => [
       ...prev,
       {
@@ -318,7 +363,7 @@ export default function RaceMultiplayer({
         time: Date.now(),
       },
     ]);
-  }
+  };
 
   function Backspace() {
     if (input.length === 0) {
@@ -476,7 +521,8 @@ export default function RaceMultiplayer({
                 type="text"
                 defaultValue={input}
                 ref={inputElement}
-                onKeyDown={handleKeyboardDownEvent}
+                onKeyUp={handleKeyboardUpEvent}
+                onInput={handleInputEvent}
                 disabled={isRaceFinished}
                 className="absolute inset-y-0 left-0 w-full h-full p-8 rounded-md -z-40 focus:outline outline-blue-500 cursor-none"
                 onPaste={(e) => e.preventDefault()}
