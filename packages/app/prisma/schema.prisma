@@ -1,0 +1,193 @@
+generator client {
+    provider      = "prisma-client-js"
+    binaryTargets = ["native", "rhel-openssl-1.0.x"]
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+    ADMIN
+    USER
+}
+
+enum AchievementType {
+  FIRST_RACE
+  FIRST_SNIPPET
+  FIFTH_RACE
+}
+
+model User {
+    id            String        @id @default(cuid())
+    createdAt     DateTime      @default(now()) @map("created_at")
+    name          String?
+    bio           String?
+    email         String?       @unique
+    emailVerified DateTime?     @map("email_verified")
+    image         String?
+    accounts      Account[]
+    sessions      Session[]
+    results       Result[]
+    achievements  Achievement[]
+    // followers     String[]
+    // following     String[]
+
+    topLanguages  String[]
+    languagesMap  Json?
+
+    averageAccuracy Decimal @default(0) @db.Decimal(5, 2)
+    averageCpm      Decimal @default(0) @db.Decimal(6, 2)
+
+    role UserRole @default(USER)
+
+    snippets        Snippet[]
+    snippetVotes    SnippetVote[]
+    RaceParticipant RaceParticipant[]
+    notifications   Notification[]
+
+    @@map("users")
+}
+
+// Necessary for Next auth
+model Account {
+    id                String  @id @default(cuid())
+    userId            String  @map("user_id")
+    type              String
+    provider          String
+    providerAccountId String  @map("provider_account_id")
+    refresh_token     String? @db.Text
+    access_token      String? @db.Text
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String? @db.Text
+    session_state     String?
+    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([provider, providerAccountId])
+    @@map("accounts")
+}
+
+model Session {
+    id           String   @id @default(cuid())
+    sessionToken String   @unique @map("session_token")
+    userId       String   @map("user_id")
+    expires      DateTime
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@map("sessions")
+}
+
+model VerificationToken {
+    identifier String
+    token      String   @unique
+    expires    DateTime
+
+    @@unique([identifier, token])
+    @@map("verification_tokens")
+}
+
+model Result {
+    id              String            @id @default(cuid())
+    snippet         Snippet           @relation(fields: [snippetId], references: [id], onDelete: Cascade)
+    userId          String            @map("user_id")
+    createdAt       DateTime          @default(now()) @map("created_at")
+    accuracy        Decimal           @db.Decimal(5, 2)
+    cpm             Int
+    takenTime       String            @map("taken_time")
+    errorCount      Int?              @map("error_count")
+    user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+    snippetId       String
+    RaceParticipant RaceParticipant[]
+
+    @@map("results")
+}
+
+model Achievement {
+    userId          String          @map("user_id")
+    achievementType AchievementType @map("achievement_type")
+    unlockedAt      DateTime        @default(now()) @map("unlocked_at")
+    user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@id([userId, achievementType])
+    @@map("achievements")
+}
+
+model Snippet {
+    id String @id @default(cuid())
+
+    code     String
+    language String
+    User     User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId   String?  @map("user_id")
+    onReview Boolean  @default(false) @map("on_review")
+    rating   Int      @default(0)
+    Result   Result[]
+
+    votes SnippetVote[]
+    Race  Race[]
+
+    @@map("snippets")
+}
+
+model Race {
+    id String @id @default(cuid())
+
+    snippetId    String            @map("snippet_id")
+    snippet      Snippet           @relation(fields: [snippetId], references: [id], onDelete: Cascade)
+    participants RaceParticipant[]
+
+    startedAt DateTime? @map("started_at")
+    endedAt   DateTime? @map("ended_at")
+    createdAt DateTime  @default(now()) @map("created_at")
+
+    @@map("race")
+}
+
+model RaceParticipant {
+    id String @id @default(cuid())
+
+    Race   Race   @relation(fields: [raceId], references: [id], onDelete: Cascade)
+    raceId String
+
+    // a race participant could be a guest user
+    userId String? @map("user_id")
+    user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    // a user could exit the race without finishing, or is a guest user
+    resultId String? @map("result_id")
+    result   Result? @relation(fields: [resultId], references: [id], onDelete: Cascade)
+
+    @@map("race_participants")
+}
+
+enum VoteType {
+    UP
+    DOWN
+}
+
+model SnippetVote {
+    snippetId String
+    userId    String
+    User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    Snippet   Snippet  @relation(fields: [snippetId], references: [id], onDelete: Cascade)
+    type      VoteType
+
+    @@id([userId, snippetId])
+    @@map("snippet_votes")
+}
+
+model Notification {
+    id          String @id @default(cuid())
+    title       String
+    description  String
+    ctaUrl      String? @map("cta_url") // URL to redirect when user click on notification
+    read        Boolean @default(false)
+    userId      String @map("user_id")
+
+    user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@map("notification")
+}

@@ -1,5 +1,5 @@
-name: "CI setup"
-description: "utility for calling other actions"
+name: "Setup Continuous Integration"
+description: "Cache Dependencies"
 runs:
   using: "composite"
   steps:
@@ -9,13 +9,13 @@ runs:
         node-version: ${{ env.NODE_VERSION }}
         cache: "npm"
 
-    - name: Cache NPM dependencies
+    - name: Cache NPM Dependencies
       uses: actions/cache@v3
       id: cache-primes
       with:
         path: node_modules
         key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
 
-    - name: Install dependencies
+    - name: Install Dependencies
       run: npm install
       shell: bash

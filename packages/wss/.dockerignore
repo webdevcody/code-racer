@@ -1,0 +1,8 @@
+node_modules
+**/.git
+**/README.md
+**/LICENSE
+**/.vscode
+**/npm-debug.log
+**/dist
+**/.env

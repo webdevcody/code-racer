@@ -34,12 +34,12 @@ If you are getting WSL error when you launch your desktop docker application, go
 
 To get started with Code Racer locally, follow these steps
 
-1. Fork the repo asdfasdf
+1. Fork the repo
 
-2. clone your fork
+2. Clone your fork
 
    ```sh
-    git clone https://github.com/webdevcody/code-racer.git
+    git clone https://github.com/<YOUR_GITHUB_ACCOUNT_NAME>/code-racer.git
    ```
 
 3. Navigate to the project directory
@@ -48,9 +48,9 @@ To get started with Code Racer locally, follow these steps
    cd code-racer
    ```
 
-4. Create a .env file inside the project's root directory.
+4. Create a .env file inside the project's packages/app directory.
 
-5. Copy and paste variables from `.env.example` into `.env`
+5. Copy and paste variables from `packages/app/.env.example` into `packages/app/.env`
 
 6. Install NPM packages
 
@@ -58,29 +58,23 @@ To get started with Code Racer locally, follow these steps
    npm i
    ```
 
-7. Generate a version of Prisma Client that is tailored to the models.
-
-   ```js
-   npx prisma generate
-   ```
-
-8. Open Docker Desktop Application and go back to your VSCode terminal and run this command:
+7. Start the database
 
    ```sh
-   docker compose up -d
+   npm run dev:db
    ```
 
-9. Once your database is ready, push your prisma schema to the database.
+8. Start the app dev server
 
    ```sh
-   npx prisma db push
+   npm run dev:app
    ```
 
-10. Finally start your dev server.
+9. Start the web socket server
 
-```sh
-npm run dev
-```
+   ```sh
+   npm run dev:wss
+   ```
 
 Open your browser and visit <http://localhost:3000> to see the application running.
 
@@ -103,9 +97,27 @@ If you want to work on a new feature, follow these steps.
 
 You should pull in the changes that we add in daily, preferably before you checkout a new branch to do new work.
 
-1. git checkout main
-2. git pull upstream main
+```sh
+git checkout main
+```
 
+```sh
+git pull upstream main
+```
+
+## Before Submitting Pull Request
+Before submitting a **Pull Request**, you should
+1. Check your code safety with Linter and TypeScript, and make sure your code can build successfully.
+
+```sh
+npm run pr:precheck
+```
+
+2. (Optional) Do an E2E test to ensure application function properly
+
+```
+npm run e2e -w @code-racer/app
+```
 ## Code of Conduct
 
 ### Our Pledge
