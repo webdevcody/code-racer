@@ -3,20 +3,18 @@ import { cn } from "@/lib/utils";
 type CodeProps = {
   code: string;
   input: string;
-  textIndicatorPosition: number;
 };
 
 export default function Code({
   code,
   input,
-  textIndicatorPosition,
 }: CodeProps) {
   const array: number[] = [];
   const currentCharacter = input.slice(-1);
-  const expectedCharacter = code.charAt(textIndicatorPosition - 1);
+  const expectedCharacter = code.charAt(input.length - 1);
 
   if (currentCharacter !== expectedCharacter) {
-    array.push(textIndicatorPosition - 1);
+    array.push(input.length - 1);
   }
 
   return (
@@ -34,7 +32,7 @@ export default function Code({
               "border-red-500 opacity-100":
                 code[index] === " " && array.includes(index),
               "bg-yellow-200 opacity-80 text-black":
-                textIndicatorPosition === index,
+                input.length === index,
               "opacity-100": input.length !== index && input[index] === char,
             })}
           >

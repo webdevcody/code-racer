@@ -19,6 +19,7 @@ import type { Snippet } from "@prisma/client";
 import type { User } from "next-auth";
 import type { ChartTimeStamp } from "./types";
 import type { ReplayTimeStamp } from "./types";
+import { useCheckForUserNavigator } from "@/lib/user-system";
 
 type RacePracticeProps = {
   user?: User;
@@ -27,11 +28,12 @@ type RacePracticeProps = {
 
 export default function RacePractice({ user, snippet }: RacePracticeProps) {
   const [input, setInput] = useState("");
-  const [textIndicatorPosition, setTextIndicatorPosition] = useState(0);
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [totalErrors, setTotalErrors] = useState(0);
   const [chartTimeStamp, setChartTimeStamp] = useState<ChartTimeStamp[]>([]);
   const [replayTimeStamp, setReplayTimeStamp] = useState<ReplayTimeStamp[]>([]);
+
+  const isUserOnAdroid = useCheckForUserNavigator("android");
 
   const inputElement = useRef<HTMLInputElement | null>(null);
   const code = snippet.code.trimEnd();
@@ -44,7 +46,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
       ...prev,
       {
         char: input.slice(-1),
-        textIndicatorPosition,
+        textIndicatorPosition: input.length,
         time: Date.now(),
       },
     ]);
@@ -78,7 +80,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
         ...replayTimeStamp,
         {
           char: input.slice(-1),
-          textIndicatorPosition,
+          textIndicatorPosition: input.length,
           time: Date.now(),
         },
       ]),
@@ -99,7 +101,39 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
     }
   }
 
+  function handleInputEvent(e: React.FormEvent<HTMLInputElement>) {
+    if (!isUserOnAdroid) return;
+    // so, if the user has errors, also check if the new value to be set is greater than the current value.
+    // This is to know if the user is trying to delete a character, since we don't want to allow a user from
+    // inserting anything, however, if we fully disable them from changing the input, then they won't be able to
+    // delete a character. Thus, one way to check if they are clicking the Backspace button on their phones is
+    // to compare the lengths of the current input and the new input;
+    if (input !== code.slice(0, input.length) && e.currentTarget.value.length > input.length) {
+      e.preventDefault();
+      return;
+    };
+
+    // if (e.currentTarget.value)
+    setInput(e.currentTarget.value);
+  };
+
   function handleKeyboardDownEvent(e: React.KeyboardEvent<HTMLInputElement>) {
+    // For ANDROID.
+    // since the enter button on a mobile keyboard/keypad actually
+    // returns a e.key of "Enter", we just set a condition for that.
+    if (isUserOnAdroid) {
+      // The code below causes bugs, please review them. For now, just return
+      // switch (e.key) {
+      //   case "Enter":
+      //     handleInputEvent(e);
+      //     break;
+      //   default:
+      //     e.preventDefault();
+      //     break;
+      // }
+      return;
+    };
+
     // Restart
     if (e.key === "Escape") {
       handleRestart();
@@ -165,7 +199,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
       ...prev,
       {
         char: input.slice(-1),
-        textIndicatorPosition,
+        textIndicatorPosition: input.length,
         time: Date.now(),
       },
     ]);
@@ -176,25 +210,16 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
       return;
     }
 
-    if (textIndicatorPosition === input.length) {
-      setInput((prevInput) => prevInput.slice(0, -1));
-    }
-
-    setTextIndicatorPosition(
-      (prevTextIndicatorPosition) => prevTextIndicatorPosition - 1,
-    );
+    setInput((prevInput) => prevInput.slice(0, -1))
 
     if (chartTimeStamp.length > 0) {
       setChartTimeStamp((prev) => prev.slice(0, -1));
     }
   }
-
+  console.log(input)
   function Enter() {
     if (code.charAt(input.length) !== "\n") {
       setInput(input + "\n");
-      setTextIndicatorPosition((prevTextIndicatorPosition) => {
-        return prevTextIndicatorPosition + 1;
-      });
     }
 
     const lines = input.split("\n");
@@ -207,10 +232,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
         indent += " ";
         i++;
       }
-      setInput(input + "\n" + indent);
-      setTextIndicatorPosition((prevTextIndicatorPosition) => {
-        return prevTextIndicatorPosition + 1 + indent.length;
-      });
+      setInput((prevInput) => prevInput + "\n" + indent);
     }
   }
 
@@ -220,21 +242,17 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
     }
 
     setInput((prevInput) => prevInput + e.key);
-    setTextIndicatorPosition(
-      (prevTextIndicatorPosition) => prevTextIndicatorPosition + 1,
-    );
   }
 
   function handleRestart() {
     setStartTime(null);
     setInput("");
-    setTextIndicatorPosition(0);
     setTotalErrors(0);
   }
 
   return (
     <div
-      className="relative flex flex-col w-3/4 gap-2 p-4 mx-auto rounded-md lg:p-8 bg-accent"
+      className="relative flex flex-col w-[clamp(10rem,95%,50rem)] gap-2 p-4 mx-auto rounded-md lg:p-8 bg-accent"
       onClick={() => {
         inputElement.current?.focus();
       }}
@@ -242,7 +260,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
     >
       <RaceTracker
         user={user}
-        position={textIndicatorPosition}
+        position={input.length}
         codeLength={code.length}
       />
       <Header user={user} snippet={snippet} handleRestart={handleRestart} />
@@ -251,17 +269,18 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
         <Code
           code={code}
           input={input}
-          textIndicatorPosition={textIndicatorPosition}
         />
         <input
           type="text"
-          defaultValue={input}
+          value={input}
           ref={inputElement}
           onKeyDown={handleKeyboardDownEvent}
+          onInput={handleInputEvent}
           disabled={input === code}
           className="absolute inset-y-0 left-0 w-full h-full p-8 rounded-md -z-40 focus:outline outline-blue-500 cursor-none"
           onPaste={(e) => e.preventDefault()}
           data-cy="race-practice-input"
+          autoComplete="off"
         />
       </section>
       <Footer
