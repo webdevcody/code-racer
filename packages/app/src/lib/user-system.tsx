@@ -11,7 +11,7 @@ export function useCheckForUserNavigator(type: "android") {
             const isUserOnAdroid = userAgent.match(/android/i);
             setIsUserOnSpecificOS(isUserOnAdroid ? true : false);
         }
-    }, []);
+    }, [type]);
 
     return isUserOnSpecificOS;
 };
