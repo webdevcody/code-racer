@@ -21,6 +21,7 @@ it("can successfully completed a practice race", () => {
 
   // Find language selection and type snippet language
   racePage.practiceCardlanguageDropdown().should("be.visible").click();
+  cy.wait(TIME_TO_WAIT);
   racePage.htmlLanguageOption().should("be.visible").click();
 
   // Find practice button to start practice race
