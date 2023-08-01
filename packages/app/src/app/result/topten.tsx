@@ -8,7 +8,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { getTopTen, getUserSnippetPlacement } from "./loaders";
 import { Heading } from "@/components/ui/heading";
