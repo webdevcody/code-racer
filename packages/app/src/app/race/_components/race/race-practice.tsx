@@ -94,18 +94,18 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
   });
 
   function handleInputEvent(e: any /** React.FormEvent<HTMLInputElement>*/) {
-    console.log(e)
+
     if (!isUserOnAdroid) return;
     const data = e.nativeEvent.data;
-    console.log(data);
+
     // undefined is returned if user pressed enter button on mobile.
     // If it's backspace, then null is returned.
     if (input !== code.slice(0, input.length) && (data === undefined || data)) {
-      console.log("running")
+
       e.preventDefault();
       return;
     };
-    console.log(data);
+
     // if (e.currentTarget.value)
     if (data) {
       setInput((prevInput) => prevInput + data);
@@ -181,11 +181,11 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
 
     changeTimeStamps(e);
   }
-  console.log(replayTimeStamp)
+
   // since this logic of setting timestamps will be reused
   function changeTimeStamps(e: any) {
     let value: string;
-    console.log(e)
+
     // if keyboardDown event is the one that calls this
     if (e.key) {
       value = e.key;
