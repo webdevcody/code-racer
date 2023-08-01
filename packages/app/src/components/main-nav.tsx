@@ -35,6 +35,7 @@ export function MainNav({ items }: { items?: NavItem[] }) {
                         isActiveRoute(currentPathName as string, item.href),
                     },
                   )}
+                  data-cy={`${item.title}-main-nav-link`}
                 >
                   {item.title}
                 </Link>

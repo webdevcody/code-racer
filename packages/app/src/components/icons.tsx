@@ -36,6 +36,11 @@ import {
   LucideProps,
   Keyboard,
   Crown,
+  Bell,
+  BellDot,
+  CircleDashed,
+  CircleDot,
+  XSquare,
 } from "lucide-react";
 
 import Image from "next/image";
@@ -90,6 +95,11 @@ export const Icons = {
   addCircle: PlusCircle,
   trash: Trash,
   ellipsis: MoreVertical,
+  normalBellNotification: Bell,
+  unreadBellNotification: BellDot,
+  unreadNotification: CircleDashed,
+  readNotification: CircleDot,
+  xSquare: XSquare,
   raceCar: (props: LucideProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"

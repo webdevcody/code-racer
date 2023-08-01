@@ -1,122 +1,32 @@
 import { Heading } from "@/components/ui/heading";
-import { siteConfig } from "@/config/site";
-import Contributor from "./contributor";
-import { GitHubUser, GitHubUserCommitActivity } from "./contributor";
+import Contributor from "./_components/contributor";
 import AdditionsDeletions from "./_components/additions-deletions";
 import ProportionBarChart from "./_components/proportion-bar-chart";
 import Time from "@/components/ui/time";
 import CountingAnimation from "./_components/counting-animation";
 import PaginationBar from "./_components/pagination-bar";
+import { z } from "zod";
+
+import {
+  getContributors,
+  getContributorCodeChanges,
+  getRepoWeeklyCodeChanges,
+} from "./_helpers/utils";
 import { redirect } from "next/navigation";
 
-type GitHubRepoCommitActivity = number[];
+const PER_PAGE_MAX = 15; // Limit to only 15 per page to avoid hitting rate limit
 
-async function getContributorsActivity(
-  contributors: GitHubUser[],
-): Promise<GitHubUserCommitActivity[]> {
-  const url = siteConfig.api.github.githubContributorActivity;
-  const commitActivity: GitHubUserCommitActivity[] = [];
-  try {
-    const response = await fetch(url, {
-      next: {
-        revalidate: siteConfig.api.github.cacheRevalidationInterval,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    // GitHub response JSON schema
-    type GitHubContributorCommitActivity = {
-      author: GitHubUser;
-      total: number;
-      weeks: {
-        w: number;
-        a: number;
-        d: number;
-        c: number;
-      }[];
-    };
-
-    const data: GitHubContributorCommitActivity[] = await response.json();
-    contributors
-      .map((contributor) => contributor.login)
-      .forEach((username) => {
-        const activity: GitHubContributorCommitActivity | undefined = data.find(
-          (e) => e.author.login === username,
-        );
-        if (activity) {
-          const activityAllTime = activity.weeks.reduce(
-            (
-              accumulator: GitHubUserCommitActivity,
-              currentValue: { a: number; d: number; w: number; c: number },
-            ) => ({
-              ...accumulator,
-              additions: currentValue.a + accumulator.additions,
-              deletions: currentValue.d + accumulator.deletions,
-            }),
-            { additions: 0, deletions: 0, login: username },
-          );
-          commitActivity.push(activityAllTime);
-        }
-      });
-    return commitActivity;
-  } catch (error) {
-    console.error("An error occurred", error);
-    return [];
-  }
-}
-
-async function getContributors(): Promise<GitHubUser[] | []> {
-  const searchParams = new URLSearchParams({
-    per_page: "100", // per GitHub api docs max is 100
-    page: "1",
-  });
-  const url =
-    siteConfig.api.github.githubContributors + "?" + searchParams.toString();
-
-  try {
-    const response = await fetch(url, {
-      next: {
-        revalidate: siteConfig.api.github.cacheRevalidationInterval,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data: GitHubUser[] = await response.json();
-    return data;
-  } catch (error) {
-    console.error("An error occurred", error);
-    return [];
-  }
-}
-
-async function getRepoWeeklyCommitActivity(): Promise<
-  GitHubRepoCommitActivity[] | []
-> {
-  const url = siteConfig.api.github.githubWeeklyActivity;
-  try {
-    const response = await fetch(url, {
-      next: {
-        revalidate: siteConfig.api.github.cacheRevalidationInterval,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data: GitHubRepoCommitActivity[] = await response.json();
-    return data;
-  } catch (error) {
-    console.error("An error occurred", error);
-    return [];
-  }
-}
+const searchParamsSchema = z.object({
+  page: z.coerce.number().default(1),
+  per_page: z.coerce
+    .number()
+    .transform((v) => {
+      if (v) {
+        return v > PER_PAGE_MAX ? PER_PAGE_MAX : v;
+      } else return PER_PAGE_MAX;
+    })
+    .default(PER_PAGE_MAX),
+});
 
 export default async function ContributorsPage({
   searchParams,
@@ -126,23 +36,21 @@ export default async function ContributorsPage({
     per_page: string;
   };
 }) {
-  const { page, per_page } = searchParams;
-  if (!page || !per_page) {
-    redirect("/contributors?page=1&per_page=30");
+  let parsedSearchParams;
+  try {
+    parsedSearchParams = searchParamsSchema.parse(searchParams);
+  } catch (err) {
+    redirect(`/contributors?page=1&per_page=${PER_PAGE_MAX}`);
   }
-  const parsed_page = page ? parseInt(page) : 1;
-  const parsed_per_page = per_page
-    ? parseInt(per_page) >= 30
-      ? 30
-      : parseInt(per_page)
-    : 30; // Limit to only 30 per page to avoid hitting rate limit
-  const sliceStartIndex = (parsed_page - 1) * parsed_per_page;
-  const sliceEndIndex = sliceStartIndex + parsed_per_page;
+  const { page, per_page } = parsedSearchParams;
+  const sliceStartIndex = (page - 1) * per_page;
+  const sliceEndIndex = sliceStartIndex + per_page;
   const contributors = await getContributors();
-  const contributorCommitActivities = await getContributorsActivity(
+  const totalPage = Math.ceil(contributors.length / per_page);
+  const contributorCommitActivities = await getContributorCodeChanges(
     contributors,
   );
-  const repoCommitActivity = await getRepoWeeklyCommitActivity();
+  const repoCommitActivity = await getRepoWeeklyCodeChanges();
   const [since, additions, deletions] =
     repoCommitActivity.length > 0
       ? repoCommitActivity[repoCommitActivity.length - 1]
@@ -151,7 +59,7 @@ export default async function ContributorsPage({
   return (
     <div className="pt-12 pb-12">
       <Heading
-        title="Contributors"
+        title="Contributors!"
         description="All the project contributors"
       />
       <br />
@@ -184,23 +92,29 @@ export default async function ContributorsPage({
           </div>
           <PaginationBar
             className="mt-3"
-            nextURL={`/contributors?page=${
-              parsed_page + 1
-            }&per_page=${parsed_per_page}`}
-            prevURL={`/contributors?page=${
-              parsed_page - 1 < 1 ? 1 : parsed_page - 1
-            }&per_page=${parsed_per_page}`}
+            nextURL={`/contributors?page=${Math.min(
+              page + 1,
+              totalPage,
+            )}&per_page=${per_page}`}
+            prevURL={`/contributors?page=${Math.max(
+              page - 1,
+              1,
+            )}&per_page=${per_page}`}
+            firstURL={`/contributors?page=1&per_page=${per_page}`}
+            lastURL={`/contributors?page=${totalPage}&per_page=${per_page}`}
+            pages={page}
+            totalPages={totalPage}
           />
         </div>
       </div>
-      <ul className="grid gap-8 mt-8 list-none md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <ul className="grid gap-4 mt-8 list-none md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {contributors
           .slice(sliceStartIndex, sliceEndIndex)
           .map((contributor) => (
             <Contributor
               key={contributor.id}
               contributor={contributor}
-              contributorsActivity={
+              contributorsCodeChanges={
                 contributorCommitActivities.find(
                   (e) => e.login === contributor.login,
                 ) ?? { additions: 0, deletions: 0, login: contributor.login }
@@ -208,6 +122,22 @@ export default async function ContributorsPage({
             />
           ))}
       </ul>
+
+      <PaginationBar
+        className="flex justify-center mt-6 w-full"
+        nextURL={`/contributors?page=${Math.min(
+          page + 1,
+          totalPage,
+        )}&per_page=${per_page}`}
+        prevURL={`/contributors?page=${Math.max(
+          page - 1,
+          1,
+        )}&per_page=${per_page}`}
+        firstURL={`/contributors?page=1&per_page=${per_page}`}
+        lastURL={`/contributors?page=${totalPage}&per_page=${per_page}`}
+        pages={page}
+        totalPages={totalPage}
+      />
     </div>
   );
 }

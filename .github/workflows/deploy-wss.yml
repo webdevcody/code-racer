@@ -1,0 +1,19 @@
+name: Deploy WSS
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy-wss:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: |
+          flyctl deploy --remote-only \
+            --build-arg DATABASE_URL=${{ secrets.DATABASE_URL }} \
+            --build-arg CORS_ORIGIN=${{ secrets.CORS_ORIGIN }} \
+            --config packages/wss/fly.toml \
+            --dockerfile packages/wss/Dockerfile
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

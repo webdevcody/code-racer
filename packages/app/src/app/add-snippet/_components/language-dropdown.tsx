@@ -46,6 +46,7 @@ const LanguageDropDown = ({
           role="combobox"
           aria-expanded={open}
           className={cn("justify-between w-full px-4 py-3", className)}
+          data-cy="language-dropdown"
         >
           {codeLanguage
             ? snippetLanguages.find(
@@ -61,6 +62,7 @@ const LanguageDropDown = ({
             placeholder="Search a Language..."
             value={search}
             onValueChange={setSearch}
+            data-cy="search-language-input"
           />
           <CommandEmpty>No language found.</CommandEmpty>
           <CommandGroup className="overflow-y-auto">
@@ -82,6 +84,7 @@ const LanguageDropDown = ({
                     );
                     setOpen(false);
                   }}
+                  data-cy={`${language.value}-value`}
                 >
                   <Check
                     className={cn(

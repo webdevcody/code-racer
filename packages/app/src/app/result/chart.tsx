@@ -12,20 +12,20 @@ import {
   ResponsiveContainer,
   TooltipProps,
 } from "recharts";
-import { ResultChartLineProps } from "@/types/result";
+import { ResultChartLine } from "@/types/result";
 import { ParsedRacesResult } from "./loaders";
 import {
   NameType,
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
 
-const dataKeys: ResultChartLineProps[] = [
+const dataKeys: ResultChartLine[] = [
   { dataKey: "accuracy", stroke: "#0261b9" },
   { dataKey: "cpm", stroke: "#0ee2c6" },
   { dataKey: "errorCount", stroke: "#f00d0d" },
 ];
 
-interface raceTimeStampProps {
+interface ChartTimeStamp {
   char: string;
   accuracy: number;
   cpm: number;
@@ -34,17 +34,17 @@ interface raceTimeStampProps {
 
 interface CurrentChartProps {
   code?: string;
-  raceTimeStamp: raceTimeStampProps[];
-  setRaceTimeStamp: React.Dispatch<React.SetStateAction<raceTimeStampProps[]>>;
+  raceTimeStamp: ChartTimeStamp[];
+  setRaceTimeStamp: React.Dispatch<React.SetStateAction<ChartTimeStamp[]>>;
   activeCharIndex?: number;
   setActiveCharIndex: React.Dispatch<React.SetStateAction<number | undefined>>;
 }
 
-export default function Chart({
-  raceResult,
-}: {
+type ChartProps = {
   raceResult: ParsedRacesResult[];
-}) {
+};
+
+export default function Chart({ raceResult }: ChartProps) {
   const [opacity, setOpacity] = useState<
     Partial<Record<keyof ParsedRacesResult, number>>
   >({
@@ -142,7 +142,7 @@ const RenderCode = ({
 }: {
   code?: string;
   activeCharIndex?: number;
-  raceTimeStamp: raceTimeStampProps[];
+  raceTimeStamp: ChartTimeStamp[];
 }) => {
   let removeExtras = 0;
   return (
@@ -233,7 +233,7 @@ function CurrentChart(props: CurrentChartProps) {
 }
 
 export function ParentCurrentChart({ code }: { code?: string }) {
-  const [raceTimeStamp, setRaceTimeStamp] = useState<raceTimeStampProps[]>([]);
+  const [raceTimeStamp, setRaceTimeStamp] = useState<ChartTimeStamp[]>([]);
   const [activeCharIndex, setActiveCharIndex] = useState<number>();
 
   return (

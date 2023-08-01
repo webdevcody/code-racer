@@ -1,10 +1,13 @@
 "use server";
-import { prisma } from "@/lib/prisma";
+//please don't alias these paths, it will break wss
+import { type Language } from "../../../config/languages";
+import { prisma } from "../../../lib/prisma";
+import type { Snippet } from "@prisma/client";
 
 export async function getRandomSnippet(input: {
-  language: string;
+  language: Language;
   reportedSnippets?: string[];
-}) {
+}): Promise<Snippet> {
   const itemCount = await prisma.snippet.count({
     where: {
       onReview: false,
@@ -34,4 +37,14 @@ export async function getRandomSnippet(input: {
   });
 
   return snippet;
+}
+
+export async function getSnippetById(
+  snippetId: string,
+): Promise<Snippet | null> {
+  return await prisma.snippet.findUnique({
+    where: {
+      id: snippetId,
+    },
+  });
 }

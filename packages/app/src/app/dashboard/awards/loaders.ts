@@ -29,3 +29,25 @@ export async function getUserResultsCount() {
     },
   });
 }
+
+export async function getUserRank() {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    throw new UnauthorizedError();
+  }
+
+  const usersSortedByAccuracy = await prisma.user.findMany({
+    select: {
+      id: true,
+      averageAccuracy: true,
+    },
+    orderBy: {
+      averageAccuracy: "desc",
+    },
+  });
+
+  const userRank = usersSortedByAccuracy.findIndex((u) => u.id === user.id) + 1;
+
+  return userRank;
+}

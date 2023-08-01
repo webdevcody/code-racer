@@ -1,11 +1,11 @@
 import { getCurrentUser } from "@/lib/session";
-
 import { getRandomSnippet } from "../loaders";
-
-import NoSnippet from "../../no-snippet";
-import Race from "../../race";
-import { getSnippetById } from "./loaders";
+import NoSnippet from "../../_components/no-snippet";
+import RacePractice from "../../_components/race/race-practice";
+import { getSnippetById } from "../loaders";
 import { CacheBuster } from "@/components/cache-buster";
+import { Language, isValidLanguage } from "@/config/languages";
+import { redirect } from "next/navigation";
 
 async function getSearchParamSnippet(snippetId: string | string[]) {
   if (typeof snippetId === "string") {
@@ -14,26 +14,35 @@ async function getSearchParamSnippet(snippetId: string | string[]) {
   return null;
 }
 
-export default async function PracticeRacePage({
-  searchParams,
-}: {
+type PracticeRacePageProps = {
   searchParams: {
     snippetId: string;
     lang: string;
   };
-}) {
+};
+
+export default async function PracticeRacePage({
+  searchParams,
+}: PracticeRacePageProps) {
   const user = await getCurrentUser();
+  const language = searchParams.lang as Language;
+  if (language) {
+    const isValidLang = isValidLanguage(language);
+    if (!isValidLang) {
+      redirect("/race");
+    }
+  }
+
   const snippet =
     (await getSearchParamSnippet(searchParams.snippetId)) ??
-    (await getRandomSnippet({ language: searchParams.lang }));
-  const language = searchParams.lang;
+    (await getRandomSnippet({ language: language }));
 
   return (
     <main>
       <CacheBuster />
       {snippet && (
         <div className="pt-8">
-          <Race snippet={snippet} user={user} />
+          <RacePractice snippet={snippet} user={user} />
         </div>
       )}
       {!snippet && (

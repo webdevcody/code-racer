@@ -1,0 +1,111 @@
+name: Pull Request
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+# on: push
+
+env:
+  NODE_VERSION: 18.16.0
+
+jobs:
+  linting:
+    name: Lint
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Continuous integration
+        uses: ./.github/actions/ci-setup
+
+      - name: Lint Application
+        run: npm run lint --workspace @code-racer/app
+
+      - name: Lint Socket Server
+        run: npm run lint --workspace @code-racer/wss
+
+  type-check:
+    name: Types
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Continuous Integration
+        uses: ./.github/actions/ci-setup
+
+      - name: Check Application Types
+        run: |
+          npm run db:generate --workspace @code-racer/app &&
+          npm run type-check --workspace @code-racer/app
+
+      - name: Check Socket Server Types
+        run: npm run type-check --workspace @code-racer/wss
+
+  build:
+    name: Build
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Continuous Integration
+        uses: ./.github/actions/ci-setup
+
+      - name: Copy Env File
+        run: cp ./packages/app/.env.example ./packages/app/.env
+
+      - name: Prisma Generate
+        run: npm run generate --workspace @code-racer/app
+
+      - name: Build Application
+        run: npm run build --workspace @code-racer/app
+
+      # - name: Build Socket Server
+      #   run: npm run build --workspace @code-racer/wss
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # - name: Setup Continuous Integration
+      #   uses: ./.github/actions/ci-setup
+
+      - name: Npm Clean Install
+        run: npm ci
+
+      - name: Copy Env File
+        run: cp ./packages/app/.env.example ./packages/app/.env
+
+      - name: Start Database
+        run: npm run db --workspace @code-racer/app
+
+      - name: Migrate Database
+        run: npm run migrate --workspace @code-racer/app
+
+      # - name: Start Socket Server
+      #   run: npm run dev --workspace @code-racer/wss
+
+      # - name: Start Application
+      #   run: npm run start --workspace @code-racer/app
+
+      # - name: Install Cypress
+      #   run: npm run cypress install --workspace @code-racer/app
+
+      - name: Run Cypress Tests
+        uses: cypress-io/github-action@v5
+        with:
+          headed: true
+          browser: chrome
+          project: ./packages/app/
+          record: false
+          install: false
+          build: npm run build -w @code-racer/app
+          start: npm run start -w @code-racer/app
+          wait-on: "http://localhost:3000"
+          config: video=false,screenshotOnRunFailure=false
