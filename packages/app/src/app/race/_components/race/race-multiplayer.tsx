@@ -163,7 +163,7 @@ export default function RaceMultiplayer({
       socket.disconnect();
       socket.off("connect");
     };
-  }, [practiceSnippet, language, startRaceEventHandlers, user?.id]);
+  }, [practiceSnippet, language, startRaceEventHandlers]);
 
   //send updated position to server
   useEffect(() => {
@@ -188,84 +188,79 @@ export default function RaceMultiplayer({
     return () => clearInterval(gameLoop);
   }, [currentRaceStatus, position, participantId, raceId]);
 
-  const endRace = React.useCallback(() => {
-    if (!startTime) return;
-    const endTime = new Date();
-    const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
-
-    localStorage.setItem(
-      "raceTimeStamp",
-      JSON.stringify([
-        ...raceTimeStamp,
-        {
-          char: input.slice(-1),
-          accuracy: calculateAccuracy(input.length, totalErrors),
-          cpm: calculateCPM(input.length, timeTaken),
-          time: Date.now(),
-        },
-      ]),
-    );
-
-    localStorage.setItem(
-      "replayTimeStamp",
-      JSON.stringify([
-        ...replayTimeStamp,
-        {
-          char: input.slice(-1),
-          textIndicatorPosition: input.length,
-          time: Date.now(),
-        },
-      ]),
-    );
-
-    if (!snippet || !code) {
-      setSubmittingResults(false);
-      return;
-    }
-
-    if (user) {
-      saveUserResultAction({
-        raceParticipantId: participantId,
-        timeTaken,
-        errors: totalErrors,
-        cpm: calculateCPM(code.length - 1, timeTaken),
-        accuracy: calculateAccuracy(code.length - 1, totalErrors),
-        snippetId: snippet.id,
-      }).then(result => {
-        if (!result) {
-          return router.refresh();
-        }
-
-        router.push(`/result?resultId=${result.id}`);
-      }).catch(error => {
-        catchError(error);
-      });
-
-    } else {
-      router.push(`/result?snippetId=${snippet.id}`);
-    }
-
-    setSubmittingResults(false);
-  }, [submittingResults, replayTimeStamp, raceTimeStamp, startTime, input, totalErrors]);
-
   useEffect(() => {
     if (isRaceFinished) {
-      endRace();
+      if (!startTime) return;
+      const endTime = new Date();
+      const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
+  
+      localStorage.setItem(
+        "raceTimeStamp",
+        JSON.stringify([
+          ...raceTimeStamp,
+          {
+            char: input.slice(-1),
+            accuracy: calculateAccuracy(input.length, totalErrors),
+            cpm: calculateCPM(input.length, timeTaken),
+            time: Date.now(),
+          },
+        ]),
+      );
+  
+      localStorage.setItem(
+        "replayTimeStamp",
+        JSON.stringify([
+          ...replayTimeStamp,
+          {
+            char: input.slice(-1),
+            textIndicatorPosition: input.length,
+            time: Date.now(),
+          },
+        ]),
+      );
+  
+      if (!snippet || !code) {
+        setSubmittingResults(false);
+        return;
+      }
+  
+      if (user) {
+        saveUserResultAction({
+          raceParticipantId: participantId,
+          timeTaken,
+          errors: totalErrors,
+          cpm: calculateCPM(code.length - 1, timeTaken),
+          accuracy: calculateAccuracy(code.length - 1, totalErrors),
+          snippetId: snippet.id,
+        }).then(result => {
+          if (!result) {
+            return router.refresh();
+          }
+          router.push(`/result?resultId=${result.id}`);
+        }).catch(error => {
+          catchError(error);
+        });
+  
+      } else {
+        router.push(`/result?snippetId=${snippet.id}`);
+      }
+  
+      setSubmittingResults(false);
     }
-  }, [isRaceFinished, endRace]);
+  });
 
   useEffect(() => {
     inputElement.current?.focus();
 
-    setReplayTimeStamp((prev) => [
-      ...prev,
-      {
-        char: input.slice(-1),
-        textIndicatorPosition: input.length,
-        time: Date.now(),
-      },
-    ]);
-  }, [input]);
+    // setReplayTimeStamp((prev) => [
+    //   ...prev,
+    //   {
+    //     char: input.slice(-1),
+    //     textIndicatorPosition: input.length,
+    //     time: Date.now(),
+    //   },
+    // ]);
+  }, []);
 
   function handleKeyboardDownEvent(e: React.KeyboardEvent<HTMLInputElement>) {
     // Restart
@@ -386,6 +381,8 @@ export default function RaceMultiplayer({
     setStartTime(null);
     setInput("");
     setTotalErrors(0);
+    setReplayTimeStamp([]);
+    setRaceTimeStamp([]);
   }
 
   return (

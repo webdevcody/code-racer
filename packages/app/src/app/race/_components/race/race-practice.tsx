@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 
 // utils
 import { calculateAccuracy, calculateCPM, noopKeys } from "./utils";
-import { catchError } from "@/lib/utils";
 
 // Componenets
 import RaceTracker from "./race-tracker";
@@ -21,6 +20,7 @@ import type { User } from "next-auth";
 import type { ChartTimeStamp } from "./types";
 import type { ReplayTimeStamp } from "./types";
 import { useCheckForUserNavigator } from "@/lib/user-system";
+import { catchError } from "@/lib/utils";
 
 type RacePracticeProps = {
   user?: User;
@@ -39,71 +39,59 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
   const inputElement = useRef<HTMLInputElement | null>(null);
   const code = snippet.code.trimEnd();
   const router = useRouter();
-
-  const endRace = React.useCallback(() => {
-    if (!startTime) return;
-    const endTime = new Date();
-    const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
-
-    localStorage.setItem(
-      "raceTimeStamp",
-      JSON.stringify([
-        ...chartTimeStamp,
-        {
-          char: input.slice(-1),
-          accuracy: calculateAccuracy(input.length, totalErrors),
-          cpm: calculateCPM(input.length, timeTaken),
-          time: Date.now(),
-        },
-      ]),
-    );
-
-    localStorage.setItem(
-      "replayTimeStamp",
-      JSON.stringify([
-        ...replayTimeStamp,
-        {
-          char: input.slice(-1),
-          textIndicatorPosition: input.length,
-          time: Date.now(),
-        },
-      ]),
-    );
-
-    if (user) {
-      saveUserResultAction({
-        timeTaken,
-        errors: totalErrors,
-        cpm: calculateCPM(code.length - 1, timeTaken),
-        accuracy: calculateAccuracy(code.length - 1, totalErrors),
-        snippetId: snippet.id,
-      }).then(result => {
-        router.push(`/result?resultId=${result.id}`)
-      }).catch(error => {
-        catchError(error);
-      });
-    } else {
-      router.push(`/result?snippetId=${snippet.id}`);
-    }
-  }, []);
-
+  const isRaceFinished = input === code;
 
   useEffect(() => {
+    if (!inputElement?.current) return;
     inputElement.current?.focus();
+  }, [inputElement.current]);
 
-    setReplayTimeStamp((prev) => [
-      ...prev,
-      {
-        char: input.slice(-1),
-        textIndicatorPosition: input.length,
-        time: Date.now(),
-      },
-    ]);
-
-    if (input === code) {
-      endRace();
+  useEffect(() => {
+    if (isRaceFinished) {
+      if (!startTime) return;
+      const endTime = new Date();
+      const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
+  
+      localStorage.setItem(
+        "raceTimeStamp",
+        JSON.stringify([
+          ...chartTimeStamp,
+          {
+            char: input.slice(-1),
+            accuracy: calculateAccuracy(input.length, totalErrors),
+            cpm: calculateCPM(input.length, timeTaken),
+            time: Date.now(),
+          },
+        ]),
+      );
+  
+      localStorage.setItem(
+        "replayTimeStamp",
+        JSON.stringify([
+          ...replayTimeStamp,
+          {
+            char: input.slice(-1),
+            textIndicatorPosition: input.length,
+            time: Date.now(),
+          },
+        ]),
+      );
+  
+      if (user) {
+        saveUserResultAction({
+          timeTaken,
+          errors: totalErrors,
+          cpm: calculateCPM(code.length - 1, timeTaken),
+          accuracy: calculateAccuracy(code.length - 1, totalErrors),
+          snippetId: snippet.id,
+        }).then(result => {
+          router.push(`/result?resultId=${result.id}`);
+        }).catch(error => catchError(error));
+      } else {
+        router.push(`/result?snippetId=${snippet.id}`);
+      }
     }
-  }, [input, code, endRace]);
+  });
 
   function handleInputEvent(e: React.FormEvent<HTMLInputElement>) {
     if (!isUserOnAdroid) return;
@@ -127,14 +115,14 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
     // returns a e.key of "Enter", we just set a condition for that.
     if (isUserOnAdroid) {
       // The code below causes bugs, please review them. For now, just return
-      // switch (e.key) {
-      //   case "Enter":
-      //     handleInputEvent(e);
-      //     break;
-      //   default:
-      //     e.preventDefault();
-      //     break;
-      // }
+      switch (e.key) {
+        case "Enter":
+          handleInputEvent(e);
+          break;
+        default:
+          e.preventDefault();
+          break;
+      }
       return;
     };
 
@@ -223,7 +211,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
 
   function Enter() {
     if (code.charAt(input.length) !== "\n") {
-      setInput(input + "\n");
+      setInput((prevInput) => prevInput + "\n");
     }
 
     const lines = input.split("\n");
@@ -252,6 +240,8 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
     setStartTime(null);
     setInput("");
     setTotalErrors(0);
+    setReplayTimeStamp([]);
+    setChartTimeStamp([]);
   }
 
   return (
