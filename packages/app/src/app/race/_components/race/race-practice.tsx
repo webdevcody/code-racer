@@ -40,7 +40,6 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
   const code = snippet.code.trimEnd();
   const router = useRouter();
 
-
   const endRace = React.useCallback(() => {
     if (!startTime) return;
     const endTime = new Date();
@@ -72,6 +71,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
     );
 
     if (user) {
+      console.log("saving")
       saveUserResultAction({
         timeTaken,
         errors: totalErrors,
@@ -86,7 +86,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
     } else {
       router.push(`/result?snippetId=${snippet.id}`);
     }
-  }, [replayTimeStamp, chartTimeStamp, input, totalErrors]);
+  }, []);
 
 
   useEffect(() => {
@@ -221,7 +221,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
       setChartTimeStamp((prev) => prev.slice(0, -1));
     }
   }
-  console.log(input)
+
   function Enter() {
     if (code.charAt(input.length) !== "\n") {
       setInput(input + "\n");

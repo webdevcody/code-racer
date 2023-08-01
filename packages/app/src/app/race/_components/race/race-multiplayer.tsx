@@ -145,7 +145,7 @@ export default function RaceMultiplayer({
         participants.filter((participant) => participant.id !== participantId),
       );
     });
-  }, [snippet, raceId, participantId, participants, currentRaceStatus, raceStatus, raceStartCountdown, startTime]);
+  }, []);
 
   // Connection to wss
   useEffect(() => {
