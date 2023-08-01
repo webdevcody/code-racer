@@ -71,7 +71,6 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
     );
 
     if (user) {
-      console.log("saving")
       saveUserResultAction({
         timeTaken,
         errors: totalErrors,
