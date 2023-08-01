@@ -494,7 +494,6 @@ export default function RaceMultiplayer({
                 <Code
                   code={code}
                   input={input}
-                  textIndicatorPosition={textIndicatorPosition}
                 />
               )}
               <input
