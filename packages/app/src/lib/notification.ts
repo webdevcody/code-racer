@@ -22,6 +22,9 @@ export async function getUserNotification({
         id: userId,
       },
     },
+    orderBy: {
+      createdAt: "asc",
+    },
   });
 
   return notifications;
@@ -78,6 +81,36 @@ export const pushNotification = safeAction(
         connect: {
           id: userId,
         },
+      },
+    },
+  });
+});
+
+export const userClearNotificationAction = safeAction(
+  z.object({
+    userId: z.string(),
+  }),
+)(async ({ userId }) => {
+  await prisma.notification.deleteMany({
+    where: {
+      user: {
+        id: userId,
+      },
+    },
+  });
+  console.log("userClearNotification");
+  revalidatePath("/");
+});
+
+export const getUserNotificationCount = safeAction(
+  z.object({
+    userId: z.string(),
+  }),
+)(async ({ userId }) => {
+  return await prisma.notification.count({
+    where: {
+      user: {
+        id: userId,
       },
     },
   });

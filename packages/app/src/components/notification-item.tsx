@@ -8,7 +8,7 @@ interface NotificationItemProps {
 
 const NotificationItem = ({ notification }: NotificationItemProps) => {
   return (
-    <div className="flex flex-row justify-start gap-3 items-center p-2">
+    <div className="flex flex-row justify-start gap-3 items-center">
       <span
         className={cn(
           "flex justify-center items-center w-8",
@@ -38,6 +38,14 @@ const NotificationItem = ({ notification }: NotificationItemProps) => {
           )}
         >
           {notification.description}
+        </span>
+        <span
+          className={cn(
+            "text-xs",
+            notification.read && "text-muted-foreground",
+          )}
+        >
+          {notification.createdAt.toLocaleString()}
         </span>
       </div>
     </div>

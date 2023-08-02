@@ -186,6 +186,7 @@ model Notification {
     ctaUrl      String? @map("cta_url") // URL to redirect when user click on notification
     read        Boolean @default(false)
     userId      String @map("user_id")
+    createdAt   DateTime @map("created_at") @default(now())
 
     user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
