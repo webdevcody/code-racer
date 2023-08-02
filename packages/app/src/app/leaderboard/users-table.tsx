@@ -23,7 +23,7 @@ export function UsersTable({
   data,
   pageCount,
   ranks,
-  field = sortFilters.AverageCPM,
+  field,
 }: {
   data: UserWithResults[];
   pageCount: number;
@@ -146,7 +146,7 @@ export function UsersTable({
         },
       },
     ],
-    [],
+    [field],
   );
 
   return (
