@@ -25,7 +25,7 @@ interface ChartTimeStamp {
 }
 
 type ResultChart = {
-  code: string;
+  code?: string;
 };
 
 export function ResultChart({ code }: ResultChart) {
@@ -80,7 +80,7 @@ export function ResultChart({ code }: ResultChart) {
 }
 
 type RenderCode = {
-  code: string;
+  code?: string;
   activeCharIndex?: number;
   chartTimeStamp: ChartTimeStamp[];
 };
