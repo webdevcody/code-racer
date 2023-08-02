@@ -63,7 +63,7 @@ export class Game {
         // race id is associated with the room id
         const race = await createRace(snippet, payload.roomId);
 
-        this.races.set(race.id, {
+        this.races.set(payload.roomId, {
           ...race,
           participants: [],
           status: "waiting",
@@ -112,19 +112,26 @@ export class Game {
 
         const race = this.races.get(roomId) as Race;
 
-        this.races.set(roomId, {
+        const updatedRace = {
           ...race,
-          participants: [...race?.participants, socket.id],
-        });
+          participants: [...race.participants, socket.id],
+        };
+
+        this.races.set(roomId, updatedRace);
+
+        const participants = this.getRaceParticipants(updatedRace);
+
+        // console.log("Participants", participants);
 
         socket.emit("RoomJoined", {
           race: participant.Race,
-          roomId,
+          participants,
+          raceStatus: race.status,
           participantId: participant.id,
         });
 
         socket.to(Game.Room(roomId)).emit("UpdateParticipants", {
-          participants: participant.Race.participants,
+          participants,
         });
       });
 
@@ -132,7 +139,7 @@ export class Game {
         this.startRaceCountdown(payload.raceId);
       });
 
-      socket.on("UserRaceRequest", async (payload) => {
+      socket.on("UserGetRace", async (payload) => {
         const { race, raceParticipantId } = await raceMatchMaking(
           payload.language as Language,
           payload.userId,
@@ -146,11 +153,55 @@ export class Game {
           socketId: socket.id,
         });
 
+        const _race = this.races.get(race.id) as Race;
+
+        socket.to(Game.Room(race.id)).emit("GameStateUpdate", {
+          raceState: {
+            id: race.id,
+            participants: this.getRaceParticipants(_race),
+            status: _race.status,
+            countdown: 0,
+          },
+        });
+
         socket.emit("UserRaceResponse", {
           race,
+          participants: this.getRaceParticipants(_race),
           raceParticipantId,
+          raceStatus: this.races.get(race.id)!.status,
         });
       });
+
+      // socket.on("UserRaceRequest", async (payload) => {
+      //   const race = await prisma.race.findUnique({
+      //     where: {
+      //       id: payload.raceId,
+      //     },
+      //   });
+
+      //   if (!race) {
+      //     console.warn("Race doesn't exist.", {
+      //       raceId: payload.raceId,
+      //       time: new Date(),
+      //       level: "warn",
+      //     });
+      //     return;
+      //   }
+
+      //   socket.join(Game.Room(race.id));
+
+      //   this.handlePlayerEnterRace({
+      //     raceId: race.id,
+      //     raceParticipantId: payload.participantId,
+      //     socketId: socket.id,
+      //   });
+
+      //   socket.emit("UserRaceResponse", {
+      //     race,
+      //     raceParticipantId: payload.participantId,
+      //     raceStatus: this.races.get(race.id)!.status,
+      //   });
+      // });
 
       socket.on("UserLeaveRoom", async (payload) => {
         socket.leave(payload.raceId);
@@ -169,7 +220,6 @@ export class Game {
         this.participants.delete(socket.id);
 
         if (participant) {
-          console.log(participant);
           await prisma.raceParticipant.delete({
             where: {
               id: getRoomParticipantId({
@@ -184,7 +234,7 @@ export class Game {
       socket.on("disconnect", () => {
         const participant = this.participants.get(socket.id);
 
-        //this happens if the race ended successfully
+        // this happens if the race ended successfully
         if (!participant) return;
 
         this.handlePlayerLeaveRace({
@@ -204,12 +254,10 @@ export class Game {
     race: Race,
   ): (Participant & { socketId: string })[] {
     const participants: (Participant & { socketId: string })[] = [];
-    //Leave this as a raw for loop, .map will create more memory and will have possibly undefined values that will need to be filtered out
+    // Leave this as a raw for loop, .map will create more memory and will have possibly undefined values that will need to be filtered out
     for (let i = 0; race.participants.length > i; i++) {
       const socketId = race.participants[i];
-      console.log(socketId);
       const participant = this.participants.get(socketId);
-      console.log(participant)
       if (participant) {
         // TODO : make typescipt happy
         //@ts-expect-error oks
@@ -313,7 +361,13 @@ export class Game {
       }
     }
 
-    this.server.to(Game.Room(payload.raceId)).emit("UserRaceLeave", payload);
+    this.server.to(Game.Room(payload.raceId)).emit("GameStateUpdate", {
+      raceState: {
+        id: payload.raceId,
+        participants: this.getRaceParticipants(race),
+        status: race.status,
+      },
+    });
 
     if (
       race.participants.length === 0 &&

@@ -31,12 +31,9 @@ import RaceTrackerMultiplayer from "./race-tracker-mutliplayer";
 import { socket } from "@/lib/socket";
 
 // Types
-import type { ClientToServerEvents } from "@code-racer/wss/src/events/client-to-server";
-import type { ServerToClientEvents } from "@code-racer/wss/src/events/server-to-client";
 import { type RaceStatus, raceStatus } from "@code-racer/wss/src/types";
-import type { Snippet } from "@prisma/client";
+import type { Race, Snippet } from "@prisma/client";
 import type { User } from "next-auth";
-import type { Socket } from "socket.io-client";
 import { ChartTimeStamp, ReplayTimeStamp } from "./types";
 import { useCheckForUserNavigator } from "@/lib/user-system";
 
@@ -45,22 +42,24 @@ type Participant = Omit<
   "socketId"
 >;
 
-export default function RaceMultiplayer({
+export function GameMultiplayer({
+  race,
+  raceId,
+  participantId,
+  participants,
+  currentRaceStatus,
   user,
-  practiceSnippet,
-  language,
 }: {
+  race: Race;
+  raceId: string;
+  participantId: string;
+  participants: Participant[];
+  currentRaceStatus: RaceStatus | null;
   user?: User;
-  practiceSnippet?: Snippet;
-  language: Language;
 }) {
   const { toast } = useToast();
   const [input, setInput] = useState("");
-  const [currentRaceStatus, setCurrentRaceStatus] = useState<RaceStatus>(
-    //if the practiceSnippet is present, it means that the race is a practice race
-    Boolean(practiceSnippet) ? raceStatus.RUNNING : raceStatus.WAITING,
-  );
-  const [snippet, setSnippet] = useState<Snippet | undefined>(practiceSnippet);
+  const [snippet, setSnippet] = useState<Snippet | undefined>();
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [submittingResults, setSubmittingResults] = useState(false);
   const [totalErrors, setTotalErrors] = useState(0);
@@ -78,98 +77,46 @@ export default function RaceMultiplayer({
   const inputElement = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
 
-  const [participants, setParticipants] = useState<Participant[]>([]);
-  const [raceStartCountdown, setRaceStartCountdown] = useState(0);
-  const [raceId, setRaceId] = useState<string | null>(null);
-  const [participantId, setParticipantId] = useState<string | undefined>(
-    undefined,
-  );
   const position = code
     ? parseFloat(
         (((input.length - errors.length) / code.length) * 100).toFixed(2),
       )
     : null;
-  const isRaceFinished = practiceSnippet
-    ? input === code
-    : currentRaceStatus === raceStatus.FINISHED;
+
+  const isRaceFinished = currentRaceStatus === raceStatus.FINISHED;
   const showRaceTimer = !!startTime && !isRaceFinished;
   const isUserOnAdroid = useCheckForUserNavigator("android");
 
-  const startRaceEventHandlers = React.useCallback(() => {
-    socket.on("UserRaceResponse", async (payload) => {
-      const { race, raceParticipantId } = payload;
-      const snippet = await getSnippetById(race.snippetId);
-      if (!snippet) {
-        toast({
-          title: "Error",
-          description: "Snippet not found",
-        });
-        return;
-      }
+  const startRaceEventHandlers = React.useCallback(async () => {
+    const snippet = await getSnippetById(race.snippetId);
+    if (!snippet) {
+      toast({
+        title: "Error",
+        description: "Snippet not found",
+      });
+      return;
+    }
 
-      setSnippet(snippet);
-      setRaceId(race.id);
-      setParticipantId(raceParticipantId);
-    });
-
-    socket.on("GameStateUpdate", (payload) => {
-      const { raceState } = payload;
-      setParticipants(raceState.participants);
-      setCurrentRaceStatus(raceState.status);
-
-      if (raceState.countdown) {
-        setRaceStartCountdown(raceState.countdown);
-      } else if (raceState.countdown === 0) {
-        setStartTime(new Date());
-      }
-    });
-
-    socket.on("UserEnterFullRace", () => {
-      router.refresh();
-    });
-
-    socket.on("UserRaceEnter", (payload) => {
-      const { raceParticipantId: participantId } = payload;
-      setParticipants((participants) => [
-        ...participants,
-        { id: participantId, position: 0, finishedAt: null },
-      ]);
-    });
-
-    socket.on("UserRaceLeave", (payload) => {
-      const { raceParticipantId: participantId } = payload;
-      setParticipants((participants) =>
-        participants.filter((participant) => participant.id !== participantId),
-      );
-    });
+    setSnippet(snippet);
   }, []);
 
   // Connection to wss
   useEffect(() => {
-    if (practiceSnippet) return;
-    socket.on("connect", () => {
-      startRaceEventHandlers();
-      socket.emit("UserRaceRequest", {
-        language,
-        userId: user?.id,
-      });
+    startRaceEventHandlers();
+    socket.emit("UserRaceRequest", {
+      raceId,
+      participantId,
     });
 
     return () => {
       socket.disconnect();
       socket.off("connect");
     };
-  }, [practiceSnippet, language, startRaceEventHandlers]);
+  }, [raceId, startRaceEventHandlers]);
 
   //send updated position to server
   useEffect(() => {
-    if (
-      !participantId ||
-      !raceId ||
-      currentRaceStatus !== raceStatus.RUNNING ||
-      !position
-    )
-      return;
+    if (!position) return;
 
     const gameLoop = setInterval(() => {
       if (currentRaceStatus === raceStatus.RUNNING) {
@@ -181,69 +128,9 @@ export default function RaceMultiplayer({
         });
       }
     }, 200);
+    
     return () => clearInterval(gameLoop);
   }, [currentRaceStatus, position, participantId, raceId]);
-
-  useEffect(() => {
-    if (isRaceFinished) {
-      if (!startTime) return;
-      const endTime = new Date();
-      const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
-  
-      localStorage.setItem(
-        "raceTimeStamp",
-        JSON.stringify([
-          ...raceTimeStamp,
-          {
-            char: input.slice(-1),
-            accuracy: calculateAccuracy(input.length, totalErrors),
-            cpm: calculateCPM(input.length, timeTaken),
-            time: Date.now(),
-          },
-        ]),
-      );
-  
-      localStorage.setItem(
-        "replayTimeStamp",
-        JSON.stringify([
-          ...replayTimeStamp,
-          {
-            char: input.slice(-1),
-            textIndicatorPosition: input.length,
-            time: Date.now(),
-          },
-        ]),
-      );
-  
-      if (!snippet || !code) {
-        setSubmittingResults(false);
-        return;
-      }
-  
-      if (user) {
-        saveUserResultAction({
-          raceParticipantId: participantId,
-          timeTaken,
-          errors: totalErrors,
-          cpm: calculateCPM(code.length - 1, timeTaken),
-          accuracy: calculateAccuracy(code.length - 1, totalErrors),
-          snippetId: snippet.id,
-        }).then(result => {
-          if (!result) {
-            return router.refresh();
-          }
-          router.push(`/result?resultId=${result.id}`);
-        }).catch(error => {
-          catchError(error);
-        });
-  
-      } else {
-        router.push(`/result?snippetId=${snippet.id}`);
-      }
-  
-      setSubmittingResults(false);
-    }
-  });
 
   useEffect(() => {
     inputElement.current?.focus();
@@ -258,18 +145,20 @@ export default function RaceMultiplayer({
     // ]);
   }, []);
 
-
   function handleInputEvent(e: any /** React.FormEvent<HTMLInputElement>*/) {
     if (!isUserOnAdroid) return;
     if (!startTime) {
       setStartTime(new Date());
-    };
+    }
     const data = e.nativeEvent.data;
 
-    if (input !== code?.slice(0, input.length) && e.nativeEvent.inputType !== "deleteContentBackward") {
+    if (
+      input !== code?.slice(0, input.length) &&
+      e.nativeEvent.inputType !== "deleteContentBackward"
+    ) {
       e.preventDefault();
       return;
-    };
+    }
 
     if (e.nativeEvent.inputType === "insertText") {
       setInput((prevInput) => prevInput + data);
@@ -280,10 +169,10 @@ export default function RaceMultiplayer({
       Enter();
     }
     changeTimeStamps();
-  };
+  }
 
   function handleKeyboardUpEvent(e: React.KeyboardEvent<HTMLInputElement>) {
-     // For ANDROID.
+    // For ANDROID.
     // since the enter button on a mobile keyboard/keypad actually
     // returns a e.key of "Enter", we just set a condition for that.
     if (isUserOnAdroid) {
@@ -296,7 +185,7 @@ export default function RaceMultiplayer({
           break;
       }
       return;
-    };
+    }
 
     // Restart
     if (e.key === "Escape") {
@@ -357,7 +246,7 @@ export default function RaceMultiplayer({
         time: Date.now(),
       },
     ]);
-  };
+  }
 
   function Backspace() {
     if (input.length === 0) {
@@ -424,23 +313,70 @@ export default function RaceMultiplayer({
     setRaceTimeStamp([]);
   }
 
+  useEffect(() => {
+    if (isRaceFinished) {
+      if (!startTime) return;
+      const endTime = new Date();
+      const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
+
+      localStorage.setItem(
+        "raceTimeStamp",
+        JSON.stringify([
+          ...raceTimeStamp,
+          {
+            char: input.slice(-1),
+            accuracy: calculateAccuracy(input.length, totalErrors),
+            cpm: calculateCPM(input.length, timeTaken),
+            time: Date.now(),
+          },
+        ]),
+      );
+
+      localStorage.setItem(
+        "replayTimeStamp",
+        JSON.stringify([
+          ...replayTimeStamp,
+          {
+            char: input.slice(-1),
+            textIndicatorPosition: input.length,
+            time: Date.now(),
+          },
+        ]),
+      );
+
+      if (!snippet || !code) {
+        setSubmittingResults(false);
+        return;
+      }
+
+      if (user) {
+        saveUserResultAction({
+          raceParticipantId: participantId,
+          timeTaken,
+          errors: totalErrors,
+          cpm: calculateCPM(code.length - 1, timeTaken),
+          accuracy: calculateAccuracy(code.length - 1, totalErrors),
+          snippetId: snippet.id,
+        })
+          .then((result) => {
+            if (!result) {
+              return router.refresh();
+            }
+            router.push(`/result?resultId=${result.id}`);
+          })
+          .catch((error) => {
+            catchError(error);
+          });
+      } else {
+        router.push(`/result?snippetId=${snippet.id}`);
+      }
+
+      setSubmittingResults(false);
+    }
+  });
+
   return (
     <>
-      {/* Debug purposes */}
-      {/* <pre className="max-w-sm p-8 rounded"> */}
-      {/*   {JSON.stringify( */}
-      {/*     { */}
-      {/*       participantId, */}
-      {/*       user, */}
-      {/*       isRaceFinished, */}
-      {/*       raceStatus, */}
-      {/*       participants, */}
-      {/*       position, */}
-      {/*     }, */}
-      {/*     null, */}
-      {/*     4, */}
-      {/*   )} */}
-      {/* </pre> */}
       <div
         className="relative flex flex-col w-3/4 gap-2 p-4 mx-auto rounded-md lg:p-8 bg-accent"
         onClick={() => {
@@ -448,33 +384,16 @@ export default function RaceMultiplayer({
         }}
         role="none"
       >
-        {raceId && currentRaceStatus != raceStatus.RUNNING && !startTime && (
-          <MultiplayerLoadingLobby participants={participants}>
-            {currentRaceStatus === raceStatus.WAITING && (
-              <div className="flex flex-col items-center text-2xl font-bold">
-                <div className="w-8 h-8 border-4 border-t-4 rounded-full border-muted-foreground border-t-warning animate-spin"></div>
-                Waiting for players
-              </div>
-            )}
-            {currentRaceStatus === raceStatus.COUNTDOWN &&
-              !startTime &&
-              Boolean(raceStartCountdown) && (
-                <div className="text-2xl font-bold text-center">
-                  Game starting in: {raceStartCountdown}
-                </div>
-              )}
-          </MultiplayerLoadingLobby>
-        )}
         {currentRaceStatus === raceStatus.RUNNING && (
           <>
             {raceId && code
               ? participants.map((p) => (
-                <RaceTrackerMultiplayer
-                  key={p.id}
-                  position={p.position}
-                  participantId={p.id}
-                />
-              ))
+                  <RaceTrackerMultiplayer
+                    key={p.id}
+                    position={p.position}
+                    participantId={p.id}
+                  />
+                ))
               : null}
             <div className="flex justify-between mb-2 md:mb-4">
               <Heading
@@ -505,12 +424,7 @@ export default function RaceMultiplayer({
                 ))}
               </div>
 
-              {code && (
-                <Code
-                  code={code}
-                  input={input}
-                />
-              )}
+              {code && <Code code={code} input={input} />}
               <input
                 type="text"
                 defaultValue={input}
@@ -559,3 +473,5 @@ export default function RaceMultiplayer({
     </>
   );
 }
+
+export default GameMultiplayer;

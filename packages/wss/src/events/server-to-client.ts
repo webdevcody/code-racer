@@ -30,17 +30,20 @@ export type GameStateUpdatePayload = {
 
 export type UserRaceResponsePayload = {
   race: Prisma.RaceGetPayload<Record<string, never>>;
+  participants: Participant[];
   raceParticipantId: RaceParticipant["id"];
+  raceStatus: RaceStatus;
 };
 
 export type RoomJoinedResponsePayload = {
   race: Prisma.RaceGetPayload<{ include: { participants: true } }>;
-  roomId: string;
+  participants: Participant[];
+  raceStatus: RaceStatus;
   participantId: string;
 };
 
 export type UpdateParticipantsPayload = {
-  participants: Prisma.RaceParticipantGetPayload<Record<string, never>>[];
+  participants: Participant[];
 };
 
 export type UserRoomRaceResponsePayload = {
