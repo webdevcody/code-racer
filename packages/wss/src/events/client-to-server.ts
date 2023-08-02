@@ -21,9 +21,6 @@ export type UserCreateRoomPayload = {
   userId: string;
 };
 
-export type UserRoomRaceRequestPayload = {
-  raceId: string;
-};
 
 export interface ClientToServerEvents {
   PositionUpdate: (payload: PositionUpdatePayload) => void;
@@ -31,7 +28,7 @@ export interface ClientToServerEvents {
   UserRaceLeave: (payload: UserRacePresencePayload) => void;
   UserRaceRequest: (payload: UserRaceRequestPayload) => void;
   UserCreateRoom: (payload: UserCreateRoomPayload) => void;
-  UserRoomRaceRequest: (payload: UserRoomRaceRequestPayload) => void;
   UserJoinRoom: (payload: { raceId: string; userId: string }) => void;
   UserLeaveRoom: (payload: { raceId: string; userId: string }) => void;
+  StartRaceCountdown: (payload: { raceId: string }) => void;
 }

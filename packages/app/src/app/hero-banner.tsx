@@ -22,6 +22,7 @@ export default function HeroBanner() {
           "
         >
           <Link
+                       
             href={"/race"}
             title="Start Racing"
             prefetch
