@@ -63,12 +63,13 @@ export default function Notification({ userId }: NotificationProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant={"outline"} size={"icon"}>
+        <Button variant={"outline"} size={"icon"} data-cy="notification-toggle">
           {!hasUnreadNotification && (
             <Icons.normalBellNotification
               className="w-[1.2rem] h-[1.2rem]"
               strokeWidth={1.5}
               size={10}
+              data-cy="notification-normal-bell-icon"
             />
           )}
           {hasUnreadNotification && (
@@ -76,17 +77,19 @@ export default function Notification({ userId }: NotificationProps) {
               className="w-[1.2rem] h-[1.2rem]"
               strokeWidth={1.5}
               size={10}
+              data-cy="notification-unread-bell-icon"
             />
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
+      <DropdownMenuContent data-cy="notification-dropdown">
         <div className="flex flex-row items-center justify-center">
           <p className="text-center text-md font-bold text-secondary-foreground p-3 flex-1">
             Notifications
           </p>
           {notificationCount > 0 && (
             <Button
+              data-cy="notification-clear-button"
               disabled={isPending}
               variant={"outline"}
               size={"sm"}
@@ -114,6 +117,7 @@ export default function Notification({ userId }: NotificationProps) {
             <DropdownMenuItem
               key={notification.id}
               className="flex flex-row gap-1 justify-between items-center"
+              data-cy="notification-dropdown-menu-item"
             >
               <span
                 onClick={(e) => {
@@ -140,6 +144,7 @@ export default function Notification({ userId }: NotificationProps) {
                 <NotificationItem notification={notification} />
               </span>
               <Button
+                data-cy="notification-delete-button"
                 disabled={isPending}
                 variant={"outline"}
                 size={"icon"}
@@ -177,18 +182,25 @@ export default function Notification({ userId }: NotificationProps) {
                     }
                   });
                 }}
+                data-cy="notification-show-more-button"
               >
                 Show More
               </Button>
             </span>
           )}
           {!displayShowMoreButton && notificationCount > 0 && (
-            <p className="text-muted-foreground text-xs text-center p-6">
+            <p
+              className="text-muted-foreground text-xs text-center p-6"
+              data-cy="notification-no-more-left"
+            >
               No more notification to show
             </p>
           )}
           {notificationCount < 1 && (
-            <p className="text-muted-foreground text-xs p-3 text-center">
+            <p
+              className="text-muted-foreground text-xs p-3 text-center"
+              data-cy="notification-empty"
+            >
               You have no notifications
             </p>
           )}
