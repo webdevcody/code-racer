@@ -1,5 +1,7 @@
-import { PrismaClient, type Notification } from "@prisma/client";
+import { PrismaClient, type Notification, Achievement, AchievementType } from "@prisma/client";
 import snippets from "./seed-data/snippets";
+import usersSeed from "./seed-data/users.seed";
+
 
 const prisma = new PrismaClient();
 
@@ -42,6 +44,26 @@ async function main() {
       });
     });
     console.log("Generated dummy notifications");
+  }
+
+  // Seed for leaderboard
+  for (const user of usersSeed) {
+    await prisma.user.upsert({
+      where: { id: user.id },
+      create: user,
+      update: { averageAccuracy: user.averageAccuracy, averageCpm: user.averageCpm }
+    });
+
+    await prisma.achievement.upsert({
+      where: {
+        userId_achievementType: {
+          userId: user.id,
+          achievementType: "FIFTH_RACE"
+        }
+      },
+      create: { userId: user.id, achievementType: "FIFTH_RACE" },
+      update: {}
+    });
   }
 }
 
