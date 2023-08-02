@@ -8,7 +8,10 @@ interface NotificationItemProps {
 
 const NotificationItem = ({ notification }: NotificationItemProps) => {
   return (
-    <div className="flex flex-row justify-start gap-3 items-center p-2">
+    <div
+      className="flex flex-row justify-start gap-3 items-center"
+      data-cy="notification-item"
+    >
       <span
         className={cn(
           "flex justify-center items-center w-8",
@@ -28,6 +31,7 @@ const NotificationItem = ({ notification }: NotificationItemProps) => {
             "text-md font-semibold",
             notification.read && "text-muted-foreground",
           )}
+          data-cy="notification-item-title-field"
         >
           {notification.title}
         </span>
@@ -36,8 +40,18 @@ const NotificationItem = ({ notification }: NotificationItemProps) => {
             "text-sm",
             notification.read && "text-muted-foreground",
           )}
+          data-cy="notification-item-description-field"
         >
           {notification.description}
+        </span>
+        <span
+          className={cn(
+            "text-xs",
+            notification.read && "text-muted-foreground",
+          )}
+          data-cy="notification-item-createdAt-field"
+        >
+          {notification.createdAt.toLocaleString()}
         </span>
       </div>
     </div>
