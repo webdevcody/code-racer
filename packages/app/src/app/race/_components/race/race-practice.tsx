@@ -150,8 +150,9 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
     setInput((prevInput) => prevInput.slice(0, -1));
 
     const character = input.slice(-1);
-    if (character !== " " && character !== "\n")
+    if (character !== " " && character !== "\n") {
       setChartTimeStamp((prevArray) => prevArray.slice(0, -1));
+    }
   }
 
   function Enter() {
