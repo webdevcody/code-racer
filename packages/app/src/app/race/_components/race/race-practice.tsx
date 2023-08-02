@@ -19,7 +19,6 @@ import type { Snippet } from "@prisma/client";
 import type { User } from "next-auth";
 import type { ChartTimeStamp } from "./types";
 import type { ReplayTimeStamp } from "./types";
-import { useCheckForUserNavigator } from "@/lib/user-system";
 import { catchError } from "@/lib/utils";
 
 type RacePracticeProps = {
@@ -34,17 +33,16 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
   const [chartTimeStamp, setChartTimeStamp] = useState<ChartTimeStamp[]>([]);
   const [replayTimeStamp, setReplayTimeStamp] = useState<ReplayTimeStamp[]>([]);
 
-  const isUserOnAdroid = useCheckForUserNavigator("android");
-
   const inputElement = useRef<HTMLInputElement | null>(null);
   const code = snippet.code.trimEnd();
   const router = useRouter();
   const isRaceFinished = input === code;
 
   useEffect(() => {
-    if (!inputElement?.current) return;
-    inputElement.current?.focus();
-  }, [inputElement.current]);
+    localStorage.removeItem("chartTimeStamp");
+    if (!inputElement.current) return;
+    inputElement.current.focus();
+  });
 
   useEffect(() => {
     if (isRaceFinished) {
@@ -53,7 +51,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
       const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
 
       localStorage.setItem(
-        "raceTimeStamp",
+        "chartTimeStamp",
         JSON.stringify([
           ...chartTimeStamp,
           {
@@ -95,48 +93,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
     }
   });
 
-  function handleInputEvent(e: any /** React.FormEvent<HTMLInputElement>*/) {
-    if (!isUserOnAdroid) return;
-    if (!startTime) {
-      setStartTime(new Date());
-    }
-    const data = e.nativeEvent.data;
-
-    if (
-      input !== code.slice(0, input.length) &&
-      e.nativeEvent.inputType !== "deleteContentBackward"
-    ) {
-      e.preventDefault();
-      return;
-    }
-
-    if (e.nativeEvent.inputType === "insertText") {
-      setInput((prevInput) => prevInput + data);
-    } else if (e.nativeEvent.inputType === "deleteContentBackward") {
-      // if the user pressed backspace on mobile, data is null
-      Backspace();
-    } else {
-      Enter();
-    }
-    changeTimeStamps(e);
-  }
-
   function handleKeyboardDownEvent(e: React.KeyboardEvent<HTMLInputElement>) {
-    // For ANDROID.
-    // since the enter button on a mobile keyboard/keypad actually
-    // returns a e.key of "Enter", we just set a condition for that.
-    if (isUserOnAdroid) {
-      switch (e.key) {
-        case "Enter":
-          if (!startTime) {
-            setStartTime(new Date());
-          }
-          handleInputEvent(e);
-          break;
-      }
-      return;
-    }
-
     // Restart
     if (e.key === "Escape") {
       handleRestart();
@@ -184,75 +141,23 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
           break;
       }
     }
-
-    changeTimeStamps(e);
-  }
-
-  // since this logic of setting timestamps will be reused
-  function changeTimeStamps(e: any) {
-    let value: string;
-
-    // if keyboardDown event is the one that calls this
-    if (e.key) {
-      value = e.key;
-      // so, this is where we can access the value of the key pressed on mobile
-    } else {
-      // check if the user pressed backspace (it's null)
-      const data = e.nativeEvent.data;
-
-      if (e.nativeEvent.inputType === "deleteContentBackward") {
-        // the 2nd to the last character
-        const latestValue = input[input.length - 2];
-        if (!latestValue) {
-          value = "";
-        } else {
-          value = latestValue;
-        }
-      } else if (e.nativeEvent.inputType === "insertText") {
-        value = data;
-      } else {
-        value = "Enter";
-      }
-    }
-
-    if (value === code[input.length - 1] && value !== " ") {
-      const currTime = Date.now();
-      const timeTaken = startTime ? (currTime - startTime.getTime()) / 1000 : 0;
-      setChartTimeStamp((prev) => [
-        ...prev,
-        {
-          char: value,
-          accuracy: calculateAccuracy(input.length, totalErrors),
-          cpm: calculateCPM(input.length, timeTaken),
-          time: currTime,
-        },
-      ]);
-    }
-    setReplayTimeStamp((prev) => [
-      ...prev,
-      {
-        char: input.slice(-1),
-        textIndicatorPosition: input.length,
-        time: Date.now(),
-      },
-    ]);
   }
 
   function Backspace() {
     if (input.length === 0) {
       return;
     }
-
     setInput((prevInput) => prevInput.slice(0, -1));
 
-    if (chartTimeStamp.length > 0) {
-      setChartTimeStamp((prev) => prev.slice(0, -1));
-    }
+    const character = input.slice(-1);
+    if (character !== " " && character !== "\n")
+      setChartTimeStamp((prevArray) => prevArray.slice(0, -1));
   }
 
   function Enter() {
     if (code.charAt(input.length) !== "\n") {
       setInput((prevInput) => prevInput + "\n");
+      return;
     }
 
     const lines = input.split("\n");
@@ -273,8 +178,29 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
     if (e.key !== code.slice(input.length, input.length + 1)) {
       setTotalErrors((prevTotalErrors) => prevTotalErrors + 1);
     }
-
     setInput((prevInput) => prevInput + e.key);
+
+    if (e.key !== " ") {
+      const currTime = Date.now();
+      const timeTaken = startTime ? (currTime - startTime.getTime()) / 1000 : 0;
+      setChartTimeStamp((prevArray) => [
+        ...prevArray,
+        {
+          char: e.key,
+          accuracy: calculateAccuracy(input.length, totalErrors),
+          cpm: calculateCPM(input.length, timeTaken),
+          time: currTime,
+        },
+      ]);
+    }
+    setReplayTimeStamp((prev) => [
+      ...prev,
+      {
+        char: input.slice(-1),
+        textIndicatorPosition: input.length,
+        time: Date.now(),
+      },
+    ]);
   }
 
   function handleRestart() {
@@ -304,10 +230,8 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
         <Code code={code} input={input} />
         <input
           type="text"
-          value={input}
           ref={inputElement}
-          onKeyUp={handleKeyboardDownEvent}
-          onInput={handleInputEvent}
+          onKeyDown={handleKeyboardDownEvent}
           disabled={input === code}
           className="absolute inset-y-0 left-0 w-full h-full p-8 rounded-md -z-40 focus:outline outline-blue-500 cursor-none"
           onPaste={(e) => e.preventDefault()}
