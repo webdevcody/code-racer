@@ -14,13 +14,11 @@ import { sortFilters } from "./sort-filters";
 
 type UserWithResults = User & { results: Result[] };
 
-function getUserRankByValue({
-  userId,
+function setUsersRankByValue({
   fieldName,
   values,
   userRanks,
 }: {
-  userId: string | undefined;
   fieldName: string;
   values: { id: string; value: number }[];
   userRanks: {
@@ -34,6 +32,7 @@ function getUserRankByValue({
     .sort((a, b) => b.value - a.value)
     .forEach((current, i, arr) => {
       const next = arr[i + 1];
+      const prev = arr[i - 1];
 
       if (userRanks[current.id] && userRanks[current.id][fieldName]) {
         return;
@@ -43,33 +42,44 @@ function getUserRankByValue({
 
       userRanks[current.id][fieldName] = { rank: currentRank };
 
-      if (next === undefined || current.value === next.value) {
-        return;
+      if (next && current.value == next.value) {
+        userRanks[current.id][fieldName]["shared"] = true;
       }
 
-      if (next.id == userId || current.id == userId) {
-        if (current.value == next.value) shared = true;
+      if (prev && current.value == prev.value) {
+        userRanks[current.id][fieldName]["shared"] = true;
+      }
+      
+      if (next === undefined || current.value === next.value) {
+        return;
       }
 
       currentRank++;
     });
 
-  return shared;
+
 }
 
 function calculateUsersRank({
-  currentUserId,
   allUsers,
 }: {
-  currentUserId: string | undefined;
   allUsers: UserWithResults[];
 }) {
   // userRanks stores rank of all users in all category (avgCPM, avgAcc, totalRaces)
   /* { 
         _userID_ : { 
-          avgCPM : { rank: 2 }, 
-          avgAcc : { rank: 5 },
-          totalRaces : { rank: 1 },
+          avgCPM : { 
+            rank: 2,
+            shared: true,
+          }, 
+          avgAcc : { 
+            rank: 5,
+            shared: false,
+          },
+          totalRaces : { 
+            rank: 1,
+            shared: false,
+          },
         }
       }
   */
@@ -81,22 +91,23 @@ function calculateUsersRank({
     };
   } = {};
 
-  const gamesPlayedRankShared = getUserRankByValue({
-    userId: currentUserId,
+  // Set user ranks based on different fields:
+  // Based on Race Played:
+  setUsersRankByValue({
     fieldName: sortFilters.RacePlayed,
     values: allUsers.map((u) => ({ id: u.id, value: u.results.length })),
     userRanks,
   });
 
-  const averageCPMRankShared = getUserRankByValue({
-    userId: currentUserId,
+  // Based on Average CPM:
+  setUsersRankByValue({
     fieldName: sortFilters.AverageCPM,
     values: allUsers.map((u) => ({ id: u.id, value: Number(u.averageCpm) })),
     userRanks,
   });
 
-  const averageAccRankShared = getUserRankByValue({
-    userId: currentUserId,
+  // Based on Average Accuracy:
+  setUsersRankByValue({
     fieldName: sortFilters.AverageAccuracy,
     values: allUsers.map((u) => ({
       id: u.id,
@@ -165,7 +176,6 @@ export default async function LeaderboardPage({
     user !== undefined && allUsers.some((u) => u.id === user.id);
   
   const userRanks = calculateUsersRank({
-    currentUserId: user?.id,
     allUsers: allUsers,
   });
 

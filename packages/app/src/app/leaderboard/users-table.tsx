@@ -19,6 +19,25 @@ import { sortFilters } from "./sort-filters";
 
 type UserWithResults = User & { results: Result[] };
 
+function convertNumberToOrdinal({ n }: { n: number }) {
+  // special case for 11, 12, 13
+  if (n % 100 === 11 || n % 100 === 12 || n % 100 === 13) {
+    return n + "th";
+  }
+
+  // standard ordinal rules
+  switch (n % 10) {
+    case 1:
+      return n + "st";
+    case 2:
+      return n + "nd";
+    case 3:
+      return n + "rd";
+    default:
+      return n + "th";
+  }
+}
+
 export function UsersTable({
   data,
   pageCount,
@@ -36,12 +55,20 @@ export function UsersTable({
         accessorFn: (user) => {
           return user.id; // Display the "place" property in the table cell
         },
-        header: "Place", // Header title for the new column
+        header: "Rank", // Header title for the new column
         cell: ({ cell }) => {
           const userId = cell.getValue() as string;
           console.log(ranks)
-          return <span className="ml-2">{ranks[userId][field]["rank"]}</span>;
+          return (
+            <span className="ml-2">
+              {ranks[userId][field]["shared"] ? "T-" : ""}
+              {convertNumberToOrdinal({
+                n: ranks[userId][field]["rank"] as number,
+              })}
+            </span>
+          );
         },
+        enableSorting: false,
       },
       {
         accessorFn: (user) => {
