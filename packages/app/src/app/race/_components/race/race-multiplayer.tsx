@@ -91,8 +91,8 @@ export default function RaceMultiplayer({
   );
   const position = code
     ? parseFloat(
-      (((input.length - errors.length) / code.length) * 100).toFixed(2),
-    )
+        (((input.length - errors.length) / code.length) * 100).toFixed(2),
+      )
     : null;
   const isRaceFinished = practiceSnippet
     ? input === code
@@ -195,7 +195,7 @@ export default function RaceMultiplayer({
       if (!startTime) return;
       const endTime = new Date();
       const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
-  
+
       localStorage.setItem(
         "raceTimeStamp",
         JSON.stringify([
@@ -208,7 +208,7 @@ export default function RaceMultiplayer({
           },
         ]),
       );
-  
+
       localStorage.setItem(
         "replayTimeStamp",
         JSON.stringify([
@@ -220,12 +220,12 @@ export default function RaceMultiplayer({
           },
         ]),
       );
-  
+
       if (!snippet || !code) {
         setSubmittingResults(false);
         return;
       }
-  
+
       if (user) {
         saveUserResultAction({
           raceParticipantId: participantId,
@@ -234,19 +234,20 @@ export default function RaceMultiplayer({
           cpm: calculateCPM(code.length - 1, timeTaken),
           accuracy: calculateAccuracy(code.length - 1, totalErrors),
           snippetId: snippet.id,
-        }).then(result => {
-          if (!result) {
-            return router.refresh();
-          }
-          router.push(`/result?resultId=${result.id}`);
-        }).catch(error => {
-          catchError(error);
-        });
-  
+        })
+          .then((result) => {
+            if (!result) {
+              return router.refresh();
+            }
+            router.push(`/result?resultId=${result.id}`);
+          })
+          .catch((error) => {
+            catchError(error);
+          });
       } else {
         router.push(`/result?snippetId=${snippet.id}`);
       }
-  
+
       setSubmittingResults(false);
     }
   });
@@ -264,18 +265,20 @@ export default function RaceMultiplayer({
     // ]);
   }, []);
 
-
   function handleInputEvent(e: any /** React.FormEvent<HTMLInputElement>*/) {
     if (!isUserOnAdroid) return;
     if (!startTime) {
       setStartTime(new Date());
-    };
+    }
     const data = e.nativeEvent.data;
 
-    if (input !== code?.slice(0, input.length) && e.nativeEvent.inputType !== "deleteContentBackward") {
+    if (
+      input !== code?.slice(0, input.length) &&
+      e.nativeEvent.inputType !== "deleteContentBackward"
+    ) {
       e.preventDefault();
       return;
-    };
+    }
 
     if (e.nativeEvent.inputType === "insertText") {
       setInput((prevInput) => prevInput + data);
@@ -286,10 +289,10 @@ export default function RaceMultiplayer({
       Enter();
     }
     changeTimeStamps();
-  };
+  }
 
   function handleKeyboardUpEvent(e: React.KeyboardEvent<HTMLInputElement>) {
-     // For ANDROID.
+    // For ANDROID.
     // since the enter button on a mobile keyboard/keypad actually
     // returns a e.key of "Enter", we just set a condition for that.
     if (isUserOnAdroid) {
@@ -302,7 +305,7 @@ export default function RaceMultiplayer({
           break;
       }
       return;
-    };
+    }
 
     // Restart
     if (e.key === "Escape") {
@@ -363,7 +366,7 @@ export default function RaceMultiplayer({
         time: Date.now(),
       },
     ]);
-  };
+  }
 
   function Backspace() {
     if (input.length === 0) {
@@ -475,12 +478,12 @@ export default function RaceMultiplayer({
           <>
             {raceId && code
               ? participants.map((p) => (
-                <RaceTrackerMultiplayer
-                  key={p.id}
-                  position={p.position}
-                  participantId={p.id}
-                />
-              ))
+                  <RaceTrackerMultiplayer
+                    key={p.id}
+                    position={p.position}
+                    participantId={p.id}
+                  />
+                ))
               : null}
             <div className="flex justify-between mb-2 md:mb-4">
               <Heading
@@ -511,12 +514,7 @@ export default function RaceMultiplayer({
                 ))}
               </div>
 
-              {code && (
-                <Code
-                  code={code}
-                  input={input}
-                />
-              )}
+              {code && <Code code={code} input={input} />}
               <input
                 type="text"
                 defaultValue={input}

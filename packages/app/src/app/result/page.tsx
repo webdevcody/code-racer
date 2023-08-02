@@ -1,37 +1,60 @@
-import { buttonVariants } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Chart, { ParentCurrentChart } from "./chart";
-import { Icons } from "@/components/icons";
 import Link from "next/link";
+import { getSnippetById } from "../race/(play)/loaders";
+import { notFound } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { User } from "next-auth";
 import { getCurrentUser } from "@/lib/session";
-import { Voting } from "./voting";
-import { Badge } from "@/components/ui/badge";
 import {
   getUserResultsForSnippet,
   getCurrentRaceResult,
   ParsedRacesResult,
   getSnippetVote,
 } from "./loaders";
+
+// Components
+import { Icons } from "@/components/icons";
+import { buttonVariants } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Voting } from "./voting";
+import { Badge } from "@/components/ui/badge";
 import { Heading } from "@/components/ui/heading";
-import { cn } from "@/lib/utils";
-import { User } from "next-auth";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ReplayCode } from "./replay-timestamps";
-import { getSnippetById } from "../race/(play)/loaders";
 import { TopTable } from "./topten";
-import { notFound } from "next/navigation";
 import { RaceAchievementBadges } from "./race-achievement-badges";
+import { ResultChart } from "./result-chart";
+import HistoryChart from "./history-chart";
 
-async function AuthenticatedPage({
-  resultId,
-  user,
-}: {
+type ResultPageProps = {
+  searchParams: {
+    resultId: string;
+    snippetId: string;
+  };
+};
+
+type AuthenticatedPageProps = {
   resultId: string;
   user: User;
-}) {
+};
+
+type UnauthenticatedPageProps = {
+  snippetId: string;
+};
+
+export default async function ResultPage({ searchParams }: ResultPageProps) {
+  const user = await getCurrentUser();
+
+  return user ? (
+    <AuthenticatedPage user={user} resultId={searchParams.resultId} />
+  ) : (
+    <UnauthenticatedPage snippetId={searchParams.snippetId} />
+  );
+}
+
+async function AuthenticatedPage({ resultId, user }: AuthenticatedPageProps) {
   if (!resultId)
     return (
-      <div className="flex flex-col items-center justify-center gap-10 mt-20">
+      <main className="flex flex-col items-center justify-center gap-10 mt-20">
         <Heading title="Oops, Something went wrong" />
         <Link
           className={cn(buttonVariants(), "whitespace-nowrap")}
@@ -39,7 +62,7 @@ async function AuthenticatedPage({
         >
           Go back
         </Link>
-      </div>
+      </main>
     );
   const currentRaceResult = await getCurrentRaceResult(resultId);
 
@@ -78,7 +101,7 @@ async function AuthenticatedPage({
   ];
 
   return (
-    <div className="w-auto mb-32 lg:mb-40">
+    <main className="w-auto mb-32 lg:mb-40">
       <div className="flex flex-col justify-center gap-4 mt-5">
         <RaceAchievementBadges />
         <Heading
@@ -101,22 +124,23 @@ async function AuthenticatedPage({
           })}
         </div>
       </div>
+
       <div className="flex flex-col px-8 rounded-xl">
-        <Tabs defaultValue="Current" className="w-full m-5">
+        <Tabs defaultValue="Results" className="w-full m-5">
           <TabsList className="m-5">
-            <TabsTrigger value="Current">Current</TabsTrigger>
+            <TabsTrigger value="Results">Results</TabsTrigger>
             <TabsTrigger value="Replay">Replay</TabsTrigger>
             <TabsTrigger value="TopTen">Top 10</TabsTrigger>
             <TabsTrigger value="History">History</TabsTrigger>
           </TabsList>
-          <TabsContent value="Current">
+          <TabsContent value="Results">
             <span className="text-2xl mx-auto text-primary flex-wrap sm:hidden">
               View in Larger Screen to Unlock Exciting Features!
             </span>
-            <ParentCurrentChart code={currentSnippet?.code} />
+            <ResultChart code={currentSnippet?.code} />
           </TabsContent>
           <TabsContent value="History">
-            <Chart raceResult={raceResults} />
+            <HistoryChart raceResult={raceResults} />
           </TabsContent>
           <TabsContent value="Replay">
             <ReplayCode code={currentSnippet?.code} />
@@ -126,6 +150,7 @@ async function AuthenticatedPage({
           </TabsContent>
         </Tabs>
       </div>
+
       <div className="flex flex-wrap items-center justify-center gap-4 p-2">
         <Link
           title="Retry"
@@ -169,15 +194,15 @@ async function AuthenticatedPage({
           />
         )}
       </div>
-    </div>
+    </main>
   );
 }
 
-async function UnauthenticatedPage({ snippetId }: { snippetId: string }) {
+async function UnauthenticatedPage({ snippetId }: UnauthenticatedPageProps) {
   const currentSnippet = await getSnippetById(snippetId);
 
   return (
-    <div className="w-auto mb-32 lg:mb-40">
+    <main className="w-auto mb-32 lg:mb-40">
       <div className="flex flex-col justify-center gap-4 mt-5">
         <Heading
           centered
@@ -185,18 +210,19 @@ async function UnauthenticatedPage({ snippetId }: { snippetId: string }) {
           description="You did great! View your race results below"
         />
       </div>
+
       <div className="flex flex-col px-8 rounded-xl">
-        <Tabs defaultValue="Current" className="w-full m-5">
+        <Tabs defaultValue="Results" className="w-full m-5">
           <TabsList className="m-5">
-            <TabsTrigger value="Current">Current</TabsTrigger>
+            <TabsTrigger value="Results">Results</TabsTrigger>
             <TabsTrigger value="Replay">Replay</TabsTrigger>
             <TabsTrigger value="TopTen">Top 10</TabsTrigger>
           </TabsList>
-          <TabsContent value="Current">
+          <TabsContent value="Results">
             <span className="text-2xl mx-auto text-primary flex-wrap sm:hidden">
               View in Larger Screen to Unlock Exciting Features!
             </span>
-            <ParentCurrentChart code={currentSnippet?.code} />
+            <ResultChart code={currentSnippet?.code} />
           </TabsContent>
           <TabsContent value="Replay">
             <ReplayCode code={currentSnippet?.code} />
@@ -209,6 +235,7 @@ async function UnauthenticatedPage({ snippetId }: { snippetId: string }) {
           </TabsContent>
         </Tabs>
       </div>
+
       <div className="flex flex-wrap items-center justify-center gap-4 p-2">
         <Link
           title="Retry"
@@ -241,20 +268,6 @@ async function UnauthenticatedPage({ snippetId }: { snippetId: string }) {
           <span className="m-1">Restart Game</span>
         </Badge>
       </div>
-    </div>
-  );
-}
-
-export default async function ResultPage({
-  searchParams,
-}: {
-  searchParams: { resultId: string; snippetId: string };
-}) {
-  const user = await getCurrentUser();
-
-  return user ? (
-    <AuthenticatedPage user={user} resultId={searchParams.resultId} />
-  ) : (
-    <UnauthenticatedPage snippetId={searchParams.snippetId} />
+    </main>
   );
 }

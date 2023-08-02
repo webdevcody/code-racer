@@ -8,10 +8,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { getTopTen, getUserSnippetPlacement } from "./loaders";
 import { Heading } from "@/components/ui/heading";
+import Image from "next/image";
 
 export async function TopTable({ snippetId }: { snippetId?: string }) {
   const topten = await getTopTen(snippetId);
@@ -39,7 +39,18 @@ export async function TopTable({ snippetId }: { snippetId?: string }) {
             <TableRow key={i + 1}>
               <TableCell className="text-yellow-500">{i + 1}</TableCell>
               <TableCell>
-                <Link href={`/users/${topten.userId}`}>{topten.user.name}</Link>
+                <Link href={`/users/${topten.userId}`}>
+                  <div className="flex items-center gap-2">
+                    <Image
+                      className="rounded-full"
+                      src={topten.user.image ?? ""}
+                      alt="user avatar"
+                      height={30}
+                      width={30}
+                    />
+                    <span>{topten.user.name}</span>
+                  </div>
+                </Link>
               </TableCell>
               <TableCell className="text-center">{topten.cpm}</TableCell>
               <TableCell

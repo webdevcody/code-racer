@@ -84,9 +84,11 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
           cpm: calculateCPM(code.length - 1, timeTaken),
           accuracy: calculateAccuracy(code.length - 1, totalErrors),
           snippetId: snippet.id,
-        }).then(result => {
-          router.push(`/result?resultId=${result.id}`);
-        }).catch(error => catchError(error));
+        })
+          .then((result) => {
+            router.push(`/result?resultId=${result.id}`);
+          })
+          .catch((error) => catchError(error));
       } else {
         router.push(`/result?snippetId=${snippet.id}`);
       }
@@ -97,13 +99,16 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
     if (!isUserOnAdroid) return;
     if (!startTime) {
       setStartTime(new Date());
-    };
+    }
     const data = e.nativeEvent.data;
 
-    if (input !== code.slice(0, input.length) && e.nativeEvent.inputType !== "deleteContentBackward") {
+    if (
+      input !== code.slice(0, input.length) &&
+      e.nativeEvent.inputType !== "deleteContentBackward"
+    ) {
       e.preventDefault();
       return;
-    };
+    }
 
     if (e.nativeEvent.inputType === "insertText") {
       setInput((prevInput) => prevInput + data);
@@ -114,7 +119,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
       Enter();
     }
     changeTimeStamps(e);
-  };
+  }
 
   function handleKeyboardDownEvent(e: React.KeyboardEvent<HTMLInputElement>) {
     // For ANDROID.
@@ -130,7 +135,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
           break;
       }
       return;
-    };
+    }
 
     // Restart
     if (e.key === "Escape") {
@@ -231,14 +236,14 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
         time: Date.now(),
       },
     ]);
-  };
+  }
 
   function Backspace() {
     if (input.length === 0) {
       return;
     }
 
-    setInput((prevInput) => prevInput.slice(0, -1))
+    setInput((prevInput) => prevInput.slice(0, -1));
 
     if (chartTimeStamp.length > 0) {
       setChartTimeStamp((prev) => prev.slice(0, -1));
@@ -296,10 +301,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
       <Header user={user} snippet={snippet} handleRestart={handleRestart} />
       <section className="flex">
         <LineNumbers code={code} currentLineNumber={input.split("\n").length} />
-        <Code
-          code={code}
-          input={input}
-        />
+        <Code code={code} input={input} />
         <input
           type="text"
           value={input}
