@@ -6,9 +6,11 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import { saveUserResultAction } from "../../actions";
+import { getSnippetById } from "../../(play)/loaders";
 
 // utils
 import { calculateAccuracy, calculateCPM, noopKeys } from "./utils";
+import { catchError } from "@/lib/utils";
 
 // Components
 import { Button } from "@/components/ui/button";
@@ -24,6 +26,9 @@ import { ReportButton } from "./buttons/report-button";
 import Code from "./code";
 import RaceDetails from "./race-details";
 import RaceTimer from "./race-timer";
+import { useToast } from "@/components/ui/use-toast";
+import RaceTrackerMultiplayer from "./race-tracker-mutliplayer";
+import { socket } from "@/lib/socket";
 
 // Types
 import type { ClientToServerEvents } from "@code-racer/wss/src/events/client-to-server";
@@ -31,11 +36,9 @@ import type { ServerToClientEvents } from "@code-racer/wss/src/events/server-to-
 import { type RaceStatus, raceStatus } from "@code-racer/wss/src/types";
 import type { Snippet } from "@prisma/client";
 import type { User } from "next-auth";
-import { RaceTimeStampProps, ReplayTimeStampProps } from "./types";
-import RaceTrackerMultiplayer from "./race-tracker-mutliplayer";
-import { getSnippetById } from "../../(play)/loaders";
-import { useToast } from "@/components/ui/use-toast";
-import { socket } from "@/lib/socket";
+import type { Socket } from "socket.io-client";
+import { ChartTimeStamp, ReplayTimeStamp } from "./types";
+import { useCheckForUserNavigator } from "@/lib/user-system";
 
 type Participant = Omit<
   GameStateUpdatePayload["raceState"]["participants"][number],
@@ -53,10 +56,6 @@ export default function RaceMultiplayer({
 }) {
   const { toast } = useToast();
   const [input, setInput] = useState("");
-  const [textIndicatorPosition, setTextIndicatorPosition] = useState(0);
-  const [currentLineNumber, setCurrentLineNumber] = useState(0);
-  const [currentCharPosition, setCurrentCharPosition] = useState(0);
-  const [currentChar, setCurrentChar] = useState("");
   const [currentRaceStatus, setCurrentRaceStatus] = useState<RaceStatus>(
     //if the practiceSnippet is present, it means that the race is a practice race
     Boolean(practiceSnippet) ? raceStatus.RUNNING : raceStatus.WAITING,
@@ -66,10 +65,8 @@ export default function RaceMultiplayer({
   const [submittingResults, setSubmittingResults] = useState(false);
   const [totalErrors, setTotalErrors] = useState(0);
 
-  const [raceTimeStamp, setRaceTimeStamp] = useState<RaceTimeStampProps[]>([]);
-  const [replayTimeStamp, setReplayTimeStamp] = useState<
-    ReplayTimeStampProps[]
-  >([]);
+  const [raceTimeStamp, setRaceTimeStamp] = useState<ChartTimeStamp[]>([]);
+  const [replayTimeStamp, setReplayTimeStamp] = useState<ReplayTimeStamp[]>([]);
 
   const code = snippet?.code.trimEnd();
   const currentText = code?.substring(0, input.length);
@@ -81,7 +78,6 @@ export default function RaceMultiplayer({
   const inputElement = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
 
-  //multiplayer-specific -----------------------------------------------------------------------------------
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [raceStartCountdown, setRaceStartCountdown] = useState(0);
   const [raceId, setRaceId] = useState<string | null>(null);
@@ -97,8 +93,9 @@ export default function RaceMultiplayer({
     ? input === code
     : currentRaceStatus === raceStatus.FINISHED;
   const showRaceTimer = !!startTime && !isRaceFinished;
+  const isUserOnAdroid = useCheckForUserNavigator("android");
 
-  function startRaceEventHandlers() {
+  const startRaceEventHandlers = React.useCallback(() => {
     socket.on("UserRaceResponse", async (payload) => {
       const { race, raceParticipantId } = payload;
       const snippet = await getSnippetById(race.snippetId);
@@ -145,7 +142,7 @@ export default function RaceMultiplayer({
         participants.filter((participant) => participant.id !== participantId),
       );
     });
-  }
+  }, []);
 
   // Connection to wss
   useEffect(() => {
@@ -162,7 +159,7 @@ export default function RaceMultiplayer({
       socket.disconnect();
       socket.off("connect");
     };
-  }, []);
+  }, [practiceSnippet, language, startRaceEventHandlers]);
 
   //send updated position to server
   useEffect(() => {
@@ -186,98 +183,121 @@ export default function RaceMultiplayer({
     }, 200);
     return () => clearInterval(gameLoop);
   }, [currentRaceStatus, position, participantId, raceId]);
-  //end of multiplayer-specific -----------------------------------------------------------------------------------
-
-  async function endRace() {
-    if (!startTime) return;
-    const endTime = new Date();
-    const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
-
-    localStorage.setItem(
-      "raceTimeStamp",
-      JSON.stringify([
-        ...raceTimeStamp,
-        {
-          char: currentChar,
-          accuracy: calculateAccuracy(input.length, totalErrors),
-          cpm: calculateCPM(input.length, timeTaken),
-          time: Date.now(),
-        },
-      ]),
-    );
-
-    localStorage.setItem(
-      "replayTimeStamp",
-      JSON.stringify([
-        ...replayTimeStamp,
-        {
-          char: currentChar,
-          textIndicatorPosition,
-          currentLineNumber,
-          currentCharPosition,
-          errors,
-          totalErrors,
-          time: Date.now(),
-        },
-      ]),
-    );
-
-    if (!snippet || !code) {
-      setSubmittingResults(false);
-      return;
-    }
-
-    if (user) {
-      const result = await saveUserResultAction({
-        raceParticipantId: participantId,
-        timeTaken,
-        errors: totalErrors,
-        cpm: calculateCPM(code.length - 1, timeTaken),
-        accuracy: calculateAccuracy(code.length - 1, totalErrors),
-        snippetId: snippet.id,
-      });
-
-      if (!result) {
-        return router.refresh();
-      }
-
-      router.push(`/result?resultId=${result.id}`);
-    } else {
-      router.push(`/result?snippetId=${snippet.id}`);
-    }
-
-    setSubmittingResults(false);
-  }
 
   useEffect(() => {
     if (isRaceFinished) {
-      endRace();
+      if (!startTime) return;
+      const endTime = new Date();
+      const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
+  
+      localStorage.setItem(
+        "raceTimeStamp",
+        JSON.stringify([
+          ...raceTimeStamp,
+          {
+            char: input.slice(-1),
+            accuracy: calculateAccuracy(input.length, totalErrors),
+            cpm: calculateCPM(input.length, timeTaken),
+            time: Date.now(),
+          },
+        ]),
+      );
+  
+      localStorage.setItem(
+        "replayTimeStamp",
+        JSON.stringify([
+          ...replayTimeStamp,
+          {
+            char: input.slice(-1),
+            textIndicatorPosition: input.length,
+            time: Date.now(),
+          },
+        ]),
+      );
+  
+      if (!snippet || !code) {
+        setSubmittingResults(false);
+        return;
+      }
+  
+      if (user) {
+        saveUserResultAction({
+          raceParticipantId: participantId,
+          timeTaken,
+          errors: totalErrors,
+          cpm: calculateCPM(code.length - 1, timeTaken),
+          accuracy: calculateAccuracy(code.length - 1, totalErrors),
+          snippetId: snippet.id,
+        }).then(result => {
+          if (!result) {
+            return router.refresh();
+          }
+          router.push(`/result?resultId=${result.id}`);
+        }).catch(error => {
+          catchError(error);
+        });
+  
+      } else {
+        router.push(`/result?snippetId=${snippet.id}`);
+      }
+  
+      setSubmittingResults(false);
     }
-  }, [isRaceFinished]);
+  });
 
   useEffect(() => {
-    // Focus Input
     inputElement.current?.focus();
 
-    // Calculate the current line and cursor position in that line
-    const lines = input.split("\n");
-    setCurrentLineNumber(lines.length);
-    setCurrentCharPosition(lines[lines.length - 1].length);
-    setReplayTimeStamp((prev) => [
-      ...prev,
-      {
-        char: currentChar,
-        textIndicatorPosition,
-        currentLineNumber,
-        currentCharPosition,
-        errors,
-        totalErrors,
-        time: Date.now(),
-      },
-    ]);
-  }, [input]);
+    // setReplayTimeStamp((prev) => [
+    //   ...prev,
+    //   {
+    //     char: input.slice(-1),
+    //     textIndicatorPosition: input.length,
+    //     time: Date.now(),
+    //   },
+    // ]);
+  }, []);
 
-  function handleKeyboardDownEvent(e: React.KeyboardEvent<HTMLInputElement>) {
+
+  function handleInputEvent(e: any /** React.FormEvent<HTMLInputElement>*/) {
+    if (!isUserOnAdroid) return;
+    if (!startTime) {
+      setStartTime(new Date());
+    };
+    const data = e.nativeEvent.data;
+
+    if (input !== code?.slice(0, input.length) && e.nativeEvent.inputType !== "deleteContentBackward") {
+      e.preventDefault();
+      return;
+    };
+
+    if (e.nativeEvent.inputType === "insertText") {
+      setInput((prevInput) => prevInput + data);
+    } else if (e.nativeEvent.inputType === "deleteContentBackward") {
+      // if the user pressed backspace on mobile, data is null
+      Backspace();
+    } else {
+      Enter();
+    }
+    changeTimeStamps();
+  };
+
+  function handleKeyboardUpEvent(e: React.KeyboardEvent<HTMLInputElement>) {
+     // For ANDROID.
+    // since the enter button on a mobile keyboard/keypad actually
+    // returns a e.key of "Enter", we just set a condition for that.
+    if (isUserOnAdroid) {
+      switch (e.key) {
+        case "Enter":
+          if (!startTime) {
+            setStartTime(new Date());
+          }
+          handleInputEvent(e);
+          break;
+      }
+      return;
+    };
+
     // Restart
     if (e.key === "Escape") {
       handleRestart();
@@ -325,35 +345,26 @@ export default function RaceMultiplayer({
           break;
       }
     }
-    const lines = input.split("\n");
-    setCurrentLineNumber(lines.length);
-    setCurrentCharPosition(lines[lines.length - 1].length);
+    changeTimeStamps();
+  }
+
+  function changeTimeStamps() {
     setReplayTimeStamp((prev) => [
       ...prev,
       {
-        char: currentChar,
-        textIndicatorPosition,
-        currentLineNumber,
-        currentCharPosition,
-        errors,
-        totalErrors,
+        char: input.slice(-1),
+        textIndicatorPosition: input.length,
         time: Date.now(),
       },
     ]);
-  }
+  };
 
   function Backspace() {
     if (input.length === 0) {
       return;
     }
 
-    if (textIndicatorPosition === input.length) {
-      setInput((prevInput) => prevInput.slice(0, -1));
-    }
-
-    setTextIndicatorPosition(
-      (prevTextIndicatorPosition) => prevTextIndicatorPosition - 1,
-    );
+    setInput((prevInput) => prevInput.slice(0, -1));
 
     if (raceTimeStamp.length > 0 && errors.length == 0) {
       setRaceTimeStamp((prev) => prev.slice(0, -1));
@@ -368,28 +379,14 @@ export default function RaceMultiplayer({
     ) {
       let indent = "";
       let i = 0;
-      while (lines?.[currentLineNumber].charAt(i) === " ") {
+      while (lines?.[input.split("\n").length].charAt(i) === " ") {
         indent += " ";
         i++;
       }
 
-      setInput(input + "\n" + indent);
-      setTextIndicatorPosition((prevTextIndicatorPosition) => {
-        if (typeof prevTextIndicatorPosition === "number") {
-          return prevTextIndicatorPosition + 1 + indent.length;
-        } else {
-          return prevTextIndicatorPosition;
-        }
-      });
+      setInput((prevInput) => prevInput + "\n" + indent);
     } else {
-      setInput(input + "\n");
-      setTextIndicatorPosition((prevTextIndicatorPosition) => {
-        if (typeof prevTextIndicatorPosition === "number") {
-          return prevTextIndicatorPosition + 1;
-        } else {
-          return prevTextIndicatorPosition;
-        }
-      });
+      setInput((prevInput) => prevInput + "\n");
     }
   }
 
@@ -414,20 +411,17 @@ export default function RaceMultiplayer({
           time: currTime,
         },
       ]);
-      setCurrentChar("");
     }
 
     setInput((prevInput) => prevInput + e.key);
-    setTextIndicatorPosition(
-      (prevTextIndicatorPosition) => prevTextIndicatorPosition + 1,
-    );
   }
 
   function handleRestart() {
     setStartTime(null);
     setInput("");
-    setTextIndicatorPosition(0);
     setTotalErrors(0);
+    setReplayTimeStamp([]);
+    setRaceTimeStamp([]);
   }
 
   return (
@@ -452,9 +446,8 @@ export default function RaceMultiplayer({
         onClick={() => {
           inputElement.current?.focus();
         }}
-        role="none" // eslint fix - will remove the semantic meaning of an element while still exposing it to assistive technology
+        role="none"
       >
-        {/* <p>participant id: {participantId}</p> */}
         {raceId && currentRaceStatus != raceStatus.RUNNING && !startTime && (
           <MultiplayerLoadingLobby participants={participants}>
             {currentRaceStatus === raceStatus.WAITING && (
@@ -476,12 +469,12 @@ export default function RaceMultiplayer({
           <>
             {raceId && code
               ? participants.map((p) => (
-                  <RaceTrackerMultiplayer
-                    key={p.id}
-                    position={p.position}
-                    participantId={p.id}
-                  />
-                ))
+                <RaceTrackerMultiplayer
+                  key={p.id}
+                  position={p.position}
+                  participantId={p.id}
+                />
+              ))
               : null}
             <div className="flex justify-between mb-2 md:mb-4">
               <Heading
@@ -502,7 +495,7 @@ export default function RaceMultiplayer({
                   <div
                     key={line}
                     className={
-                      currentLineNumber === line + 1
+                      input.split("\n").length === line + 1
                         ? "text-center bg-slate-600 text-white  border-r-2 border-yellow-500"
                         : " text-center border-r-2 border-yellow-500"
                     }
@@ -515,16 +508,15 @@ export default function RaceMultiplayer({
               {code && (
                 <Code
                   code={code}
-                  userInput={input}
-                  textIndicatorPosition={textIndicatorPosition}
-                  errors={errors}
+                  input={input}
                 />
               )}
               <input
                 type="text"
                 defaultValue={input}
                 ref={inputElement}
-                onKeyDown={handleKeyboardDownEvent}
+                onKeyUp={handleKeyboardUpEvent}
+                onInput={handleInputEvent}
                 disabled={isRaceFinished}
                 className="absolute inset-y-0 left-0 w-full h-full p-8 rounded-md -z-40 focus:outline outline-blue-500 cursor-none"
                 onPaste={(e) => e.preventDefault()}

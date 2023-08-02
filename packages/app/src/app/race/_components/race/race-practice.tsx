@@ -15,115 +15,123 @@ import Code from "./code";
 import Footer from "./footer";
 
 // Types
-import { RaceTimeStampProps, ReplayTimeStampProps } from "./types";
 import type { Snippet } from "@prisma/client";
 import type { User } from "next-auth";
+import type { ChartTimeStamp } from "./types";
+import type { ReplayTimeStamp } from "./types";
+import { useCheckForUserNavigator } from "@/lib/user-system";
+import { catchError } from "@/lib/utils";
 
-export default function RacePractice({
-  user,
-  snippet,
-}: {
+type RacePracticeProps = {
   user?: User;
   snippet: Snippet;
-}) {
-  const [input, setInput] = useState("");
-  const [textIndicatorPosition, setTextIndicatorPosition] = useState(0);
-  const [currentLineNumber, setCurrentLineNumber] = useState(0);
+};
 
+export default function RacePractice({ user, snippet }: RacePracticeProps) {
+  const [input, setInput] = useState("");
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [totalErrors, setTotalErrors] = useState(0);
+  const [chartTimeStamp, setChartTimeStamp] = useState<ChartTimeStamp[]>([]);
+  const [replayTimeStamp, setReplayTimeStamp] = useState<ReplayTimeStamp[]>([]);
 
-  const [raceTimeStamp, setRaceTimeStamp] = useState<RaceTimeStampProps[]>([]);
-  const [replayTimeStamp, setReplayTimeStamp] = useState<
-    ReplayTimeStampProps[]
-  >([]);
-
-  const code = snippet.code.trimEnd();
-  const currentText = code.substring(0, input.length);
-  const errors = input
-    .split("")
-    .map((char, index) => (char !== currentText[index] ? index : -1))
-    .filter((index) => index !== -1);
+  const isUserOnAdroid = useCheckForUserNavigator("android");
 
   const inputElement = useRef<HTMLInputElement | null>(null);
+  const code = snippet.code.trimEnd();
   const router = useRouter();
+  const isRaceFinished = input === code;
 
   useEffect(() => {
-    // Focus Input
+    if (!inputElement?.current) return;
     inputElement.current?.focus();
+  }, [inputElement.current]);
 
-    // Calculate the current line and cursor position in that line
-    const lines = input.split("\n");
-    setCurrentLineNumber(lines.length);
-    setReplayTimeStamp((prev) => [
-      ...prev,
-      {
-        char: input.slice(-1),
-        textIndicatorPosition,
-        currentLineNumber,
-        currentCharPosition: input.length - 1,
-        errors,
-        totalErrors,
-        time: Date.now(),
-      },
-    ]);
+  useEffect(() => {
+    if (isRaceFinished) {
+      if (!startTime) return;
+      const endTime = new Date();
+      const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
 
-    // End Race
-    if (input === code) {
-      endRace();
+      localStorage.setItem(
+        "raceTimeStamp",
+        JSON.stringify([
+          ...chartTimeStamp,
+          {
+            char: input.slice(-1),
+            accuracy: calculateAccuracy(input.length, totalErrors),
+            cpm: calculateCPM(input.length, timeTaken),
+            time: Date.now(),
+          },
+        ]),
+      );
+
+      localStorage.setItem(
+        "replayTimeStamp",
+        JSON.stringify([
+          ...replayTimeStamp,
+          {
+            char: input.slice(-1),
+            textIndicatorPosition: input.length,
+            time: Date.now(),
+          },
+        ]),
+      );
+
+      if (user) {
+        saveUserResultAction({
+          timeTaken,
+          errors: totalErrors,
+          cpm: calculateCPM(code.length - 1, timeTaken),
+          accuracy: calculateAccuracy(code.length - 1, totalErrors),
+          snippetId: snippet.id,
+        }).then(result => {
+          router.push(`/result?resultId=${result.id}`);
+        }).catch(error => catchError(error));
+      } else {
+        router.push(`/result?snippetId=${snippet.id}`);
+      }
     }
-  }, [input]);
+  });
 
-  async function endRace() {
-    if (!startTime) return;
-    const endTime = new Date();
-    const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
+  function handleInputEvent(e: any /** React.FormEvent<HTMLInputElement>*/) {
+    if (!isUserOnAdroid) return;
+    if (!startTime) {
+      setStartTime(new Date());
+    };
+    const data = e.nativeEvent.data;
 
-    localStorage.setItem(
-      "raceTimeStamp",
-      JSON.stringify([
-        ...raceTimeStamp,
-        {
-          char: input.slice(-1),
-          accuracy: calculateAccuracy(input.length, totalErrors),
-          cpm: calculateCPM(input.length, timeTaken),
-          time: Date.now(),
-        },
-      ]),
-    );
+    if (input !== code.slice(0, input.length) && e.nativeEvent.inputType !== "deleteContentBackward") {
+      e.preventDefault();
+      return;
+    };
 
-    localStorage.setItem(
-      "replayTimeStamp",
-      JSON.stringify([
-        ...replayTimeStamp,
-        {
-          char: input.slice(-1),
-          textIndicatorPosition,
-          currentLineNumber,
-          currentCharPosition: input.length - 1,
-          errors,
-          totalErrors,
-          time: Date.now(),
-        },
-      ]),
-    );
-
-    if (user) {
-      const result = await saveUserResultAction({
-        timeTaken,
-        errors: totalErrors,
-        cpm: calculateCPM(code.length - 1, timeTaken),
-        accuracy: calculateAccuracy(code.length - 1, totalErrors),
-        snippetId: snippet.id,
-      });
-
-      router.push(`/result?resultId=${result.id}`);
+    if (e.nativeEvent.inputType === "insertText") {
+      setInput((prevInput) => prevInput + data);
+    } else if (e.nativeEvent.inputType === "deleteContentBackward") {
+      // if the user pressed backspace on mobile, data is null
+      Backspace();
     } else {
-      router.push(`/result?snippetId=${snippet.id}`);
+      Enter();
     }
-  }
+    changeTimeStamps(e);
+  };
 
   function handleKeyboardDownEvent(e: React.KeyboardEvent<HTMLInputElement>) {
+    // For ANDROID.
+    // since the enter button on a mobile keyboard/keypad actually
+    // returns a e.key of "Enter", we just set a condition for that.
+    if (isUserOnAdroid) {
+      switch (e.key) {
+        case "Enter":
+          if (!startTime) {
+            setStartTime(new Date());
+          }
+          handleInputEvent(e);
+          break;
+      }
+      return;
+    };
+
     // Restart
     if (e.key === "Escape") {
       handleRestart();
@@ -136,7 +144,7 @@ export default function RacePractice({
     }
     // Reload Control + r
     if (e.ctrlKey && e.key === "r") {
-      e.preventDefault;
+      e.preventDefault();
       return;
     }
     // Catch Alt Gr - Please confirm I am unable to test this
@@ -171,46 +179,75 @@ export default function RacePractice({
           break;
       }
     }
-    const lines = input.split("\n");
-    setCurrentLineNumber(lines.length);
+
+    changeTimeStamps(e);
+  }
+
+  // since this logic of setting timestamps will be reused
+  function changeTimeStamps(e: any) {
+    let value: string;
+
+    // if keyboardDown event is the one that calls this
+    if (e.key) {
+      value = e.key;
+      // so, this is where we can access the value of the key pressed on mobile
+    } else {
+      // check if the user pressed backspace (it's null)
+      const data = e.nativeEvent.data;
+
+      if (e.nativeEvent.inputType === "deleteContentBackward") {
+        // the 2nd to the last character
+        const latestValue = input[input.length - 2];
+        if (!latestValue) {
+          value = "";
+        } else {
+          value = latestValue;
+        }
+      } else if (e.nativeEvent.inputType === "insertText") {
+        value = data;
+      } else {
+        value = "Enter";
+      }
+    }
+
+    if (value === code[input.length - 1] && value !== " ") {
+      const currTime = Date.now();
+      const timeTaken = startTime ? (currTime - startTime.getTime()) / 1000 : 0;
+      setChartTimeStamp((prev) => [
+        ...prev,
+        {
+          char: value,
+          accuracy: calculateAccuracy(input.length, totalErrors),
+          cpm: calculateCPM(input.length, timeTaken),
+          time: currTime,
+        },
+      ]);
+    }
     setReplayTimeStamp((prev) => [
       ...prev,
       {
         char: input.slice(-1),
-        textIndicatorPosition,
-        currentLineNumber,
-        currentCharPosition: input.length - 1,
-        errors,
-        totalErrors,
+        textIndicatorPosition: input.length,
         time: Date.now(),
       },
     ]);
-  }
+  };
 
   function Backspace() {
     if (input.length === 0) {
       return;
     }
 
-    if (textIndicatorPosition === input.length) {
-      setInput((prevInput) => prevInput.slice(0, -1));
-    }
+    setInput((prevInput) => prevInput.slice(0, -1))
 
-    setTextIndicatorPosition(
-      (prevTextIndicatorPosition) => prevTextIndicatorPosition - 1,
-    );
-
-    if (raceTimeStamp.length > 0 && errors.length == 0) {
-      setRaceTimeStamp((prev) => prev.slice(0, -1));
+    if (chartTimeStamp.length > 0) {
+      setChartTimeStamp((prev) => prev.slice(0, -1));
     }
   }
 
   function Enter() {
     if (code.charAt(input.length) !== "\n") {
-      setInput(input + "\n");
-      setTextIndicatorPosition((prevTextIndicatorPosition) => {
-        return prevTextIndicatorPosition + 1;
-      });
+      setInput((prevInput) => prevInput + "\n");
     }
 
     const lines = input.split("\n");
@@ -223,14 +260,7 @@ export default function RacePractice({
         indent += " ";
         i++;
       }
-      while (nextLine.charAt(i) === "\t") {
-        indent += "\t";
-        i++;
-      }
-      setInput(input + "\n" + indent);
-      setTextIndicatorPosition((prevTextIndicatorPosition) => {
-        return prevTextIndicatorPosition + 1 + indent.length;
-      });
+      setInput((prevInput) => prevInput + "\n" + indent);
     }
   }
 
@@ -239,36 +269,20 @@ export default function RacePractice({
       setTotalErrors((prevTotalErrors) => prevTotalErrors + 1);
     }
 
-    if (e.key === code[input.length] && errors.length === 0 && e.key !== " " && e.key !== "\t") {
-      const currTime = Date.now();
-      const timeTaken = startTime ? (currTime - startTime.getTime()) / 1000 : 0;
-      setRaceTimeStamp((prev) => [
-        ...prev,
-        {
-          char: e.key,
-          accuracy: calculateAccuracy(input.length, totalErrors),
-          cpm: calculateCPM(input.length, timeTaken),
-          time: currTime,
-        },
-      ]);
-    }
-
     setInput((prevInput) => prevInput + e.key);
-    setTextIndicatorPosition(
-      (prevTextIndicatorPosition) => prevTextIndicatorPosition + 1,
-    );
   }
 
   function handleRestart() {
     setStartTime(null);
     setInput("");
-    setTextIndicatorPosition(0);
     setTotalErrors(0);
+    setReplayTimeStamp([]);
+    setChartTimeStamp([]);
   }
 
   return (
     <div
-      className="relative flex flex-col w-3/4 gap-2 p-4 mx-auto rounded-md lg:p-8 bg-accent"
+      className="relative flex flex-col w-[clamp(10rem,95%,50rem)] gap-2 p-4 mx-auto rounded-md lg:p-8 bg-accent"
       onClick={() => {
         inputElement.current?.focus();
       }}
@@ -276,26 +290,27 @@ export default function RacePractice({
     >
       <RaceTracker
         user={user}
-        position={textIndicatorPosition}
+        position={input.length}
         codeLength={code.length}
       />
       <Header user={user} snippet={snippet} handleRestart={handleRestart} />
       <section className="flex">
-        <LineNumbers code={code} currentLineNumber={currentLineNumber} />
+        <LineNumbers code={code} currentLineNumber={input.split("\n").length} />
         <Code
           code={code}
-          userInput={input}
-          textIndicatorPosition={textIndicatorPosition}
-          errors={errors}
+          input={input}
         />
         <input
           type="text"
-          defaultValue={input}
+          value={input}
           ref={inputElement}
-          onKeyDown={handleKeyboardDownEvent}
+          onKeyUp={handleKeyboardDownEvent}
+          onInput={handleInputEvent}
+          disabled={input === code}
           className="absolute inset-y-0 left-0 w-full h-full p-8 rounded-md -z-40 focus:outline outline-blue-500 cursor-none"
           onPaste={(e) => e.preventDefault()}
           data-cy="race-practice-input"
+          autoComplete="off"
         />
       </section>
       <Footer

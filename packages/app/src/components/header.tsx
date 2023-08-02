@@ -4,9 +4,19 @@ import { MobileNav } from "./mobile-nav";
 import { MainNav } from "./main-nav";
 import { UserDropdown } from "./user-dropdown";
 import { getCurrentUser } from "@/lib/session";
+import Notification from "./notification";
+import { getUserNotification } from "@/lib/notification";
 
 export async function Header() {
   const user = await getCurrentUser();
+  let userNotifications = null;
+  if (user) {
+    userNotifications = await getUserNotification({
+      userId: user?.id,
+      take: 5,
+      skip: 0,
+    });
+  }
 
   return (
     <header className="sticky top-0 z-40 flex w-full dark:shadow-black shadow-slate-300 dark:bg-opacity-50 bg-background/10 backdrop-blur-md">
@@ -16,6 +26,7 @@ export async function Header() {
         </div>
         <MobileNav user={user} />
         <nav className="items-center hidden h-full space-x-2 md:flex">
+          {user && <Notification notifications={userNotifications} />}
           <ModeToggle />
           <UserDropdown user={user} />
         </nav>

@@ -100,12 +100,14 @@ export default async function ContributorsPage({
               page - 1,
               1,
             )}&per_page=${per_page}`}
+            firstURL={`/contributors?page=1&per_page=${per_page}`}
+            lastURL={`/contributors?page=${totalPage}&per_page=${per_page}`}
             pages={page}
             totalPages={totalPage}
           />
         </div>
       </div>
-      <ul className="grid gap-8 mt-8 list-none md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <ul className="grid gap-4 mt-8 list-none md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {contributors
           .slice(sliceStartIndex, sliceEndIndex)
           .map((contributor) => (
@@ -131,6 +133,8 @@ export default async function ContributorsPage({
           page - 1,
           1,
         )}&per_page=${per_page}`}
+        firstURL={`/contributors?page=1&per_page=${per_page}`}
+        lastURL={`/contributors?page=${totalPage}&per_page=${per_page}`}
         pages={page}
         totalPages={totalPage}
       />

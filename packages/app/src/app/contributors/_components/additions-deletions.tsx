@@ -26,10 +26,10 @@ export default function AdditionsDeletions({
         className,
       )}
     >
-      <span className="text-green-500">
+      <span className="text-green-500 text-sm">
         +{displayNumber(additions)} {verbose && "additions"}
       </span>
-      <span className="text-red-500">
+      <span className="text-red-500 text-sm">
         -{displayNumber(Math.abs(deletions))} {verbose && "deletions"}
       </span>
     </div>

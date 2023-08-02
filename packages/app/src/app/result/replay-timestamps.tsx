@@ -2,22 +2,20 @@
 
 import { useState, useEffect } from "react";
 import { PauseIcon, PlayIcon, RefreshCcw } from "lucide-react";
-import Code from "../race/_components/race/code";
+import { cn } from "@/lib/utils";
 
-interface replayTimeStampProps {
+interface ReplayTimeStamp {
   char: string;
   textIndicatorPosition: number;
-  currentLineNumber: number;
-  currentCharPosition: number;
-  errors: number[];
-  totalErrors: number;
   time: number;
 }
 
-export const ReplayCode = ({ code }: { code?: string }) => {
-  const [replayTimeStamp, setReplayTimeStamp] = useState<
-    replayTimeStampProps[]
-  >([]);
+type ReplayCode = {
+  code?: string;
+};
+
+export const ReplayCode = ({ code }: ReplayCode) => {
+  const [replayTimeStamp, setReplayTimeStamp] = useState<ReplayTimeStamp[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -61,15 +59,12 @@ export const ReplayCode = ({ code }: { code?: string }) => {
     return null;
   }
 
-  const currentTimestamp = replayTimeStamp[currentIndex];
-
   const progress = (currentIndex / (replayTimeStamp.length - 1)) * 100;
-
+  const currentTimestamp = replayTimeStamp[currentIndex];
   if (!currentTimestamp) handleRestart();
 
   return (
     <div className="py-2 w-full bg-accent text-2xl text-primary relative group">
-      {/* Buttons */}
       <div className="opacity-0 group-hover:opacity-100 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex space-x-2  z-10">
         {isPlaying ? (
           <PauseIcon
@@ -88,11 +83,10 @@ export const ReplayCode = ({ code }: { code?: string }) => {
           className="w-12 h-12 text-primary cursor-pointer"
         />
       </div>
-      <Code
+      <CodeReplay
         code={code}
-        userInput={currentTimestamp?.char}
+        character={currentTimestamp?.char}
         textIndicatorPosition={currentTimestamp?.textIndicatorPosition}
-        errors={currentTimestamp?.errors}
       />
       <div className="w-full h-2 bg-secondary mt-2">
         <div
@@ -106,3 +100,42 @@ export const ReplayCode = ({ code }: { code?: string }) => {
     </div>
   );
 };
+
+type CodeReplayProps = {
+  code: string;
+  character: string;
+  textIndicatorPosition: number;
+};
+
+function CodeReplay({
+  code,
+  character,
+  textIndicatorPosition,
+}: CodeReplayProps) {
+  const array: number[] = [];
+  if (character !== code.charAt(textIndicatorPosition - 1)) {
+    array.push(textIndicatorPosition - 1);
+  }
+
+  return (
+    <>
+      <pre className="text-monochrome mb-4 overflow-auto font-medium px-2 w-full">
+        {code.split("").map((char, index) => (
+          <span
+            key={index}
+            className={cn("border opacity-50", {
+              "text-red-500 opacity-100":
+                code[index] !== " " && array.includes(index),
+              "border-red-500 opacity-100":
+                code[index] === " " && array.includes(index),
+              "bg-yellow-200 opacity-80 text-black":
+                textIndicatorPosition === index,
+            })}
+          >
+            {char === "\n" ? "⏎\n" : char}
+          </span>
+        ))}
+      </pre>
+    </>
+  );
+}

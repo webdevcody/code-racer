@@ -14,19 +14,23 @@ async function getSearchParamSnippet(snippetId: string | string[]) {
   return null;
 }
 
-export default async function PracticeRacePage({
-  searchParams,
-}: {
+type PracticeRacePageProps = {
   searchParams: {
     snippetId: string;
     lang: string;
   };
-}) {
+};
+
+export default async function PracticeRacePage({
+  searchParams,
+}: PracticeRacePageProps) {
   const user = await getCurrentUser();
   const language = searchParams.lang as Language;
-  const isValidLang = isValidLanguage(language);
-  if (!isValidLang) {
-    redirect("/race");
+  if (language) {
+    const isValidLang = isValidLanguage(language);
+    if (!isValidLang) {
+      redirect("/race");
+    }
   }
 
   const snippet =
