@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   LineChart,
   Line,
@@ -24,46 +24,14 @@ interface ChartTimeStamp {
   time: number;
 }
 
-interface ResultChartProps {
+type ResultChart = {
   code?: string;
-  chartTimeStamp: ChartTimeStamp[];
-  setChartTimeStamp: React.Dispatch<React.SetStateAction<ChartTimeStamp[]>>;
-  activeCharIndex?: number;
-  setActiveCharIndex: React.Dispatch<React.SetStateAction<number | undefined>>;
-}
+};
 
-export function ResultChart({ code }: { code?: string }) {
-  const [chartTimeStamp, setChartTimeStamp] = useState<ChartTimeStamp[]>([]);
+export function ResultChart({ code }: ResultChart) {
+  const data = JSON.parse(localStorage.getItem("chartTimeStamp") || "[]");
+  const [chartTimeStamp, setChartTimeStamp] = useState<ChartTimeStamp[]>(data);
   const [activeCharIndex, setActiveCharIndex] = useState<number>();
-
-  return (
-    <Chart
-      code={code}
-      chartTimeStamp={chartTimeStamp}
-      setChartTimeStamp={setChartTimeStamp}
-      activeCharIndex={activeCharIndex}
-      setActiveCharIndex={setActiveCharIndex}
-    />
-  );
-}
-
-function Chart(props: ResultChartProps) {
-  const {
-    code,
-    chartTimeStamp,
-    setChartTimeStamp,
-    activeCharIndex,
-    setActiveCharIndex,
-  } = props;
-
-  useEffect(() => {
-    const getData = () => {
-      return JSON.parse(localStorage.getItem("chartTimeStamp") || "[]");
-    };
-
-    const data = getData();
-    return setChartTimeStamp(data);
-  }, [setChartTimeStamp]);
 
   return (
     <div style={{ width: "100%" }} className="mx-auto pb-3 flex flex-col">
@@ -99,6 +67,7 @@ function Chart(props: ResultChartProps) {
           />
         </LineChart>
       </ResponsiveContainer>
+
       <div className="px-2 bg-accent text-primary">
         <RenderCode
           code={code}
@@ -110,15 +79,13 @@ function Chart(props: ResultChartProps) {
   );
 }
 
-const RenderCode = ({
-  code,
-  activeCharIndex,
-  chartTimeStamp,
-}: {
+type RenderCode = {
   code?: string;
   activeCharIndex?: number;
   chartTimeStamp: ChartTimeStamp[];
-}) => {
+};
+
+const RenderCode = ({ code, activeCharIndex, chartTimeStamp }: RenderCode) => {
   let removeExtras = 0;
   return (
     <code className="flex-wrap text-2xl hidden sm:block whitespace-pre-wrap">
