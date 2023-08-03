@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { formatDate } from "@/lib/utils";
 import { Result, Snippet } from "@prisma/client";
+import { Decimal } from "@prisma/client/runtime/library";
+import { race } from "cypress/types/bluebird";
 import { redirect } from "next/navigation";
 import "server-only";
 
@@ -179,3 +181,24 @@ export async function getUserSnippetPlacement(snippetId?: Snippet["id"]) {
 
   return allResults.findIndex((r) => r.id === usersResult.id) + 1;
 }
+
+
+export const getFastestRace = async (snippetId: any, raceID: string) => {
+
+  const user = await getCurrentUser();
+
+  if (!user) return null;
+
+  return await prisma.result.findFirst({
+    where: {
+      userId: user.id,
+      snippetId: snippetId.snippetId,
+      NOT: {
+        id: raceID,
+      }
+    },
+    orderBy: {
+      cpm: 'desc',
+    },
+  });
+};

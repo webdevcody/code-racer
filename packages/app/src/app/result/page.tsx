@@ -7,6 +7,7 @@ import { getCurrentUser } from "@/lib/session";
 import {
   getUserResultsForSnippet,
   getCurrentRaceResult,
+  getFastestRace,
   ParsedRacesResult,
   getSnippetVote,
 } from "./loaders";
@@ -24,6 +25,7 @@ import { TopTable } from "./topten";
 import { RaceAchievementBadges } from "./race-achievement-badges";
 import { ResultChart } from "./result-chart";
 import HistoryChart from "./history-chart";
+import { pushNotification } from "@/lib/notification";
 
 type ResultPageProps = {
   searchParams: {
@@ -99,6 +101,28 @@ async function AuthenticatedPage({ resultId, user }: AuthenticatedPageProps) {
       value: `${currentRaceResult?.takenTime}s`,
     },
   ];
+
+  const bestCPMRace = await getFastestRace(currentRaceResult.snippetId, currentRaceResult.id);
+  console.log("----------------------------------");
+
+  if (bestCPMRace && bestCPMRace?.cpm < currentRaceResult.cpm) {
+    console.log("BEST");
+    const notificationData = {
+      notification: {
+        title: 'New Record!',
+        description: 'You just achvied your highest CPM!',
+        //ctaUrl: '/',
+      },
+      userId: user.id,
+    };
+
+    try {
+      await pushNotification(notificationData);
+      console.log('Notification sent successfully!');
+    } catch (error) {
+      console.error('Error sending notification:', error);
+    }
+  }
 
   return (
     <main className="w-auto mb-32 lg:mb-40">
