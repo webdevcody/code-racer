@@ -12,10 +12,12 @@ import { Trash } from "lucide-react";
 import dynamic from "next/dynamic";
 import { Suspense, useState } from "react";
 
-const DeleteConfirmation = dynamic(() => import("./confirmation"));
+const DeleteConfirmation = dynamic(() => import("./delete-confirmation"));
+const ResetConfirmation = dynamic(() => import("./reset-confirmation"));
 
 export default function ProfileNav({ displayName }: { displayName: string }) {
   const [willDelete, setWillDelete] = useState(false);
+  const [reset, setReset] = useState(false);
 
   return (
     <>
@@ -36,6 +38,14 @@ export default function ProfileNav({ displayName }: { displayName: string }) {
               <Trash className="w-4 h-4 mr-2 stroke-red-500" />
               <span className="text-red-500">Delete Account</span>
             </DropdownMenuItem>
+            <DropdownMenuItem
+              title="Reset Results"
+              className="cursor-pointer"
+              onClick={() => setReset(true)}
+            >
+              <Trash className="w-4 h-4 mr-2 stroke-yellow-500" />
+              <span className="text-yellow-500">Reset Results</span>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -45,6 +55,11 @@ export default function ProfileNav({ displayName }: { displayName: string }) {
             setWillDelete={setWillDelete}
             displayName={displayName}
           />
+        </Suspense>
+      ) : null}
+      {reset ? (
+        <Suspense>
+          <ResetConfirmation setReset={setReset} displayName={displayName} />
         </Suspense>
       ) : null}
     </>

@@ -78,3 +78,34 @@ export const updateUserAction = safeAction(z.object({ name: z.string() }))(
     });
   },
 );
+
+export const deleteUserResults = safeAction(z.object({}))(async () => {
+  const user = await getCurrentUser();
+  console.log(user?.id);
+
+  if (!user) throw new UnauthorizedError();
+
+  await prisma.result.deleteMany({
+    where: {
+      userId: user.id,
+    },
+  });
+
+  await prisma.achievement.deleteMany({
+    where: {
+      userId: user.id,
+    },
+  });
+
+  await prisma.user.update({
+    where: {
+      id: user.id,
+    },
+    data: {
+      topLanguages: [],
+      languagesMap: undefined,
+      averageCpm: 0,
+      averageAccuracy: 0,
+    },
+  });
+});
