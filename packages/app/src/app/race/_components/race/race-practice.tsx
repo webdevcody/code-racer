@@ -113,10 +113,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
     if (e.nativeEvent.inputType === "insertText") {
       setInput((prevInput) => prevInput + data);
     } else if (e.nativeEvent.inputType === "deleteContentBackward") {
-      // if the user pressed backspace on mobile, data is null
       Backspace();
-    } else {
-      Enter();
     }
     changeTimeStamps(e);
   }
@@ -124,15 +121,20 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
   function handleKeyboardDownEvent(e: React.KeyboardEvent<HTMLInputElement>) {
     // For ANDROID.
     // since the enter button on a mobile keyboard/keypad actually
-    // returns a e.key of "Enter", we just set a condition for that.
+    // returns a e.key of "Enter" onkeydown, we just set a condition for that.
     if (isUserOnAdroid) {
       switch (e.key) {
         case "Enter":
           if (!startTime) {
             setStartTime(new Date());
           }
-          handleInputEvent(e);
-          break;
+          if (input !== code.slice(0, input.length)) return;
+          Enter();
+        break;
+        // this is to delete the characters when "Enter" is pressed;
+        case "Backspace":
+          Backspace();
+        break;
       }
       return;
     }
@@ -197,7 +199,6 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
       value = e.key;
       // so, this is where we can access the value of the key pressed on mobile
     } else {
-      // check if the user pressed backspace (it's null)
       const data = e.nativeEvent.data;
 
       if (e.nativeEvent.inputType === "deleteContentBackward") {
@@ -306,7 +307,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
           type="text"
           value={input}
           ref={inputElement}
-          onKeyUp={handleKeyboardDownEvent}
+          onKeyDown={handleKeyboardDownEvent}
           onInput={handleInputEvent}
           disabled={input === code}
           className="absolute inset-y-0 left-0 w-full h-full p-8 rounded-md -z-40 focus:outline outline-blue-500 cursor-none"

@@ -519,7 +519,7 @@ export default function RaceMultiplayer({
                 type="text"
                 defaultValue={input}
                 ref={inputElement}
-                onKeyUp={handleKeyboardUpEvent}
+                onKeyDown={handleKeyboardUpEvent}
                 onInput={handleInputEvent}
                 disabled={isRaceFinished}
                 className="absolute inset-y-0 left-0 w-full h-full p-8 rounded-md -z-40 focus:outline outline-blue-500 cursor-none"
