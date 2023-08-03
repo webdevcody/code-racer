@@ -26,12 +26,22 @@ export function calculateCPM(
   secondsTaken: number,
 ): number {
   const minutesTaken = secondsTaken / 60;
-  return Math.round(numberOfCharacters / minutesTaken);
+  const cpm = Math.round(numberOfCharacters / minutesTaken);
+  if (Number.isNaN(cpm)) {
+    // result chart graph needs a 0 value
+    return 0;
+  }
+  return cpm;
 }
 
 export function calculateAccuracy(
   numberOfCharacters: number,
   errorsCount: number,
 ): number {
-  return (1 - errorsCount / numberOfCharacters) * 100;
+  const accuracy = (1 - errorsCount / numberOfCharacters) * 100;
+  if (Number.isNaN(accuracy)) {
+    // result chart graph needs a 0 value
+    return 0;
+  }
+  return accuracy;
 }
