@@ -183,7 +183,7 @@ export default async function LeaderboardPage({
     <div className="pt-12">
       <Heading title="Leaderboard" description="Find your competition" />
       {currUserIsRanked ? (
-        <UserRankings currentUser={user} allUsers={allUsers} />
+        <UserRankings currentUserRankDetail={userRanks[user.id]} />
       ) : null}
       <UsersTable data={users} pageCount={pageCount} ranks={userRanks} field={sortBy}/>
     </div>
