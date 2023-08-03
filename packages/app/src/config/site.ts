@@ -77,13 +77,13 @@ export const siteConfig = {
         endOfLine: "lf",
         singleAttributePerLine: false,
         plugins: [
-          "prettier-plugin-go-template",
+          // "prettier-plugin-go-template",
           "prettier-plugin-java",
           "@prettier/plugin-ruby",
         ],
       } satisfies PrettierOptions,
       parserMap: new Map<Language, string>([
-        ["go", "go-template"],
+        // ["go", "go-template"],
         ["java", "java"],
         ["html", "html"],
         ["javascript", "babel"],
