@@ -35,7 +35,6 @@ import { type RaceStatus, raceStatus } from "@code-racer/wss/src/types";
 import type { Race, Snippet } from "@prisma/client";
 import type { User } from "next-auth";
 import { ChartTimeStamp, ReplayTimeStamp } from "./types";
-import { useCheckForUserNavigator } from "@/lib/user-system";
 
 type Participant = Omit<
   GameStateUpdatePayload["raceState"]["participants"][number],
@@ -64,7 +63,7 @@ export function GameMultiplayer({
   const [submittingResults, setSubmittingResults] = useState(false);
   const [totalErrors, setTotalErrors] = useState(0);
 
-  const [raceTimeStamp, setRaceTimeStamp] = useState<ChartTimeStamp[]>([]);
+  const [chartTimeStamp, setChartTimeStamp] = useState<ChartTimeStamp[]>([]);
   const [replayTimeStamp, setReplayTimeStamp] = useState<ReplayTimeStamp[]>([]);
 
   const code = snippet?.code.trimEnd();
@@ -85,7 +84,6 @@ export function GameMultiplayer({
 
   const isRaceFinished = currentRaceStatus === raceStatus.FINISHED;
   const showRaceTimer = !!startTime && !isRaceFinished;
-  const isUserOnAdroid = useCheckForUserNavigator("android");
 
   const startRaceEventHandlers = React.useCallback(async () => {
     const snippet = await getSnippetById(race.snippetId);
@@ -114,6 +112,13 @@ export function GameMultiplayer({
     };
   }, [raceId, startRaceEventHandlers]);
 
+  // remove previous results
+  useEffect(() => {
+    localStorage.removeItem("chartTimeStamp");
+    if (!inputElement.current) return;
+    inputElement.current.focus();
+  }, []);
+
   //send updated position to server
   useEffect(() => {
     if (!position) return;
@@ -128,65 +133,11 @@ export function GameMultiplayer({
         });
       }
     }, 200);
-    
+
     return () => clearInterval(gameLoop);
   }, [currentRaceStatus, position, participantId, raceId]);
 
-  useEffect(() => {
-    inputElement.current?.focus();
-
-    // setReplayTimeStamp((prev) => [
-    //   ...prev,
-    //   {
-    //     char: input.slice(-1),
-    //     textIndicatorPosition: input.length,
-    //     time: Date.now(),
-    //   },
-    // ]);
-  }, []);
-
-  function handleInputEvent(e: any /** React.FormEvent<HTMLInputElement>*/) {
-    if (!isUserOnAdroid) return;
-    if (!startTime) {
-      setStartTime(new Date());
-    }
-    const data = e.nativeEvent.data;
-
-    if (
-      input !== code?.slice(0, input.length) &&
-      e.nativeEvent.inputType !== "deleteContentBackward"
-    ) {
-      e.preventDefault();
-      return;
-    }
-
-    if (e.nativeEvent.inputType === "insertText") {
-      setInput((prevInput) => prevInput + data);
-    } else if (e.nativeEvent.inputType === "deleteContentBackward") {
-      // if the user pressed backspace on mobile, data is null
-      Backspace();
-    } else {
-      Enter();
-    }
-    changeTimeStamps();
-  }
-
   function handleKeyboardUpEvent(e: React.KeyboardEvent<HTMLInputElement>) {
-    // For ANDROID.
-    // since the enter button on a mobile keyboard/keypad actually
-    // returns a e.key of "Enter", we just set a condition for that.
-    if (isUserOnAdroid) {
-      switch (e.key) {
-        case "Enter":
-          if (!startTime) {
-            setStartTime(new Date());
-          }
-          handleInputEvent(e);
-          break;
-      }
-      return;
-    }
-
     // Restart
     if (e.key === "Escape") {
       handleRestart();
@@ -234,18 +185,6 @@ export function GameMultiplayer({
           break;
       }
     }
-    changeTimeStamps();
-  }
-
-  function changeTimeStamps() {
-    setReplayTimeStamp((prev) => [
-      ...prev,
-      {
-        char: input.slice(-1),
-        textIndicatorPosition: input.length,
-        time: Date.now(),
-      },
-    ]);
   }
 
   function Backspace() {
@@ -255,8 +194,9 @@ export function GameMultiplayer({
 
     setInput((prevInput) => prevInput.slice(0, -1));
 
-    if (raceTimeStamp.length > 0 && errors.length == 0) {
-      setRaceTimeStamp((prev) => prev.slice(0, -1));
+    const character = input.slice(-1);
+    if (character !== " " && character !== "\n") {
+      setChartTimeStamp((prevArray) => prevArray.slice(0, -1));
     }
   }
 
@@ -284,15 +224,13 @@ export function GameMultiplayer({
       setTotalErrors((prevTotalErrors) => prevTotalErrors + 1);
     }
 
-    if (
-      e.key === code?.[input.length] &&
-      errors.length === 0 &&
-      e.key !== " "
-    ) {
+    setInput((prevInput) => prevInput + e.key);
+
+    if (e.key !== " ") {
       const currTime = Date.now();
       const timeTaken = startTime ? (currTime - startTime.getTime()) / 1000 : 0;
-      setRaceTimeStamp((prev) => [
-        ...prev,
+      setChartTimeStamp((prevArray) => [
+        ...prevArray,
         {
           char: e.key,
           accuracy: calculateAccuracy(input.length, totalErrors),
@@ -302,7 +240,14 @@ export function GameMultiplayer({
       ]);
     }
 
-    setInput((prevInput) => prevInput + e.key);
+    setReplayTimeStamp((prev) => [
+      ...prev,
+      {
+        char: input.slice(-1),
+        textIndicatorPosition: input.length,
+        time: Date.now(),
+      },
+    ]);
   }
 
   function handleRestart() {
@@ -310,7 +255,7 @@ export function GameMultiplayer({
     setInput("");
     setTotalErrors(0);
     setReplayTimeStamp([]);
-    setRaceTimeStamp([]);
+    setChartTimeStamp([]);
   }
 
   useEffect(() => {
@@ -320,9 +265,9 @@ export function GameMultiplayer({
       const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
 
       localStorage.setItem(
-        "raceTimeStamp",
+        "chartTimeStamp",
         JSON.stringify([
-          ...raceTimeStamp,
+          ...chartTimeStamp,
           {
             char: input.slice(-1),
             accuracy: calculateAccuracy(input.length, totalErrors),
@@ -430,7 +375,6 @@ export function GameMultiplayer({
                 defaultValue={input}
                 ref={inputElement}
                 onKeyUp={handleKeyboardUpEvent}
-                onInput={handleInputEvent}
                 disabled={isRaceFinished}
                 className="absolute inset-y-0 left-0 w-full h-full p-8 rounded-md -z-40 focus:outline outline-blue-500 cursor-none"
                 onPaste={(e) => e.preventDefault()}
