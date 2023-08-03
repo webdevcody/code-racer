@@ -19,7 +19,6 @@ import type { Snippet } from "@prisma/client";
 import type { User } from "next-auth";
 import type { ChartTimeStamp } from "./types";
 import type { ReplayTimeStamp } from "./types";
-import { useCheckForUserNavigator } from "@/lib/user-system";
 import { catchError } from "@/lib/utils";
 
 type RacePracticeProps = {
@@ -34,17 +33,16 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
   const [chartTimeStamp, setChartTimeStamp] = useState<ChartTimeStamp[]>([]);
   const [replayTimeStamp, setReplayTimeStamp] = useState<ReplayTimeStamp[]>([]);
 
-  const isUserOnAdroid = useCheckForUserNavigator("android");
-
   const inputElement = useRef<HTMLInputElement | null>(null);
   const code = snippet.code.trimEnd();
   const router = useRouter();
   const isRaceFinished = input === code;
 
   useEffect(() => {
-    if (!inputElement?.current) return;
-    inputElement.current?.focus();
-  }, [inputElement.current]);
+    localStorage.removeItem("chartTimeStamp");
+    if (!inputElement.current) return;
+    inputElement.current.focus();
+  });
 
   useEffect(() => {
     if (isRaceFinished) {
@@ -53,7 +51,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
       const timeTaken = (endTime.getTime() - startTime.getTime()) / 1000;
 
       localStorage.setItem(
-        "raceTimeStamp",
+        "chartTimeStamp",
         JSON.stringify([
           ...chartTimeStamp,
           {
@@ -243,17 +241,18 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
     if (input.length === 0) {
       return;
     }
-
     setInput((prevInput) => prevInput.slice(0, -1));
 
-    if (chartTimeStamp.length > 0) {
-      setChartTimeStamp((prev) => prev.slice(0, -1));
+    const character = input.slice(-1);
+    if (character !== " " && character !== "\n") {
+      setChartTimeStamp((prevArray) => prevArray.slice(0, -1));
     }
   }
 
   function Enter() {
     if (code.charAt(input.length) !== "\n") {
       setInput((prevInput) => prevInput + "\n");
+      return;
     }
 
     const lines = input.split("\n");
@@ -274,8 +273,29 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
     if (e.key !== code.slice(input.length, input.length + 1)) {
       setTotalErrors((prevTotalErrors) => prevTotalErrors + 1);
     }
-
     setInput((prevInput) => prevInput + e.key);
+
+    if (e.key !== " ") {
+      const currTime = Date.now();
+      const timeTaken = startTime ? (currTime - startTime.getTime()) / 1000 : 0;
+      setChartTimeStamp((prevArray) => [
+        ...prevArray,
+        {
+          char: e.key,
+          accuracy: calculateAccuracy(input.length, totalErrors),
+          cpm: calculateCPM(input.length, timeTaken),
+          time: currTime,
+        },
+      ]);
+    }
+    setReplayTimeStamp((prev) => [
+      ...prev,
+      {
+        char: input.slice(-1),
+        textIndicatorPosition: input.length,
+        time: Date.now(),
+      },
+    ]);
   }
 
   function handleRestart() {
@@ -305,7 +325,6 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
         <Code code={code} input={input} />
         <input
           type="text"
-          value={input}
           ref={inputElement}
           onKeyDown={handleKeyboardDownEvent}
           onInput={handleInputEvent}

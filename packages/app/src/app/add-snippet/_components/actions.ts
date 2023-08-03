@@ -5,8 +5,12 @@ import { UnauthorizedError } from "@/lib/exceptions/custom-hooks";
 import { getCurrentUser } from "@/lib/session";
 import { snippetSchema } from "@/lib/validations/snippet";
 import { Configuration, OpenAIApi } from "openai";
-import { prisma } from "@/lib/prisma";
+import { type Snippet, prisma } from "@/lib/prisma";
 import { env } from "@/env.mjs";
+
+import * as prettier from "prettier";
+import { siteConfig } from "@/config/site";
+import { type Language } from "@/config/languages";
 
 const configuration = new Configuration({
   apiKey: env.OPENAI_API_KEY,
@@ -88,10 +92,35 @@ export const addSnippetAction = safeAction(snippetSchema)(async (input) => {
     }
   }
 
+  // Format snippet with prettier
+  let formattedCode: Snippet["code"] = input.code;
+  const parser = siteConfig.snippet.prettier.parserMap.get(
+    input.language as Language,
+  );
+
+  // Only format snippet language that Prettier support
+  if (parser) {
+    try {
+      formattedCode = await prettier.format(input.code, {
+        ...siteConfig.snippet.prettier.options,
+        parser,
+      });
+    } catch (error) {
+      return {
+        failure: {
+          reason:
+            "Failed to format snippet, make sure language syntax is correct.\n" +
+            error,
+        },
+      };
+    }
+  }
+
   await prisma.snippet.create({
     data: {
       userId: user?.id,
       ...input,
+      code: formattedCode,
     },
   });
 
