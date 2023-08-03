@@ -283,7 +283,7 @@ export default function RaceMultiplayer({
     changeTimeStamps(e);
   }
 
-  function handleKeyboardUpEvent(e: React.KeyboardEvent<HTMLInputElement>) {
+  function handleKeyboardDownEvent(e: React.KeyboardEvent<HTMLInputElement>) {
 
     if (isUserOnAdroid) {
       switch (e.key) {
@@ -555,7 +555,7 @@ export default function RaceMultiplayer({
                 type="text"
                 defaultValue={input}
                 ref={inputElement}
-                onKeyDown={handleKeyboardUpEvent}
+                onKeyDown={handleKeyboardDownEvent}
                 onInput={handleInputEvent}
                 disabled={isRaceFinished}
                 className="absolute inset-y-0 left-0 w-full h-full p-8 rounded-md -z-40 focus:outline outline-blue-500 cursor-none"
