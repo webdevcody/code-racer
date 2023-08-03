@@ -20,6 +20,7 @@ import type { User } from "next-auth";
 import type { ChartTimeStamp } from "./types";
 import type { ReplayTimeStamp } from "./types";
 import { catchError } from "@/lib/utils";
+import { useCheckForUserNavigator } from "@/lib/user-system";
 
 type RacePracticeProps = {
   user?: User;
@@ -37,6 +38,8 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
   const code = snippet.code.trimEnd();
   const router = useRouter();
   const isRaceFinished = input === code;
+
+  const isUserOnAdroid = useCheckForUserNavigator("android");
 
   useEffect(() => {
     localStorage.removeItem("chartTimeStamp");

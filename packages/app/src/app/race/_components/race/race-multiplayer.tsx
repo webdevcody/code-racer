@@ -37,6 +37,7 @@ import type { Snippet } from "@prisma/client";
 import type { User } from "next-auth";
 import type { Socket } from "socket.io-client";
 import { ChartTimeStamp, ReplayTimeStamp } from "./types";
+import { useCheckForUserNavigator } from "@/lib/user-system";
 
 type Participant = Omit<
   GameStateUpdatePayload["raceState"]["participants"][number],
@@ -90,13 +91,15 @@ export default function RaceMultiplayer({
   );
   const position = code
     ? parseFloat(
-        (((input.length - errors.length) / code.length) * 100).toFixed(2),
-      )
+      (((input.length - errors.length) / code.length) * 100).toFixed(2),
+    )
     : null;
   const isRaceFinished = practiceSnippet
     ? input === code
     : currentRaceStatus === raceStatus.FINISHED;
   const showRaceTimer = !!startTime && !isRaceFinished;
+
+  const isUserOnAdroid = useCheckForUserNavigator("android");
 
   const startRaceEventHandlers = React.useCallback(() => {
     socket.on("UserRaceResponse", async (payload) => {
@@ -256,7 +259,49 @@ export default function RaceMultiplayer({
     }
   });
 
+
+  function handleInputEvent(e: any /** React.FormEvent<HTMLInputElement>*/) {
+    if (!isUserOnAdroid) return;
+    if (!startTime) {
+      setStartTime(new Date());
+    }
+    const data = e.nativeEvent.data;
+
+    if (
+      input !== code?.slice(0, input.length) &&
+      e.nativeEvent.inputType !== "deleteContentBackward"
+    ) {
+      e.preventDefault();
+      return;
+    }
+
+    if (e.nativeEvent.inputType === "insertText") {
+      setInput((prevInput) => prevInput + data);
+    } else if (e.nativeEvent.inputType === "deleteContentBackward") {
+      Backspace();
+    }
+    changeTimeStamps(e);
+  }
+
   function handleKeyboardUpEvent(e: React.KeyboardEvent<HTMLInputElement>) {
+
+    if (isUserOnAdroid) {
+      switch (e.key) {
+        case "Enter":
+          if (!startTime) {
+            setStartTime(new Date());
+          }
+          if (input !== code?.slice(0, input.length)) return;
+          Enter();
+          break;
+        // this is to delete the characters when "Enter" is pressed;
+        case "Backspace":
+          Backspace();
+          break;
+      }
+      return;
+    }
+
     // Restart
     if (e.key === "Escape") {
       handleRestart();
@@ -306,10 +351,60 @@ export default function RaceMultiplayer({
     }
   }
 
-  function Backspace() {
-    if (input.length === 0) {
-      return;
+
+  // since this logic of setting timestamps will be reused
+  function changeTimeStamps(e: any) {
+    if (!code) return;
+    let value: string;
+
+    // if keyboardDown event is the one that calls this
+    if (e.key) {
+      value = e.key;
+      // so, this is where we can access the value of the key pressed on mobile
+    } else {
+      const data = e.nativeEvent.data;
+
+      if (e.nativeEvent.inputType === "deleteContentBackward") {
+        // the 2nd to the last character
+        const latestValue = input[input.length - 2];
+        if (!latestValue) {
+          value = "";
+        } else {
+          value = latestValue;
+        }
+      } else if (e.nativeEvent.inputType === "insertText") {
+        value = data;
+      } else {
+        value = "Enter";
+      }
     }
+
+    if (value === code[input.length - 1] && value !== " ") {
+      const currTime = Date.now();
+      const timeTaken = startTime ? (currTime - startTime.getTime()) / 1000 : 0;
+      setChartTimeStamp((prev) => [
+        ...prev,
+        {
+          char: value,
+          accuracy: calculateAccuracy(input.length, totalErrors),
+          cpm: calculateCPM(input.length, timeTaken),
+          time: currTime,
+        },
+      ]);
+    }
+    setReplayTimeStamp((prev) => [
+      ...prev,
+      {
+        char: input.slice(-1),
+        textIndicatorPosition: input.length,
+        time: Date.now(),
+      },
+    ]);
+  }
+
+  function Backspace() {
+    if (!input) return;
+
     setInput((prevInput) => prevInput.slice(0, -1));
 
     const character = input.slice(-1);
@@ -419,12 +514,12 @@ export default function RaceMultiplayer({
           <>
             {raceId && code
               ? participants.map((p) => (
-                  <RaceTrackerMultiplayer
-                    key={p.id}
-                    position={p.position}
-                    participantId={p.id}
-                  />
-                ))
+                <RaceTrackerMultiplayer
+                  key={p.id}
+                  position={p.position}
+                  participantId={p.id}
+                />
+              ))
               : null}
             <div className="flex justify-between mb-2 md:mb-4">
               <Heading
