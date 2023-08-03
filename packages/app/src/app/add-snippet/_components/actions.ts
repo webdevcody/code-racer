@@ -109,7 +109,8 @@ export const addSnippetAction = safeAction(snippetSchema)(async (input) => {
       return {
         failure: {
           reason:
-            "Failed to format snippet, make sure language syntax is correct",
+            "Failed to format snippet, make sure language syntax is correct.\n" +
+            error,
         },
       };
     }
