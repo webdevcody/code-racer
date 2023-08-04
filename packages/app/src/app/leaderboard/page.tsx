@@ -26,7 +26,6 @@ function setUsersRankByValue({
   };
 }) {
   let currentRank = 1;
-  let shared = false;
 
   values
     .sort((a, b) => b.value - a.value)
