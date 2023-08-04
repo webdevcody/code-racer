@@ -1,11 +1,11 @@
 "use server";
 
-import { z } from "zod";
 import { safeAction } from "@/lib/actions";
-import { Prisma } from "@prisma/client";
 import { UnauthorizedError } from "@/lib/exceptions/custom-hooks";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
+import { Prisma } from "@prisma/client";
+import { z } from "zod";
 
 export const saveUserResultAction = safeAction(
   z.object({
@@ -39,10 +39,12 @@ export const saveUserResultAction = safeAction(
         where: { id: result.snippetId },
       });
 
-      if (Object.keys(languagesMap).includes(raceSnippet!.language)) {
-        languagesMap[raceSnippet!.language] += 1;
-      } else {
-        languagesMap[raceSnippet!.language] = 1;
+      if (raceSnippet) {
+        if (Object.keys(languagesMap).includes(raceSnippet.language)) {
+          languagesMap[raceSnippet.language] += 1;
+        } else {
+          languagesMap[raceSnippet.language] = 1;
+        }
       }
 
     });
@@ -55,10 +57,13 @@ export const saveUserResultAction = safeAction(
     where: { id: input.snippetId },
   });
 
-  if (Object.keys(languagesMap).includes(snippetData!.language!)) {
-    languagesMap[snippetData!.language!] += 1;
-  } else {
-    languagesMap[snippetData!.language!] = 1;
+  if (snippetData) {
+    if (Object.keys(languagesMap).includes(snippetData.language)) {
+      languagesMap[snippetData.language] += 1;
+    } else {
+      languagesMap[snippetData.language] = 1;
+    }
+
   }
 
   const topLanguages = Object.keys(languagesMap)
@@ -138,6 +143,7 @@ export const getParticipantUser = safeAction(
  * This should create a private room for the user
  * Not implemented
  **/
+// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
 export const createPrivateRaceRoom = safeAction(z.object({}))(async (input) => {
   throw new Error("Not implemented");
 });

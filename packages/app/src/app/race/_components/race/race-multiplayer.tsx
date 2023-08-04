@@ -5,12 +5,12 @@ import { GameStateUpdatePayload } from "@code-racer/wss/src/events/server-to-cli
 import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
-import { saveUserResultAction } from "../../actions";
 import { getSnippetById } from "../../(play)/loaders";
+import { saveUserResultAction } from "../../actions";
 
 // utils
-import { calculateAccuracy, calculateCPM, noopKeys } from "./utils";
 import { catchError } from "@/lib/utils";
+import { calculateAccuracy, calculateCPM, noopKeys } from "./utils";
 
 // Components
 import { Button } from "@/components/ui/button";
@@ -21,23 +21,23 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useToast } from "@/components/ui/use-toast";
 import MultiplayerLoadingLobby from "../multiplayer-loading-lobby";
 import { ReportButton } from "./buttons/report-button";
 import Code from "./code";
 import RaceDetails from "./race-details";
 import RaceTimer from "./race-timer";
-import { useToast } from "@/components/ui/use-toast";
 import RaceTrackerMultiplayer from "./race-tracker-mutliplayer";
 
 // Types
+import { useCheckForUserNavigator } from "@/lib/user-system";
 import type { ClientToServerEvents } from "@code-racer/wss/src/events/client-to-server";
 import type { ServerToClientEvents } from "@code-racer/wss/src/events/server-to-client";
-import { type RaceStatus, raceStatus } from "@code-racer/wss/src/types";
+import { raceStatus, type RaceStatus } from "@code-racer/wss/src/types";
 import type { Snippet } from "@prisma/client";
 import type { User } from "next-auth";
 import type { Socket } from "socket.io-client";
 import { ChartTimeStamp, ReplayTimeStamp } from "./types";
-import { useCheckForUserNavigator } from "@/lib/user-system";
 
 type Participant = Omit<
   GameStateUpdatePayload["raceState"]["participants"][number],
@@ -47,6 +47,7 @@ type Participant = Omit<
 let socket: Socket<ServerToClientEvents, ClientToServerEvents>;
 
 async function getSocketConnection() {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   socket = io(process.env.NEXT_PUBLIC_WSS_URL!); // KEEP AS IS
 }
 
@@ -260,6 +261,7 @@ export default function RaceMultiplayer({
   });
 
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function handleInputEvent(e: any /** React.FormEvent<HTMLInputElement>*/) {
     if (!isUserOnAdroid) return;
     if (!startTime) {
@@ -353,6 +355,7 @@ export default function RaceMultiplayer({
 
 
   // since this logic of setting timestamps will be reused
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function changeTimeStamps(e: any) {
     if (!code) return;
     let value: string;

@@ -1,6 +1,15 @@
 "use client";
 
-import * as React from "react";
+import { Icons } from "@/components/icons";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -9,33 +18,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import * as React from "react";
 import {
   Table as ShadcnTable,
   type ColumnDef,
   type PaginationState,
 } from "unstyled-table";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
-import { Icons } from "@/components/icons";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { DataTableFilterableColumn, DataTableSearchableColumn } from "./types";
 import { DataTableToolbar } from "./data-table-toolbar";
+import { DataTableFilterableColumn, DataTableSearchableColumn } from "./types";
 
 interface ColumnSort {
   id: string;

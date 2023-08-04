@@ -1,11 +1,9 @@
 "use client";
-import * as React from "react";
-import Link from "next/link";
-import { NavItem } from "@/types/nav";
-import { siteConfig } from "@/config/site";
-import { isActiveRoute, cn } from "@/lib/utils";
 import { Icons } from "@/components/icons";
-import { buttonVariants } from "./ui/button";
+import { siteConfig } from "@/config/site";
+import { cn, isActiveRoute } from "@/lib/utils";
+import { NavItem } from "@/types/nav";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export function MainNav({ items }: { items?: NavItem[] }) {

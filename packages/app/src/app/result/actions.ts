@@ -1,10 +1,10 @@
 "use server";
 
 import { safeAction } from "@/lib/actions";
+import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { prisma } from "@/lib/prisma";
 
 const snippetVoteSchema = z.object({
   snippetId: z.string(),
@@ -195,7 +195,7 @@ export const deleteVoteAction = safeAction(snippetVoteSchema)(async ({
       },
     });
 
-    if (previousVote!.type === "DOWN") {
+    if (previousVote && previousVote.type === "DOWN") {
       await tx.snippet.update({
         where: {
           id: snippetId,

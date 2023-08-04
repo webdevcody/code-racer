@@ -1,29 +1,29 @@
-import Link from "next/link";
-import { getSnippetById } from "../race/(play)/loaders";
-import { notFound } from "next/navigation";
+import { getCurrentUser } from "@/lib/session";
 import { cn } from "@/lib/utils";
 import { User } from "next-auth";
-import { getCurrentUser } from "@/lib/session";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { getSnippetById } from "../race/(play)/loaders";
 import {
-  getUserResultsForSnippet,
-  getCurrentRaceResult,
   ParsedRacesResult,
+  getCurrentRaceResult,
   getSnippetVote,
+  getUserResultsForSnippet,
 } from "./loaders";
 
 // Components
 import { Icons } from "@/components/icons";
+import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Voting } from "./voting";
-import { Badge } from "@/components/ui/badge";
 import { Heading } from "@/components/ui/heading";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ReplayCode } from "./replay-timestamps";
-import { TopTable } from "./topten";
-import { RaceAchievementBadges } from "./race-achievement-badges";
-import { ResultChart } from "./result-chart";
 import HistoryChart from "./history-chart";
+import { RaceAchievementBadges } from "./race-achievement-badges";
+import { ReplayCode } from "./replay-timestamps";
+import { ResultChart } from "./result-chart";
+import { TopTable } from "./topten";
+import { Voting } from "./voting";
 
 type ResultPageProps = {
   searchParams: {

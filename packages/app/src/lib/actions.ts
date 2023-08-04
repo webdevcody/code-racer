@@ -1,6 +1,7 @@
-import { type z, ZodError } from "zod";
+import { ZodError, type z } from "zod";
 
 type ActionType<InputType extends z.ZodTypeAny, ResponseType> = (
+  // eslint-disable-next-line no-unused-vars
   input: z.infer<InputType>,
 ) => Promise<ResponseType>;
 

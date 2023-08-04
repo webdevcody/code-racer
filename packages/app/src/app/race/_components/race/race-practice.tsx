@@ -1,26 +1,25 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { saveUserResultAction } from "../../actions";
 import { useRouter } from "next/navigation";
+import React, { useEffect, useRef, useState } from "react";
+import { saveUserResultAction } from "../../actions";
 
 // utils
 import { calculateAccuracy, calculateCPM, noopKeys } from "./utils";
 
 // Componenets
-import RaceTracker from "./race-tracker";
-import Header from "./header";
-import LineNumbers from "./line-numbers";
 import Code from "./code";
 import Footer from "./footer";
+import Header from "./header";
+import LineNumbers from "./line-numbers";
+import RaceTracker from "./race-tracker";
 
 // Types
+import { useCheckForUserNavigator } from "@/lib/user-system";
+import { catchError } from "@/lib/utils";
 import type { Snippet } from "@prisma/client";
 import type { User } from "next-auth";
-import type { ChartTimeStamp } from "./types";
-import type { ReplayTimeStamp } from "./types";
-import { catchError } from "@/lib/utils";
-import { useCheckForUserNavigator } from "@/lib/user-system";
+import type { ChartTimeStamp, ReplayTimeStamp } from "./types";
 
 type RacePracticeProps = {
   user?: User;
@@ -96,7 +95,8 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
     }
   });
 
-  function handleInputEvent(e: any /** React.FormEvent<HTMLInputElement>*/) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function handleInputEvent(e: any) {
     if (!isUserOnAdroid) return;
     if (!startTime) {
       setStartTime(new Date());
@@ -192,6 +192,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
   }
 
   // since this logic of setting timestamps will be reused
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function changeTimeStamps(e: any) {
     let value: string;
 

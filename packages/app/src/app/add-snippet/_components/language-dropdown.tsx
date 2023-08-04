@@ -1,9 +1,5 @@
 "use client";
 
-import * as React from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { useEffect } from "react";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -18,6 +14,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { snippetLanguages } from "@/config/languages";
+import { cn } from "@/lib/utils";
+import { Check, ChevronsUpDown } from "lucide-react";
+import * as React from "react";
+import { useEffect } from "react";
 
 const LanguageDropDown = ({
   codeLanguage,
@@ -25,6 +25,7 @@ const LanguageDropDown = ({
   className,
 }: {
   codeLanguage: string;
+  // eslint-disable-next-line no-unused-vars
   setCodeLanguage: (event: string) => void;
   className?: string;
 }) => {
