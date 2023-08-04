@@ -184,7 +184,6 @@ export async function getUserSnippetPlacement(snippetId?: Snippet["id"]) {
 
 
 export const getFastestRace = async (snippetId: any, raceID: string) => {
-
   const user = await getCurrentUser();
 
   if (!user) return null;
@@ -199,6 +198,26 @@ export const getFastestRace = async (snippetId: any, raceID: string) => {
     },
     orderBy: {
       cpm: 'desc',
+    },
+  });
+};
+
+export const getBestAccuracy = async (snippetId: any, raceID: string) => {
+
+  const user = await getCurrentUser();
+
+  if (!user) return null;
+
+  return await prisma.result.findFirst({
+    where: {
+      userId: user.id,
+      snippetId: snippetId.snippetId,
+      NOT: {
+        id: raceID,
+      }
+    },
+    orderBy: {
+      accuracy: 'desc',
     },
   });
 };

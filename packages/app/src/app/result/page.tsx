@@ -10,6 +10,7 @@ import {
   getFastestRace,
   ParsedRacesResult,
   getSnippetVote,
+  getBestAccuracy,
 } from "./loaders";
 
 // Components
@@ -103,22 +104,40 @@ async function AuthenticatedPage({ resultId, user }: AuthenticatedPageProps) {
   ];
 
   const bestCPMRace = await getFastestRace(currentRaceResult.snippetId, currentRaceResult.id);
-  console.log("----------------------------------");
 
   if (bestCPMRace && bestCPMRace?.cpm < currentRaceResult.cpm) {
-    console.log("BEST");
     const notificationData = {
       notification: {
         title: 'New Record!',
         description: 'You just achvied your highest CPM!',
-        //ctaUrl: '/',
+        ctaUrl: '/dashboard/races',
       },
       userId: user.id,
     };
 
     try {
       await pushNotification(notificationData);
-      console.log('Notification sent successfully!');
+      console.log('Best CPM notification sent successfully!');
+    } catch (error) {
+      console.error('Error sending notification:', error);
+    }
+  }
+
+  const bestAccuracy = await getBestAccuracy(currentRaceResult.snippetId, currentRaceResult.id);
+
+  if (bestAccuracy && currentRaceResult.accuracy.gt(bestAccuracy?.accuracy)) {
+    const notificationData = {
+      notification: {
+        title: 'New Record!',
+        description: 'You just achvied your highest accuracy!',
+        ctaUrl: '/dashboard/races',
+      },
+      userId: user.id,
+    };
+
+    try {
+      await pushNotification(notificationData);
+      console.log('Best accuracy notification sent successfully!');
     } catch (error) {
       console.error('Error sending notification:', error);
     }
