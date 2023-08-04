@@ -55,10 +55,9 @@ export function Room({ user, roomId }: { user: User; roomId: string }) {
     });
 
     return () => {
-      socket.emit("UserLeaveRoom", { raceId: roomId, userId: user.id });
-      // socket.disconnect();
-      // socket.off("connect");
-    };
+      socket.disconnect();
+      socket.off("connect");
+  };
   }, []);
 
   function handleGameStart() {

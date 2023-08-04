@@ -106,10 +106,10 @@ export function GameMultiplayer({
       participantId,
     });
 
-    return () => {
-      socket.disconnect();
-      socket.off("connect");
-    };
+    // return () => {
+    //   socket.disconnect();
+    //   socket.off("connect");
+    // };
   }, [raceId, startRaceEventHandlers]);
 
   // remove previous results

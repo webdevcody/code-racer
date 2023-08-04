@@ -68,7 +68,7 @@ export class Game {
           participants: [],
           status: "waiting",
         });
-
+        
         socket.emit("RoomCreated", {
           roomId: race.id,
         });
@@ -121,8 +121,6 @@ export class Game {
 
         const participants = this.getRaceParticipants(updatedRace);
 
-        // console.log("Participants", participants);
-
         socket.emit("RoomJoined", {
           race: participant.Race,
           participants,
@@ -170,65 +168,6 @@ export class Game {
           raceParticipantId,
           raceStatus: this.races.get(race.id)!.status,
         });
-      });
-
-      // socket.on("UserRaceRequest", async (payload) => {
-      //   const race = await prisma.race.findUnique({
-      //     where: {
-      //       id: payload.raceId,
-      //     },
-      //   });
-
-      //   if (!race) {
-      //     console.warn("Race doesn't exist.", {
-      //       raceId: payload.raceId,
-      //       time: new Date(),
-      //       level: "warn",
-      //     });
-      //     return;
-      //   }
-
-      //   socket.join(Game.Room(race.id));
-
-      //   this.handlePlayerEnterRace({
-      //     raceId: race.id,
-      //     raceParticipantId: payload.participantId,
-      //     socketId: socket.id,
-      //   });
-
-      //   socket.emit("UserRaceResponse", {
-      //     race,
-      //     raceParticipantId: payload.participantId,
-      //     raceStatus: this.races.get(race.id)!.status,
-      //   });
-      // });
-
-      socket.on("UserLeaveRoom", async (payload) => {
-        socket.leave(payload.raceId);
-
-        const participantId = getRoomParticipantId({
-          roomId: payload.raceId,
-          userId: payload.userId,
-        });
-
-        const participant = await prisma.raceParticipant.findUnique({
-          where: {
-            id: participantId,
-          },
-        });
-
-        this.participants.delete(socket.id);
-
-        if (participant) {
-          await prisma.raceParticipant.delete({
-            where: {
-              id: getRoomParticipantId({
-                roomId: payload.raceId,
-                userId: payload.userId,
-              }),
-            },
-          });
-        }
       });
 
       socket.on("disconnect", () => {
