@@ -76,11 +76,11 @@ export const siteConfig = {
         vueIndentScriptAndStyle: false,
         endOfLine: "lf",
         singleAttributePerLine: false,
-        plugins: [
-          // "prettier-plugin-go-template",
-          "prettier-plugin-java",
-          "@prettier/plugin-ruby",
-        ],
+        // plugins: [
+        //   // "prettier-plugin-go-template",
+        //   "prettier-plugin-java",
+        //   "@prettier/plugin-ruby",
+        // ],
       } satisfies PrettierOptions,
       parserMap: new Map<Language, string>([
         // ["go", "go-template"],
