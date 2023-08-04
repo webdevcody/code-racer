@@ -81,10 +81,11 @@ export default function AddSnippetForm({ lang }: { lang: string }) {
           duration: 5000,
           style: {
             background: "hsl(var(--destructive))",
+            color: "white",
           },
           action: (
             <Button
-              className="py-7"
+              className="py-7 text-xs"
               variant="secondary"
               onClick={() => {
                 dismiss(failureToast.id);

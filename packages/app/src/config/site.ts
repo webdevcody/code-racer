@@ -1,3 +1,5 @@
+import { type Options as PrettierOptions } from "prettier";
+import { type Language } from "./languages";
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
@@ -53,6 +55,42 @@ export const siteConfig = {
 
   multiplayer: {
     maxParticipantsPerRace: 4,
+  },
+
+  snippet: {
+    prettier: {
+      options: {
+        // tabWidth: 2,
+        printWidth: 60,
+        useTabs: false,
+        semi: true,
+        singleQuote: true,
+        quoteProps: "consistent",
+        jsxSingleQuote: false,
+        trailingComma: "es5",
+        bracketSpacing: true,
+        bracketSameLine: false,
+        arrowParens: "avoid",
+        insertPragma: false,
+        htmlWhitespaceSensitivity: "css",
+        vueIndentScriptAndStyle: false,
+        endOfLine: "lf",
+        singleAttributePerLine: false,
+        // plugins: [
+        //   // "prettier-plugin-go-template",
+        //   "prettier-plugin-java",
+        //   "@prettier/plugin-ruby",
+        // ],
+      } satisfies PrettierOptions,
+      parserMap: new Map<Language, string>([
+        // ["go", "go-template"],
+        ["java", "java"],
+        ["html", "html"],
+        ["javascript", "babel"],
+        ["typescript", "babel-ts"],
+        ["ruby", "ruby"],
+      ]),
+    },
   },
 };
 
