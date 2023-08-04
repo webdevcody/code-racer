@@ -20,6 +20,7 @@ import type { User } from "next-auth";
 import type { ChartTimeStamp } from "./types";
 import type { ReplayTimeStamp } from "./types";
 import { catchError } from "@/lib/utils";
+import { useCheckForUserNavigator } from "@/lib/user-system";
 
 type RacePracticeProps = {
   user?: User;
@@ -37,6 +38,8 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
   const code = snippet.code.trimEnd();
   const router = useRouter();
   const isRaceFinished = input === code;
+
+  const isUserOnAdroid = useCheckForUserNavigator("android");
 
   useEffect(() => {
     localStorage.removeItem("chartTimeStamp");
@@ -93,7 +96,50 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
     }
   });
 
+  function handleInputEvent(e: any /** React.FormEvent<HTMLInputElement>*/) {
+    if (!isUserOnAdroid) return;
+    if (!startTime) {
+      setStartTime(new Date());
+    }
+    const data = e.nativeEvent.data;
+
+    if (
+      input !== code.slice(0, input.length) &&
+      e.nativeEvent.inputType !== "deleteContentBackward"
+    ) {
+      e.preventDefault();
+      return;
+    }
+
+    if (e.nativeEvent.inputType === "insertText") {
+      setInput((prevInput) => prevInput + data);
+    } else if (e.nativeEvent.inputType === "deleteContentBackward") {
+      Backspace();
+    }
+    changeTimeStamps(e);
+  }
+
   function handleKeyboardDownEvent(e: React.KeyboardEvent<HTMLInputElement>) {
+    // For ANDROID.
+    // since the enter button on a mobile keyboard/keypad actually
+    // returns a e.key of "Enter" onkeydown, we just set a condition for that.
+    if (isUserOnAdroid) {
+      switch (e.key) {
+        case "Enter":
+          if (!startTime) {
+            setStartTime(new Date());
+          }
+          if (input !== code.slice(0, input.length)) return;
+          Enter();
+        break;
+        // this is to delete the characters when "Enter" is pressed;
+        case "Backspace":
+          Backspace();
+        break;
+      }
+      return;
+    }
+
     // Restart
     if (e.key === "Escape") {
       handleRestart();
@@ -141,6 +187,57 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
           break;
       }
     }
+
+    changeTimeStamps(e);
+  }
+
+  // since this logic of setting timestamps will be reused
+  function changeTimeStamps(e: any) {
+    let value: string;
+
+    // if keyboardDown event is the one that calls this
+    if (e.key) {
+      value = e.key;
+      // so, this is where we can access the value of the key pressed on mobile
+    } else {
+      const data = e.nativeEvent.data;
+
+      if (e.nativeEvent.inputType === "deleteContentBackward") {
+        // the 2nd to the last character
+        const latestValue = input[input.length - 2];
+        if (!latestValue) {
+          value = "";
+        } else {
+          value = latestValue;
+        }
+      } else if (e.nativeEvent.inputType === "insertText") {
+        value = data;
+      } else {
+        value = "Enter";
+      }
+    }
+
+    if (value === code[input.length - 1] && value !== " ") {
+      const currTime = Date.now();
+      const timeTaken = startTime ? (currTime - startTime.getTime()) / 1000 : 0;
+      setChartTimeStamp((prev) => [
+        ...prev,
+        {
+          char: value,
+          accuracy: calculateAccuracy(input.length, totalErrors),
+          cpm: calculateCPM(input.length, timeTaken),
+          time: currTime,
+        },
+      ]);
+    }
+    setReplayTimeStamp((prev) => [
+      ...prev,
+      {
+        char: input.slice(-1),
+        textIndicatorPosition: input.length,
+        time: Date.now(),
+      },
+    ]);
   }
 
   function Backspace() {
@@ -233,6 +330,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
           type="text"
           ref={inputElement}
           onKeyDown={handleKeyboardDownEvent}
+          onInput={handleInputEvent}
           disabled={input === code}
           className="absolute inset-y-0 left-0 w-full h-full p-8 rounded-md -z-40 focus:outline outline-blue-500 cursor-none"
           onPaste={(e) => e.preventDefault()}
