@@ -85,9 +85,9 @@ export const siteConfig = {
         endOfLine: "lf",
         singleAttributePerLine: false,
         plugins: [
-          "prettier-plugin-java/dist/index.js",
-          "prettier-plugin-go-template/lib/index.js",
-          "@prettier/plugin-ruby/src/plugin.js",
+          "prettier-plugin-java",
+          "prettier-plugin-go-template",
+          "@prettier/plugin-ruby",
         ],
       } satisfies PrettierOptions,
       parserMap: new Map<Language, string>([
