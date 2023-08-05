@@ -1,5 +1,3 @@
-import CloseModal from "@/components/close-modal";
-
 import {
   Card,
   CardContent,
@@ -9,16 +7,10 @@ import {
 } from "@/components/ui/card";
 import { CreateRoomForm } from "@/app/race/_components/create-room-form";
 import { NoHistoryButton } from "@/components/no-history-button";
-import { getCurrentUser } from "@/lib/session";
-import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
 export default async function CreateRoomPage({}) {
-  const user = await getCurrentUser();
-
-  if (!user) redirect("/auth");
-
   return (
     <div className="flex items-center justify-center">
       <Card>
@@ -30,7 +22,7 @@ export default async function CreateRoomPage({}) {
         </CardHeader>
 
         <CardContent className="flex flex-col space-y-4">
-          <CreateRoomForm user={user} />
+          <CreateRoomForm/>
 
           <NoHistoryButton variant={"ghost"} path="/race/join">
             Join a Room

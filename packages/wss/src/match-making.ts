@@ -104,7 +104,7 @@ export async function getAvailableRace(
 }
 
 export async function createRace(snippet: Snippet, id?: string) {
-  let data = {
+  let data: { snippet: { connect: { id: string } }; id?: string } = {
     snippet: {
       connect: {
         id: snippet.id,
@@ -116,7 +116,7 @@ export async function createRace(snippet: Snippet, id?: string) {
     data = {
       ...data,
       id,
-    } as any;
+    };
   }
 
   return await prisma.race.create({

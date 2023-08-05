@@ -9,8 +9,6 @@ import {
 } from "@/components/ui/card";
 import { CreateRoomForm } from "@/app/race/_components/create-room-form";
 import { NoHistoryButton } from "@/components/no-history-button";
-import { getCurrentUser } from "@/lib/session";
-import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 

@@ -1,7 +1,7 @@
 import { Prisma, RaceParticipant } from "@code-racer/app/src/lib/prisma";
 import { UserRacePresencePayload } from "./common";
-import { SocketId } from "@/game";
-import { RaceStatus } from "@/types";
+import { SocketId } from "../game";
+import { RaceStatus } from "../types";
 
 type NewType = {
   participants: SocketId[];
