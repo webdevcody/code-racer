@@ -1,16 +1,13 @@
-"use client";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Users } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useToast } from "@/components/ui/use-toast";
 import { bruno_ace_sc } from "@/lib/fonts";
-import { createPrivateRaceRoom } from "../../actions";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 export default function FriendsRaceCard({ enabled }: { enabled: boolean }) {
-  const { data: session } = useSession();
-  const { toast } = useToast();
-
   return (
     <Card className="flex flex-col justify-between flex-1 border-2 border-warning">
       <CardHeader>
@@ -29,31 +26,16 @@ export default function FriendsRaceCard({ enabled }: { enabled: boolean }) {
           </div>
         </div>
       </CardHeader>
-      <CardContent className="grid items-center gap-2">
-        <Button
-          variant="black"
-          disabled
-          onClick={() => {
-            if (!enabled) return;
-            if (!session) {
-              toast({
-                title: "Unauthorized",
-                description: "You need to be logged in to create a racetrack",
-              });
-              return;
-            }
-            createPrivateRaceRoom({
-              userId: session?.user.id,
-            });
-          }}
+      <CardContent className="grid items-start grid-cols-2 gap-2">
+        <Link
+          href="/race/create"
+          className={cn(buttonVariants({ variant: "black" }))}
         >
-          Create Room (Coming Soon)
-        </Button>
-        {/* <LanguageDropDown
-          className="w-fit"
-          codeLanguage={selectedLanguage}
-          setCodeLanguage={setLanguagePrivate}
-        /> */}
+          Create Room
+        </Link>
+        <Link href="/race/join" className={cn(buttonVariants({ variant: "outline" }))}>
+          Join Room
+        </Link>
       </CardContent>
     </Card>
   );

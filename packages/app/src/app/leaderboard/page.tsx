@@ -1,6 +1,6 @@
 import { Heading } from "@/components/ui/heading";
 import { getCurrentUser } from "@/lib/session.js";
-import { User } from "@prisma/client";
+import { Result, User } from "@prisma/client";
 import {
   getAllUsersWithResults,
   getTotalUsers,
@@ -10,6 +10,113 @@ import {
 } from "./loaders";
 import { UserRankings } from "./user-rankings";
 import { UsersTable } from "./users-table";
+import { sortFilters } from "./sort-filters";
+
+type UserWithResults = User & { results: Result[] };
+
+function setUsersRankByValue({
+  fieldName,
+  values,
+  userRanks,
+}: {
+  fieldName: string;
+  values: { id: string; value: number }[];
+  userRanks: {
+    [key: string]: { [key: string]: { [key: string]: number | boolean } };
+  };
+}) {
+  let currentRank = 1;
+
+  values
+    .sort((a, b) => b.value - a.value)
+    .forEach((current, i, arr) => {
+      const next = arr[i + 1];
+      const prev = arr[i - 1];
+
+      if (userRanks[current.id] && userRanks[current.id][fieldName]) {
+        return;
+      }
+
+      if (!userRanks[current.id]) userRanks[current.id] = {};
+
+      userRanks[current.id][fieldName] = { rank: currentRank };
+
+      if (next && current.value == next.value) {
+        userRanks[current.id][fieldName]["shared"] = true;
+      }
+
+      if (prev && current.value == prev.value) {
+        userRanks[current.id][fieldName]["shared"] = true;
+      }
+      
+      if (next === undefined || current.value === next.value) {
+        return;
+      }
+
+      currentRank++;
+    });
+
+
+}
+
+function calculateUsersRank({
+  allUsers,
+}: {
+  allUsers: UserWithResults[];
+}) {
+  // userRanks stores rank of all users in all category (avgCPM, avgAcc, totalRaces)
+  /* { 
+        _userID_ : { 
+          avgCPM : { 
+            rank: 2,
+            shared: true,
+          }, 
+          avgAcc : { 
+            rank: 5,
+            shared: false,
+          },
+          totalRaces : { 
+            rank: 1,
+            shared: false,
+          },
+        }
+      }
+  */
+  const userRanks: {
+    [key: string]: {
+      [key: string]: {
+        [key: string]: number | boolean;
+      };
+    };
+  } = {};
+
+  // Set user ranks based on different fields:
+  // Based on Race Played:
+  setUsersRankByValue({
+    fieldName: sortFilters.RacePlayed,
+    values: allUsers.map((u) => ({ id: u.id, value: u.results.length })),
+    userRanks,
+  });
+
+  // Based on Average CPM:
+  setUsersRankByValue({
+    fieldName: sortFilters.AverageCPM,
+    values: allUsers.map((u) => ({ id: u.id, value: Number(u.averageCpm) })),
+    userRanks,
+  });
+
+  // Based on Average Accuracy:
+  setUsersRankByValue({
+    fieldName: sortFilters.AverageAccuracy,
+    values: allUsers.map((u) => ({
+      id: u.id,
+      value: Number(u.averageAccuracy),
+    })),
+    userRanks,
+  });
+
+  return userRanks;
+}
 
 export default async function LeaderboardPage({
   searchParams,
@@ -30,29 +137,29 @@ export default async function LeaderboardPage({
   const [column, order] =
     typeof sort === "string"
       ? (sort.split(".") as [
-          keyof User | "Races played" | undefined,
+          keyof User | sortFilters.RacePlayed | undefined,
           "asc" | "desc" | undefined,
         ])
       : [];
 
   const sortBy =
-    column === "Races played"
-      ? "Races played"
+    column === sortFilters.RacePlayed
+      ? sortFilters.RacePlayed
       : column && isFieldInUser(column)
       ? column
-      : "averageCpm";
+      : sortFilters.AverageCPM;
 
   let users = [];
 
-  if (column === "Races played") {
+  if (column === sortFilters.RacePlayed) {
     users = await getUsersWithResultCounts({
       take,
       skip,
-      order,
+      order: order ? order : "desc",
     });
   } else {
     users = await getUsersWithResults({
-      order,
+      order: order ? order : "desc",
       skip,
       sortBy,
       take,
@@ -66,14 +173,18 @@ export default async function LeaderboardPage({
   const allUsers = await getAllUsersWithResults();
   const currUserIsRanked =
     user !== undefined && allUsers.some((u) => u.id === user.id);
+  
+  const userRanks = calculateUsersRank({
+    allUsers: allUsers,
+  });
 
   return (
     <div className="pt-12">
       <Heading title="Leaderboard" description="Find your competition" />
       {currUserIsRanked ? (
-        <UserRankings currentUser={user} allUsers={allUsers} />
+        <UserRankings currentUserRankDetail={userRanks[user.id]} />
       ) : null}
-      <UsersTable data={users} pageCount={pageCount} />
+      <UsersTable data={users} pageCount={pageCount} ranks={userRanks} field={sortBy}/>
     </div>
   );
 }
