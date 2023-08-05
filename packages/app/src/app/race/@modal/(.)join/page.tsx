@@ -12,6 +12,8 @@ import { NoHistoryButton } from "@/components/no-history-button";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
 
+export const dynamic = "force-dynamic";
+
 export default async function JoinRoomModal() {
   const user = await getCurrentUser()
 

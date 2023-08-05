@@ -7,14 +7,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CreateRoomForm } from "@/app/race/_components/create-room-form";
+import { JoinRoomForm } from "@/app/race/_components/join-room-form";
 import { NoHistoryButton } from "@/components/no-history-button";
 import { getCurrentUser } from "@/lib/session";
 import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
-export default async function CreateRoomPage({}) {
+export default async function JoinRoomPage({}) {
   const user = await getCurrentUser();
 
   if (!user) redirect("/auth");
@@ -30,10 +30,9 @@ export default async function CreateRoomPage({}) {
         </CardHeader>
 
         <CardContent className="flex flex-col space-y-4">
-          <CreateRoomForm user={user} />
-
-          <NoHistoryButton variant={"ghost"} path="/race/join">
-            Join a Room
+          <JoinRoomForm user={user} />
+          <NoHistoryButton variant={"ghost"} path="/race/create">
+            Create Room
           </NoHistoryButton>
         </CardContent>
       </Card>

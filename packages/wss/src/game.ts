@@ -79,8 +79,6 @@ export class Game {
           status: "waiting",
         });
 
-        console.log("HERE")
-
         socket.emit("RoomCreated", {
           roomId: race.id,
         });

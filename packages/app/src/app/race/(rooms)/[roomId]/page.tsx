@@ -9,6 +9,8 @@ import { Room } from "./room";
 import { getCurrentUser } from "@/lib/session";
 import { redirect } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 export default async function RoomPage({
   params,
 }: {

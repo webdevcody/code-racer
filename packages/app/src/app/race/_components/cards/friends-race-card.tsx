@@ -33,7 +33,7 @@ export default function FriendsRaceCard({ enabled }: { enabled: boolean }) {
         >
           Create Room
         </Link>
-        <Link href="/race/join" className={cn(buttonVariants({ variant: "black" }))}>
+        <Link href="/race/join" className={cn(buttonVariants({ variant: "outline" }))}>
           Join Room
         </Link>
       </CardContent>

@@ -12,8 +12,10 @@ import { NoHistoryButton } from "@/components/no-history-button";
 import { getCurrentUser } from "@/lib/session";
 import { redirect } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 export default async function CreateRoomModal() {
-  const user = await getCurrentUser()
+  const user = await getCurrentUser();
 
   if (!user) redirect("/auth");
 
@@ -33,7 +35,7 @@ export default async function CreateRoomModal() {
             </CardHeader>
 
             <CardContent className="flex flex-col space-y-4">
-              <CreateRoomForm user={user}/>
+              <CreateRoomForm user={user} />
 
               <NoHistoryButton variant={"ghost"} path="/race/join">
                 Join a Room

@@ -81,7 +81,7 @@ export function Room({ user, roomId }: { user: User; roomId: string }) {
     <>
       {participants && notStarted && (
         <MultiplayerLoadingLobby participants={participants}>
-          {canStartRace && <Button onClick={handleGameStart}>Start game</Button>}
+          {hasRoomCrown && <Button onClick={handleGameStart} disabled={!canStartRace}>Start game</Button>}
           {raceStatus === "countdown" && Boolean(raceStartCountdown) && (
             <div className="text-2xl font-bold text-center">
               Game starting in: {raceStartCountdown}
