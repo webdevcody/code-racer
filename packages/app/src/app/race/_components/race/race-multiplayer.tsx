@@ -33,7 +33,7 @@ import RaceTrackerMultiplayer from "./race-tracker-mutliplayer";
 import type { ClientToServerEvents } from "@code-racer/wss/src/events/client-to-server";
 import type { ServerToClientEvents } from "@code-racer/wss/src/events/server-to-client";
 import { type RaceStatus, raceStatus } from "@code-racer/wss/src/types";
-import type { Snippet } from "@prisma/client";
+import { type Snippet } from "@prisma/client";
 import type { User } from "next-auth";
 import type { Socket } from "socket.io-client";
 import { ChartTimeStamp, ReplayTimeStamp } from "./types";
@@ -68,6 +68,7 @@ export default function RaceMultiplayer({
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [submittingResults, setSubmittingResults] = useState(false);
   const [totalErrors, setTotalErrors] = useState(0);
+  const [snippetTitle, setSnippetTitle] = useState<string>("")
 
   const [chartTimeStamp, setChartTimeStamp] = useState<ChartTimeStamp[]>([]);
   const [replayTimeStamp, setReplayTimeStamp] = useState<ReplayTimeStamp[]>([]);
@@ -113,6 +114,12 @@ export default function RaceMultiplayer({
       setSnippet(snippet);
       setRaceId(race.id);
       setParticipantId(raceParticipantId);
+
+      if (snippet.name === "undefined") {
+        setSnippetTitle("Type this code");
+      } else {
+        setSnippetTitle(snippet.name!)
+      }
     });
 
     socket.on("GameStateUpdate", (payload) => {
@@ -427,16 +434,19 @@ export default function RaceMultiplayer({
                 ))
               : null}
             <div className="flex justify-between mb-2 md:mb-4">
-              <Heading
-                title="Type this code"
-                description="Start typing to get racing"
-              />
               {user && snippet && (
-                <ReportButton
-                  snippetId={snippet.id}
-                  language={snippet.language as Language}
-                  handleRestart={handleRestart}
-                />
+                <>
+                  <Heading
+                    title={snippetTitle}
+                    description="Start typing to get racing"
+                  />
+                  <ReportButton
+                    snippetId={snippet.id}
+                    language={snippet.language as Language}
+                    handleRestart={handleRestart}
+                  />
+                  
+                </>
               )}
             </div>
             <div className="flex ">

@@ -32,6 +32,11 @@ const formDataSchema = z.object({
       required_error: "Please enter a code snippet",
     })
     .min(30, "Code snippet must be at least 30 characters long"),
+  codeName: z
+    .string({
+      required_error: "Please enter a name for your snippet",
+    })
+    .min(2, "Code snippet must be at least 2 characters long"),
 });
 
 type FormData = z.infer<typeof formDataSchema>;
@@ -45,6 +50,7 @@ export default function AddSnippetForm({ lang }: { lang: string }) {
     defaultValues: {
       codeLanguage: lang,
       codeSnippet: "",
+      codeName: "",
     },
   });
 
@@ -53,6 +59,7 @@ export default function AddSnippetForm({ lang }: { lang: string }) {
       await addSnippetForReviewAction({
         language: data.codeLanguage,
         code: data.codeSnippet,
+        name: data.codeName,
       });
 
       toast({
@@ -70,6 +77,7 @@ export default function AddSnippetForm({ lang }: { lang: string }) {
       const responseData = await addSnippetAction({
         language: data.codeLanguage,
         code: data.codeSnippet,
+        name: data.codeName,
       });
 
       if (responseData?.failure) {
@@ -138,6 +146,23 @@ export default function AddSnippetForm({ lang }: { lang: string }) {
         className="flex flex-col gap-3 mt-5"
         onSubmit={form.handleSubmit(onSubmit)}
       >
+        <FormField
+          control={form.control}
+          name="codeName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Snippet Name</FormLabel>
+              <FormControl>
+                <Textarea
+                  rows={1}
+                  className="w-full p-2 border resize-none"
+                  placeholder="Type the name of your snippet here."
+                  {...field}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="codeLanguage"
