@@ -2,14 +2,14 @@ import { Language } from "@code-racer/app/src/config/languages";
 import { siteConfig } from "@code-racer/app/src/config/site";
 import type { RaceParticipant } from "@code-racer/app/src/lib/prisma";
 import { prisma } from "@code-racer/app/src/lib/prisma";
-import { Socket, type Server } from "socket.io";
+import { type Server } from "socket.io";
 import {
   PositionUpdatePayload,
   type ClientToServerEvents,
 } from "./events/client-to-server";
 import { UserRacePresencePayload } from "./events/common";
 import { type ServerToClientEvents } from "./events/server-to-client";
-import { createRace, getAvailableRace, raceMatchMaking } from "./match-making";
+import { createRace, raceMatchMaking } from "./match-making";
 import { RaceStatus, raceStatus } from "./types";
 import { getRandomSnippet } from "@code-racer/app/src/app/race/(play)/loaders";
 import { getRoomParticipantId } from "@code-racer/app/src/lib/wss-app-utils";
@@ -60,6 +60,16 @@ export class Game {
     this.server.on("connection", (socket) => {
       socket.on("UserCreateRoom", async (payload) => {
         const snippet = await getRandomSnippet({ language: payload.language });
+        
+        if (!snippet) {
+          socket.emit("SendNotification", {
+            title: "Snippet not found",
+            description: `There is no available snippet on ${payload.language} language yet. Try creating a new one`,
+            variant: "destructive",
+          });
+          return;
+        }
+
         // race id is associated with the room id
         const race = await createRace(snippet, payload.roomId);
 
@@ -68,7 +78,9 @@ export class Game {
           participants: [],
           status: "waiting",
         });
-        
+
+        console.log("HERE")
+
         socket.emit("RoomCreated", {
           roomId: race.id,
         });
@@ -76,6 +88,17 @@ export class Game {
 
       socket.on("UserJoinRoom", async (payload) => {
         const { raceId: roomId, userId } = payload;
+
+        const race = this.races.get(roomId);
+
+        if (!race) {
+          socket.emit("SendNotification", {
+            title: "Room not found",
+            description: `Room with id ${roomId} not found.`,
+          });
+
+          return;
+        }
 
         socket.join(Game.Room(roomId));
 
@@ -110,11 +133,9 @@ export class Game {
           finishedAt: null,
         });
 
-        const race = this.races.get(roomId) as Race;
-
         const updatedRace = {
           ...race,
-          participants: [...race.participants, socket.id],
+          participants: [...race?.participants, socket.id],
         };
 
         this.races.set(roomId, updatedRace);
@@ -125,7 +146,7 @@ export class Game {
           race: participant.Race,
           participants,
           raceStatus: race.status,
-          participantId: participant.id,
+          participantId,
         });
 
         socket.to(Game.Room(roomId)).emit("UpdateParticipants", {

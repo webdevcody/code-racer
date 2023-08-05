@@ -50,6 +50,12 @@ export type UserRoomRaceResponsePayload = {
   race: Race;
 };
 
+export type SendNotificationPayload = {
+  title?: string;
+  description?: string;
+  variant?: "default" | "destructive" | "middle";
+}
+
 export interface ServerToClientEvents {
   GameStateUpdate: (payload: GameStateUpdatePayload) => void;
   UserRaceEnter: (payload: UserRacePresencePayload) => void;
@@ -59,6 +65,6 @@ export interface ServerToClientEvents {
   RoomJoined: (payload: RoomJoinedResponsePayload) => void;
   RoomCreated: (payload: { roomId: string }) => void;
   UpdateParticipants: (payload: UpdateParticipantsPayload) => void;
-  SendNotification: (payload: { title: string; message: string }) => void;
+  SendNotification: (payload: SendNotificationPayload) => void;
   UserRoomRaceResponse: (payload: UserRoomRaceResponsePayload) => void;
 }

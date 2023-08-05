@@ -41,6 +41,5 @@ export interface ClientToServerEvents {
   UserRaceRequest: (payload: UserRaceRequestPayload) => void;
   UserCreateRoom: (payload: UserCreateRoomPayload) => void;
   UserJoinRoom: (payload: { raceId: string; userId: string }) => void;
-  UserLeaveRoom: (payload: { raceId: string; userId: string }) => void;
   StartRaceCountdown: (payload: { raceId: string }) => void;
 }

@@ -23,6 +23,8 @@ import { Icons } from "@/components/icons";
 import type { User } from "next-auth";
 import { socket } from "@/lib/socket";
 import { useRouter } from "next/navigation";
+import { toast } from "@/components/ui/use-toast";
+import { Language } from "@/config/languages";
 
 // import CopyButton from '@/components/CopyButton'
 
@@ -47,7 +49,7 @@ export const CreateRoomForm = ({ user }: { user: User }) => {
     socket.emit("UserCreateRoom", {
       roomId,
       // TODO: make typescript happy
-      language: language as any,
+      language: language as Language,
       userId: user.id,
     });
   }
@@ -56,7 +58,17 @@ export const CreateRoomForm = ({ user }: { user: User }) => {
     socket.on("RoomCreated", (payload) => {
       router.push(`/race/${payload.roomId}`);
     });
-  });
+
+    socket.on("SendNotification", (payload) => {
+      toast({
+        title: payload.title,
+        description: payload.description,
+        variant: payload.variant,
+      });
+
+      setIsLoading(false);
+    });
+  }, []);
 
   return (
     <Form {...form}>
