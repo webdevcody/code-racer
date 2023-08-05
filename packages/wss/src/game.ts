@@ -122,21 +122,15 @@ export class Game {
           },
         });
 
-        this.participants.set(socket.id, {
-          id: participant.id,
-          raceId: payload.raceId,
-          position: 0,
-          finishedAt: null,
+        this.handlePlayerEnterRace({
+          raceId: roomId,
+          raceParticipantId: participant.id,
+          socketId: socket.id,
         });
 
-        const updatedRace = {
-          ...race,
-          participants: [...race?.participants, socket.id],
-        };
+        const updatedRace = this.races.get(roomId) as Race;
 
-        this.races.set(roomId, updatedRace);
-
-        const participants = this.getRaceParticipants(updatedRace);
+        const participants = this.getRaceParticipants(updatedRace)
 
         socket.emit("RoomJoined", {
           race: participant.Race,
@@ -162,26 +156,29 @@ export class Game {
 
         socket.join(Game.Room(race.id));
 
-        this.handlePlayerEnterRace({
-          raceId: race.id,
-          raceParticipantId,
-          socketId: socket.id,
-        });
+        this.handlePlayerEnterRace(
+          {
+            raceId: race.id,
+            raceParticipantId,
+            socketId: socket.id,
+          },
+          true,
+        );
 
-        const _race = this.races.get(race.id) as Race;
+        const updatedRace = this.races.get(race.id) as Race;
 
         socket.to(Game.Room(race.id)).emit("GameStateUpdate", {
           raceState: {
             id: race.id,
-            participants: this.getRaceParticipants(_race),
-            status: _race.status,
+            participants: this.getRaceParticipants(updatedRace),
+            status: updatedRace.status,
             countdown: 0,
           },
         });
 
         socket.emit("UserRaceResponse", {
           race,
-          participants: this.getRaceParticipants(_race),
+          participants: this.getRaceParticipants(updatedRace),
           raceParticipantId,
           raceStatus: this.races.get(race.id)!.status,
         });
@@ -250,7 +247,10 @@ export class Game {
     });
   }
 
-  private async handlePlayerEnterRace(payload: UserRacePresencePayload) {
+  private async handlePlayerEnterRace(
+    payload: UserRacePresencePayload,
+    autoStart?: boolean,
+  ) {
     const race = this.races.get(payload.raceId);
 
     if (!race) {
@@ -271,7 +271,7 @@ export class Game {
         finishedAt: null,
       });
       race.participants.push(payload.socketId);
-      this.startRaceCountdown(payload.raceId);
+      autoStart && this.startRaceCountdown(payload.raceId);
     }
 
     // Emit to all players in the room that a new player has joined.

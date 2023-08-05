@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { GameStateUpdatePayload } from "@code-racer/wss/src/events/server-to-client";
 import GameMultiplayer from "../../_components/race/game-multiplayer";
 import { toast } from "@/components/ui/use-toast";
+import CopyButton from "@/components/ui/copy-button";
 
 type Participant = Omit<
   GameStateUpdatePayload["raceState"]["participants"][number],
@@ -31,12 +32,10 @@ export function Room({ user, roomId }: { user?: User; roomId: string }) {
 
   const notStarted = raceStatus === "waiting" || raceStatus === "countdown";
 
-  const hasRoomCrown = raceParticipantId === participants[0]?.id;
+  const isRoomLeader = raceParticipantId === participants[0]?.id;
 
-  console.log(raceParticipantId, participants)
-
-  const canStartRace = hasRoomCrown && participants.length > 1;
-
+  const canStartRace =
+    isRoomLeader && participants.length > 1 && raceStatus === "waiting";
 
   useEffect(() => {
     socket.emit("UserJoinRoom", {
@@ -46,6 +45,8 @@ export function Room({ user, roomId }: { user?: User; roomId: string }) {
 
     socket.on("RoomJoined", async (payload) => {
       const { race, participants, raceStatus, participantId } = payload;
+
+      console.log(race, participants, notStarted);
 
       setRace(race);
       setParticipants(participants);
@@ -81,7 +82,15 @@ export function Room({ user, roomId }: { user?: User; roomId: string }) {
     <>
       {participants && notStarted && (
         <MultiplayerLoadingLobby participants={participants}>
-          {hasRoomCrown && <Button onClick={handleGameStart} disabled={!canStartRace}>Start game</Button>}
+          <div className="flex h-10 w-full items-center justify-between rounded-md border bg-background px-3 py-2 text-sm text-muted-foreground gap-2">
+            <span>{roomId}</span>
+            <CopyButton value={roomId} />
+          </div>
+          {isRoomLeader && (
+            <Button onClick={handleGameStart} disabled={!canStartRace}>
+              Start game
+            </Button>
+          )}
           {raceStatus === "countdown" && Boolean(raceStartCountdown) && (
             <div className="text-2xl font-bold text-center">
               Game starting in: {raceStartCountdown}
