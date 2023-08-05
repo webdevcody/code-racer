@@ -29,7 +29,6 @@ export type UserGetRacePayload = {
 export type UserCreateRoomPayload = {
   roomId: string;
   language: Language;
-  userId: string;
 };
 
 export interface ClientToServerEvents {
@@ -40,6 +39,6 @@ export interface ClientToServerEvents {
   UserGetRace: (payload: UserGetRacePayload) => void;
   UserRaceRequest: (payload: UserRaceRequestPayload) => void;
   UserCreateRoom: (payload: UserCreateRoomPayload) => void;
-  UserJoinRoom: (payload: { raceId: string; userId: string }) => void;
+  UserJoinRoom: (payload: { raceId: string; userId?: string }) => void;
   StartRaceCountdown: (payload: { raceId: string }) => void;
 }

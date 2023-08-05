@@ -19,7 +19,7 @@ type Participant = Omit<
   "socketId"
 >;
 
-export function Room({ user, roomId }: { user: User; roomId: string }) {
+export function Room({ user, roomId }: { user?: User; roomId: string }) {
   const [race, setRace] = React.useState<Prisma.RaceGetPayload<
     Record<string, never>
   > | null>(null);
@@ -40,7 +40,7 @@ export function Room({ user, roomId }: { user: User; roomId: string }) {
 
   useEffect(() => {
     socket.emit("UserJoinRoom", {
-      userId: user.id,
+      userId: user?.id,
       raceId: roomId,
     });
 

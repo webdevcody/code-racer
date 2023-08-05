@@ -26,7 +26,7 @@ import { useRouter } from "next/navigation";
 
 type JoinRoomForm = z.infer<typeof joinRoomSchema>;
 
-export const JoinRoomForm = ({ user }: { user: User }) => {
+export const JoinRoomForm = () => {
   const [isLoading, setIsLoading] = React.useState(false);
 
   const router = useRouter();

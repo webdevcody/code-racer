@@ -60,7 +60,7 @@ export class Game {
     this.server.on("connection", (socket) => {
       socket.on("UserCreateRoom", async (payload) => {
         const snippet = await getRandomSnippet({ language: payload.language });
-        
+
         if (!snippet) {
           socket.emit("SendNotification", {
             title: "Snippet not found",
@@ -100,18 +100,16 @@ export class Game {
 
         socket.join(Game.Room(roomId));
 
-        const participantId = getRoomParticipantId({ roomId, userId });
-
         const participant = await prisma.raceParticipant.upsert({
           where: {
-            id: participantId,
+            id: socket.id,
           },
           update: {
             raceId: roomId,
             userId,
           },
           create: {
-            id: participantId,
+            id: socket.id,
             raceId: roomId,
             userId,
           },
@@ -125,7 +123,7 @@ export class Game {
         });
 
         this.participants.set(socket.id, {
-          id: participantId,
+          id: participant.id,
           raceId: payload.raceId,
           position: 0,
           finishedAt: null,
@@ -144,7 +142,7 @@ export class Game {
           race: participant.Race,
           participants,
           raceStatus: race.status,
-          participantId,
+          participantId: socket.id,
         });
 
         socket.to(Game.Room(roomId)).emit("UpdateParticipants", {

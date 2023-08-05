@@ -18,8 +18,6 @@ export default async function RoomPage({
 }) {
   const user = await getCurrentUser();
 
-  if (!user) redirect("auth");
-
   return (
     <main className="flex flex-col items-center justify-between py-10 lg:p-24">
       <Room user={user} roomId={params.roomId} />

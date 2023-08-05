@@ -15,10 +15,6 @@ import { redirect } from "next/navigation";
 export const dynamic = "force-dynamic";
 
 export default async function CreateRoomModal() {
-  const user = await getCurrentUser();
-
-  if (!user) redirect("/auth");
-
   return (
     <div className="fixed inset-0 z-10">
       <div className="container flex items-center h-full max-w-lg mx-auto relative">
@@ -35,7 +31,7 @@ export default async function CreateRoomModal() {
             </CardHeader>
 
             <CardContent className="flex flex-col space-y-4">
-              <CreateRoomForm user={user} />
+              <CreateRoomForm />
 
               <NoHistoryButton variant={"ghost"} path="/race/join">
                 Join a Room

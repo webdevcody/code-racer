@@ -30,7 +30,7 @@ import { Language } from "@/config/languages";
 
 type CreateRoomForm = z.infer<typeof createRoomSchema>;
 
-export const CreateRoomForm = ({ user }: { user: User }) => {
+export const CreateRoomForm = () => {
   const [isLoading, setIsLoading] = React.useState(false);
 
   const roomId = uuidv4();
@@ -50,7 +50,6 @@ export const CreateRoomForm = ({ user }: { user: User }) => {
       roomId,
       // TODO: make typescript happy
       language: language as Language,
-      userId: user.id,
     });
   }
 
