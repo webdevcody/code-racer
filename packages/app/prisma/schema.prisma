@@ -117,7 +117,7 @@ model Achievement {
 
 model Snippet {
     id String @id @default(cuid())
-    name String? @default("undefined")
+    name String?
 
     code     String
     language String
