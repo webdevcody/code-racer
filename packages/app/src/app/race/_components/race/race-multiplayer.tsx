@@ -69,7 +69,9 @@ export default function RaceMultiplayer({
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [submittingResults, setSubmittingResults] = useState(false);
   const [totalErrors, setTotalErrors] = useState(0);
-  const [snippetTitle, setSnippetTitle] = useState<string>("")
+
+  const snippetTitle = snippet?.name === "undefined" ? "Type this code"
+         : "Type " + " Snippet " + snippet?.name
 
   const [chartTimeStamp, setChartTimeStamp] = useState<ChartTimeStamp[]>([]);
   const [replayTimeStamp, setReplayTimeStamp] = useState<ReplayTimeStamp[]>([]);
@@ -117,12 +119,6 @@ export default function RaceMultiplayer({
       setSnippet(snippet);
       setRaceId(race.id);
       setParticipantId(raceParticipantId);
-
-      if (snippet.name === "undefined") {
-        setSnippetTitle("Type this code");
-      } else {
-        setSnippetTitle(snippet.name!)
-      }
     });
 
     socket.on("GameStateUpdate", (payload) => {
