@@ -1,5 +1,6 @@
 import type { Result, User } from "@prisma/client";
 import { User as NextUser } from "next-auth";
+import { sortFilters } from "./sort-filters";
 
 type UserWithResults = User & { results: Result[] };
 
@@ -22,45 +23,18 @@ function convertNumberToOrdinal({ n }: { n: number }) {
   }
 }
 
-function getUserRankByValue({
-  userId,
-  values,
+function getRank({
+  rankDetail,
 }: {
-  userId: string;
-  values: { id: string; value: number }[];
+  rankDetail: {
+    [key: string]: number | boolean;
+  };
 }) {
-  const rankMap = new Map();
-  let currentRank = 1;
-
-  values
-    .sort((a, b) => b.value - a.value)
-    .forEach((current, i, arr) => {
-      const next = arr[i + 1];
-
-      if (rankMap.has(current.id)) {
-        return;
-      }
-
-      rankMap.set(current.id, currentRank);
-
-      if (next === undefined || current.value === next.value) {
-        return;
-      }
-
-      currentRank++;
-    });
-
-  const userRank = rankMap.get(userId);
-  const userRankOrdinal = convertNumberToOrdinal({ n: userRank });
-  rankMap.delete(userId);
-
-  const sharesRank = [...rankMap.values()].some((r) => r === userRank);
-
-  if (sharesRank) {
-    return `T-${userRankOrdinal}`;
+  if (rankDetail.shared) {
+    return "T-" + convertNumberToOrdinal({ n: rankDetail["rank"] as number });
+  } else {
+    return convertNumberToOrdinal({ n: rankDetail["rank"] as number });
   }
-
-  return userRankOrdinal;
 }
 
 function Ranking({ label, rank }: { label: string; rank: string }) {
@@ -75,28 +49,24 @@ function Ranking({ label, rank }: { label: string; rank: string }) {
 }
 
 export async function UserRankings({
-  currentUser,
-  allUsers,
+  currentUserRankDetail,
 }: {
-  currentUser: NextUser;
-  allUsers: UserWithResults[];
+  currentUserRankDetail: {
+    [key: string]: {
+      [key: string]: number | boolean;
+    };
+  };
 }) {
-  const userRankByGamesPlayed = getUserRankByValue({
-    userId: currentUser.id,
-    values: allUsers.map((u) => ({ id: u.id, value: u.results.length })),
+  const userRankByGamesPlayed = getRank({
+    rankDetail: currentUserRankDetail[sortFilters.RacePlayed],
   });
 
-  const userRankByAverageCPM = getUserRankByValue({
-    userId: currentUser.id,
-    values: allUsers.map((u) => ({ id: u.id, value: Number(u.averageCpm) })),
+  const userRankByAverageCPM = getRank({
+    rankDetail: currentUserRankDetail[sortFilters.AverageCPM],
   });
 
-  const userRankByAverageAcc = getUserRankByValue({
-    userId: currentUser.id,
-    values: allUsers.map((u) => ({
-      id: u.id,
-      value: Number(u.averageAccuracy),
-    })),
+  const userRankByAverageAcc = getRank({
+    rankDetail: currentUserRankDetail[sortFilters.AverageAccuracy],
   });
 
   return (
