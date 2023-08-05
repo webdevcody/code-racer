@@ -59,8 +59,8 @@ export default function PracticeRaceCard() {
                 buttonVariants({ variant: "ghost" }),
                 error && "border-red-500",
               )}
-              codeLanguage={selectedPracticeLanguage}
-              setCodeLanguage={handleSetCodeLanguage}
+              value={selectedPracticeLanguage}
+              onChange={handleSetCodeLanguage}
             />
             <span className="text-red-500">{error}</span>
           </div>

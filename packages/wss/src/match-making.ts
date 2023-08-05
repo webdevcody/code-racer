@@ -103,15 +103,24 @@ export async function getAvailableRace(
   return availableRace[0];
 }
 
-async function createRace(snippet: Snippet) {
-  return await prisma.race.create({
-    data: {
-      snippet: {
-        connect: {
-          id: snippet.id,
-        },
+export async function createRace(snippet: Snippet, id?: string) {
+  let data: { snippet: { connect: { id: string } }; id?: string } = {
+    snippet: {
+      connect: {
+        id: snippet.id,
       },
     },
+  };
+
+  if (id) {
+    data = {
+      ...data,
+      id,
+    };
+  }
+
+  return await prisma.race.create({
+    data,
   });
 }
 

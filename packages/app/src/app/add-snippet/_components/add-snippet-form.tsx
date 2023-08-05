@@ -170,10 +170,7 @@ export default function AddSnippetForm({ lang }: { lang: string }) {
             <FormItem className="w-full">
               <FormLabel>Language</FormLabel>
               <FormControl>
-                <LanguageDropDown
-                  codeLanguage={field.value}
-                  setCodeLanguage={field.onChange}
-                />
+                <LanguageDropDown {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

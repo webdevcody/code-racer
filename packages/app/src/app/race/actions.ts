@@ -138,6 +138,4 @@ export const getParticipantUser = safeAction(
  * This should create a private room for the user
  * Not implemented
  **/
-export const createPrivateRaceRoom = safeAction(z.object({}))(async (input) => {
-  throw new Error("Not implemented");
-});
+

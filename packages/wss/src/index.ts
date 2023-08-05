@@ -22,6 +22,7 @@ const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
 
 new Game(io);
 
+
 server.listen(PORT, () => {
   console.log(`listening on *:${PORT}`);
 });
