@@ -8,7 +8,7 @@ export type SiteConfig = typeof siteConfig;
 
 import * as prettierPluginJava from "prettier-plugin-java";
 import * as prettierPluginGo from "prettier-plugin-go-template";
-import * as prettierPluginRuby from "@prettier/plugin-ruby";
+// import * as prettierPluginRuby from "@prettier/plugin-ruby";
 
 export const siteConfig = {
   name: "CodeRacer",
@@ -84,7 +84,7 @@ export const siteConfig = {
         vueIndentScriptAndStyle: false,
         endOfLine: "lf",
         singleAttributePerLine: false,
-        plugins: [prettierPluginJava, prettierPluginGo, prettierPluginRuby],
+        plugins: [prettierPluginJava, prettierPluginGo],
       } satisfies PrettierOptions,
       parserMap: new Map<Language, string>([
         ["go", "go-template"],
@@ -92,7 +92,7 @@ export const siteConfig = {
         ["html", "html"],
         ["javascript", "babel"],
         ["typescript", "babel-ts"],
-        ["ruby", "ruby"],
+        // ["ruby", "ruby"],
       ]),
     },
   },
