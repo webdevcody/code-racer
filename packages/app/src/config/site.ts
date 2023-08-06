@@ -2,13 +2,13 @@
 /// <reference path="prettier-plugin.d.ts" />
 /* eslint-enable */
 
-import { type Options as PrettierOptions } from "prettier";
+// import { type Options as PrettierOptions } from "prettier";
 import { type Language } from "./languages";
 export type SiteConfig = typeof siteConfig;
 
-import * as prettierPluginJava from "prettier-plugin-java";
-import * as prettierPluginGo from "prettier-plugin-go-template";
-import * as prettierPluginRuby from "@prettier/plugin-ruby";
+// import * as prettierPluginJava from "prettier-plugin-java";
+// import * as prettierPluginGo from "prettier-plugin-go-template";
+// import * as prettierPluginRuby from "@prettier/plugin-ruby";
 
 export const siteConfig = {
   name: "CodeRacer",
@@ -86,12 +86,12 @@ export const siteConfig = {
         singleAttributePerLine: false,
         plugins: [
           "prettier-plugin-java",
-          "prettier-plugin-go-template",
+          // "prettier-plugin-go-template",
           "@prettier/plugin-ruby",
         ],
-      } satisfies PrettierOptions,
+      },
       parserMap: new Map<Language, string>([
-        ["go", "go-template"],
+        // ["go", "go-template"],
         ["java", "java"],
         ["html", "html"],
         ["javascript", "babel"],
