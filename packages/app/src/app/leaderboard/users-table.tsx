@@ -233,6 +233,7 @@ export function UsersTable({
             </div>
           );
         },
+        enableSorting: false,        
       },
     ],
     [field],
