@@ -17,8 +17,10 @@ import type { User } from "next-auth";
 import { UserRole } from "@prisma/client";
 
 export function UserDropdown({
+  onOpenChange,
   user,
 }: {
+  onOpenChange?: (open: boolean) => void;
   user?: User & {
     role: UserRole;
   };
@@ -26,15 +28,21 @@ export function UserDropdown({
   return (
     <div className="flex items-center gap-4">
       <div className="flex justify-center">
-        {user ? <AccountMenu user={user} /> : <LoginButton />}
+        {user ? (
+          <AccountMenu user={user} onOpenChange={onOpenChange} />
+        ) : (
+          <LoginButton />
+        )}
       </div>
     </div>
   );
 }
 
 const AccountMenu = ({
+  onOpenChange,
   user,
 }: {
+  onOpenChange?: (open: boolean) => void;
   user: User & {
     role: UserRole;
   };
@@ -58,20 +66,32 @@ const AccountMenu = ({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem asChild>
-          <Link href="/dashboard/races" className="flex items-center gap-1">
+          <Link
+            href="/dashboard/races"
+            className="flex items-center gap-1"
+            onClick={() => onOpenChange?.(false)}
+          >
             <Icons.lineChart className="w-4 h-4 mr-2" />
             <span>Dashboard</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href={`/users/${user.id}`} className="flex items-center gap-1">
+          <Link
+            href={`/users/${user.id}`}
+            className="flex items-center gap-1"
+            onClick={() => onOpenChange?.(false)}
+          >
             <Icons.profile className="w-4 h-4 mr-2" />
             <span>Profile</span>
           </Link>
         </DropdownMenuItem>
         {user.role === "ADMIN" && (
           <DropdownMenuItem asChild>
-            <Link href="/review" className="flex items-center gap-1">
+            <Link
+              href="/review"
+              className="flex items-center gap-1"
+              onClick={() => onOpenChange?.(false)}
+            >
               <Icons.review className="w-4 h-4 mr-2" />
               <span>Review</span>
             </Link>
