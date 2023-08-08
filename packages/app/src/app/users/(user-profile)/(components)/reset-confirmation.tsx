@@ -60,7 +60,11 @@ export default function ResetConfirmation({
             className="flex flex-col gap-2 mt-4 select-none"
             onSubmit={resetResults}
           >
-            <p>Please type &quot;{displayName}&quot; to confirm:</p>
+            <p>
+              Please type &quot;
+              <span className="brake-all">{displayName}</span>
+              &quot; to confirm:
+            </p>
             <Input
               type="text"
               name="name"
