@@ -1,0 +1,9 @@
+{
+  "/page": "app/page.js",
+  "/race/page": "app/race/page.js",
+  "/contributors/page": "app/contributors/page.js",
+  "/leaderboard/page": "app/leaderboard/page.js",
+  "/add-snippet/page": "app/add-snippet/page.js",
+  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
+  "/race/(play)/practice/page": "app/race/(play)/practice/page.js"
+}

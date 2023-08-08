@@ -1,0 +1,604 @@
+{
+  "ssrModuleMapping": {
+    "(app-client)/./node_modules/next/dist/client/components/error-boundary.js": {
+      "*": {
+        "id": "(sc_client)/./node_modules/next/dist/client/components/error-boundary.js",
+        "name": "*",
+        "chunks": [],
+        "async": false
+      }
+    },
+    "(app-client)/./node_modules/next/dist/client/components/app-router.js": {
+      "*": {
+        "id": "(sc_client)/./node_modules/next/dist/client/components/app-router.js",
+        "name": "*",
+        "chunks": [],
+        "async": false
+      }
+    },
+    "(app-client)/./node_modules/next/dist/client/components/layout-router.js": {
+      "*": {
+        "id": "(sc_client)/./node_modules/next/dist/client/components/layout-router.js",
+        "name": "*",
+        "chunks": [],
+        "async": false
+      }
+    },
+    "(app-client)/./node_modules/next/dist/client/components/render-from-template-context.js": {
+      "*": {
+        "id": "(sc_client)/./node_modules/next/dist/client/components/render-from-template-context.js",
+        "name": "*",
+        "chunks": [],
+        "async": false
+      }
+    },
+    "(app-client)/./node_modules/next/dist/client/components/static-generation-searchparams-bailout-provider.js": {
+      "*": {
+        "id": "(sc_client)/./node_modules/next/dist/client/components/static-generation-searchparams-bailout-provider.js",
+        "name": "*",
+        "chunks": [],
+        "async": false
+      }
+    },
+    "(app-client)/./node_modules/next/dist/client/link.js": {
+      "*": {
+        "id": "(sc_client)/./node_modules/next/dist/client/link.js",
+        "name": "*",
+        "chunks": [],
+        "async": false
+      }
+    },
+    "(app-client)/./src/app/title-backdrop-svg.tsx": {
+      "*": {
+        "id": "(sc_client)/./src/app/title-backdrop-svg.tsx",
+        "name": "*",
+        "chunks": [],
+        "async": false
+      }
+    },
+    "(app-client)/./node_modules/nextjs-toploader/dist/index.js": {
+      "*": {
+        "id": "(sc_client)/./node_modules/nextjs-toploader/dist/index.js",
+        "name": "*",
+        "chunks": [],
+        "async": false
+      }
+    },
+    "(app-client)/./node_modules/next/dist/client/image-component.js": {
+      "*": {
+        "id": "(sc_client)/./node_modules/next/dist/client/image-component.js",
+        "name": "*",
+        "chunks": [],
+        "async": false
+      }
+    },
+    "(app-client)/./node_modules/next/font/google/target.css?{\"path\":\"src/lib/fonts.ts\",\"import\":\"Inter\",\"arguments\":[{\"subsets\":[\"latin\"]}],\"variableName\":\"inter\"}": {
+      "*": {
+        "id": "(sc_client)/./node_modules/next/font/google/target.css?{\"path\":\"src/lib/fonts.ts\",\"import\":\"Inter\",\"arguments\":[{\"subsets\":[\"latin\"]}],\"variableName\":\"inter\"}",
+        "name": "*",
+        "chunks": [],
+        "async": false
+      }
+    },
+    "(app-client)/./node_modules/next/font/google/target.css?{\"path\":\"src/lib/fonts.ts\",\"import\":\"Bruno_Ace_SC\",\"arguments\":[{\"subsets\":[\"latin\"],\"weight\":\"400\",\"variable\":\"--font-bruno-ace-sc\",\"display\":\"swap\"}],\"variableName\":\"bruno_ace_sc\"}": {
+      "*": {
+        "id": "(sc_client)/./node_modules/next/font/google/target.css?{\"path\":\"src/lib/fonts.ts\",\"import\":\"Inter\",\"arguments\":[{\"subsets\":[\"latin\"]}],\"variableName\":\"inter\"}",
+        "name": "*",
+        "chunks": [],
+        "async": false
+      }
+    },
+    "(app-client)/./src/components/mode-toggle.tsx": {
+      "*": {
+        "id": "(sc_client)/./src/components/mode-toggle.tsx",
+        "name": "*",
+        "chunks": [],
+        "async": false
+      }
+    },
+    "(app-client)/./src/components/mobile-nav.tsx": {
+      "*": {
+        "id": "(sc_client)/./src/components/mobile-nav.tsx",
+        "name": "*",
+        "chunks": [],
+        "async": false
+      }
+    },
+    "(app-client)/./src/components/main-nav.tsx": {
+      "*": {
+        "id": "(sc_client)/./src/components/main-nav.tsx",
+        "name": "*",
+        "chunks": [],
+        "async": false
+      }
+    },
+    "(app-client)/./src/components/user-dropdown.tsx": {
+      "*": {
+        "id": "(sc_client)/./src/components/user-dropdown.tsx",
+        "name": "*",
+        "chunks": [],
+        "async": false
+      }
+    },
+    "(app-client)/./src/components/context-provider.tsx": {
+      "*": {
+        "id": "(sc_client)/./src/components/context-provider.tsx",
+        "name": "*",
+        "chunks": [],
+        "async": false
+      }
+    },
+    "(app-client)/./src/components/ui/toaster.tsx": {
+      "*": {
+        "id": "(sc_client)/./src/components/ui/toaster.tsx",
+        "name": "*",
+        "chunks": [],
+        "async": false
+      }
+    },
+    "(app-client)/./src/components/ui/use-toast.ts": {
+      "*": {
+        "id": "(sc_client)/./src/components/ui/use-toast.ts",
+        "name": "*",
+        "chunks": [],
+        "async": false
+      }
+    },
+    "(app-client)/./src/app/leaderboard/users-table.tsx": {
+      "*": {
+        "id": "(sc_client)/./src/app/leaderboard/users-table.tsx",
+        "name": "*",
+        "chunks": [],
+        "async": false
+      }
+    },
+    "(app-client)/./src/app/race/_components/practice-race.tsx": {
+      "*": {
+        "id": "(sc_client)/./src/app/race/_components/practice-race.tsx",
+        "name": "*",
+        "chunks": [],
+        "async": false
+      }
+    },
+    "(app-client)/./src/app/race/_components/multiplayer-race.tsx": {
+      "*": {
+        "id": "(sc_client)/./src/app/race/_components/multiplayer-race.tsx",
+        "name": "*",
+        "chunks": [],
+        "async": false
+      }
+    },
+    "(app-client)/./src/app/race/_components/friends-race.tsx": {
+      "*": {
+        "id": "(sc_client)/./src/app/race/_components/friends-race.tsx",
+        "name": "*",
+        "chunks": [],
+        "async": false
+      }
+    },
+    "(app-client)/./src/app/add-snippet/page.tsx": {
+      "*": {
+        "id": "(sc_client)/./src/app/add-snippet/page.tsx",
+        "name": "*",
+        "chunks": [],
+        "async": false
+      }
+    },
+    "(app-client)/./node_modules/next/dist/shared/lib/lazy-dynamic/dynamic-no-ssr.js": {
+      "*": {
+        "id": "(sc_client)/./node_modules/next/dist/shared/lib/lazy-dynamic/dynamic-no-ssr.js",
+        "name": "*",
+        "chunks": [],
+        "async": false
+      }
+    },
+    "(app-client)/./src/components/ui/avatar.tsx": {
+      "*": {
+        "id": "(sc_client)/./src/components/ui/avatar.tsx",
+        "name": "*",
+        "chunks": [],
+        "async": false
+      }
+    },
+    "(app-client)/./src/components/ui/hover-card.tsx": {
+      "*": {
+        "id": "(sc_client)/./src/components/ui/hover-card.tsx",
+        "name": "*",
+        "chunks": [],
+        "async": false
+      }
+    },
+    "(app-client)/./src/app/contributors/_components/counting-animation.tsx": {
+      "*": {
+        "id": "(sc_client)/./src/app/contributors/_components/counting-animation.tsx",
+        "name": "*",
+        "chunks": [],
+        "async": false
+      }
+    },
+    "(app-client)/./src/components/cache-buster.tsx": {
+      "*": {
+        "id": "(sc_client)/./src/components/cache-buster.tsx",
+        "name": "*",
+        "chunks": [],
+        "async": false
+      }
+    },
+    "(app-client)/./src/app/race/race.tsx": {
+      "*": {
+        "id": "(sc_client)/./src/app/race/race.tsx",
+        "name": "*",
+        "chunks": [],
+        "async": false
+      }
+    }
+  },
+  "edgeSSRModuleMapping": {},
+  "clientModules": {
+    "/home/sycodes95/personal-projects/code-racer/node_modules/next/dist/client/components/error-boundary.js": {
+      "id": "(app-client)/./node_modules/next/dist/client/components/error-boundary.js",
+      "name": "*",
+      "chunks": [
+        "app-client-internals:static/chunks/app-client-internals.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/node_modules/next/dist/esm/client/components/error-boundary.js": {
+      "id": "(app-client)/./node_modules/next/dist/client/components/error-boundary.js",
+      "name": "*",
+      "chunks": [
+        "app-client-internals:static/chunks/app-client-internals.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/node_modules/next/dist/client/components/app-router.js": {
+      "id": "(app-client)/./node_modules/next/dist/client/components/app-router.js",
+      "name": "*",
+      "chunks": [
+        "app-client-internals:static/chunks/app-client-internals.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/node_modules/next/dist/esm/client/components/app-router.js": {
+      "id": "(app-client)/./node_modules/next/dist/client/components/app-router.js",
+      "name": "*",
+      "chunks": [
+        "app-client-internals:static/chunks/app-client-internals.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/node_modules/next/dist/client/components/layout-router.js": {
+      "id": "(app-client)/./node_modules/next/dist/client/components/layout-router.js",
+      "name": "*",
+      "chunks": [
+        "app-client-internals:static/chunks/app-client-internals.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/node_modules/next/dist/esm/client/components/layout-router.js": {
+      "id": "(app-client)/./node_modules/next/dist/client/components/layout-router.js",
+      "name": "*",
+      "chunks": [
+        "app-client-internals:static/chunks/app-client-internals.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/node_modules/next/dist/client/components/render-from-template-context.js": {
+      "id": "(app-client)/./node_modules/next/dist/client/components/render-from-template-context.js",
+      "name": "*",
+      "chunks": [
+        "app-client-internals:static/chunks/app-client-internals.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/node_modules/next/dist/esm/client/components/render-from-template-context.js": {
+      "id": "(app-client)/./node_modules/next/dist/client/components/render-from-template-context.js",
+      "name": "*",
+      "chunks": [
+        "app-client-internals:static/chunks/app-client-internals.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/node_modules/next/dist/client/components/static-generation-searchparams-bailout-provider.js": {
+      "id": "(app-client)/./node_modules/next/dist/client/components/static-generation-searchparams-bailout-provider.js",
+      "name": "*",
+      "chunks": [
+        "app-client-internals:static/chunks/app-client-internals.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/node_modules/next/dist/esm/client/components/static-generation-searchparams-bailout-provider.js": {
+      "id": "(app-client)/./node_modules/next/dist/client/components/static-generation-searchparams-bailout-provider.js",
+      "name": "*",
+      "chunks": [
+        "app-client-internals:static/chunks/app-client-internals.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/node_modules/next/dist/client/link.js": {
+      "id": "(app-client)/./node_modules/next/dist/client/link.js",
+      "name": "*",
+      "chunks": [
+        "app/race/(play)/practice/page:static/chunks/app/race/(play)/practice/page.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/node_modules/next/dist/esm/client/link.js": {
+      "id": "(app-client)/./node_modules/next/dist/client/link.js",
+      "name": "*",
+      "chunks": [
+        "app/race/(play)/practice/page:static/chunks/app/race/(play)/practice/page.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/src/app/title-backdrop-svg.tsx": {
+      "id": "(app-client)/./src/app/title-backdrop-svg.tsx",
+      "name": "*",
+      "chunks": [
+        "app/page:static/chunks/app/page.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/node_modules/nextjs-toploader/dist/index.js": {
+      "id": "(app-client)/./node_modules/nextjs-toploader/dist/index.js",
+      "name": "*",
+      "chunks": [
+        "app/layout:static/chunks/app/layout.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/node_modules/next/dist/client/image-component.js": {
+      "id": "(app-client)/./node_modules/next/dist/client/image-component.js",
+      "name": "*",
+      "chunks": [
+        "app/contributors/page:static/chunks/app/contributors/page.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/node_modules/next/dist/esm/client/image-component.js": {
+      "id": "(app-client)/./node_modules/next/dist/client/image-component.js",
+      "name": "*",
+      "chunks": [
+        "app/contributors/page:static/chunks/app/contributors/page.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/node_modules/next/font/google/target.css?{\"path\":\"src/lib/fonts.ts\",\"import\":\"Inter\",\"arguments\":[{\"subsets\":[\"latin\"]}],\"variableName\":\"inter\"}": {
+      "id": "(app-client)/./node_modules/next/font/google/target.css?{\"path\":\"src/lib/fonts.ts\",\"import\":\"Inter\",\"arguments\":[{\"subsets\":[\"latin\"]}],\"variableName\":\"inter\"}",
+      "name": "*",
+      "chunks": [
+        "app/layout:static/chunks/app/layout.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/node_modules/next/font/google/target.css?{\"path\":\"src/lib/fonts.ts\",\"import\":\"Bruno_Ace_SC\",\"arguments\":[{\"subsets\":[\"latin\"],\"weight\":\"400\",\"variable\":\"--font-bruno-ace-sc\",\"display\":\"swap\"}],\"variableName\":\"bruno_ace_sc\"}": {
+      "id": "(app-client)/./node_modules/next/font/google/target.css?{\"path\":\"src/lib/fonts.ts\",\"import\":\"Bruno_Ace_SC\",\"arguments\":[{\"subsets\":[\"latin\"],\"weight\":\"400\",\"variable\":\"--font-bruno-ace-sc\",\"display\":\"swap\"}],\"variableName\":\"bruno_ace_sc\"}",
+      "name": "*",
+      "chunks": [
+        "app/layout:static/chunks/app/layout.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/src/components/mode-toggle.tsx": {
+      "id": "(app-client)/./src/components/mode-toggle.tsx",
+      "name": "*",
+      "chunks": [
+        "app/layout:static/chunks/app/layout.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/src/components/mobile-nav.tsx": {
+      "id": "(app-client)/./src/components/mobile-nav.tsx",
+      "name": "*",
+      "chunks": [
+        "app/layout:static/chunks/app/layout.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/src/components/main-nav.tsx": {
+      "id": "(app-client)/./src/components/main-nav.tsx",
+      "name": "*",
+      "chunks": [
+        "app/layout:static/chunks/app/layout.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/src/components/user-dropdown.tsx": {
+      "id": "(app-client)/./src/components/user-dropdown.tsx",
+      "name": "*",
+      "chunks": [
+        "app/layout:static/chunks/app/layout.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/src/components/context-provider.tsx": {
+      "id": "(app-client)/./src/components/context-provider.tsx",
+      "name": "*",
+      "chunks": [
+        "app/layout:static/chunks/app/layout.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/src/components/ui/toaster.tsx": {
+      "id": "(app-client)/./src/components/ui/toaster.tsx",
+      "name": "*",
+      "chunks": [
+        "app/layout:static/chunks/app/layout.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/src/components/ui/use-toast.ts": {
+      "id": "(app-client)/./src/components/ui/use-toast.ts",
+      "name": "*",
+      "chunks": [
+        "app/race/(play)/practice/page:static/chunks/app/race/(play)/practice/page.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/src/styles/globals.css": {
+      "id": "(app-client)/./src/styles/globals.css",
+      "name": "*",
+      "chunks": [
+        "app/layout:static/chunks/app/layout.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/src/app/leaderboard/users-table.tsx": {
+      "id": "(app-client)/./src/app/leaderboard/users-table.tsx",
+      "name": "*",
+      "chunks": [
+        "app/leaderboard/page:static/chunks/app/leaderboard/page.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/src/app/race/_components/practice-race.tsx": {
+      "id": "(app-client)/./src/app/race/_components/practice-race.tsx",
+      "name": "*",
+      "chunks": [
+        "app/race/page:static/chunks/app/race/page.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/src/app/race/_components/multiplayer-race.tsx": {
+      "id": "(app-client)/./src/app/race/_components/multiplayer-race.tsx",
+      "name": "*",
+      "chunks": [
+        "app/race/page:static/chunks/app/race/page.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/src/app/race/_components/friends-race.tsx": {
+      "id": "(app-client)/./src/app/race/_components/friends-race.tsx",
+      "name": "*",
+      "chunks": [
+        "app/race/page:static/chunks/app/race/page.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/src/app/add-snippet/page.tsx": {
+      "id": "(app-client)/./src/app/add-snippet/page.tsx",
+      "name": "*",
+      "chunks": [
+        "app/add-snippet/page:static/chunks/app/add-snippet/page.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/node_modules/next/dist/shared/lib/app-router-context.js": {
+      "id": "(app-client)/./node_modules/next/dist/shared/lib/app-router-context.js",
+      "name": "*",
+      "chunks": [
+        "app/contributors/page:static/chunks/app/contributors/page.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/node_modules/next/dist/esm/shared/lib/app-router-context.js": {
+      "id": "(app-client)/./node_modules/next/dist/shared/lib/app-router-context.js",
+      "name": "*",
+      "chunks": [
+        "app/contributors/page:static/chunks/app/contributors/page.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/node_modules/next/dist/shared/lib/hooks-client-context.js": {
+      "id": "(app-client)/./node_modules/next/dist/shared/lib/hooks-client-context.js",
+      "name": "*",
+      "chunks": [
+        "app/contributors/page:static/chunks/app/contributors/page.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/node_modules/next/dist/esm/shared/lib/hooks-client-context.js": {
+      "id": "(app-client)/./node_modules/next/dist/shared/lib/hooks-client-context.js",
+      "name": "*",
+      "chunks": [
+        "app/contributors/page:static/chunks/app/contributors/page.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/node_modules/next/dist/shared/lib/server-inserted-html.js": {
+      "id": "(app-client)/./node_modules/next/dist/shared/lib/server-inserted-html.js",
+      "name": "*",
+      "chunks": [
+        "app/contributors/page:static/chunks/app/contributors/page.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/node_modules/next/dist/esm/shared/lib/server-inserted-html.js": {
+      "id": "(app-client)/./node_modules/next/dist/shared/lib/server-inserted-html.js",
+      "name": "*",
+      "chunks": [
+        "app/contributors/page:static/chunks/app/contributors/page.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/node_modules/next/dist/shared/lib/lazy-dynamic/dynamic-no-ssr.js": {
+      "id": "(app-client)/./node_modules/next/dist/shared/lib/lazy-dynamic/dynamic-no-ssr.js",
+      "name": "*",
+      "chunks": [
+        "app/contributors/page:static/chunks/app/contributors/page.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/node_modules/next/dist/esm/shared/lib/lazy-dynamic/dynamic-no-ssr.js": {
+      "id": "(app-client)/./node_modules/next/dist/shared/lib/lazy-dynamic/dynamic-no-ssr.js",
+      "name": "*",
+      "chunks": [
+        "app/contributors/page:static/chunks/app/contributors/page.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/src/components/ui/avatar.tsx": {
+      "id": "(app-client)/./src/components/ui/avatar.tsx",
+      "name": "*",
+      "chunks": [
+        "app/contributors/page:static/chunks/app/contributors/page.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/src/components/ui/hover-card.tsx": {
+      "id": "(app-client)/./src/components/ui/hover-card.tsx",
+      "name": "*",
+      "chunks": [
+        "app/contributors/page:static/chunks/app/contributors/page.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/src/app/contributors/_components/counting-animation.tsx": {
+      "id": "(app-client)/./src/app/contributors/_components/counting-animation.tsx",
+      "name": "*",
+      "chunks": [
+        "app/contributors/page:static/chunks/app/contributors/page.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/src/components/cache-buster.tsx": {
+      "id": "(app-client)/./src/components/cache-buster.tsx",
+      "name": "*",
+      "chunks": [
+        "app/race/(play)/practice/page:static/chunks/app/race/(play)/practice/page.js"
+      ],
+      "async": false
+    },
+    "/home/sycodes95/personal-projects/code-racer/src/app/race/race.tsx": {
+      "id": "(app-client)/./src/app/race/race.tsx",
+      "name": "*",
+      "chunks": [
+        "app/race/(play)/practice/page:static/chunks/app/race/(play)/practice/page.js"
+      ],
+      "async": false
+    }
+  },
+  "entryCSSFiles": {
+    "/home/sycodes95/personal-projects/code-racer/src/app/page": [],
+    "/home/sycodes95/personal-projects/code-racer/src/app/layout": [
+      "static/css/app/layout.css"
+    ],
+    "/home/sycodes95/personal-projects/code-racer/src/app/leaderboard/page": [],
+    "/home/sycodes95/personal-projects/code-racer/src/app/race/page": [
+      "static/css/app/race/page.css"
+    ],
+    "/home/sycodes95/personal-projects/code-racer/src/app/add-snippet/page": [],
+    "/home/sycodes95/personal-projects/code-racer/src/app/contributors/page": [],
+    "/home/sycodes95/personal-projects/code-racer/src/app/race/(play)/practice/page": []
+  }
+}
