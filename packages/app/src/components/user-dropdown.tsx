@@ -44,7 +44,7 @@ const AccountMenu = ({
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="flex h-full gap-2 px-2 bg-white bg-opacity-0 lg:px-4 hover:bg-white hover:bg-opacity-5"
+          className="flex h-full gap-2 px-2 bg-white bg-opacity-0 lg:px-4 hover:bg-white hover:bg-opacity-5 w-[175px] lg:w-[300px]"
         >
           <Image
             className="rounded-full"
@@ -53,7 +53,7 @@ const AccountMenu = ({
             height={26}
             width={26}
           />
-          <p className="whitespace-nowrap">{user.name}</p>
+          <p className="truncate">{user.name}</p>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
