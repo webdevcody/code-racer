@@ -62,7 +62,7 @@ export default function ResetConfirmation({
           >
             <p>
               Please type &quot;
-              <span className="brake-all">{displayName}</span>
+              <span className="break-all">{displayName}</span>
               &quot; to confirm:
             </p>
             <Input

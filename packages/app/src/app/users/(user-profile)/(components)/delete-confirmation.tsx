@@ -59,7 +59,7 @@ export default function DeleteConfirmation({
             onSubmit={handleDelete}
           >
             <p>
-              Please type &quot;<span className="brake-all">{displayName}</span>
+              Please type &quot;<span className="break-all">{displayName}</span>
               &quot; to confirm:
             </p>
             <Input
