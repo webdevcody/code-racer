@@ -6,7 +6,7 @@ import { ExternalLink } from "lucide-react";
 const getUserContributions = async (userEmail: string) => {
   const encodedEmail = encodeURIComponent(userEmail);
   const res = await fetch(
-    `https://api.github.com/repos/webdevcody/code-racer/commits?author=${encodedEmail}`,
+    `https://api.github.com/repos/webdevcody/code-racer/commits?author=${encodedEmail}`
   ).then((res) => res.json());
   return res ?? [];
 };
@@ -26,7 +26,7 @@ export default async function UserCommits({
       </div>
       <div className="grid gap-4 ">
         {/*TODO: Style this */}
-        {/* {userCommits.map((commit, index) => (
+        {userCommits.map((commit, index) => (
           <a
             href={commit.html_url}
             key={index}
@@ -40,7 +40,7 @@ export default async function UserCommits({
               {formatDate(commit.commit.author.date)}
             </p>
           </a>
-        ))} */}
+        ))}
       </div>
     </section>
   );
