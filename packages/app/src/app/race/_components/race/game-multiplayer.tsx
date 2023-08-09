@@ -437,7 +437,8 @@ function changeTimeStamps(e: any) {
               : null}
             <div className="flex justify-between mb-2 md:mb-4">
               <Heading
-                title="Type this code"
+                title={snippet?.name ? 
+                  "Type " + " Snippet " + snippet?.name : "Type this code"}
                 description="Start typing to get racing"
               />
               {user && snippet && (
