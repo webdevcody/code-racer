@@ -1,7 +1,7 @@
 import { getCurrentUser } from "@/lib/session";
 import { redirect } from "next/navigation";
-import RaceMultiplayer from "../../_components/race/race-multiplayer";
 import { Language, isValidLanguage } from "@/config/languages";
+import RaceMultiplayerRoom from "./room";
 
 export default async function MultiplayerRacePage({
   searchParams,
@@ -23,7 +23,7 @@ export default async function MultiplayerRacePage({
 
   return (
     <main className="flex flex-col items-center justify-between py-10 lg:p-24">
-      <RaceMultiplayer user={user} language={searchParams.lang as Language} />
+      <RaceMultiplayerRoom user={user} language={searchParams.lang as Language} />
     </main>
   );
 }
