@@ -197,7 +197,7 @@ export const getFastestRace = async (snippetId: any, raceID: string) => {
       }
     },
     orderBy: {
-      cpm: 'desc',
+      cpm: "desc",
     },
   });
 };
@@ -217,7 +217,7 @@ export const getBestAccuracy = async (snippetId: any, raceID: string) => {
       }
     },
     orderBy: {
-      accuracy: 'desc',
+      accuracy: "desc",
     },
   });
 };
