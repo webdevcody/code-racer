@@ -80,8 +80,13 @@ Open your browser and visit <http://localhost:3000> to see the application runni
 
 ## Working on New Features
 
-If you're new to github and working with open source repositories, I made a video a while back which walks you through the process:
+If you're new to Github and working with open source repositories, I made a video a while back which walks you through the process:
 [![How to make a pull request on an open source project](https://img.youtube.com/vi/8A4TsoXJOs8/0.jpg)](https://youtu.be/8A4TsoXJOs8)
+
+There is also a new video explaining how you can contribute to this project:
+<br/>
+[How to contribute to open source projects (our community project walkthrough)](https://www.youtube.com/watch?v=dLRA1lffWBw)
+
 
 If you want to work on a new feature, follow these steps.
 
@@ -105,7 +110,7 @@ git checkout main
 git pull upstream main
 ```
 
-## Before Submitting Pull Request
+## Before Submitting a Pull Request
 Before submitting a **Pull Request**, you should
 1. Check your code safety with Linter and TypeScript, and make sure your code can build successfully.
 
