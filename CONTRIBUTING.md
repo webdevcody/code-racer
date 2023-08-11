@@ -118,7 +118,7 @@ Before submitting a **Pull Request**, you should
 npm run pr:precheck
 ```
 
-2. (Optional) Do an E2E test to ensure application function properly
+2. (Optional) Do an E2E test to ensure application functions properly
 
 ```
 npm run e2e -w @code-racer/app
@@ -129,7 +129,8 @@ npm run e2e -w @code-racer/app
 
 In the interest of fostering an open and welcoming environment, we as
 contributors and maintainers pledge to making participation in our project and
-our community a friendly experience for everyone, regardless of any experience to give everyone an opportunity to contribute in this project.
+our community a friendly experience for everyone, regardless of any experience
+to give everyone an opportunity to contribute in this project.
 
 ### Our Responsibilities
 
