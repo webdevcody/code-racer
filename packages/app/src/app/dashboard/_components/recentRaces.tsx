@@ -48,11 +48,7 @@ export function RecentRacesTable({
         cell: ({ cell }) => {
           const snippet = cell.getValue() as Snippet;
 
-          if (snippet.name === "undefined") {
-            return <span>-</span>
-          } else {
-            return <span>{snippet.name!}</span>
-          }
+          return <span>{snippet.name ?? "-"}</span>
         }
       },
       {
