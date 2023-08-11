@@ -58,7 +58,10 @@ export default function DeleteConfirmation({
             className="flex flex-col gap-2 mt-4 select-none"
             onSubmit={handleDelete}
           >
-            <p>Please type &quot;{displayName}&quot; to confirm:</p>
+            <p>
+              Please type &quot;<span className="break-all">{displayName}</span>
+              &quot; to confirm:
+            </p>
             <Input
               type="text"
               name="name"
