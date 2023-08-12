@@ -34,43 +34,45 @@ If you are getting WSL error when you launch your desktop docker application, go
 
 To get started with Code Racer locally, follow these steps
 
-1. Fork the repo
+1. Make sure you have installed Docker locally (See above Prerequisites)
 
-2. Clone your fork
+2. Fork the repo
+
+3. Clone your fork
 
    ```sh
     git clone https://github.com/<YOUR_GITHUB_ACCOUNT_NAME>/code-racer.git
    ```
 
-3. Navigate to the project directory
+4. Navigate to the project directory
 
    ```sh
    cd code-racer
    ```
 
-4. Create a .env file inside the project's packages/app directory.
+5. Create a .env file inside the project's packages/app directory.
 
-5. Copy and paste variables from `packages/app/.env.example` into `packages/app/.env`
+6. Copy and paste variables from `packages/app/.env.example` into `packages/app/.env`
 
-6. Install NPM packages
+7. Install NPM packages
 
    ```sh
    npm i
    ```
 
-7. Start the database
+8. Start the database
 
    ```sh
    npm run dev:db
    ```
 
-8. Start the app dev server
+9. Start the app dev server
 
    ```sh
    npm run dev:app
    ```
 
-9. Start the web socket server
+10. Start the web socket server
 
    ```sh
    npm run dev:wss
