@@ -1,5 +1,5 @@
 <div align="center" >
-  <img src="./packages/app/public/static/logo.png" width="60" alt="">
+  <img src="./packages/app/public/static/logo.png" width="60" alt="code-racer-logo">
   <br/>
   <h1>Code Racer</h1>
 </div>
@@ -18,10 +18,10 @@ Code Racer is a multiplayer coding game where developers can compete against eac
 
 ## Technologies Used
 
-- [Next.js](https://nextjs.org) : A React framework for building server-side rendered and statically generated applications.
-- [NextAuth](https://next-auth.js.org) : For user authentication.
-- [Prisma](https://www.prisma.io) : Next-generation ORM, it provides a clean and type-safe API for submitting database queries
-- [Tailwind CSS](https://tailwindcss.com) : A utility-first CSS framework for rapid UI development.
+- [Next.js](https://nextjs.org): A React framework for building server-side rendered and statically generated applications.
+- [NextAuth](https://next-auth.js.org): For user authentication.
+- [Prisma](https://www.prisma.io): Next-generation ORM, it provides a clean and type-safe API for submitting database queries.
+- [Tailwind CSS](https://tailwindcss.com): A utility-first CSS framework for rapid UI development.
 - [TypeScript](https://www.typescriptlang.org): A typed superset of JavaScript that provides enhanced tooling and developer productivity.
 
 ## Contribution
@@ -49,7 +49,7 @@ A big thank you to all the developers who have helped shape Code Racer into what
 
 ## Contact
 
-If you have any questions, suggestions, or feedback regarding Code Racer, please feel free to reach out to us at in the WebDevCody [discord](https://discord.gg/4kGbBaa) server
+If you have any questions, suggestions, or feedback regarding Code Racer, please feel free to reach out to us at in the WebDevCody [discord](https://discord.gg/4kGbBaa) server.
 
 Happy coding and enjoy the race!
 
@@ -57,10 +57,12 @@ Happy coding and enjoy the race!
 
 1. [Community Project Announcement Video](https://www.youtube.com/watch?v=-n6tV3RPjGc)
 2. [First Q&A Livestream and Community Project Live Coding Session](https://www.youtube.com/watch?v=BQXXBsHXfak)
+3. [How to contribute to open source projects (our community project walkthrough)](https://www.youtube.com/watch?v=dLRA1lffWBw)
+4. [You need to write tests when this starts to happen](https://www.youtube.com/watch?v=PzrhclEQp-M)
 
 <details>
   <summary>
-  <h2>How To(s) - A newbie section</h2>
+    <h2>How To(s) - A newbie section</h2>
   </summary>
 
 ### Check the logs of Post
