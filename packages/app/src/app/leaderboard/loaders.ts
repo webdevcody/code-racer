@@ -1,4 +1,6 @@
-import { prisma } from "@/lib/prisma";
+import { User, prisma } from "@/lib/prisma";
+import { map } from "lodash";
+import { omit } from "lodash/fp";
 
 export async function getUsersWithResultCounts({
   take,
@@ -9,7 +11,7 @@ export async function getUsersWithResultCounts({
   skip: number;
   order: "asc" | "desc" | undefined;
 }) {
-  return await prisma.user.findMany({
+  const users = await prisma.user.findMany({
     take,
     skip,
     orderBy: {
@@ -28,10 +30,12 @@ export async function getUsersWithResultCounts({
       },
     },
   });
+
+  return stripSensitiveUserInfo(users);
 }
 
 export async function getAllUsersWithResults() {
-  return await prisma.user.findMany({
+  const users = await prisma.user.findMany({
     include: {
       results: true,
     },
@@ -43,6 +47,7 @@ export async function getAllUsersWithResults() {
       },
     },
   });
+  return stripSensitiveUserInfo(users);
 }
 
 export async function getUsersWithResults({
@@ -56,7 +61,7 @@ export async function getUsersWithResults({
   sortBy: string;
   order: "asc" | "desc" | undefined;
 }) {
-  return await prisma.user.findMany({
+  const users = await prisma.user.findMany({
     take,
     skip,
     orderBy: {
@@ -73,6 +78,8 @@ export async function getUsersWithResults({
       },
     },
   });
+
+  return stripSensitiveUserInfo(users);
 }
 
 export async function getTotalUsers() {
@@ -89,4 +96,17 @@ export async function getTotalUsers() {
 
 export function isFieldInUser(field: string) {
   return field in prisma.user.fields;
+}
+
+export function stripSensitiveUserInfo(users: User[] | User | null) {
+  const removeSensitiveFields = omit([
+    "email",
+    "emailVerified",
+    "role",
+    "createdAt",
+  ]);
+  if (!users) return null;
+  return Array.isArray(users)
+    ? map(users, removeSensitiveFields)
+    : removeSensitiveFields(users);
 }

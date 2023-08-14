@@ -5,12 +5,13 @@ import { safeAction } from "@/lib/actions";
 import { UnauthorizedError } from "@/lib/exceptions/custom-hooks";
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
+import { stripSensitiveUserInfo } from "@/app/leaderboard/loaders";
 
 /** If no userId is provided, this will get the current
  *  logged in user's achievements.
  */
 export const findUserAchievements = safeAction(
-  z.object({ userId: z.string().optional() }),
+  z.object({ userId: z.string().optional() })
 )(async (input) => {
   const user = await getCurrentUser();
 
@@ -34,6 +35,6 @@ export const findUser = safeAction(z.object({ userId: z.string().optional() }))(
       },
     });
 
-    return foundUser;
-  },
+    return stripSensitiveUserInfo(foundUser);
+  }
 );

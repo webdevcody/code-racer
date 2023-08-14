@@ -48,22 +48,16 @@ function setUsersRankByValue({
       if (prev && current.value == prev.value) {
         userRanks[current.id][fieldName]["shared"] = true;
       }
-      
+
       if (next === undefined || current.value === next.value) {
         return;
       }
 
       currentRank++;
     });
-
-
 }
 
-function calculateUsersRank({
-  allUsers,
-}: {
-  allUsers: UserWithResults[];
-}) {
+function calculateUsersRank({ allUsers }: { allUsers: UserWithResults[] }) {
   // userRanks stores rank of all users in all category (avgCPM, avgAcc, totalRaces)
   /* { 
         _userID_ : { 
@@ -138,7 +132,7 @@ export default async function LeaderboardPage({
     typeof sort === "string"
       ? (sort.split(".") as [
           keyof User | sortFilters.RacePlayed | undefined,
-          "asc" | "desc" | undefined,
+          "asc" | "desc" | undefined
         ])
       : [];
 
@@ -166,6 +160,8 @@ export default async function LeaderboardPage({
     });
   }
 
+  console.log("users", users);
+
   const totalUsers = await getTotalUsers();
   const pageCount = totalUsers === 0 ? 1 : Math.ceil(totalUsers / take);
 
@@ -173,7 +169,7 @@ export default async function LeaderboardPage({
   const allUsers = await getAllUsersWithResults();
   const currUserIsRanked =
     user !== undefined && allUsers.some((u) => u.id === user.id);
-  
+
   const userRanks = calculateUsersRank({
     allUsers: allUsers,
   });
@@ -184,7 +180,12 @@ export default async function LeaderboardPage({
       {currUserIsRanked ? (
         <UserRankings currentUserRankDetail={userRanks[user.id]} />
       ) : null}
-      <UsersTable data={users} pageCount={pageCount} ranks={userRanks} field={sortBy}/>
+      <UsersTable
+        data={users}
+        pageCount={pageCount}
+        ranks={userRanks}
+        field={sortBy}
+      />
     </div>
   );
 }
