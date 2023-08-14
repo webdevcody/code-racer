@@ -160,8 +160,6 @@ export default async function LeaderboardPage({
     });
   }
 
-  console.log("users", users);
-
   const totalUsers = await getTotalUsers();
   const pageCount = totalUsers === 0 ? 1 : Math.ceil(totalUsers / take);
 
