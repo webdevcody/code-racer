@@ -1,9 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-
 import { AchievementCard } from "@/components/achievement";
 import ProfileCard from "../(components)/profile-card";
-
 import { achievements } from "@/config/achievements";
 import { Heading } from "@/components/ui/heading";
 import { notFound } from "next/navigation";
@@ -109,7 +107,7 @@ export default async function ProfilePage({
                   {userParamsAchievements?.map(
                     ({ achievementType, unlockedAt }) => {
                       const achievement = achievements.find(
-                        (achievement) => achievement.type === achievementType,
+                        (achievement) => achievement.type === achievementType
                       );
                       if (!achievement) return null;
                       return (
@@ -123,7 +121,7 @@ export default async function ProfilePage({
                           }}
                         />
                       );
-                    },
+                    }
                   )}
                 </ul>
               </>

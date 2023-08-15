@@ -10,7 +10,7 @@ import { prisma } from "@/lib/prisma";
  *  logged in user's achievements.
  */
 export const findUserAchievements = safeAction(
-  z.object({ userId: z.string().optional() }),
+  z.object({ userId: z.string().optional() })
 )(async (input) => {
   const user = await getCurrentUser();
 
@@ -32,8 +32,15 @@ export const findUser = safeAction(z.object({ userId: z.string().optional() }))(
       where: {
         id: params.userId ? params.userId : user?.id,
       },
+      select: {
+        image: true,
+        bio: true,
+        name: true,
+        id: true,
+        email: true, // this is needed to look up contributions
+      },
     });
 
     return foundUser;
-  },
+  }
 );

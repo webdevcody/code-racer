@@ -1,6 +1,6 @@
 import { Heading } from "@/components/ui/heading";
 import { getCurrentUser } from "@/lib/session.js";
-import { Result, User } from "@prisma/client";
+import { User } from "@prisma/client";
 import {
   getAllUsersWithResults,
   getTotalUsers,
@@ -11,8 +11,7 @@ import {
 import { UserRankings } from "./user-rankings";
 import { UsersTable } from "./users-table";
 import { sortFilters } from "./sort-filters";
-
-type UserWithResults = User & { results: Result[] };
+import { UserWithResults } from "./types";
 
 function setUsersRankByValue({
   fieldName,
@@ -48,22 +47,16 @@ function setUsersRankByValue({
       if (prev && current.value == prev.value) {
         userRanks[current.id][fieldName]["shared"] = true;
       }
-      
+
       if (next === undefined || current.value === next.value) {
         return;
       }
 
       currentRank++;
     });
-
-
 }
 
-function calculateUsersRank({
-  allUsers,
-}: {
-  allUsers: UserWithResults[];
-}) {
+function calculateUsersRank(allUsers: UserWithResults[]) {
   // userRanks stores rank of all users in all category (avgCPM, avgAcc, totalRaces)
   /* { 
         _userID_ : { 
@@ -94,7 +87,7 @@ function calculateUsersRank({
   // Based on Race Played:
   setUsersRankByValue({
     fieldName: sortFilters.RacePlayed,
-    values: allUsers.map((u) => ({ id: u.id, value: u.results.length })),
+    values: allUsers.map((u) => ({ id: u.id, value: u.results!.length })),
     userRanks,
   });
 
@@ -138,7 +131,7 @@ export default async function LeaderboardPage({
     typeof sort === "string"
       ? (sort.split(".") as [
           keyof User | sortFilters.RacePlayed | undefined,
-          "asc" | "desc" | undefined,
+          "asc" | "desc" | undefined
         ])
       : [];
 
@@ -173,10 +166,8 @@ export default async function LeaderboardPage({
   const allUsers = await getAllUsersWithResults();
   const currUserIsRanked =
     user !== undefined && allUsers.some((u) => u.id === user.id);
-  
-  const userRanks = calculateUsersRank({
-    allUsers: allUsers,
-  });
+
+  const userRanks = calculateUsersRank(allUsers);
 
   return (
     <div className="pt-12">
@@ -184,7 +175,12 @@ export default async function LeaderboardPage({
       {currUserIsRanked ? (
         <UserRankings currentUserRankDetail={userRanks[user.id]} />
       ) : null}
-      <UsersTable data={users} pageCount={pageCount} ranks={userRanks} field={sortBy}/>
+      <UsersTable
+        data={users}
+        pageCount={pageCount}
+        ranks={userRanks}
+        field={sortBy}
+      />
     </div>
   );
 }

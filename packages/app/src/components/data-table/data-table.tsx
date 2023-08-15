@@ -10,15 +10,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   Table as ShadcnTable,
   type ColumnDef,
   type PaginationState,
@@ -95,7 +86,7 @@ export function DataTable<TData, TValue>({
         sort: sorting[0]?.id
           ? `${sorting[0]?.id}.${sorting[0]?.desc ? "desc" : "asc"}`
           : null,
-      })}`,
+      })}`
     );
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -120,7 +111,7 @@ export function DataTable<TData, TValue>({
 
       return newSearchParams.toString();
     },
-    [searchParams],
+    [searchParams]
   );
 
   return (
@@ -202,7 +193,7 @@ export function DataTable<TData, TValue>({
                             page: 1,
                             per_page: value,
                             sort: sort as string | number | null,
-                          })}`,
+                          })}`
                         );
                       });
                     }}
@@ -233,7 +224,7 @@ export function DataTable<TData, TValue>({
                             page: 1,
                             per_page,
                             sort: sort as string | number | null,
-                          })}`,
+                          })}`
                         );
                       });
                     }}
@@ -256,7 +247,7 @@ export function DataTable<TData, TValue>({
                             page: Number(page) - 1,
                             per_page,
                             sort: sort as string | number | null,
-                          })}`,
+                          })}`
                         );
                       });
                     }}
@@ -276,7 +267,7 @@ export function DataTable<TData, TValue>({
                             page: Number(page) + 1,
                             per_page,
                             sort: sort as string | number | null,
-                          })}`,
+                          })}`
                         );
                       });
                     }}
@@ -298,7 +289,7 @@ export function DataTable<TData, TValue>({
                           page: pageCount ?? 1,
                           per_page,
                           sort: sort as string | number | null,
-                        })}`,
+                        })}`
                       );
                     }}
                     disabled={Number(page) >= (pageCount ?? 1) || isPending}
