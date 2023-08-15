@@ -107,7 +107,7 @@ function EditMode({
         description: "Your information is being updated..",
         variant: "default",
       },
-      "loading-toast",
+      "loading-toast"
     );
 
     try {
@@ -122,7 +122,7 @@ function EditMode({
           description: "Hooray! Your information has been updated.",
           variant: "middle",
         },
-        "",
+        ""
       );
 
       changeMode();
@@ -137,8 +137,14 @@ function EditMode({
   return (
     <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
       <div className="w-full">
-        <Label htmlFor="username-input">Name*</Label>
+        <div className="w-full relative">
+          <Label htmlFor="username-input">Name*</Label>
+          <div className="absolute right-1 top-1 text-sm">
+            {name?.length} / 39
+          </div>
+        </div>
         <Input
+          maxLength={39}
           type="text"
           placeholder="Enter your name"
           name="username-input"
