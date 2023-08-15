@@ -135,26 +135,24 @@ export function UsersTable({
       },
       {
         accessorFn: (user) => {
-          return {
-            id: user.id,
-            image: user.image ?? "",
-            name: user.name,
-          };
+          return user.id;
         },
         header: "User",
         cell: ({ cell }) => {
-          const userInfo = cell.getValue() as User;
+          const userInfo = cell.row.original;
 
           return (
             <Link href={`/users/${userInfo.id}`}>
               <div className="flex items-center gap-2">
-                <Image
-                  className="rounded-full"
-                  src={userInfo.image ?? ""}
-                  alt="user avatar"
-                  height={30}
-                  width={30}
-                />
+                {userInfo.image && (
+                  <Image
+                    className="rounded-full"
+                    src={userInfo.image ?? ""}
+                    alt="user avatar"
+                    height={30}
+                    width={30}
+                  />
+                )}
                 <span>{userInfo.name}</span>
               </div>
             </Link>

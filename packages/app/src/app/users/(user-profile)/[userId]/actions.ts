@@ -5,7 +5,6 @@ import { safeAction } from "@/lib/actions";
 import { UnauthorizedError } from "@/lib/exceptions/custom-hooks";
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { omitSensitiveUserFields } from "@/app/leaderboard/loaders";
 
 /** If no userId is provided, this will get the current
  *  logged in user's achievements.
@@ -33,8 +32,15 @@ export const findUser = safeAction(z.object({ userId: z.string().optional() }))(
       where: {
         id: params.userId ? params.userId : user?.id,
       },
+      select: {
+        image: true,
+        bio: true,
+        name: true,
+        id: true,
+        email: true, // this is needed to look up contributions
+      },
     });
 
-    return omitSensitiveUserFields(foundUser);
+    return foundUser;
   }
 );
