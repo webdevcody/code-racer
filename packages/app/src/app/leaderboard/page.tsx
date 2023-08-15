@@ -1,6 +1,6 @@
 import { Heading } from "@/components/ui/heading";
 import { getCurrentUser } from "@/lib/session.js";
-import { Result, User } from "@prisma/client";
+import { User } from "@prisma/client";
 import {
   getAllUsersWithResults,
   getTotalUsers,
@@ -11,8 +11,7 @@ import {
 import { UserRankings } from "./user-rankings";
 import { UsersTable } from "./users-table";
 import { sortFilters } from "./sort-filters";
-
-type UserWithResults = User & { results: Result[] };
+import { UserWithResults } from "./types";
 
 function setUsersRankByValue({
   fieldName,
@@ -57,7 +56,7 @@ function setUsersRankByValue({
     });
 }
 
-function calculateUsersRank({ allUsers }: { allUsers: UserWithResults[] }) {
+function calculateUsersRank(allUsers: UserWithResults[]) {
   // userRanks stores rank of all users in all category (avgCPM, avgAcc, totalRaces)
   /* { 
         _userID_ : { 
@@ -88,7 +87,7 @@ function calculateUsersRank({ allUsers }: { allUsers: UserWithResults[] }) {
   // Based on Race Played:
   setUsersRankByValue({
     fieldName: sortFilters.RacePlayed,
-    values: allUsers.map((u) => ({ id: u.id, value: u.results.length })),
+    values: allUsers.map((u) => ({ id: u.id, value: u.results!.length })),
     userRanks,
   });
 
@@ -168,9 +167,7 @@ export default async function LeaderboardPage({
   const currUserIsRanked =
     user !== undefined && allUsers.some((u) => u.id === user.id);
 
-  const userRanks = calculateUsersRank({
-    allUsers: allUsers,
-  });
+  const userRanks = calculateUsersRank(allUsers);
 
   return (
     <div className="pt-12">

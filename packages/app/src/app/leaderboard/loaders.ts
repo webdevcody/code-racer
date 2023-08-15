@@ -1,6 +1,10 @@
-import { User, prisma } from "@/lib/prisma";
-import { map } from "lodash";
-import { omit } from "lodash/fp";
+import { prisma } from "@/lib/prisma";
+import { omit } from "lodash";
+import {
+  SensitiveUserFields,
+  UserWithResults,
+  sensitiveUserFields,
+} from "./types";
 
 export async function getUsersWithResultCounts({
   take,
@@ -31,7 +35,7 @@ export async function getUsersWithResultCounts({
     },
   });
 
-  return stripSensitiveUserInfo(users);
+  return users.map(omitSensitiveUserFields);
 }
 
 export async function getAllUsersWithResults() {
@@ -47,7 +51,7 @@ export async function getAllUsersWithResults() {
       },
     },
   });
-  return stripSensitiveUserInfo(users);
+  return users.map(omitSensitiveUserFields) as UserWithResults[];
 }
 
 export async function getUsersWithResults({
@@ -79,7 +83,7 @@ export async function getUsersWithResults({
     },
   });
 
-  return stripSensitiveUserInfo(users);
+  return users.map(omitSensitiveUserFields);
 }
 
 export async function getTotalUsers() {
@@ -98,15 +102,6 @@ export function isFieldInUser(field: string) {
   return field in prisma.user.fields;
 }
 
-export function stripSensitiveUserInfo(users: User[] | User | null) {
-  const removeSensitiveFields = omit([
-    "email",
-    "emailVerified",
-    "role",
-    "createdAt",
-  ]);
-  if (!users) return null;
-  return Array.isArray(users)
-    ? map(users, removeSensitiveFields)
-    : removeSensitiveFields(users);
-}
+export const omitSensitiveUserFields = <T>(user: T) => {
+  return omit(user as any, sensitiveUserFields) as Omit<T, SensitiveUserFields>;
+};
