@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { omit } from "lodash";
 
 export async function getUsersWithResultCounts({
   take,
@@ -17,7 +18,13 @@ export async function getUsersWithResultCounts({
         _count: order,
       },
     },
-    include: {
+    select: {
+      id: true,
+      image: true,
+      averageAccuracy: true,
+      averageCpm: true,
+      name: true,
+      topLanguages: true,
       results: true,
     },
     where: {
@@ -28,11 +35,19 @@ export async function getUsersWithResultCounts({
       },
     },
   });
+
+  // return users.map(omitSensitiveUserFields);
 }
 
 export async function getAllUsersWithResults() {
-  return await prisma.user.findMany({
-    include: {
+  const users = await prisma.user.findMany({
+    select: {
+      id: true,
+      averageAccuracy: true,
+      averageCpm: true,
+      image: true,
+      name: true,
+      topLanguages: true,
       results: true,
     },
     where: {
@@ -43,6 +58,7 @@ export async function getAllUsersWithResults() {
       },
     },
   });
+  return users;
 }
 
 export async function getUsersWithResults({
@@ -56,13 +72,19 @@ export async function getUsersWithResults({
   sortBy: string;
   order: "asc" | "desc" | undefined;
 }) {
-  return await prisma.user.findMany({
+  const users = await prisma.user.findMany({
     take,
     skip,
     orderBy: {
       [sortBy]: order,
     },
-    include: {
+    select: {
+      id: true,
+      image: true,
+      averageAccuracy: true,
+      averageCpm: true,
+      name: true,
+      topLanguages: true,
       results: true,
     },
     where: {
@@ -73,6 +95,8 @@ export async function getUsersWithResults({
       },
     },
   });
+
+  return users;
 }
 
 export async function getTotalUsers() {
