@@ -5,7 +5,6 @@ import {
   getAllUsersWithResults,
   getTotalUsers,
   getUsersWithResultCounts,
-  getUsersWithResults,
   isFieldInUser,
 } from "./loaders";
 import { UserRankings } from "./user-rankings";
@@ -87,7 +86,7 @@ function calculateUsersRank(allUsers: UserWithResults[]) {
   // Based on Race Played:
   setUsersRankByValue({
     fieldName: sortFilters.RacePlayed,
-    values: allUsers.map((u) => ({ id: u.id, value: u.results!.length })),
+    values: allUsers.map((u) => ({ id: u.id, value: u.results })),
     userRanks,
   });
 
@@ -142,22 +141,11 @@ export default async function LeaderboardPage({
       ? column
       : sortFilters.AverageCPM;
 
-  let users = [];
-
-  if (column === sortFilters.RacePlayed) {
-    users = await getUsersWithResultCounts({
-      take,
-      skip,
-      order: order ? order : "desc",
-    });
-  } else {
-    users = await getUsersWithResults({
-      order: order ? order : "desc",
-      skip,
-      sortBy,
-      take,
-    });
-  }
+  const users = await getUsersWithResultCounts({
+    take,
+    skip,
+    order: order ? order : "desc",
+  });
 
   const totalUsers = await getTotalUsers();
   const pageCount = totalUsers === 0 ? 1 : Math.ceil(totalUsers / take);
