@@ -144,6 +144,7 @@ export default async function LeaderboardPage({
   const users = await getUsersWithResultCounts({
     take,
     skip,
+    sortBy,
     order: order ? order : "desc",
   });
 

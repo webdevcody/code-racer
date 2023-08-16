@@ -1,5 +1,5 @@
 export enum sortFilters {
-  RacePlayed = "Races played",
+  RacePlayed = "racesPlayed",
   AverageCPM = "averageCpm",
   AverageAccuracy = "averageAccuracy",
 }

@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { safeLoader } from "@/lib/safeLoader";
 import { z } from "zod";
+import { sortFilters } from "./sort-filters";
 
 export const getUsersWithResultCounts = safeLoader({
   outputValidation: z
@@ -18,19 +19,26 @@ export const getUsersWithResultCounts = safeLoader({
     take,
     skip,
     order,
+    sortBy = "averageCpm",
   }: {
     take: number;
     skip: number;
+    sortBy: string;
     order: "asc" | "desc" | undefined;
   }) => {
     const users = await prisma.user.findMany({
       take,
       skip,
-      orderBy: {
-        results: {
-          _count: order,
-        },
-      },
+      orderBy:
+        sortBy !== sortFilters.RacePlayed
+          ? {
+              [sortBy]: order,
+            }
+          : {
+              results: {
+                _count: order,
+              },
+            },
       select: {
         id: true,
         image: true,
