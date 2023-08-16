@@ -5,12 +5,11 @@ import { NavItem } from "@/types/nav";
 import { siteConfig } from "@/config/site";
 import { isActiveRoute, cn } from "@/lib/utils";
 import { Icons } from "@/components/icons";
-import { buttonVariants } from "./ui/button";
 import { usePathname } from "next/navigation";
 
 export function MainNav({ items }: { items?: NavItem[] }) {
   const currentPathName = usePathname();
-  //   console.log(items);
+
   return (
     <div className="flex items-center h-full gap-6 lg:gap-10">
       <Link href="/" className="flex items-center space-x-2">
@@ -33,13 +32,13 @@ export function MainNav({ items }: { items?: NavItem[] }) {
                       "cursor-not-allowed opacity-80": item.disabled,
                       "border-b-2 border-b-yellow-500 border-opacity-100 text-yellow-500 decoration-2 decoration-primary":
                         isActiveRoute(currentPathName as string, item.href),
-                    },
+                    }
                   )}
                   data-cy={`${item.title}-main-nav-link`}
                 >
                   {item.title}
                 </Link>
-              ),
+              )
           )}
         </nav>
       )}
