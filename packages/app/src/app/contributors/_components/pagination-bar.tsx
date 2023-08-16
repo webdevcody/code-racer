@@ -13,7 +13,7 @@ interface PaginationBarProps {
   totalPages: number;
 }
 
-export default function PaginationBar({
+function PaginationBarElement({
   nextURL,
   prevURL,
   lastURL,
@@ -23,7 +23,7 @@ export default function PaginationBar({
   totalPages,
 }: PaginationBarProps) {
   return (
-    <div className={cn("flex flex-col", "gap-2", "items-center", className)} >
+    <div className={cn("flex flex-col", "gap-2", "items-center", className)}>
       <div className={cn("flex flex-row", "gap-2", className)}>
         {pages === 1 ? (
           <div className={cn("flex", "gap-2")}>
@@ -39,13 +39,23 @@ export default function PaginationBar({
         ) : (
           <div className={cn("flex", "gap-2")}>
             <Link href={firstURL}>
-              <Button variant="outline" size="icon" className="w-8 h-8" disabled={false}>
+              <Button
+                variant="outline"
+                size="icon"
+                className="w-8 h-8"
+                disabled={false}
+              >
                 <Icons.chevronsLeft className="w-5 h-5" aria-hidden="true" />
                 <span className="sr-only">Previous page</span>
               </Button>
             </Link>
             <Link href={prevURL}>
-              <Button variant="outline" size="icon" className="w-8 h-8" disabled={false}>
+              <Button
+                variant="outline"
+                size="icon"
+                className="w-8 h-8"
+                disabled={false}
+              >
                 <Icons.chevronLeft className="w-5 h-5" aria-hidden="true" />
                 <span className="sr-only">First page</span>
               </Button>
@@ -80,10 +90,45 @@ export default function PaginationBar({
             </Link>
           </div>
         )}
-        
       </div>
-      <h1>page {pages} out of {totalPages}</h1>
+      <h1>
+        page {pages} out of {totalPages}
+      </h1>
     </div>
-
   );
 }
+
+interface PaginationInfo {  
+  className: string;
+  page: number;
+  totalPage: number;
+  per_page: number;
+} 
+
+const PaginationBar = ({
+  className,
+  page,
+  totalPage,
+  per_page,
+}: PaginationInfo) => {
+  return (
+    <PaginationBarElement
+      className={className}
+      nextURL={`/contributors?page=${Math.min(
+        page + 1,
+        totalPage
+      )}&per_page=${per_page}`}
+      prevURL={`/contributors?page=${Math.max(
+        page - 1,
+        1
+      )}&per_page=${per_page}`}
+      firstURL={`/contributors?page=1&per_page=${per_page}`}
+      lastURL={`/contributors?page=${totalPage}&per_page=${per_page}`}
+      pages={page}
+      totalPages={totalPage}
+    />
+  );
+};     
+
+      
+export default PaginationBar;

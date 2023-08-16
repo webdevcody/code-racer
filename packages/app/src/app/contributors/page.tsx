@@ -4,7 +4,7 @@ import AdditionsDeletions from "./_components/additions-deletions";
 import ProportionBarChart from "./_components/proportion-bar-chart";
 import Time from "@/components/ui/time";
 import CountingAnimation from "./_components/counting-animation";
-import PaginationBar from "./_components/pagination-bar";
+import PaginationBar from "./_components/pagination-bar"
 import { z } from "zod";
 
 import {
@@ -50,6 +50,7 @@ export default async function ContributorsPage({
   const contributorCommitActivities = await getContributorCodeChanges(
     contributors,
   );
+
   const repoCommitActivity = await getRepoWeeklyCodeChanges();
   const [since, additions, deletions] =
     repoCommitActivity.length > 0
@@ -92,18 +93,9 @@ export default async function ContributorsPage({
           </div>
           <PaginationBar
             className="mt-3"
-            nextURL={`/contributors?page=${Math.min(
-              page + 1,
-              totalPage,
-            )}&per_page=${per_page}`}
-            prevURL={`/contributors?page=${Math.max(
-              page - 1,
-              1,
-            )}&per_page=${per_page}`}
-            firstURL={`/contributors?page=1&per_page=${per_page}`}
-            lastURL={`/contributors?page=${totalPage}&per_page=${per_page}`}
-            pages={page}
-            totalPages={totalPage}
+            page={page}
+            totalPage={totalPage}
+            per_page={per_page}
           />
         </div>
       </div>
@@ -122,22 +114,12 @@ export default async function ContributorsPage({
             />
           ))}
       </ul>
-
       <PaginationBar
         className="flex justify-center mt-6 w-full"
-        nextURL={`/contributors?page=${Math.min(
-          page + 1,
-          totalPage,
-        )}&per_page=${per_page}`}
-        prevURL={`/contributors?page=${Math.max(
-          page - 1,
-          1,
-        )}&per_page=${per_page}`}
-        firstURL={`/contributors?page=1&per_page=${per_page}`}
-        lastURL={`/contributors?page=${totalPage}&per_page=${per_page}`}
-        pages={page}
-        totalPages={totalPage}
-      />
+        page={page}
+        totalPage={totalPage}
+        per_page={per_page}
+      />      
     </div>
   );
 }
