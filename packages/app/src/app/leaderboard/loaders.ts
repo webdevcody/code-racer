@@ -1,5 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import { omit } from "lodash";
 
 export async function getUsersWithResultCounts({
   take,
@@ -35,8 +34,6 @@ export async function getUsersWithResultCounts({
       },
     },
   });
-
-  // return users.map(omitSensitiveUserFields);
 }
 
 export async function getAllUsersWithResults() {
