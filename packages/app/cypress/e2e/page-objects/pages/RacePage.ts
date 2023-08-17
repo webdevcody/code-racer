@@ -2,8 +2,8 @@ export class RacePage {
   practiceCardlanguageDropdown(): Cypress.Chainable {
     return cy.get('[data-cy="practice-card"] [data-cy="language-dropdown"]');
   }
-  htmlLanguageOption(): Cypress.Chainable {
-    return cy.get('[data-cy="html-value"]');
+  cppLanguageOption(): Cypress.Chainable {
+    return cy.get('[data-cy="c++-value"]');
   }
   practiceButton(): Cypress.Chainable {
     return cy.get('[data-cy="practice-button"]');
