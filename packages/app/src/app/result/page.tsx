@@ -7,7 +7,7 @@ import { getCurrentUser } from "@/lib/session";
 import {
   getUserResultsForSnippet,
   getCurrentRaceResult,
-  getFastestRace,
+  getBestCPM,
   ParsedRacesResult,
   getSnippetVote,
   getBestAccuracy,
@@ -103,7 +103,7 @@ async function AuthenticatedPage({ resultId, user }: AuthenticatedPageProps) {
     },
   ];
 
-  const bestCPMRace = await getFastestRace(currentRaceResult.snippetId, currentRaceResult.id);
+  const bestCPMRace = await getBestCPM(currentRaceResult.snippetId, currentRaceResult.id);
 
   if (bestCPMRace && bestCPMRace?.cpm < currentRaceResult.cpm) {
     const notificationData = {
@@ -125,7 +125,7 @@ async function AuthenticatedPage({ resultId, user }: AuthenticatedPageProps) {
 
   const bestAccuracy = await getBestAccuracy(currentRaceResult.snippetId, currentRaceResult.id);
 
-  if (bestAccuracy && currentRaceResult.accuracy.gt(bestAccuracy?.accuracy)) {
+  if (bestAccuracy && bestAccuracy?.accuracy < currentRaceResult.accuracy) {
     const notificationData = {
       notification: {
         title: "New Record!",

@@ -113,14 +113,31 @@ export async function getCurrentRaceResult(resultId: string) {
     redirect("/auth");
   }
 
-  const raceResults = await prisma.result.findUnique({
-    where: {
-      id: resultId,
-    },
-  });
+  const raceResults = await safeLoadCurrentResults(resultId);
 
   return raceResults;
 }
+
+const safeLoadCurrentResults = safeLoader({
+  outputValidation: z
+    .object({
+      id: z.string(),
+      snippetId: z.string(),
+      accuracy: z.number(),
+      cpm: z.number(),
+      errorCount: z.number(),
+      takenTime: z.string(),
+    }),
+  loader: async (resultId: string) => {
+    const results = await prisma.result.findUnique({
+      where: {
+        id: resultId,
+      },
+    });
+
+    return convertDecimalsToNumbers(results);
+  },
+});
 
 export async function getSnippetVote(snippetId: string) {
   const user = await getCurrentUser();
@@ -210,42 +227,80 @@ export async function getUserSnippetPlacement(snippetId?: Snippet["id"]) {
   return allResults.findIndex((r) => r.id === usersResult.id) + 1;
 }
 
+export const getBestCPM = safeLoader({
+  outputValidation: z
+    .object({
+      id: z.string(),
+      cpm: z.number(),
+      user: z.object({
+        id: z.string(),
+      }),
+    }),
+  loader: async (snippetId: any, raceID: string) => {
+    const user = await getCurrentUser();
 
-export const getFastestRace = async (snippetId: any, raceID: string) => {
-  const user = await getCurrentUser();
+    if (!user) return null;
 
-  if (!user) return null;
+    const results = await prisma.result.findFirst({
+      where: {
+        userId: user.id,
+        snippetId: snippetId,
+        NOT: {
+          id: raceID,
+        },
+      },
+      orderBy: {
+        cpm: "desc",
+      },
+      distinct: ["userId"],
+      include: {
+        user: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
 
-  return await prisma.result.findFirst({
-    where: {
-      userId: user.id,
-      snippetId: snippetId.snippetId,
-      NOT: {
-        id: raceID,
-      }
-    },
-    orderBy: {
-      cpm: "desc",
-    },
-  });
-};
+    return convertDecimalsToNumbers(results);
+  },
+});
 
-export const getBestAccuracy = async (snippetId: any, raceID: string) => {
+export const getBestAccuracy = safeLoader({
+  outputValidation: z
+    .object({
+      id: z.string(),
+      accuracy: z.number(),
+      user: z.object({
+        id: z.string(),
+      }),
+    }),
+  loader: async (snippetId: any, raceID: string) => {
+    const user = await getCurrentUser();
 
-  const user = await getCurrentUser();
+    if (!user) return null;
 
-  if (!user) return null;
+    const results = await prisma.result.findFirst({
+      where: {
+        userId: user.id,
+        snippetId: snippetId,
+        NOT: {
+          id: raceID,
+        },
+      },
+      orderBy: {
+        accuracy: "desc",
+      },
+      distinct: ["userId"],
+      include: {
+        user: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
 
-  return await prisma.result.findFirst({
-    where: {
-      userId: user.id,
-      snippetId: snippetId.snippetId,
-      NOT: {
-        id: raceID,
-      }
-    },
-    orderBy: {
-      accuracy: "desc",
-    },
-  });
-};
+    return convertDecimalsToNumbers(results);
+  },
+});
