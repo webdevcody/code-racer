@@ -9,14 +9,16 @@ import {
 } from "./events/client-to-server";
 import { UserRacePresencePayload } from "./events/common";
 import { type ServerToClientEvents } from "./events/server-to-client";
-import { raceMatchMaking } from "./match-making";
+import { createRace, raceMatchMaking } from "./match-making";
 import { RaceStatus, raceStatus } from "./types";
+import { getRandomSnippet } from "@code-racer/app/src/app/race/(play)/loaders";
+import { getRoomParticipantId } from "@code-racer/app/src/lib/wss-app-utils";
 
-type SocketId = string;
+export type SocketId = string;
 type RaceId = string;
 type Timestamp = number;
 
-type Participant = {
+export type Participant = {
   id: RaceParticipant["id"];
   raceId: RaceId;
   position: number;
@@ -56,7 +58,97 @@ export class Game {
 
   private initialize() {
     this.server.on("connection", (socket) => {
-      socket.on("UserRaceRequest", async (payload) => {
+      socket.on("UserCreateRoom", async (payload) => {
+        const snippet = await getRandomSnippet({ language: payload.language });
+
+        if (!snippet) {
+          socket.emit("SendNotification", {
+            title: "Snippet not found",
+            description: `There is no available snippet on ${payload.language} language yet. Try creating a new one`,
+            variant: "destructive",
+          });
+          return;
+        }
+
+        // race id is associated with the room id
+        const race = await createRace(snippet, payload.roomId);
+
+        this.races.set(payload.roomId, {
+          ...race,
+          participants: [],
+          status: "waiting",
+        });
+
+        socket.emit("RoomCreated", {
+          roomId: race.id,
+        });
+      });
+
+      socket.on("UserJoinRoom", async (payload) => {
+        const { raceId: roomId, userId } = payload;
+
+        const race = this.races.get(roomId);
+
+        if (!race) {
+          socket.emit("SendNotification", {
+            title: "Room not found",
+            description: `Room with id ${roomId} not found.`,
+          });
+
+          return;
+        }
+
+        socket.join(Game.Room(roomId));
+
+        const participant = await prisma.raceParticipant.upsert({
+          where: {
+            id: socket.id,
+          },
+          update: {
+            raceId: roomId,
+            userId,
+          },
+          create: {
+            id: socket.id,
+            raceId: roomId,
+            userId,
+          },
+          include: {
+            Race: {
+              include: {
+                participants: true,
+              },
+            },
+          },
+        });
+
+        this.handlePlayerEnterRace({
+          raceId: roomId,
+          raceParticipantId: participant.id,
+          socketId: socket.id,
+        });
+
+        const updatedRace = this.races.get(roomId) as Race;
+
+        const participants = this.getRaceParticipants(updatedRace)
+
+        socket.emit("RoomJoined", {
+          race: participant.Race,
+          participants,
+          raceStatus: race.status,
+          participantId: socket.id,
+        });
+
+        socket.to(Game.Room(roomId)).emit("UpdateParticipants", {
+          participants,
+        });
+      });
+
+      socket.on("StartRaceCountdown", async (payload) => {
+        this.startRaceCountdown(payload.raceId);
+      });
+
+      socket.on("UserGetRace", async (payload) => {
         const { race, raceParticipantId } = await raceMatchMaking(
           payload.language as Language,
           payload.userId,
@@ -64,22 +156,38 @@ export class Game {
 
         socket.join(Game.Room(race.id));
 
-        this.handlePlayerEnterRace({
-          raceId: race.id,
-          raceParticipantId,
-          socketId: socket.id,
+        this.handlePlayerEnterRace(
+          {
+            raceId: race.id,
+            raceParticipantId,
+            socketId: socket.id,
+          },
+          true,
+        );
+
+        const updatedRace = this.races.get(race.id) as Race;
+
+        socket.to(Game.Room(race.id)).emit("GameStateUpdate", {
+          raceState: {
+            id: race.id,
+            participants: this.getRaceParticipants(updatedRace),
+            status: updatedRace.status,
+            countdown: 0,
+          },
         });
 
         socket.emit("UserRaceResponse", {
           race,
+          participants: this.getRaceParticipants(updatedRace),
           raceParticipantId,
+          raceStatus: this.races.get(race.id)!.status,
         });
       });
 
       socket.on("disconnect", () => {
         const participant = this.participants.get(socket.id);
 
-        //this happens if the race ended successfully
+        // this happens if the race ended successfully
         if (!participant) return;
 
         this.handlePlayerLeaveRace({
@@ -99,7 +207,7 @@ export class Game {
     race: Race,
   ): (Participant & { socketId: string })[] {
     const participants: (Participant & { socketId: string })[] = [];
-    //Leave this as a raw for loop, .map will create more memory and will have possibly undefined values that will need to be filtered out
+    // Leave this as a raw for loop, .map will create more memory and will have possibly undefined values that will need to be filtered out
     for (let i = 0; race.participants.length > i; i++) {
       const socketId = race.participants[i];
       const participant = this.participants.get(socketId);
@@ -139,7 +247,10 @@ export class Game {
     });
   }
 
-  private async handlePlayerEnterRace(payload: UserRacePresencePayload) {
+  private async handlePlayerEnterRace(
+    payload: UserRacePresencePayload,
+    autoStart?: boolean,
+  ) {
     const race = this.races.get(payload.raceId);
 
     if (!race) {
@@ -160,7 +271,7 @@ export class Game {
         finishedAt: null,
       });
       race.participants.push(payload.socketId);
-      this.startRaceCountdown(payload.raceId);
+      autoStart && this.startRaceCountdown(payload.raceId);
     }
 
     // Emit to all players in the room that a new player has joined.
@@ -206,7 +317,13 @@ export class Game {
       }
     }
 
-    this.server.to(Game.Room(payload.raceId)).emit("UserRaceLeave", payload);
+    this.server.to(Game.Room(payload.raceId)).emit("GameStateUpdate", {
+      raceState: {
+        id: payload.raceId,
+        participants: this.getRaceParticipants(race),
+        status: race.status,
+      },
+    });
 
     if (
       race.participants.length === 0 &&
@@ -363,7 +480,6 @@ export class Game {
       );
       return;
     }
-
     const participant = this.participants.get(payload.socketId);
 
     if (!participant) {

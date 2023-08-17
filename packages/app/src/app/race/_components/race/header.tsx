@@ -14,7 +14,8 @@ export default function Header({ user, snippet, handleRestart }: Props) {
   return (
     <div className="mb-2 md:mb-4 flex justify-between">
       <Heading
-        title="Type this code"
+        title={snippet.name ? 
+          "Type " + " Snippet " + snippet.name : "Type this code"}
         description="Start typing to get racing"
       />
       {user && (

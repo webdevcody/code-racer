@@ -1,6 +1,14 @@
-import { type Options as PrettierOptions } from "prettier";
+/* eslint-disable */
+/// <reference path="prettier-plugin.d.ts" />
+/* eslint-enable */
+
+// import { type Options as PrettierOptions } from "prettier";
 import { type Language } from "./languages";
 export type SiteConfig = typeof siteConfig;
+
+// import * as prettierPluginJava from "prettier-plugin-java";
+// import * as prettierPluginGo from "prettier-plugin-go-template";
+// import * as prettierPluginRuby from "@prettier/plugin-ruby";
 
 export const siteConfig = {
   name: "CodeRacer",
@@ -35,7 +43,7 @@ export const siteConfig = {
   links: {
     github: "https://github.com/webdevcody/code-racer",
     codyTwitter: "https://twitter.com/webdevcody",
-    codyDiscord: "https://discord.gg/sduWx3kp",
+    codyDiscord: "https://discord.com/invite/4kGbBaa",
   },
   api: {
     github: {
@@ -76,12 +84,12 @@ export const siteConfig = {
         vueIndentScriptAndStyle: false,
         endOfLine: "lf",
         singleAttributePerLine: false,
-        // plugins: [
-        //   // "prettier-plugin-go-template",
-        //   "prettier-plugin-java",
-        //   "@prettier/plugin-ruby",
-        // ],
-      } satisfies PrettierOptions,
+        plugins: [
+          "prettier-plugin-java",
+          // "prettier-plugin-go-template",
+          "@prettier/plugin-ruby",
+        ],
+      },
       parserMap: new Map<Language, string>([
         // ["go", "go-template"],
         ["java", "java"],

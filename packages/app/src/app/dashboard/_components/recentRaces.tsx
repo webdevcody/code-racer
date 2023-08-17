@@ -44,6 +44,15 @@ export function RecentRacesTable({
       },
       {
         accessorKey: "snippet",
+        header: "Name",
+        cell: ({ cell }) => {
+          const snippet = cell.getValue() as Snippet;
+
+          return <span>{snippet.name ?? "-"}</span>
+        }
+      },
+      {
+        accessorKey: "snippet",
         header: "Language",
         cell: ({ cell }) => {
           const snippet = cell.getValue() as Snippet;

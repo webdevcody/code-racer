@@ -1,10 +1,13 @@
 import { achievements } from "@/config/achievements";
+import { convertDecimalsToNumbers } from "@/lib/convertDecimalsToNumbers";
 import { prisma } from "@/lib/prisma";
+import { safeLoader } from "@/lib/safeLoader";
 import { getCurrentUser } from "@/lib/session";
 import { formatDate } from "@/lib/utils";
 import { Result, Snippet } from "@prisma/client";
 import { redirect } from "next/navigation";
 import "server-only";
+import { z } from "zod";
 
 export type ParsedRacesResult = Omit<Result, "createdAt"> & {
   createdAt: string;
@@ -18,7 +21,7 @@ export async function getFirstRaceBadge() {
   }
 
   const firstRaceAchievement = achievements.find(
-    (achievement) => achievement.type === "FIRST_RACE",
+    (achievement) => achievement.type === "FIRST_RACE"
   );
 
   const firstRaceBadge = await prisma.achievement.findFirst({
@@ -47,7 +50,7 @@ export async function getFifthRaceBadge() {
   }
 
   const fifthRaceAchievement = achievements.find(
-    (achievement) => achievement.type === "FIFTH_RACE",
+    (achievement) => achievement.type === "FIFTH_RACE"
   );
 
   const resultsCount = await prisma.result.count({
@@ -76,7 +79,7 @@ export async function getFifthRaceBadge() {
 
 export async function getUserResultsForSnippet(
   snippetId: string,
-  numberOfResults = 7,
+  numberOfResults = 7
 ): Promise<ParsedRacesResult[]> {
   const user = await getCurrentUser();
   if (!user) {
@@ -134,22 +137,47 @@ export async function getSnippetVote(snippetId: string) {
   });
 }
 
-export async function getTopTen(snippet: string | undefined) {
-  const result = await prisma.result.findMany({
-    where: {
-      snippetId: snippet,
-    },
-    orderBy: {
-      cpm: "desc",
-    },
-    take: 10,
-    distinct: ["userId"],
-    include: {
-      user: true,
-    },
-  });
-  return result;
-}
+export const getTopTen = safeLoader({
+  outputValidation: z
+    .object({
+      id: z.string(),
+      accuracy: z.number(),
+      cpm: z.number(),
+      user: z.object({
+        id: z.string(),
+        name: z.string(),
+        averageAccuracy: z.number(),
+        averageCpm: z.number(),
+        image: z.string(),
+      }),
+    })
+    .array(),
+  loader: async (snippet: string | undefined) => {
+    const results = await prisma.result.findMany({
+      where: {
+        snippetId: snippet,
+      },
+      orderBy: {
+        cpm: "desc",
+      },
+      take: 10,
+      distinct: ["userId"],
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            averageAccuracy: true,
+            averageCpm: true,
+            image: true,
+          },
+        },
+      },
+    });
+
+    return convertDecimalsToNumbers(results);
+  },
+});
 
 export async function getUserSnippetPlacement(snippetId?: Snippet["id"]) {
   const user = await getCurrentUser();
