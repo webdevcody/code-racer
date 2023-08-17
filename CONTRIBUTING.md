@@ -28,60 +28,76 @@ You will need to [install docker](https://www.docker.com/get-started/) on your l
 
 If you do not have docker, go here to download and install: <https://www.docker.com/get-started/>
 
+If you see error starting db on M1 mac, you may need to update your docker config file at `~/.docker/config.json`
+Your file should look like something like this:
+
+```
+{
+        "auths": {},
+        "currentContext": "desktop-linux"
+}
+```
+
 If you are getting WSL error when you launch your desktop docker application, go here and follow these steps for windows: <https://learn.microsoft.com/en-us/windows/wsl/install-manual#step-4---download-the-linux-kernel-update-package>.
 
 ## Installation
 
 To get started with Code Racer locally, follow these steps
 
-1. Fork the repo
+1. Make sure you have installed Docker locally (See above Prerequisites)
 
-2. Clone your fork
+2. Fork the repo
+
+3. Clone your fork
 
    ```sh
     git clone https://github.com/<YOUR_GITHUB_ACCOUNT_NAME>/code-racer.git
    ```
 
-3. Navigate to the project directory
+4. Navigate to the project directory
 
    ```sh
    cd code-racer
    ```
 
-4. Create a .env file inside the project's packages/app directory.
+5. Create a .env file inside the project's packages/app directory.
 
-5. Copy and paste variables from `packages/app/.env.example` into `packages/app/.env`
+6. Copy and paste variables from `packages/app/.env.example` into `packages/app/.env`
 
-6. Install NPM packages
+7. Install NPM packages
 
    ```sh
    npm i
    ```
 
-7. Start the database
+8. Start the database
 
    ```sh
    npm run dev:db
    ```
 
-8. Start the app dev server
+9. Start the app dev server
 
    ```sh
    npm run dev:app
    ```
 
-9. Start the web socket server
+10. Start the web socket server
 
-   ```sh
-   npm run dev:wss
-   ```
+```sh
+npm run dev:wss
+```
 
 Open your browser and visit <http://localhost:3000> to see the application running.
 
 ## Working on New Features
 
-If you're new to github and working with open source repositories, I made a video a while back which walks you through the process:
+If you're new to Github and working with open source repositories, I made a video a while back which walks you through the process:
 [![How to make a pull request on an open source project](https://img.youtube.com/vi/8A4TsoXJOs8/0.jpg)](https://youtu.be/8A4TsoXJOs8)
+
+There is also a new video explaining how you can contribute to this project:
+<br/>
+[How to contribute to open source projects (our community project walkthrough)](https://www.youtube.com/watch?v=dLRA1lffWBw)
 
 If you want to work on a new feature, follow these steps.
 
@@ -105,26 +121,30 @@ git checkout main
 git pull upstream main
 ```
 
-## Before Submitting Pull Request
+## Before Submitting a Pull Request
+
 Before submitting a **Pull Request**, you should
+
 1. Check your code safety with Linter and TypeScript, and make sure your code can build successfully.
 
 ```sh
 npm run pr:precheck
 ```
 
-2. (Optional) Do an E2E test to ensure application function properly
+2. (Optional) Do an E2E test to ensure application functions properly
 
 ```
 npm run e2e -w @code-racer/app
 ```
+
 ## Code of Conduct
 
 ### Our Pledge
 
 In the interest of fostering an open and welcoming environment, we as
 contributors and maintainers pledge to making participation in our project and
-our community a friendly experience for everyone, regardless of any experience to give everyone an opportunity to contribute in this project.
+our community a friendly experience for everyone, regardless of any experience
+to give everyone an opportunity to contribute in this project.
 
 ### Our Responsibilities
 
