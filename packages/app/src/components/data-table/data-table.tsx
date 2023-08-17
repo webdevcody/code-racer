@@ -1,15 +1,6 @@
 "use client";
 
-import { Icons } from "@/components/icons";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
+import * as React from "react";
 import {
   Table,
   TableBody,
@@ -18,15 +9,24 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import * as React from "react";
 import {
   Table as ShadcnTable,
   type ColumnDef,
   type PaginationState,
 } from "unstyled-table";
-import { DataTableToolbar } from "./data-table-toolbar";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Icons } from "@/components/icons";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { DataTableFilterableColumn, DataTableSearchableColumn } from "./types";
+import { DataTableToolbar } from "./data-table-toolbar";
 
 interface ColumnSort {
   id: string;
@@ -86,7 +86,7 @@ export function DataTable<TData, TValue>({
         sort: sorting[0]?.id
           ? `${sorting[0]?.id}.${sorting[0]?.desc ? "desc" : "asc"}`
           : null,
-      })}`,
+      })}`
     );
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -111,7 +111,7 @@ export function DataTable<TData, TValue>({
 
       return newSearchParams.toString();
     },
-    [searchParams],
+    [searchParams]
   );
 
   return (
@@ -193,7 +193,7 @@ export function DataTable<TData, TValue>({
                             page: 1,
                             per_page: value,
                             sort: sort as string | number | null,
-                          })}`,
+                          })}`
                         );
                       });
                     }}
@@ -224,7 +224,7 @@ export function DataTable<TData, TValue>({
                             page: 1,
                             per_page,
                             sort: sort as string | number | null,
-                          })}`,
+                          })}`
                         );
                       });
                     }}
@@ -247,7 +247,7 @@ export function DataTable<TData, TValue>({
                             page: Number(page) - 1,
                             per_page,
                             sort: sort as string | number | null,
-                          })}`,
+                          })}`
                         );
                       });
                     }}
@@ -267,7 +267,7 @@ export function DataTable<TData, TValue>({
                             page: Number(page) + 1,
                             per_page,
                             sort: sort as string | number | null,
-                          })}`,
+                          })}`
                         );
                       });
                     }}
@@ -289,7 +289,7 @@ export function DataTable<TData, TValue>({
                           page: pageCount ?? 1,
                           per_page,
                           sort: sort as string | number | null,
-                        })}`,
+                        })}`
                       );
                     }}
                     disabled={Number(page) >= (pageCount ?? 1) || isPending}
