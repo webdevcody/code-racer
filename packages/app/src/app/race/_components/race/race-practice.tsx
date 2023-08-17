@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 // utils
 import { calculateAccuracy, calculateCPM, noopKeys } from "./utils";
 
-// Componenets
+// Components
 import RaceTracker from "./race-tracker";
 import Header from "./header";
 import LineNumbers from "./line-numbers";
@@ -39,7 +39,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
   const router = useRouter();
   const isRaceFinished = input === code;
 
-  const isUserOnAdroid = useCheckForUserNavigator("android");
+  const isUserOnAndroid = useCheckForUserNavigator("android");
 
   useEffect(() => {
     localStorage.removeItem("chartTimeStamp");
@@ -97,7 +97,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
   });
 
   function handleInputEvent(e: any /** React.FormEvent<HTMLInputElement>*/) {
-    if (!isUserOnAdroid) return;
+    if (!isUserOnAndroid) return;
     if (!startTime) {
       setStartTime(new Date());
     }
@@ -123,7 +123,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
     // For ANDROID.
     // since the enter button on a mobile keyboard/keypad actually
     // returns a e.key of "Enter" onkeydown, we just set a condition for that.
-    if (isUserOnAdroid) {
+    if (isUserOnAndroid) {
       switch (e.key) {
         case "Enter":
           if (!startTime) {
