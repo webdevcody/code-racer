@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { safeLoader } from "@/lib/safeLoader";
 import { z } from "zod";
 import { sortFilters } from "./sort-filters";
+import { convertDecimalsToNumbers } from "@/lib/convertDecimalsToNumbers";
 
 export const getUsersWithResultCounts = safeLoader({
   outputValidation: z
@@ -42,6 +43,7 @@ export const getUsersWithResultCounts = safeLoader({
       select: {
         id: true,
         image: true,
+        email: true,
         averageAccuracy: true,
         averageCpm: true,
         name: true,
@@ -57,13 +59,12 @@ export const getUsersWithResultCounts = safeLoader({
       },
     });
 
-    // TODO: this feels gross
-    return users.map((user) => ({
-      ...user,
-      results: user.results.length,
-      averageAccuracy: user.averageAccuracy.toNumber(),
-      averageCpm: user.averageCpm.toNumber(),
-    }));
+    return convertDecimalsToNumbers(
+      users.map((user) => ({
+        ...user,
+        results: user.results.length,
+      }))
+    );
   },
 });
 
@@ -73,6 +74,7 @@ export async function getAllUsersWithResults() {
   return getUsersWithResultCounts({
     take: 5000,
     skip: 0,
+    sortBy: "averageCpm",
     order: "desc",
   });
 }

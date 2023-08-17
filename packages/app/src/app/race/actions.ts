@@ -15,7 +15,7 @@ export const saveUserResultAction = safeAction(
     cpm: z.number(),
     accuracy: z.number().min(0).max(100),
     snippetId: z.string(),
-  }),
+  })
 )(async (input) => {
   const user = await getCurrentUser();
 
@@ -28,7 +28,7 @@ export const saveUserResultAction = safeAction(
 
   if (userData == null) throw new Error("User not found");
 
-  let languagesMap: { [key: string]: number};
+  let languagesMap: { [key: string]: number };
 
   if (userData.languagesMap == null) {
     languagesMap = {};
@@ -44,10 +44,9 @@ export const saveUserResultAction = safeAction(
       } else {
         languagesMap[raceSnippet!.language] = 1;
       }
-
     });
   } else {
-      languagesMap = JSON.parse(userData.languagesMap as string);
+    languagesMap = JSON.parse(userData.languagesMap as string);
   }
 
   const snippetData = await prisma.snippet.findUnique({
@@ -74,11 +73,13 @@ export const saveUserResultAction = safeAction(
         cpm: input.cpm,
         accuracy: new Prisma.Decimal(input.accuracy),
         snippetId: input.snippetId,
-        RaceParticipant: input.raceParticipantId ? {
-          connect: {
-            id: input.raceParticipantId,
-          }
-        } : undefined
+        RaceParticipant: input.raceParticipantId
+          ? {
+              connect: {
+                id: input.raceParticipantId,
+              },
+            }
+          : undefined,
       },
     });
 
@@ -111,7 +112,7 @@ export const saveUserResultAction = safeAction(
 export const getParticipantUser = safeAction(
   z.object({
     participantId: z.string(),
-  }),
+  })
 )(async (input) => {
   const participant = await prisma.raceParticipant.findUnique({
     where: {
@@ -138,4 +139,3 @@ export const getParticipantUser = safeAction(
  * This should create a private room for the user
  * Not implemented
  **/
-
