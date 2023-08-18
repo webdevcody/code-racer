@@ -68,7 +68,6 @@ async function AuthenticatedPage({ resultId, user }: AuthenticatedPageProps) {
       </main>
     );
 
-  debugger;
   const currentRaceResult = await getCurrentRaceResult(resultId);
 
   if (!currentRaceResult) notFound();

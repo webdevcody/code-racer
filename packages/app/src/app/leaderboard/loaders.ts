@@ -43,7 +43,6 @@ export const getUsersWithResultCounts = validatedCallback({
       select: {
         id: true,
         image: true,
-        email: true,
         averageAccuracy: true,
         averageCpm: true,
         name: true,
