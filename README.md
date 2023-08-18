@@ -71,6 +71,7 @@ Happy coding and enjoy the race!
 3. [How to contribute to open source projects (our community project walkthrough)](https://www.youtube.com/watch?v=dLRA1lffWBw)
 4. [You need to write tests when this starts to happen](https://www.youtube.com/watch?v=PzrhclEQp-M)
 5. [CodeRacer had a major security issue](https://www.youtube.com/watch?v=FigpqBGqwK4)
+6. [Stop calling prisma inside server components](https://www.youtube.com/watch?v=sLIoCfKK5SA)
 
 <details>
   <summary>
