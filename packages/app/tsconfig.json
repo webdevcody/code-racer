@@ -2,11 +2,7 @@
   "compilerOptions": {
     "target": "es5",
     "downlevelIteration": true,
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -18,8 +14,6 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "strictNullChecks": true,
-    "noImplicitAny": true,
     "incremental": true,
     "plugins": [
       {
@@ -27,23 +21,18 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["./src/*"]
     }
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
+    ".next/types/**/*.ts",
     "**/*.*.js",
-    "**/*.mjs",
-    ".next/types/**/*.ts"
+    "**/*.mjs"
   ],
-  "exclude": [
-    "node_modules",
-    ".next/types/app/api/auth/[...nextauth]/route.ts"
-  ],
+  "exclude": ["node_modules", ".next/types/app/api/auth/[...nextauth]/route.ts"],
   "ts-node": {
     "compilerOptions": {
       "module": "commonjs"
