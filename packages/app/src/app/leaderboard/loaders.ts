@@ -1,10 +1,10 @@
 import { prisma } from "@/lib/prisma";
-import { safeLoader } from "@/lib/safeLoader";
 import { z } from "zod";
 import { sortFilters } from "./sort-filters";
 import { convertDecimalsToNumbers } from "@/lib/convertDecimalsToNumbers";
+import { validatedCallback } from "@/lib/validatedCallback";
 
-export const getUsersWithResultCounts = safeLoader({
+export const getUsersWithResultCounts = validatedCallback({
   outputValidation: z
     .object({
       id: z.string(),
@@ -16,7 +16,7 @@ export const getUsersWithResultCounts = safeLoader({
       results: z.number(),
     })
     .array(),
-  loader: async ({
+  callback: async ({
     take,
     skip,
     order,

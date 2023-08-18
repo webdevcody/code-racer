@@ -11,6 +11,7 @@ import {
   getCurrentRaceResult,
   getSnippetVote,
   getUserResultsForSnippet,
+  getBestAccuracy,
 } from "./loaders";
 
 // Components
@@ -27,6 +28,8 @@ import { ReplayCode } from "./replay-timestamps";
 import { ResultChart } from "./result-chart";
 import { TopTable } from "./topten";
 import { Voting } from "./voting";
+import HistoryChart from "./history-chart";
+import { pushNotification } from "@/lib/notification";
 
 type ResultPageProps = {
   searchParams: {

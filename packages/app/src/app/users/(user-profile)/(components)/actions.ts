@@ -1,11 +1,11 @@
 "use server";
 
 import { UnauthorizedError } from "@/lib/exceptions/custom-hooks";
-import { prisma } from "@/lib/prisma";
-import { getCurrentUser } from "@/lib/session";
-import { validatedCallback } from "@/lib/validatedCallback";
-import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { revalidatePath } from "next/cache";
+import { getCurrentUser } from "@/lib/session";
+import { prisma } from "@/lib/prisma";
+import { validatedCallback } from "@/lib/validatedCallback";
 
 export const deleteUserAction = validatedCallback({
   inputValidation: z.object({}),
