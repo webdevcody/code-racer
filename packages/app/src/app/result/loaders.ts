@@ -1,12 +1,10 @@
 import { achievements } from "@/config/achievements";
 import { convertDecimalsToNumbers } from "@/lib/convertDecimalsToNumbers";
 import { prisma } from "@/lib/prisma";
-import { safeLoader } from "@/lib/safeLoader";
 import { getCurrentUser } from "@/lib/session";
 import { formatDate } from "@/lib/utils";
+import { validatedCallback } from "@/lib/validatedCallback";
 import { Result, Snippet } from "@prisma/client";
-import { Decimal } from "@prisma/client/runtime/library";
-import { race } from "cypress/types/bluebird";
 import { redirect } from "next/navigation";
 import "server-only";
 import { z } from "zod";
@@ -113,22 +111,21 @@ export async function getCurrentRaceResult(resultId: string) {
     redirect("/auth");
   }
 
-  const raceResults = await safeLoadCurrentResults(resultId);
+  const raceResults = await loadCurrentResults(resultId);
 
   return raceResults;
 }
 
-const safeLoadCurrentResults = safeLoader({
-  outputValidation: z
-    .object({
-      id: z.string(),
-      snippetId: z.string(),
-      accuracy: z.number(),
-      cpm: z.number(),
-      errorCount: z.number(),
-      takenTime: z.string(),
-    }),
-  loader: async (resultId: string) => {
+const loadCurrentResults = validatedCallback({
+  outputValidation: z.object({
+    id: z.string(),
+    snippetId: z.string(),
+    accuracy: z.number(),
+    cpm: z.number(),
+    errorCount: z.number(),
+    takenTime: z.string(),
+  }),
+  callback: async (resultId: string) => {
     const results = await prisma.result.findUnique({
       where: {
         id: resultId,
@@ -156,7 +153,7 @@ export async function getSnippetVote(snippetId: string) {
   });
 }
 
-export const getTopTen = safeLoader({
+export const getTopTen = validatedCallback({
   outputValidation: z
     .object({
       id: z.string(),
@@ -171,7 +168,8 @@ export const getTopTen = safeLoader({
       }),
     })
     .array(),
-  loader: async (snippet: string | undefined) => {
+  inputValidation: z.string().optional(),
+  callback: async (snippet) => {
     const results = await prisma.result.findMany({
       where: {
         snippetId: snippet,
@@ -227,7 +225,7 @@ export async function getUserSnippetPlacement(snippetId?: Snippet["id"]) {
   return allResults.findIndex((r) => r.id === usersResult.id) + 1;
 }
 
-export const getBestCPM = safeLoader({
+export const getBestCPM = validatedCallback({
   outputValidation: z
     .object({
       id: z.string(),
@@ -235,8 +233,13 @@ export const getBestCPM = safeLoader({
       user: z.object({
         id: z.string(),
       }),
-    }),
-  loader: async (snippetId: any, raceID: string) => {
+    })
+    .nullable(),
+  inputValidation: z.object({
+    snippetId: z.string(),
+    raceId: z.string(),
+  }),
+  callback: async ({ snippetId, raceId }) => {
     const user = await getCurrentUser();
 
     if (!user) return null;
@@ -246,7 +249,7 @@ export const getBestCPM = safeLoader({
         userId: user.id,
         snippetId: snippetId,
         NOT: {
-          id: raceID,
+          id: raceId,
         },
       },
       orderBy: {
@@ -266,7 +269,7 @@ export const getBestCPM = safeLoader({
   },
 });
 
-export const getBestAccuracy = safeLoader({
+export const getBestAccuracy = validatedCallback({
   outputValidation: z
     .object({
       id: z.string(),
@@ -274,8 +277,13 @@ export const getBestAccuracy = safeLoader({
       user: z.object({
         id: z.string(),
       }),
-    }),
-  loader: async (snippetId: any, raceID: string) => {
+    })
+    .nullable(),
+  inputValidation: z.object({
+    snippetId: z.string(),
+    raceId: z.string(),
+  }),
+  callback: async ({ snippetId, raceId }) => {
     const user = await getCurrentUser();
 
     if (!user) return null;
@@ -285,7 +293,7 @@ export const getBestAccuracy = safeLoader({
         userId: user.id,
         snippetId: snippetId,
         NOT: {
-          id: raceID,
+          id: raceId,
         },
       },
       orderBy: {

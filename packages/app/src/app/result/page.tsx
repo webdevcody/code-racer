@@ -67,6 +67,8 @@ async function AuthenticatedPage({ resultId, user }: AuthenticatedPageProps) {
         </Link>
       </main>
     );
+
+  debugger;
   const currentRaceResult = await getCurrentRaceResult(resultId);
 
   if (!currentRaceResult) notFound();
@@ -103,7 +105,10 @@ async function AuthenticatedPage({ resultId, user }: AuthenticatedPageProps) {
     },
   ];
 
-  const bestCPMRace = await getBestCPM(currentRaceResult.snippetId, currentRaceResult.id);
+  const bestCPMRace = await getBestCPM({
+    snippetId: currentRaceResult.snippetId,
+    raceId: currentRaceResult.id,
+  });
 
   if (bestCPMRace && bestCPMRace?.cpm < currentRaceResult.cpm) {
     const notificationData = {
@@ -123,7 +128,10 @@ async function AuthenticatedPage({ resultId, user }: AuthenticatedPageProps) {
     }
   }
 
-  const bestAccuracy = await getBestAccuracy(currentRaceResult.snippetId, currentRaceResult.id);
+  const bestAccuracy = await getBestAccuracy({
+    snippetId: currentRaceResult.snippetId,
+    raceId: currentRaceResult.id,
+  });
 
   if (bestAccuracy && bestAccuracy?.accuracy < currentRaceResult.accuracy) {
     const notificationData = {
