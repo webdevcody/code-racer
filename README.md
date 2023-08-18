@@ -39,12 +39,12 @@
 
 We welcome contributions from the community! If you'd like to contribute to Code Racer, please refer to [CONTRIBUTING.md](./CONTRIBUTING.md). We have these base guidelines:
 
-- Fork the repository.
-- Create a new branch for your feature or bug fix.
-- Make your changes and test thoroughly.
-- Commit your changes with clear commit messages.
-- Push your branch to your forked repository.
-- Submit a pull request detailing your changes.
+- Fork the repository
+- Create a new branch for your feature or bug fix
+- Make your changes and test thoroughly
+- Commit your changes with clear commit messages
+- Push your branch to your forked repository
+- Submit a pull request detailing your changes
 
 Please ensure that your code adheres to the project's coding standards and conventions.
 
@@ -70,6 +70,7 @@ Happy coding and enjoy the race!
 2. [First Q&A Livestream and Community Project Live Coding Session](https://www.youtube.com/watch?v=BQXXBsHXfak)
 3. [How to contribute to open source projects (our community project walkthrough)](https://www.youtube.com/watch?v=dLRA1lffWBw)
 4. [You need to write tests when this starts to happen](https://www.youtube.com/watch?v=PzrhclEQp-M)
+5. [CodeRacer had a major security issue](https://www.youtube.com/watch?v=FigpqBGqwK4)
 
 <details>
   <summary>
