@@ -5,7 +5,6 @@ import { getCurrentUser } from "@/lib/session";
 import { validatedCallback } from "@/lib/validatedCallback";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { validatedCallback } from "@/lib/validatedCallback";
 
 const snippetVoteSchema = z.object({
   snippetId: z.string(),
