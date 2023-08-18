@@ -211,8 +211,9 @@ export function UsersTable({
       },
       {
         accessorFn: ({ results }) => {
-          return results.length;
+          return results;
         },
+        accessorKey: "racesPlayed",
         header: "Races played",
       },
       {

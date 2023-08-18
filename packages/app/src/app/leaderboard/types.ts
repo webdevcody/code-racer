@@ -1,8 +1,10 @@
-import { Result, User } from "@prisma/client";
+import { User } from "@prisma/client";
 
 export type UserWithResults = Pick<
   User,
-  "id" | "averageAccuracy" | "averageCpm" | "name" | "topLanguages" | "image"
+  "id" | "name" | "topLanguages" | "image"
 > & {
-  results: Result[];
+  results: number;
+  averageAccuracy: number;
+  averageCpm: number;
 };
