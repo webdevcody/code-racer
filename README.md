@@ -15,19 +15,19 @@
 ## Table of Contents
 
 - [:rocket: Features](#features)
-- [:computer: Technologies Used](#technologies-used)
-- [:raised_hands: Contribution](#contribution)
-- [:scroll: License](#license)
-- [:clap: Acknowledgements](#acknowledgements)
-- [:mailbox: Contact](#contact)
-- [:movie_camera: Related Youtube Videos & Progress](#related-youtube-videos--progress)
+- [:hammer_and_wrench: Technologies Used](#technologies-used)
+- [:handshake: Contribution](#contribution)
+- [:lock: License](#license)
+- [🙏🏻 Acknowledgements](#acknowledgements)
+- [:envelope: Contact](#contact)
+- [:clapper: Related Youtube Videos & Progress](#related-youtube-videos--progress)
 
 ## Features :rocket:
 
 - Code snippet games
 - [Multiplayer races](./packages/wss/README.md)
 
-## Technologies Used :computer:
+## Technologies Used :hammer_and_wrench:
 
 - [Next.js](https://nextjs.org): A React framework for building server-side rendered and statically generated applications.
 - [NextAuth](https://next-auth.js.org): For user authentication.
@@ -35,7 +35,7 @@
 - [Tailwind CSS](https://tailwindcss.com): A utility-first CSS framework for rapid UI development.
 - [TypeScript](https://www.typescriptlang.org): A typed superset of JavaScript that provides enhanced tooling and developer productivity.
 
-## Contribution :raised_hands:
+## Contribution :handshake:
 
 We welcome contributions from the community! If you'd like to contribute to Code Racer, please refer to [CONTRIBUTING.md](./CONTRIBUTING.md). We have these base guidelines:
 
@@ -48,23 +48,23 @@ We welcome contributions from the community! If you'd like to contribute to Code
 
 Please ensure that your code adheres to the project's coding standards and conventions.
 
-## License :scroll:
+## License :lock:
 
 The Code Racer project is licensed under the MIT License. Feel free to use, modify, and distribute the code as per the terms of the license.
 
-## Acknowledgements :clap:
+## Acknowledgements 🙏🏻
 
 Code Racer wouldn't be possible without the valuable contributions and support from the open-source community. We would like to express our gratitude to all the contributors and acknowledge the following libraries and resources used in this project.
 
 A big thank you to all the developers who have helped shape Code Racer into what it is today!
 
-## Contact :mailbox:
+## Contact :envelope:
 
 If you have any questions, suggestions, or feedback regarding Code Racer, please feel free to reach out to us at in the WebDevCody [discord](https://discord.gg/4kGbBaa) server.
 
 Happy coding and enjoy the race!
 
-## Related Youtube Videos & Progress :movie_camera:
+## Related Youtube Videos & Progress :clapper:
 
 1. [Community Project Announcement Video](https://www.youtube.com/watch?v=-n6tV3RPjGc)
 2. [First Q&A Livestream and Community Project Live Coding Session](https://www.youtube.com/watch?v=BQXXBsHXfak)
