@@ -11,6 +11,13 @@ import { validatedCallback } from "@/lib/validatedCallback";
  */
 export const findUserAchievements = validatedCallback({
   inputValidation: z.object({ userId: z.string().optional() }),
+  outputValidation: z
+    .object({
+      userId: z.string(),
+      achievementType: z.string(),
+      unlockedAt: z.date(),
+    })
+    .array(),
   callback: async (input) => {
     const user = await getCurrentUser();
 
