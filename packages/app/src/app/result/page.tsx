@@ -7,8 +7,10 @@ import { getCurrentUser } from "@/lib/session";
 import {
   getUserResultsForSnippet,
   getCurrentRaceResult,
+  getBestCPM,
   ParsedRacesResult,
   getSnippetVote,
+  getBestAccuracy,
 } from "./loaders";
 
 // Components
@@ -24,6 +26,7 @@ import { TopTable } from "./topten";
 import { RaceAchievementBadges } from "./race-achievement-badges";
 import { ResultChart } from "./result-chart";
 import HistoryChart from "./history-chart";
+import { pushNotification } from "@/lib/notification";
 
 type ResultPageProps = {
   searchParams: {
@@ -99,6 +102,46 @@ async function AuthenticatedPage({ resultId, user }: AuthenticatedPageProps) {
       value: `${currentRaceResult?.takenTime}s`,
     },
   ];
+
+  const bestCPMRace = await getBestCPM(currentRaceResult.snippetId, currentRaceResult.id);
+
+  if (bestCPMRace && bestCPMRace?.cpm < currentRaceResult.cpm) {
+    const notificationData = {
+      notification: {
+        title: "New Record!",
+        description: "You just achvied your highest CPM!",
+        ctaUrl: "/dashboard/races",
+      },
+      userId: user.id,
+    };
+
+    try {
+      await pushNotification(notificationData);
+      console.log("Best CPM notification sent successfully!");
+    } catch (error) {
+      console.error("Error sending notification:", error);
+    }
+  }
+
+  const bestAccuracy = await getBestAccuracy(currentRaceResult.snippetId, currentRaceResult.id);
+
+  if (bestAccuracy && bestAccuracy?.accuracy < currentRaceResult.accuracy) {
+    const notificationData = {
+      notification: {
+        title: "New Record!",
+        description: "You just achvied your highest accuracy!",
+        ctaUrl: "/dashboard/races",
+      },
+      userId: user.id,
+    };
+
+    try {
+      await pushNotification(notificationData);
+      console.log("Best accuracy notification sent successfully!");
+    } catch (error) {
+      console.error("Error sending notification:", error);
+    }
+  }
 
   return (
     <main className="w-auto mb-32 lg:mb-40">
