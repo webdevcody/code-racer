@@ -104,4 +104,6 @@ const LanguageDropdown = ({
 
 LanguageDropdown.displayName = "LanguageDropdown";
 
+LanguageDropdown.displayName = "LanguageDropdown";
+
 export default LanguageDropdown;

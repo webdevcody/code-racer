@@ -1,3 +1,3 @@
-export * from './ContributorsPage'
-export * from './RacePage'
-export * from './LeaderboardPage'
+export * from "./ContributorsPage"
+export * from "./LeaderboardPage"
+export * from "./RacePage"

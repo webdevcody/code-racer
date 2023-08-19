@@ -1,10 +1,10 @@
 "use server";
 
+import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
+import { validatedCallback } from "@/lib/validatedCallback";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { prisma } from "@/lib/prisma";
-import { validatedCallback } from "@/lib/validatedCallback";
 
 const snippetVoteSchema = z.object({
   snippetId: z.string(),
