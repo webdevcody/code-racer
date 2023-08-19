@@ -13,13 +13,13 @@
 
 # Table of Contents
 
-- [:rocket&colon;  Features](#features)
-- [:hammer_and_wrench&colon;  Technologies Used](#technologies-used)
-- [:handshake&colon;  Contribution](#contribution)
-- [:lock&colon:  License](#license)
+- [:rocket:Features](#features)
+- [:hammer_and_wrench:Technologies Used](#technologies-used)
+- [:handshake:Contribution](#contribution)
+- [:lock:  License](#license)
 - [🙏🏻 Acknowledgements](#acknowledgements)
-- [:envelope&colon;  Contact](#contact)
-- [:clapper&colon;  Related Youtube Videos & Progress](#related-youtube-videos-progress)
+- [:envelope:Contact](#contact)
+- [:clapper:Related Youtube Videos & Progress](#related-youtube-videos-progress)
 
 <a id="features"></a>
 
@@ -32,11 +32,11 @@
 
 # Technologies Used &colon; hammer_and_wrench&colon;
 
-- [Next.js](https://nextjs.org)&colon;  A React framework for building server-side rendered and statically generated applications.
-- [NextAuth](https://next-auth.js.org)&colon;  For user authentication.
-- [Prisma](https://www.prisma.io)&colon;  Next-generation ORM, it provides a clean and type-safe API for submitting database queries.
-- [Tailwind CSS](https://tailwindcss.com)&colon;  A utility-first CSS framework for rapid UI development.
-- [TypeScript](https://www.typescriptlang.org)&colon;  A typed superset of JavaScript that provides enhanced tooling and developer productivity.
+- [Next.js](https://nextjs.org): A React framework for building server-side rendered and statically generated applications.
+- [NextAuth](https://next-auth.js.org):For user authentication.
+- [Prisma](https://www.prisma.io):Next-generation ORM, it provides a clean and type-safe API for submitting database queries.
+- [Tailwind CSS](https://tailwindcss.com):A utility-first CSS framework for rapid UI development.
+- [TypeScript](https://www.typescriptlang.org):A typed superset of JavaScript that provides enhanced tooling and developer productivity.
 
 <a id="contribution"></a>
 
