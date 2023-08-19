@@ -11,7 +11,7 @@
   Code Racer is a multiplayer coding game where developers can compete against each other to solve programming challenges in real-time. Sharpen your coding skills, challenge your peers, and have fun while racing against the clock!
 </div>
 
-# Table of Contents
+## Table of Contents
 
 - [:rocket:Features](#features)
 - [:hammer_and_wrench:Technologies Used](#technologies-used)
@@ -23,14 +23,14 @@
 
 <a id="features"></a>
 
-# Features &colon; rocket &colon;
+## Features &colon;rocket &colon;
 
 - Code snippet games
 - [Multiplayer races](./packages/wss/README.md)
 
 <a id="technologies-used"></a>
 
-# Technologies Used &colon; hammer_and_wrench&colon;
+## Technologies Used &colon;hammer_and_wrench&colon;
 
 - [Next.js](https://nextjs.org): A React framework for building server-side rendered and statically generated applications.
 - [NextAuth](https://next-auth.js.org):For user authentication.
@@ -40,7 +40,7 @@
 
 <a id="contribution"></a>
 
-# Contribution &colon; handshake&colon;
+## Contribution &colon;handshake&colon;
 
 We welcome contributions from the community! If you'd like to contribute to Code Racer, please refer to [CONTRIBUTING.md](./CONTRIBUTING.md). We have these base guidelines&colon;
 
@@ -53,7 +53,7 @@ We welcome contributions from the community! If you'd like to contribute to Code
 
 Please ensure that your code adheres to the project's coding standards and conventions.
 
-# License &colon; lock&colon;
+## License &colon;lock&colon;
 
 <a id="license"></a>
 
@@ -61,7 +61,7 @@ The Code Racer project is licensed under the MIT License. Feel free to use, modi
 
 <a id="acknowledgements"></a>
 
-# Acknowledgements 🙏🏻
+## Acknowledgements 🙏🏻
 
 Code Racer wouldn't be possible without the valuable contributions and support from the open-source community. We would like to express our gratitude to all the contributors and acknowledge the following libraries and resources used in this project.
 
@@ -69,7 +69,7 @@ A big thank you to all the developers who have helped shape Code Racer into what
 
 <a id="contact"></a>
 
-# Contact &colon; envelope&colon;
+## Contact &colon;envelope&colon;
 
 If you have any questions, suggestions, or feedback regarding Code Racer, please feel free to reach out to us at in the WebDevCody [discord](https://discord.gg/4kGbBaa) server.
 
@@ -77,7 +77,7 @@ Happy coding and enjoy the race!
 
 <a id="related-youtube-videos-progress"></a>
 
-# Related Youtube Videos & Progress &colon;clapper&colon;
+## Related Youtube Videos & Progress &colon;clapper&colon;
 
 1. [Community Project Announcement Video](https://www.youtube.com/watch?v=-n6tV3RPjGc)
 2. [First Q&A Livestream and Community Project Live Coding Session](https://www.youtube.com/watch?v=BQXXBsHXfak)
@@ -90,7 +90,7 @@ Happy coding and enjoy the race!
     <h2>How To(s) - A newbie section</h2>
   </summary>
 
-# Check the logs of Post
+### Check the logs of Post
 
 > Run the command - `docker logs --follow code-racer-postgres`
 
