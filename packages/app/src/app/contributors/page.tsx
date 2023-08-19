@@ -14,7 +14,7 @@ import {
 } from "./_helpers/utils";
 import { redirect } from "next/navigation";
 
-const PER_PAGE_MAX = 18; // Limit to only 16 per page to avoid hitting rate limit
+const PER_PAGE_MAX = 12; // Limit to only 12 per page to avoid hitting rate limit
 
 const searchParamsSchema = z.object({
   page: z.coerce.number().default(1),
