@@ -77,6 +77,8 @@ export default function TitleBackdropSvg() {
       const delay = Math.random() / config.speed;
       const dur = (Math.ceil(Math.random() * 5) * 0.5) / config.speed;
 
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       lineArray.push({
         x1: xCoordinate,
         x2: xCoordinate,

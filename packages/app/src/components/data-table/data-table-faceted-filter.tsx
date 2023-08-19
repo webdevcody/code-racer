@@ -1,9 +1,7 @@
-import * as React from "react";
-import { type Option } from "./types";
 import { CheckIcon, PlusCircledIcon } from "@radix-ui/react-icons";
 import { type Column } from "@tanstack/react-table";
+import { type Option } from "./types";
 
-import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,8 +19,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 
-interface DataTableFacetedFilter<TData, TValue> {
+interface IDataTableFacetedFilter<TData, TValue> {
   column?: Column<TData, TValue>;
   title?: string;
   options: Option[];
@@ -32,7 +31,7 @@ export function DataTableFacetedFilter<TData, TValue>({
   column,
   title,
   options,
-}: DataTableFacetedFilter<TData, TValue>) {
+}: IDataTableFacetedFilter<TData, TValue>) {
   const selectedValues = new Set(column?.getFilterValue() as string[]);
 
   return (

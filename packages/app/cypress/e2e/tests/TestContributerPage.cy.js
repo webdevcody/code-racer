@@ -15,7 +15,7 @@ beforeEach(() => {
 
 it("can hover on contributor card and display recent commits", () => {
   contributorsPage.contributorCard().first().focus();
-  contributorsPage.commitDisplay().should('be.visible');
+  contributorsPage.commitDisplay().should("be.visible");
 });
 
 it("can click on contributor card and redirected to github profile page", () => {
@@ -25,8 +25,8 @@ it("can click on contributor card and redirected to github profile page", () => 
   contributorsPage.contributorCardText(cy.get("@contributor-card")).then((contributorName) => {
     // Check if contributor card's href contains contributor name
     cy.get("@contributor-card")
-      .should('have.attr', 'href')
-      .and('include', contributorName);
+      .should("have.attr", "href")
+      .and("include", contributorName);
 
     // Cypress does not support multi tab
     cy.get("@contributor-card")

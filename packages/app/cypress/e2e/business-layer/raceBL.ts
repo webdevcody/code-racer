@@ -1,6 +1,7 @@
 import { RacePage } from "../page-objects/pages/RacePage";
 export class RaceBL {
     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public static runTypingRace(spans: any): RacePage{
         const NEW_LINE = "⏎\n";
         let code = "";
@@ -23,7 +24,7 @@ export class RaceBL {
             isIndentWhiteSpace = true;
             }
         }
-        cy.get('[data-cy="race-practice-input"]').type(code, {
+        cy.get("[data-cy=\"race-practice-input\"]").type(code, {
             force: true,
             parseSpecialCharSequences: false,
             delay: 30,
