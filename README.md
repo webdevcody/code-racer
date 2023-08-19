@@ -23,7 +23,7 @@
 
 <a id="features"></a>
 
-## Features &colon;rocket &colon;
+## Features &colon;rocket&colon;
 
 - Code snippet games
 - [Multiplayer races](./packages/wss/README.md)
@@ -42,7 +42,7 @@
 
 ## Contribution &colon;handshake&colon;
 
-We welcome contributions from the community! If you'd like to contribute to Code Racer, please refer to [CONTRIBUTING.md](./CONTRIBUTING.md). We have these base guidelines&colon;
+We welcome contributions from the community! If you'd like to contribute to Code Racer, please refer to [CONTRIBUTING.md](./CONTRIBUTING.md). We have these base guidelines:
 
 - Fork the repository
 - Create a new branch for your feature or bug fix
