@@ -13,13 +13,13 @@
 
 # Table of Contents
 
-- [&colon; rocket&colon;  Features](#features)
-- [&colon; hammer_and_wrench&colon;  Technologies Used](#technologies-used)
-- [&colon; handshake&colon;  Contribution](#contribution)
-- [&colon; lock&colon;  License](#license)
+- [:rocket&colon;  Features](#features)
+- [:hammer_and_wrench&colon;  Technologies Used](#technologies-used)
+- [:handshake&colon;  Contribution](#contribution)
+- [:lock&colon:  License](#license)
 - [🙏🏻 Acknowledgements](#acknowledgements)
-- [&colon; envelope&colon;  Contact](#contact)
-- [&colon; clapper&colon;  Related Youtube Videos & Progress](#related-youtube-videos-progress)
+- [:envelope&colon;  Contact](#contact)
+- [:clapper&colon;  Related Youtube Videos & Progress](#related-youtube-videos-progress)
 
 <a id="features"></a>
 
