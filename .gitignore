@@ -4,3 +4,6 @@
 
 # MacOS generated files
 **/.DS_Store
+
+# VS Code generated files
+**/.vscode/*

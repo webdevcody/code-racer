@@ -26,6 +26,7 @@ const LanguageDropdown = ({
 }: {
   className?: string;
   value: string;
+  // eslint-disable-next-line no-unused-vars
   onChange: (props: React.SetStateAction<string>) => void;
 }) => {
   const [open, setOpen] = React.useState(false);
@@ -36,6 +37,7 @@ const LanguageDropdown = ({
     if (savedCodeLanguage) {
       onChange(savedCodeLanguage);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <Popover open={open} onOpenChange={setOpen}>

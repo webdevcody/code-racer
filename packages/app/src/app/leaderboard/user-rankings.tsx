@@ -1,8 +1,5 @@
-import type { Result, User } from "@prisma/client";
-import { User as NextUser } from "next-auth";
 import { sortFilters } from "./sort-filters";
 
-type UserWithResults = User & { results: Result[] };
 
 function convertNumberToOrdinal({ n }: { n: number }) {
   // special case for 11, 12, 13
@@ -40,7 +37,7 @@ function getRank({
 function Ranking({ label, rank }: { label: string; rank: string }) {
   return (
     <div className="flex flex-col items-center gap-2">
-      <div className="text-xs md:text-sm text-center text-muted-foreground uppercase">
+      <div className="text-xs text-center uppercase md:text-sm text-muted-foreground">
         {label}
       </div>
       <div className="text-2xl md:text-3xl">{rank}</div>
@@ -70,11 +67,11 @@ export async function UserRankings({
   });
 
   return (
-    <div className="flex flex-col items-center gap-5 mt-2 p-2">
-      <h1 className="text-1xl md:text-2xl font-special font-bold tracking-tight text-primary">
+    <div className="flex flex-col items-center gap-5 p-2 mt-2">
+      <h1 className="font-bold tracking-tight text-1xl md:text-2xl font-special text-primary">
         Your Rankings
       </h1>
-      <div className="w-full flex justify-evenly">
+      <div className="flex w-full justify-evenly">
         <Ranking label="by average cpm" rank={userRankByAverageCPM} />
         <Ranking label="by average accuracy" rank={userRankByAverageAcc} />
         <Ranking label="by races played" rank={userRankByGamesPlayed} />
