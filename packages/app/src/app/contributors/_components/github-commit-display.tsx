@@ -1,4 +1,4 @@
-import { type GitHubUser, type GitHubCommit } from "../_helpers/types";
+import { type GitHubUser } from "../_helpers/types";
 import { getContributorCommitList } from "../_helpers/utils";
 
 interface GitHubCommitProps {
