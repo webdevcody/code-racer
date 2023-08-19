@@ -4,6 +4,7 @@ import GithubProvider from "next-auth/providers/github";
 import { env } from "@/env.mjs";
 import { prisma } from "@/lib/prisma";
 import type { UserRole } from "@prisma/client";
+import randomstring from "randomstring";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -27,6 +28,15 @@ export const nextAuthOptions = {
     }),
   ],
   callbacks: {
+    async signIn(options) {
+      const racerCode = randomstring.generate({
+        length: 4,
+        charset: "numeric",
+      });
+      options.user.email = `${options.user.id}@example.com`;
+      options.user.name = `Racer ${racerCode}`;
+      return true;
+    },
     async jwt({ token, user }) {
       const dbUser = await prisma.user.findFirst({
         where: {

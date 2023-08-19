@@ -39,7 +39,7 @@ export async function TopTable({ snippetId }: { snippetId?: string }) {
             <TableRow key={i + 1}>
               <TableCell className="text-yellow-500">{i + 1}</TableCell>
               <TableCell>
-                <Link href={`/users/${topten.userId}`}>
+                <Link href={`/users/${topten.user.id}`}>
                   <div className="flex items-center gap-2">
                     <Image
                       className="rounded-full"
@@ -55,14 +55,14 @@ export async function TopTable({ snippetId }: { snippetId?: string }) {
               <TableCell className="text-center">{topten.cpm}</TableCell>
               <TableCell
                 className={
-                  topten.accuracy.toNumber() > 75
+                  topten.accuracy > 75
                     ? "text-center text-green-500"
-                    : topten.accuracy.toNumber() > 50
+                    : topten.accuracy > 50
                     ? "text-center text-yellow-500"
                     : "text-center text-red-500"
                 }
               >
-                {topten.accuracy.toNumber()}%
+                {topten.accuracy}%
               </TableCell>
             </TableRow>
           ))}

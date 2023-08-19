@@ -28,7 +28,7 @@ export async function getRaces({
 
   return prisma.result.findMany({
     include: {
-        snippet: true
+      snippet: true,
     },
     take,
     skip,

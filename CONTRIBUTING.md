@@ -28,6 +28,16 @@ You will need to [install docker](https://www.docker.com/get-started/) on your l
 
 If you do not have docker, go here to download and install: <https://www.docker.com/get-started/>
 
+If you see error starting db on M1 mac, you may need to update your docker config file at `~/.docker/config.json`
+Your file should look like something like this:
+
+```
+{
+        "auths": {},
+        "currentContext": "desktop-linux"
+}
+```
+
 If you are getting WSL error when you launch your desktop docker application, go here and follow these steps for windows: <https://learn.microsoft.com/en-us/windows/wsl/install-manual#step-4---download-the-linux-kernel-update-package>.
 
 ## Installation
@@ -74,9 +84,9 @@ To get started with Code Racer locally, follow these steps
 
 10. Start the web socket server
 
-   ```sh
-   npm run dev:wss
-   ```
+```sh
+npm run dev:wss
+```
 
 Open your browser and visit <http://localhost:3000> to see the application running.
 
@@ -88,7 +98,6 @@ If you're new to Github and working with open source repositories, I made a vide
 There is also a new video explaining how you can contribute to this project:
 <br/>
 [How to contribute to open source projects (our community project walkthrough)](https://www.youtube.com/watch?v=dLRA1lffWBw)
-
 
 If you want to work on a new feature, follow these steps.
 
@@ -113,7 +122,9 @@ git pull upstream main
 ```
 
 ## Before Submitting a Pull Request
+
 Before submitting a **Pull Request**, you should
+
 1. Check your code safety with Linter and TypeScript, and make sure your code can build successfully.
 
 ```sh
@@ -125,6 +136,7 @@ npm run pr:precheck
 ```
 npm run e2e -w @code-racer/app
 ```
+
 ## Code of Conduct
 
 ### Our Pledge
