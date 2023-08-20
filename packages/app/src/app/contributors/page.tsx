@@ -14,7 +14,7 @@ import {
 } from "./_helpers/utils";
 import { redirect } from "next/navigation";
 
-const PER_PAGE_MAX = 15; // Limit to only 15 per page to avoid hitting rate limit
+const PER_PAGE_MAX = 12; // Limit to only 12 per page to avoid hitting rate limit
 
 const searchParamsSchema = z.object({
   page: z.coerce.number().default(1),
@@ -65,16 +65,16 @@ export default async function ContributorsPage({
       <br />
       <div className="flex flex-col items-center justify-start gap-3">
         <div className="w-[80vw] md:w-[70vw] lg:w-[50vw] xl:w-[600px] flex flex-col gap-4 justify-start items-center">
-          <div className="flex flex-col items-center justify- gap-3">
+          <div className="flex flex-col items-center gap-3 justify-">
             <CountingAnimation
               targetNumber={contributors.length}
-              className="text-7xl text-primary font-extrabold"
+              className="font-extrabold text-7xl text-primary"
             />
             <p className="text-2xl font-bold text-secondary-foreground">
               Contributors and counting!
             </p>
           </div>
-          <div className="flex flex-col gap-2 w-full">
+          <div className="flex flex-col w-full gap-2">
             <p className="text-xl font-semibold text-center text-secondary-foreground">
               Since <Time date={sinceDate} />
             </p>
@@ -124,7 +124,7 @@ export default async function ContributorsPage({
       </ul>
 
       <PaginationBar
-        className="flex justify-center mt-6 w-full"
+        className="flex justify-center w-full mt-6"
         nextURL={`/contributors?page=${Math.min(
           page + 1,
           totalPage,

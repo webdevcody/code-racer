@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import type { User } from "@prisma/client";
 import { type ColumnDef } from "unstyled-table";
 import Image from "next/image";
 import Link from "next/link";
@@ -74,7 +73,7 @@ export function UsersTable({
               {ranks[userId][field]["rank"] == 1 ||
               ranks[userId][field]["rank"] == 2 ||
               ranks[userId][field]["rank"] == 3 ? (
-                <div className="relative flex justify-start items-center">
+                <div className="relative flex items-center justify-start">
                   <div className="w-[20px] h-[20px] flex items-center justify-center absolute top-[2px] left-[6px] animate-star-scale delay-75">
                     <svg
                       width={
@@ -228,7 +227,7 @@ export function UsersTable({
               {topLanguages.length > 0 ? (
                 <span className="capitalize">{topLanguages.join(", ")}</span>
               ) : (
-                <span className="capitalize text-gray-400">---</span>
+                <span className="text-gray-400 capitalize">---</span>
               )}
             </div>
           );
@@ -250,7 +249,7 @@ export function UsersTable({
           val: "desc",
         }}
       />
-      <p className="text-sm md:text-base mt-1 text-muted-foreground">
+      <p className="mt-1 text-sm md:text-base text-muted-foreground">
         You must have completed 5 races to be placed in the leaderboards.
       </p>
     </>

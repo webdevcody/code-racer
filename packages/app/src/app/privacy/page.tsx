@@ -1,5 +1,4 @@
 import { Heading } from "@/components/ui/heading";
-import { Subheading } from "@/components/ui/sub-heading";
 
 function PrivacyPage({}) {
   return (

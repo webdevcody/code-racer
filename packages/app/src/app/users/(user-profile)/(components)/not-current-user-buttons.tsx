@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 export default function NotCurrentUserButtons({
   followers,
-  userInViewId,
+  // userInViewId,
   currentUserId,
 }: {
   followers: string[];

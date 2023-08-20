@@ -1,4 +1,4 @@
-import { z, ZodError, ZodTypeAny } from "zod";
+import { z, ZodTypeAny } from "zod";
 
 type ValidatedCallbackOptions<
   CallbackInput,
