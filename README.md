@@ -4,12 +4,12 @@
   <h1>Code Racer</h1>
 
   <!-- TO ADD more Badges use -> https://shields.io/ -->
-  <div style=" display: flex; gap:2">
-  ![GitHub contributors](https://img.shields.io/github/contributors/webdevcody/code-racer)
+  <div align="center">
 
-  ![Repo License](https://img.shields.io/github/license/webdevcody/code-racer)  
+  <img alt="GitHub contributors" src="https://img.shields.io/github/contributors-anon/webdevcody/code-racer">
+  <img alt="Repo License" src="https://img.shields.io/github/license/webdevcody/code-racer">
+  <img alt="Website Status" src="https://img.shields.io/website?url=https%3A%2F%2Fcode-racer-eight.vercel.app">
 
-  ![Website](https://img.shields.io/website?url=https%3A%2F%2Fcode-racer-eight.vercel.app%2F)
   </div>
 
 </div>
@@ -21,13 +21,13 @@
 
 ## Table of Contents
 
-- [:rocket:Features](#features)
-- [:hammer_and_wrench:Technologies Used](#technologies-used)
-- [:handshake:Contribution](#contribution)
+- [:rocket:  Features](#features)
+- [:hammer_and_wrench:  Technologies Used](#technologies-used)
+- [:handshake:  Contribution](#contribution)
 - [:lock:  License](#license)
 - [🙏🏻 Acknowledgements](#acknowledgements)
-- [:envelope:Contact](#contact)
-- [:clapper:Related Youtube Videos & Progress](#related-youtube-videos-progress)
+- [:envelope:  Contact](#contact)
+- [:clapper:  Related Youtube Videos & Progress](#related-youtube-videos-progress)
 
 <a id="features"></a>
 
