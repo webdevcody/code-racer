@@ -4,12 +4,13 @@
   <h1>Code Racer</h1>
 
   <!-- TO ADD more Badges use -> https://shields.io/ -->
-  
+  <div style=" display: flex; gap:2">
   ![GitHub contributors](https://img.shields.io/github/contributors/webdevcody/code-racer)
 
   ![Repo License](https://img.shields.io/github/license/webdevcody/code-racer)  
 
   ![Website](https://img.shields.io/website?url=https%3A%2F%2Fcode-racer-eight.vercel.app%2F)
+  </div>
 
 </div>
 
