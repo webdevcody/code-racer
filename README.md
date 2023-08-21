@@ -2,9 +2,16 @@
   <img src="./packages/app/public/static/logo.png" width="60" alt="code-racer-logo">
   <br/>
   <h1>Code Racer</h1>
-</div>
 
-# [![View 👁️](https://img.shields.io/badge/Website-View%20🌐-red?style=for-the-badge&logo=appveyor)](https://code-racer-eight.vercel.app/)
+  <!-- TO ADD more Badges use -> https://shields.io/ -->
+  
+  ![GitHub contributors](https://img.shields.io/github/contributors/webdevcody/code-racer)
+
+  ![Repo License](https://img.shields.io/github/license/webdevcody/code-racer)  
+
+  ![Website](https://img.shields.io/website?url=https%3A%2F%2Fcode-racer-eight.vercel.app%2F)
+
+</div>
 
 <div align="center">
   Welcome to Code Racer, a community project built with <a href="https://nextjs.org/">Next.js</a>, <a href="https://tailwindcss.com">Tailwind CSS</a>, and <a href="https://www.typescriptlang.org">TypeScript</a>.
