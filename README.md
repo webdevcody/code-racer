@@ -2,9 +2,15 @@
   <img src="./packages/app/public/static/logo.png" width="60" alt="code-racer-logo">
   <br/>
   <h1>Code Racer</h1>
+</div>
 
+<div align="center">
+  Welcome to Code Racer, a community project built with <a href="https://nextjs.org/">Next.js</a>, <a href="https://tailwindcss.com">Tailwind CSS</a>, and <a href="https://www.typescriptlang.org">TypeScript</a>.
+  Code Racer is a multiplayer coding game where developers can compete against each other to solve programming challenges in real-time. Sharpen your coding skills, challenge your peers, and have fun while racing against the clock!
+</div>
+
+<div align="center">
   <!-- TO ADD more Badges use -> https://shields.io/ -->
-  <div align="center">
 
   <img alt="GitHub contributors" src="https://img.shields.io/github/contributors-anon/webdevcody/code-racer">
   <img alt="Repo License" src="https://img.shields.io/github/license/webdevcody/code-racer">
@@ -12,12 +18,6 @@
 
   </div>
 
-</div>
-
-<div align="center">
-  Welcome to Code Racer, a community project built with <a href="https://nextjs.org/">Next.js</a>, <a href="https://tailwindcss.com">Tailwind CSS</a>, and <a href="https://www.typescriptlang.org">TypeScript</a>.
-  Code Racer is a multiplayer coding game where developers can compete against each other to solve programming challenges in real-time. Sharpen your coding skills, challenge your peers, and have fun while racing against the clock!
-</div>
 
 ## Table of Contents
 
