@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { v4 as uuidv4 } from "uuid";
 
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -33,8 +32,6 @@ type CreateRoomForm = z.infer<typeof createRoomSchema>;
 export const CreateRoomForm = () => {
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const roomId = uuidv4();
-
   const router = useRouter();
 
   const form = useForm<CreateRoomForm>({
@@ -47,7 +44,6 @@ export const CreateRoomForm = () => {
   function onSubmit({ language }: CreateRoomForm) {
     setIsLoading(true);
     socket.emit("UserCreateRoom", {
-      roomId,
       // TODO: make typescript happy
       language: language as Language,
     });
@@ -88,15 +84,6 @@ export const CreateRoomForm = () => {
             </FormItem>
           )}
         />
-
-        <div>
-          <p className="mb-2 text-sm font-medium">Room ID</p>
-
-          <div className="flex h-10 w-full items-center justify-between rounded-md border bg-background px-3 py-2 text-sm text-muted-foreground">
-            <span>{roomId}</span>
-            <CopyButton value={roomId} />
-          </div>
-        </div>
 
         <Button type="submit" className="mt-2 w-full">
           {isLoading ? (

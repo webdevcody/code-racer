@@ -1,9 +1,8 @@
 import { z } from "zod";
 import { isValidUUID } from "@/lib/utils";
 
-
 export const createRoomSchema = z.object({
-  language: z.string(),
+  language: z.string().nonempty(),
 });
 
 export const joinRoomSchema = z.object({
