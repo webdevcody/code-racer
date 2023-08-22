@@ -77,7 +77,6 @@
     "tailwindcss": "3.3.2",
     "tailwindcss-animate": "^1.0.6",
     "unstyled-table": "^0.0.3-alpha-3",
-    "uuid": "^9.0.0",
     "zod": "^3.21.4"
   },
   "devDependencies": {
