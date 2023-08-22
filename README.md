@@ -4,22 +4,30 @@
   <h1>Code Racer</h1>
 </div>
 
-# [![View 👁️](https://img.shields.io/badge/Website-View%20🌐-red?style=for-the-badge&logo=appveyor)](https://code-racer-eight.vercel.app/)
-
 <div align="center">
   Welcome to Code Racer, a community project built with <a href="https://nextjs.org/">Next.js</a>, <a href="https://tailwindcss.com">Tailwind CSS</a>, and <a href="https://www.typescriptlang.org">TypeScript</a>.
   Code Racer is a multiplayer coding game where developers can compete against each other to solve programming challenges in real-time. Sharpen your coding skills, challenge your peers, and have fun while racing against the clock!
 </div>
 
+<div align="center">
+  <!-- TO ADD more Badges use -> https://shields.io/ -->
+
+  <img alt="GitHub contributors" src="https://img.shields.io/github/contributors-anon/webdevcody/code-racer">
+  <img alt="Repo License" src="https://img.shields.io/github/license/webdevcody/code-racer">
+  <img alt="Website Status" src="https://img.shields.io/website?url=https%3A%2F%2Fcode-racer-eight.vercel.app">
+
+  </div>
+
+
 ## Table of Contents
 
-- [:rocket:Features](#features)
-- [:hammer_and_wrench:Technologies Used](#technologies-used)
-- [:handshake:Contribution](#contribution)
+- [:rocket:  Features](#features)
+- [:hammer_and_wrench:  Technologies Used](#technologies-used)
+- [:handshake:  Contribution](#contribution)
 - [:lock:  License](#license)
 - [🙏🏻 Acknowledgements](#acknowledgements)
-- [:envelope:Contact](#contact)
-- [:clapper:Related Youtube Videos & Progress](#related-youtube-videos-progress)
+- [:envelope:  Contact](#contact)
+- [:clapper:  Related Youtube Videos & Progress](#related-youtube-videos-progress)
 
 <a id="features"></a>
 
