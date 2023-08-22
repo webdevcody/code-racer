@@ -20,7 +20,7 @@ it("can successfully completed a practice race", () => {
   navbarComponent.race().should("be.visible").click();
 
   // Find language selection and type snippet language
-  racePage.practiceCardlanguageDropdown().should("be.visible").click();
+  racePage.practiceCardLanguageDropdown().should("be.visible").click();
   cy.wait(TIME_TO_WAIT);
   cy.get("input").type("c++");
   cy.wait(TIME_TO_WAIT);
