@@ -4,7 +4,7 @@ import React from "react";
 type CodeProps = {
   code: string;
   input: string;
-  preRef: React.MutableRefObject<HTMLPreElement | null>;
+  preRef?: React.MutableRefObject<HTMLPreElement | null>;
 };
 
 export default function Code({ code, input, preRef }: CodeProps) {
