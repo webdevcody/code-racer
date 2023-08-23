@@ -73,7 +73,7 @@ export function SnippetsTable({
               <Tooltip>
                 <TooltipTrigger>
                   <Badge>
-                    <Icons.eye className="mr-2 w-4 h-4" />
+                    <Icons.eye className="w-4 h-4 mr-2" />
                     See
                   </Badge>
                 </TooltipTrigger>
@@ -123,7 +123,7 @@ export function SnippetsTable({
         },
       },
     ],
-    [],
+    [data],
   );
 
   async function deleteSelectedRows() {

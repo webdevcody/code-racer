@@ -1,5 +1,6 @@
+/* eslint-disable no-unused-vars */
 export enum sortFilters {
-  RacePlayed = "Races played",
+  RacePlayed = "racesPlayed",
   AverageCPM = "averageCpm",
   AverageAccuracy = "averageAccuracy",
 }

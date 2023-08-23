@@ -1,8 +1,6 @@
 "use client";
 
 import * as React from "react";
-import type { Result, User } from "@prisma/client";
-
 import { type ColumnDef } from "unstyled-table";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,9 +13,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
-import { sortFilters } from "./sort-filters";
-
-type UserWithResults = User & { results: Result[] };
+import { UserWithResults } from "./types";
 
 function convertNumberToOrdinal({ n }: { n: number }) {
   // special case for 11, 12, 13
@@ -47,15 +43,17 @@ export function UsersTable({
   data: UserWithResults[];
   pageCount: number;
   ranks: {
-    [key: string]: { 
-      [key: string]: { 
-        [key: string]: number | boolean 
-      }
-    }
+    [key: string]: {
+      [key: string]: {
+        [key: string]: number | boolean;
+      };
+    };
   };
   field: string;
 }) {
-  const columns = React.useMemo<(ColumnDef<UserWithResults, unknown>&{headerClass?: string})[]>(
+  const columns = React.useMemo<
+    (ColumnDef<UserWithResults, unknown> & { headerClass?: string })[]
+  >(
     () => [
       {
         accessorFn: (user) => {
@@ -65,23 +63,25 @@ export function UsersTable({
         headerClass: "text-center",
         cell: ({ cell }) => {
           const userId = cell.getValue() as string;
-          const crownColor: {[key: number]: string} = {
+          const crownColor: { [key: number]: string } = {
             1: "#FFD700",
             2: "#C0C0C0",
             3: "#CD7F32",
-          }
+          };
           return (
             <div className="ml-1">
               {ranks[userId][field]["rank"] == 1 ||
               ranks[userId][field]["rank"] == 2 ||
               ranks[userId][field]["rank"] == 3 ? (
-                <div className="relative flex justify-start items-center">
-                  <div
-                    className="w-[20px] h-[20px] flex items-center justify-center absolute top-[2px] left-[6px] animate-star-scale delay-75"
-                  >
+                <div className="relative flex items-center justify-start">
+                  <div className="w-[20px] h-[20px] flex items-center justify-center absolute top-[2px] left-[6px] animate-star-scale delay-75">
                     <svg
-                      width= { 20 - 4 * (ranks[userId][field]["rank"] as number - 1)}
-                      height= { 20 - 4 * (ranks[userId][field]["rank"] as number - 1)}
+                      width={
+                        20 - 4 * ((ranks[userId][field]["rank"] as number) - 1)
+                      }
+                      height={
+                        20 - 4 * ((ranks[userId][field]["rank"] as number) - 1)
+                      }
                       viewBox="0 0 140 140"
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"
@@ -134,26 +134,24 @@ export function UsersTable({
       },
       {
         accessorFn: (user) => {
-          return {
-            id: user.id,
-            image: user.image ?? "",
-            name: user.name,
-          };
+          return user.id;
         },
         header: "User",
         cell: ({ cell }) => {
-          const userInfo = cell.getValue() as User;
+          const userInfo = cell.row.original;
 
           return (
             <Link href={`/users/${userInfo.id}`}>
               <div className="flex items-center gap-2">
-                <Image
-                  className="rounded-full"
-                  src={userInfo.image ?? ""}
-                  alt="user avatar"
-                  height={30}
-                  width={30}
-                />
+                {userInfo.image && (
+                  <Image
+                    className="rounded-full"
+                    src={userInfo.image ?? ""}
+                    alt="user avatar"
+                    height={30}
+                    width={30}
+                  />
+                )}
                 <span>{userInfo.name}</span>
               </div>
             </Link>
@@ -212,8 +210,9 @@ export function UsersTable({
       },
       {
         accessorFn: ({ results }) => {
-          return results.length;
+          return results;
         },
+        accessorKey: "racesPlayed",
         header: "Races played",
       },
       {
@@ -228,14 +227,15 @@ export function UsersTable({
               {topLanguages.length > 0 ? (
                 <span className="capitalize">{topLanguages.join(", ")}</span>
               ) : (
-                <span className="capitalize text-gray-400">---</span>
+                <span className="text-gray-400 capitalize">---</span>
               )}
             </div>
           );
         },
+        enableSorting: false,
       },
     ],
-    [field],
+    [field]
   );
 
   return (
@@ -249,7 +249,7 @@ export function UsersTable({
           val: "desc",
         }}
       />
-      <p className="text-sm md:text-base mt-1 text-muted-foreground">
+      <p className="mt-1 text-sm md:text-base text-muted-foreground">
         You must have completed 5 races to be placed in the leaderboards.
       </p>
     </>

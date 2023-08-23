@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 import {
-  LineChart,
+  CartesianGrid,
   Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  TooltipProps,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  TooltipProps,
 } from "recharts";
 
 import {
@@ -24,13 +24,13 @@ interface ChartTimeStamp {
   time: number;
 }
 
-type ResultChart = {
+type TResultChart = {
   code?: string;
 };
 
-export function ResultChart({ code }: ResultChart) {
+export function ResultChart({ code }: TResultChart) {
   const data = JSON.parse(localStorage.getItem("chartTimeStamp") || "[]");
-  const [chartTimeStamp, setChartTimeStamp] = useState<ChartTimeStamp[]>(data);
+  const [chartTimeStamp, ] = useState<ChartTimeStamp[]>(data);
   const [activeCharIndex, setActiveCharIndex] = useState<number>();
 
   return (

@@ -27,7 +27,6 @@ export type UserGetRacePayload = {
 };
 
 export type UserCreateRoomPayload = {
-  roomId: string;
   language: Language;
 };
 

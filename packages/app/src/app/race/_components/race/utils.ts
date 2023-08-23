@@ -19,6 +19,7 @@ export const noopKeys = [
   "Tab",
   "ArrowRight",
   "ArrowLeft",
+  "Dead",
 ];
 
 export function calculateCPM(

@@ -1,29 +1,32 @@
-import Link from "next/link";
-import { getSnippetById } from "../race/(play)/loaders";
-import { notFound } from "next/navigation";
+import { getCurrentUser } from "@/lib/session";
 import { cn } from "@/lib/utils";
 import { User } from "next-auth";
-import { getCurrentUser } from "@/lib/session";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { getSnippetById } from "../race/(play)/loaders";
 import {
-  getUserResultsForSnippet,
-  getCurrentRaceResult,
   ParsedRacesResult,
+  getBestAccuracy,
+  getBestCPM,
+  getCurrentRaceResult,
   getSnippetVote,
+  getUserResultsForSnippet
 } from "./loaders";
 
 // Components
 import { Icons } from "@/components/icons";
+import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Voting } from "./voting";
-import { Badge } from "@/components/ui/badge";
 import { Heading } from "@/components/ui/heading";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ReplayCode } from "./replay-timestamps";
-import { TopTable } from "./topten";
-import { RaceAchievementBadges } from "./race-achievement-badges";
-import { ResultChart } from "./result-chart";
+import { pushNotification } from "@/lib/notification";
 import HistoryChart from "./history-chart";
+import { RaceAchievementBadges } from "./race-achievement-badges";
+import { ReplayCode } from "./replay-timestamps";
+import { ResultChart } from "./result-chart";
+import { TopTable } from "./topten";
+import { Voting } from "./voting";
 
 type ResultPageProps = {
   searchParams: {
@@ -64,6 +67,7 @@ async function AuthenticatedPage({ resultId, user }: AuthenticatedPageProps) {
         </Link>
       </main>
     );
+
   const currentRaceResult = await getCurrentRaceResult(resultId);
 
   if (!currentRaceResult) notFound();
@@ -99,6 +103,52 @@ async function AuthenticatedPage({ resultId, user }: AuthenticatedPageProps) {
       value: `${currentRaceResult?.takenTime}s`,
     },
   ];
+
+  const bestCPMRace = await getBestCPM({
+    snippetId: currentRaceResult.snippetId,
+    raceId: currentRaceResult.id,
+  });
+
+  if (bestCPMRace && bestCPMRace?.cpm < currentRaceResult.cpm) {
+    const notificationData = {
+      notification: {
+        title: "New Record!",
+        description: "You just achvied your highest CPM!",
+        ctaUrl: "/dashboard/races",
+      },
+      userId: user.id,
+    };
+
+    try {
+      await pushNotification(notificationData);
+      console.log("Best CPM notification sent successfully!");
+    } catch (error) {
+      console.error("Error sending notification:", error);
+    }
+  }
+
+  const bestAccuracy = await getBestAccuracy({
+    snippetId: currentRaceResult.snippetId,
+    raceId: currentRaceResult.id,
+  });
+
+  if (bestAccuracy && bestAccuracy?.accuracy < currentRaceResult.accuracy) {
+    const notificationData = {
+      notification: {
+        title: "New Record!",
+        description: "You just achvied your highest accuracy!",
+        ctaUrl: "/dashboard/races",
+      },
+      userId: user.id,
+    };
+
+    try {
+      await pushNotification(notificationData);
+      console.log("Best accuracy notification sent successfully!");
+    } catch (error) {
+      console.error("Error sending notification:", error);
+    }
+  }
 
   return (
     <main className="w-auto mb-32 lg:mb-40">

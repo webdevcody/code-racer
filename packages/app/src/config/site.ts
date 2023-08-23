@@ -43,7 +43,7 @@ export const siteConfig = {
   links: {
     github: "https://github.com/webdevcody/code-racer",
     codyTwitter: "https://twitter.com/webdevcody",
-    codyDiscord: "https://discord.gg/sduWx3kp",
+    codyDiscord: "https://discord.com/invite/4kGbBaa",
   },
   api: {
     github: {

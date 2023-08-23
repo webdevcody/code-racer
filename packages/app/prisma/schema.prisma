@@ -14,9 +14,9 @@ enum UserRole {
 }
 
 enum AchievementType {
-  FIRST_RACE
-  FIRST_SNIPPET
-  FIFTH_RACE
+    FIRST_RACE
+    FIRST_SNIPPET
+    FIFTH_RACE
 }
 
 model User {
@@ -34,8 +34,8 @@ model User {
     // followers     String[]
     // following     String[]
 
-    topLanguages  String[]
-    languagesMap  Json?
+    topLanguages String[]
+    languagesMap Json?
 
     signToken           String      @default("")
     signTokenValidity   DateTime    @default(dbgenerated("NOW() - interval '1 year'"))
@@ -119,7 +119,7 @@ model Achievement {
 }
 
 model Snippet {
-    id String @id @default(cuid())
+    id   String  @id @default(cuid())
     name String?
 
     code     String
@@ -184,15 +184,15 @@ model SnippetVote {
 }
 
 model Notification {
-    id          String @id @default(cuid())
+    id          String   @id @default(cuid())
     title       String
-    description  String
-    ctaUrl      String? @map("cta_url") // URL to redirect when user click on notification
-    read        Boolean @default(false)
-    userId      String @map("user_id")
-    createdAt   DateTime @map("created_at") @default(now())
+    description String
+    ctaUrl      String?  @map("cta_url") // URL to redirect when user click on notification
+    read        Boolean  @default(false)
+    userId      String   @map("user_id")
+    createdAt   DateTime @default(now()) @map("created_at")
 
-    user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@map("notification")
 }

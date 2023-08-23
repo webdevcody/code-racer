@@ -6,6 +6,7 @@ type State = string[];
 
 let memoryState: State = [];
 
+// eslint-disable-next-line no-unused-vars
 const listeners = new Set<(state: State) => void>();
 
 const TOAST_REMOVE_DELAY = 60_000;
@@ -74,4 +75,5 @@ function useConfetti() {
   };
 }
 
-export { useConfetti, tossConfetti };
+export { tossConfetti, useConfetti };
+

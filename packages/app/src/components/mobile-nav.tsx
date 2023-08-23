@@ -41,7 +41,7 @@ export function MobileNav({
         <SheetContent side="right" className="w-[300px] sm:w-[540px]">
           <ScrollArea className="my-4 h-[calc(100vh-9rem)] pb-10">
             <div className="flex flex-col items-center justify-center gap-10 py-2">
-              <UserDropdown user={user} />
+              <UserDropdown user={user} onOpenChange={setOpen} />
               <nav className="flex flex-col items-center justify-center flex-1 space-y-4">
                 {siteConfig.getHeaderLinks(isLoggedIn).map((item) => (
                   <MobileLink
@@ -51,7 +51,7 @@ export function MobileNav({
                       {
                         "bg-background border-2 border-primary text-primary":
                           isActiveRoute(currentPathName as string, item.href),
-                      },
+                      }
                     )}
                     href={item.href}
                     key={item.href}

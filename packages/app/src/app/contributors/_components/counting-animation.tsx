@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface CountingAnimationProps {
   targetNumber: number;
@@ -19,6 +19,7 @@ export default function CountingAnimation({
   className,
 }: CountingAnimationProps) {
   const [currentNumber, setCurrentNumber] = useState<number>(startingNumber);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const intervalID = useRef<any>(null);
 
   // Amount to increment in every update cycle
