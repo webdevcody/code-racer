@@ -37,6 +37,9 @@ model User {
     topLanguages  String[]
     languagesMap  Json?
 
+    signToken           String      @default("")
+    signTokenValidity   DateTime    @default(dbgenerated("NOW() - interval '1 year'"))
+
     averageAccuracy Decimal @default(0) @db.Decimal(5, 2)
     averageCpm      Decimal @default(0) @db.Decimal(6, 2)
 
