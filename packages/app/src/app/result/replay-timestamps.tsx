@@ -33,14 +33,18 @@ export const ReplayCode = ({ code }: TReplayCode) => {
 
     if (isPlaying && replayTimeStamp && currentIndex < replayTimeStamp.length) {
       const currentTimestamp = replayTimeStamp[currentIndex];
-      const nextTimestampDelay =
-        currentIndex + 1 < replayTimeStamp.length
-          ? replayTimeStamp[currentIndex + 1].time - currentTimestamp.time
-          : null;
+      let nextTimestampDelay = 0;
+
+      if (currentIndex + 1 < replayTimeStamp.length) {
+        nextTimestampDelay =
+          replayTimeStamp[currentIndex + 1].time - currentTimestamp.time;
+      } else {
+        return;
+      }
 
       timeout = setTimeout(() => {
         setCurrentIndex(currentIndex + 1);
-      }, nextTimestampDelay || currentTimestamp.time);
+      }, nextTimestampDelay);
     }
 
     return () => clearTimeout(timeout);
