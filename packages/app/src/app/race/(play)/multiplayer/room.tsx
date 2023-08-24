@@ -1,7 +1,7 @@
 "use client";
 
 import { Language } from "@/config/languages";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { socket } from "@/lib/socket";
 
 // Types
@@ -68,12 +68,12 @@ export default function RaceMultiplayerRoom({
         <MultiplayerLoadingLobby participants={participants}>
           {raceStatus === "waiting" && (
             <div className="flex flex-col items-center text-2xl font-bold">
-              <div className="w-8 h-8 border-4 border-muted-foreground rounded-full border-t-4 border-t-warning animate-spin"></div>
+              <div className="w-8 h-8 border-4 border-t-4 rounded-full border-muted-foreground border-t-warning animate-spin"></div>
               Waiting for players
             </div>
           )}
           {raceStatus === "countdown" && Boolean(raceStartCountdown) && (
-            <div className="text-center text-2xl font-bold">
+            <div className="text-2xl font-bold text-center">
               Game starting in: {raceStartCountdown}
             </div>
           )}

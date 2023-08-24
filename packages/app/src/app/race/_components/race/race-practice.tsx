@@ -1,20 +1,22 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { saveUserResultAction } from "../../actions";
 import { useRouter } from "next/navigation";
+import React, { useEffect, useRef, useState } from "react";
+import { saveUserResultAction } from "../../actions";
 
 // utils
 import { calculateAccuracy, calculateCPM, noopKeys } from "./utils";
 
-// Componenets
-import RaceTracker from "./race-tracker";
-import Header from "./header";
-import LineNumbers from "./line-numbers";
+// Components
 import Code from "./code";
 import Footer from "./footer";
+import Header from "./header";
+import LineNumbers from "./line-numbers";
+import RaceTracker from "./race-tracker";
 
 // Types
+import { useCheckForUserNavigator } from "@/lib/user-system";
+import { catchError } from "@/lib/utils";
 import type { Snippet } from "@prisma/client";
 import type { User } from "next-auth";
 import type { ChartTimeStamp } from "./types";
@@ -42,12 +44,17 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
   const router = useRouter();
   const isRaceFinished = input === code;
 
+<<<<<<< HEAD
   const isUserOnAdroid = useCheckForUserNavigator("android");
   //for auto scroll
   const preElement = useRef<HTMLPreElement | null>(null);
   const scrollUpperLimit = 7;
   const scrollLowerLimit = 7 - 1; //1 is deducted because when scrolling backwards, we count from the left side
   const spanElementWidth = 10.4;
+=======
+  const isUserOnAndroid = useCheckForUserNavigator("android");
+
+>>>>>>> 1f8ec0865da4c364680b7fed3dfc32e978617bc6
   useEffect(() => {
     localStorage.removeItem("chartTimeStamp");
     if (!inputElement.current) return;
@@ -114,9 +121,10 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
       }
     }
   });
-
+  
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function handleInputEvent(e: any /** React.FormEvent<HTMLInputElement>*/) {
-    if (!isUserOnAdroid) return;
+    if (!isUserOnAndroid) return;
     if (!startTime) {
       setStartTime(new Date());
     }
@@ -144,7 +152,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
     // For ANDROID.
     // since the enter button on a mobile keyboard/keypad actually
     // returns a e.key of "Enter" onkeydown, we just set a condition for that.
-    if (isUserOnAdroid) {
+    if (isUserOnAndroid) {
       switch (e.key) {
         case "Enter":
           if (!startTime) {
@@ -213,6 +221,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
   }
 
   // since this logic of setting timestamps will be reused
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function changeTimeStamps(e: any) {
     let value: string;
 

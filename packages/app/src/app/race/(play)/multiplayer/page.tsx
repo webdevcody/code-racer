@@ -1,5 +1,7 @@
 import { getCurrentUser } from "@/lib/session";
 import { redirect } from "next/navigation";
+
+import RaceMultiplayer from "../../_components/race/game-multiplayer";
 import { Language, isValidLanguage } from "@/config/languages";
 import RaceMultiplayerRoom from "./room";
 

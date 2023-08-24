@@ -1,9 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { safeAction } from "./actions";
 import { prisma, type Notification } from "./prisma";
 import { z } from "zod";
+import { validatedCallback } from "./validatedCallback";
 
 export async function getUserNotification({
   userId,
@@ -30,40 +30,42 @@ export async function getUserNotification({
   return notifications;
 }
 
-export const userHasReadNotificationAction = safeAction(
-  z.object({
+export const userHasReadNotificationAction = validatedCallback({
+  inputValidation: z.object({
     notificationId: z.string().nullish(),
   }),
-)(async ({ notificationId }) => {
-  if (!notificationId) {
-    return;
-  }
-  await prisma.notification.update({
-    where: {
-      id: notificationId,
-    },
-    data: {
-      read: true,
-    },
-  });
-  revalidatePath("/");
+  callback: async ({ notificationId }) => {
+    if (!notificationId) {
+      return;
+    }
+    await prisma.notification.update({
+      where: {
+        id: notificationId,
+      },
+      data: {
+        read: true,
+      },
+    });
+    revalidatePath("/");
+  },
 });
 
-export const userDeleteNotificationAction = safeAction(
-  z.object({
+export const userDeleteNotificationAction = validatedCallback({
+  inputValidation: z.object({
     notificationId: z.string(),
   }),
-)(async ({ notificationId }) => {
-  await prisma.notification.delete({
-    where: {
-      id: notificationId,
-    },
-  });
-  revalidatePath("/");
+  callback: async ({ notificationId }) => {
+    await prisma.notification.delete({
+      where: {
+        id: notificationId,
+      },
+    });
+    revalidatePath("/");
+  },
 });
 
-export const pushNotification = safeAction(
-  z.object({
+export const pushNotification = validatedCallback({
+  inputValidation: z.object({
     userId: z.string(),
     notification: z.object({
       title: z.string(),
@@ -71,47 +73,52 @@ export const pushNotification = safeAction(
       ctaUrl: z.string().optional(),
     }),
   }),
-)(async ({ userId, notification: { title, description, ctaUrl } }) => {
-  await prisma.notification.create({
-    data: {
-      title,
-      description,
-      ctaUrl,
-      user: {
-        connect: {
+  callback: async ({
+    userId,
+    notification: { title, description, ctaUrl },
+  }) => {
+    await prisma.notification.create({
+      data: {
+        title,
+        description,
+        ctaUrl,
+        user: {
+          connect: {
+            id: userId,
+          },
+        },
+      },
+    });
+  },
+});
+
+export const userClearNotificationAction = validatedCallback({
+  inputValidation: z.object({
+    userId: z.string(),
+  }),
+  callback: async ({ userId }) => {
+    await prisma.notification.deleteMany({
+      where: {
+        user: {
           id: userId,
         },
       },
-    },
-  });
+    });
+    revalidatePath("/");
+  },
 });
 
-export const userClearNotificationAction = safeAction(
-  z.object({
+export const getUserNotificationCount = validatedCallback({
+  inputValidation: z.object({
     userId: z.string(),
   }),
-)(async ({ userId }) => {
-  await prisma.notification.deleteMany({
-    where: {
-      user: {
-        id: userId,
+  callback: async ({ userId }) => {
+    return await prisma.notification.count({
+      where: {
+        user: {
+          id: userId,
+        },
       },
-    },
-  });
-  console.log("userClearNotification");
-  revalidatePath("/");
-});
-
-export const getUserNotificationCount = safeAction(
-  z.object({
-    userId: z.string(),
-  }),
-)(async ({ userId }) => {
-  return await prisma.notification.count({
-    where: {
-      user: {
-        id: userId,
-      },
-    },
-  });
+    });
+  },
 });

@@ -12,7 +12,7 @@ import { type ServerToClientEvents } from "./events/server-to-client";
 import { createRace, raceMatchMaking } from "./match-making";
 import { RaceStatus, raceStatus } from "./types";
 import { getRandomSnippet } from "@code-racer/app/src/app/race/(play)/loaders";
-import { getRoomParticipantId } from "@code-racer/app/src/lib/wss-app-utils";
+import { v4 as uuidv4 } from "uuid";
 
 export type SocketId = string;
 type RaceId = string;
@@ -70,10 +70,12 @@ export class Game {
           return;
         }
 
-        // race id is associated with the room id
-        const race = await createRace(snippet, payload.roomId);
+        const roomId = uuidv4();
 
-        this.races.set(payload.roomId, {
+        // race id is associated with the room id
+        const race = await createRace(snippet, roomId);
+
+        this.races.set(roomId, {
           ...race,
           participants: [],
           status: "waiting",

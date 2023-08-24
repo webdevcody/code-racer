@@ -1,7 +1,6 @@
-import { PrismaClient, type Notification, Achievement, AchievementType } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import snippets from "./seed-data/snippets";
 import usersSeed from "./seed-data/users.seed";
-
 
 const prisma = new PrismaClient();
 

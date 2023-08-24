@@ -1,19 +1,19 @@
 "use client";
 
-import * as React from "react";
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
+import { catchError, cn } from "@/lib/utils";
 import type { Snippet, SnippetVote } from "@prisma/client";
 import { User } from "next-auth";
+import * as React from "react";
 import {
   deleteVoteAction,
   downVoteSnippetAction,
   upvoteSnippetAction,
 } from "./actions";
-import { toast } from "@/components/ui/use-toast";
-import { catchError, cn } from "@/lib/utils";
 
 export function Voting({
+  // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
   userId,
   snippetId,
   usersVote,

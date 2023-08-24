@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { PauseIcon, PlayIcon, RefreshCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PauseIcon, PlayIcon, RefreshCcw } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface ReplayTimeStamp {
   char: string;
@@ -10,11 +10,11 @@ interface ReplayTimeStamp {
   time: number;
 }
 
-type ReplayCode = {
+type TReplayCode = {
   code?: string;
 };
 
-export const ReplayCode = ({ code }: ReplayCode) => {
+export const ReplayCode = ({ code }: TReplayCode) => {
   const [replayTimeStamp, setReplayTimeStamp] = useState<ReplayTimeStamp[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);

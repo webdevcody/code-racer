@@ -5,7 +5,7 @@ import * as React from "react";
 import { Prisma } from "@/lib/prisma";
 import { socket } from "@/lib/socket";
 import { useEffect } from "react";
-import { type RaceStatus, raceStatus } from "@code-racer/wss/src/types";
+import { type RaceStatus } from "@code-racer/wss/src/types";
 import { User } from "next-auth";
 import MultiplayerLoadingLobby from "@/app/race/_components/multiplayer-loading-lobby";
 import { Button } from "@/components/ui/button";
@@ -82,7 +82,7 @@ export function Room({ user, roomId }: { user?: User; roomId: string }) {
     <>
       {participants && notStarted && (
         <MultiplayerLoadingLobby participants={participants}>
-          <div className="flex h-10 w-full items-center justify-between rounded-md border bg-background px-3 py-2 text-sm text-muted-foreground gap-2">
+          <div className="flex items-center justify-between w-full h-10 gap-2 px-3 py-2 text-sm border rounded-md bg-background text-muted-foreground">
             <span>{roomId}</span>
             <CopyButton value={roomId} />
           </div>
