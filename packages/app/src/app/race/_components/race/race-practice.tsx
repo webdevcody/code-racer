@@ -19,10 +19,7 @@ import { useCheckForUserNavigator } from "@/lib/user-system";
 import { catchError } from "@/lib/utils";
 import type { Snippet } from "@prisma/client";
 import type { User } from "next-auth";
-import type { ChartTimeStamp } from "./types";
-import type { ReplayTimeStamp } from "./types";
-import { catchError } from "@/lib/utils";
-import { useCheckForUserNavigator } from "@/lib/user-system";
+import type { ChartTimeStamp, ReplayTimeStamp } from "./types";
 import { useEffectOnce } from "react-use";
 
 type RacePracticeProps = {
@@ -44,22 +41,18 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
   const router = useRouter();
   const isRaceFinished = input === code;
 
-<<<<<<< HEAD
-  const isUserOnAdroid = useCheckForUserNavigator("android");
+  const isUserOnAndroid = useCheckForUserNavigator("android");
   //for auto scroll
   const preElement = useRef<HTMLPreElement | null>(null);
   const scrollUpperLimit = 7;
   const scrollLowerLimit = 7 - 1; //1 is deducted because when scrolling backwards, we count from the left side
-  const spanElementWidth = 10.4;
-=======
-  const isUserOnAndroid = useCheckForUserNavigator("android");
-
->>>>>>> 1f8ec0865da4c364680b7fed3dfc32e978617bc6
+  const spanElementWidth = 10.4; //the span element will always have this width
   useEffect(() => {
     localStorage.removeItem("chartTimeStamp");
     if (!inputElement.current) return;
     inputElement.current.focus();
   });
+  
   useEffectOnce(() => {
     if (preElement.current) {
       setWindowEnd(
@@ -121,7 +114,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
       }
     }
   });
-  
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function handleInputEvent(e: any /** React.FormEvent<HTMLInputElement>*/) {
     if (!isUserOnAndroid) return;
@@ -386,8 +379,15 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
     setTotalErrors(0);
     setReplayTimeStamp([]);
     setChartTimeStamp([]);
+    setWindowEnd(
+      Math.floor(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (preElement.current?.getBoundingClientRect().width as any) /
+          spanElementWidth
+      )
+    );
   }
-
+  //function to handle scroll to the right
   function handleScrollPositive(updatedInput: string) {
     const lineNumber = input.split("\n").length;
     const totalCharactersInput = Number(
@@ -399,6 +399,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
       setScrollPosition((prev) => prev + spanElementWidth);
     }
   }
+  //function to handle scroll to the left when backspaced
   function handleScrollNegative(updatedInput: string) {
     const lineNumber = input.split("\n").length;
     const totalCharactersInput = Number(
