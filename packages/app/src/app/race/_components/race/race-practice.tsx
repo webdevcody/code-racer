@@ -52,7 +52,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
     if (!inputElement.current) return;
     inputElement.current.focus();
   });
-  
+
   useEffectOnce(() => {
     if (preElement.current) {
       setWindowEnd(
@@ -276,11 +276,6 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
         const totalCharactersInput = Number(
           updatedInput.split("\n")[lineNumber - 1]?.length
         );
-        console.log({
-          totalCharactersInput,
-          scrollUpperLimit,
-          spanElementWidth,
-        });
         setScrollPosition(
           (totalCharactersInput -
             Math.floor(
@@ -346,7 +341,6 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
       const updated = prevInput + e.key;
 
       handleScrollPositive(updated);
-      console.log({ TotalChar: updated.length });
       return updated;
     });
 
