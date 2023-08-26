@@ -17,10 +17,6 @@ module.exports = {
     },
     extend: {
       backgroundSize: { achievement: "50% 100%" },
-      backgroundImage: {
-        achievement:
-          "linear-gradient(115deg, var(--achievement-progress-color))",
-      },
       screens: {
         xs: "560px",
       },
