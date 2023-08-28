@@ -69,6 +69,14 @@ The Code Racer project is licensed under the MIT License. Feel free to use, modi
 
 <a id="acknowledgements"></a>
 
+### Run the application locally
+
+  Pre-requisites - [Docker](https://www.docker.com/) and [Node](https://nodejs.org/) installed.
+
+  1. Create a copy of `.env.example` with name `.env` or `.env.local`
+  2. Run the docker - `docker compose up -d`
+  3. Run the dev env - `npm run dev:app`
+
 ## Acknowledgements 🙏🏻
 
 Code Racer wouldn't be possible without the valuable contributions and support from the open-source community. We would like to express our gratitude to all the contributors and acknowledge the following libraries and resources used in this project.
