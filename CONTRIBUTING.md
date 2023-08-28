@@ -46,43 +46,43 @@ To get started with Code Racer locally, follow these steps
 
 1. Make sure you have installed Docker locally (See above Prerequisites)
 
-2. Fork the repo
+1. Fork the repo
 
-3. Clone your fork
+1. Clone your fork
 
    ```sh
     git clone https://github.com/<YOUR_GITHUB_ACCOUNT_NAME>/code-racer.git
    ```
 
-4. Navigate to the project directory
+1. Navigate to the project directory
 
    ```sh
    cd code-racer
    ```
 
-5. Create a .env file inside the project's packages/app directory.
+1. Create a .env file inside the project's packages/app directory.
 
-6. Copy and paste variables from `packages/app/.env.example` into `packages/app/.env`
+1. Copy and paste variables from `packages/app/.env.example` into `packages/app/.env`
 
-7. Install NPM packages
+1. Install NPM packages
 
    ```sh
    npm i
    ```
 
-8. Start the database
+1. Start the database
 
    ```sh
    npm run dev:db
    ```
 
-9. Start the app dev server
+1. Start the app dev server
 
    ```sh
    npm run dev:app
    ```
 
-10. Start the web socket server
+1. Start the web socket server
 
 ```sh
 npm run dev:wss
@@ -102,12 +102,12 @@ There is also a new video explaining how you can contribute to this project:
 If you want to work on a new feature, follow these steps.
 
 1. Fork the repo
-2. Clone your fork
-3. Checkout a new branch
-4. Do your work
-5. Commit
-6. Push your branch to your fork
-7. Go into github UI and create a PR from your fork & branch, and merge it into upstream MAIN
+1. Clone your fork
+1. Checkout a new branch
+1. Do your work
+1. Commit
+1. Push your branch to your fork
+1. Go into github UI and create a PR from your fork & branch, and merge it into upstream MAIN
 
 ## Pulling in changes from upstream
 
@@ -131,7 +131,7 @@ Before submitting a **Pull Request**, you should
 npm run pr:precheck
 ```
 
-2. (Optional) Do an E2E test to ensure application functions properly
+1. (Optional) Do an E2E test to ensure application functions properly
 
 ```
 npm run e2e -w @code-racer/app

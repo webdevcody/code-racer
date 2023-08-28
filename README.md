@@ -88,11 +88,11 @@ Happy coding and enjoy the race!
 ## Related Youtube Videos & Progress &colon;clapper&colon;
 
 1. [Community Project Announcement Video](https://www.youtube.com/watch?v=-n6tV3RPjGc)
-2. [First Q&A Livestream and Community Project Live Coding Session](https://www.youtube.com/watch?v=BQXXBsHXfak)
-3. [How to contribute to open source projects (our community project walkthrough)](https://www.youtube.com/watch?v=dLRA1lffWBw)
-4. [You need to write tests when this starts to happen](https://www.youtube.com/watch?v=PzrhclEQp-M)
-5. [CodeRacer had a major security issue](https://www.youtube.com/watch?v=FigpqBGqwK4)
-6. [Stop calling prisma inside server components](https://www.youtube.com/watch?v=sLIoCfKK5SA)
+1. [First Q&A Livestream and Community Project Live Coding Session](https://www.youtube.com/watch?v=BQXXBsHXfak)
+1. [How to contribute to open source projects (our community project walkthrough)](https://www.youtube.com/watch?v=dLRA1lffWBw)
+1. [You need to write tests when this starts to happen](https://www.youtube.com/watch?v=PzrhclEQp-M)
+1. [CodeRacer had a major security issue](https://www.youtube.com/watch?v=FigpqBGqwK4)
+1. [Stop calling prisma inside server components](https://www.youtube.com/watch?v=sLIoCfKK5SA)
 
 <details>
   <summary>
