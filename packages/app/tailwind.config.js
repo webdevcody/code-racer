@@ -16,6 +16,7 @@ module.exports = {
       },
     },
     extend: {
+      backgroundSize: { achievement: "50% 100%" },
       screens: {
         xs: "560px",
       },
@@ -115,9 +116,26 @@ module.exports = {
           "80%": { transform: "scale(0)" },
           "100%": { transform: "scale(0)" },
         },
+        gradient: {
+          "0%": {
+            backgroundPosition: "0% 0%",
+          },
+          "25%": {
+            backgroundPosition: "25% 50%",
+          },
+          "50%": {
+            backgroundPosition: "50% 75%",
+          },
+          "75%": {
+            backgroundPosition: "75% 100%",
+          },
+          "100%": {
+            backgroundPosition: "100% 0%",
+          },
+        },
         "half-rotate": {
-          "0%": {transform: "rotate(0deg)"},
-          "100%": {transform: "rotate(180deg)"},
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(180deg)" },
         },
       },
       animation: {
@@ -130,6 +148,7 @@ module.exports = {
         dash: "dash linear infinite",
         blink: "blink 1.5s ease infinite",
         fade: "fade 1s ease-in-out",
+        gradient: "gradient 0.75s linear infinite",
       },
     },
   },
