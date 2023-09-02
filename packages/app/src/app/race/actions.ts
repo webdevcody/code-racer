@@ -6,6 +6,7 @@ import { UnauthorizedError } from "@/lib/exceptions/custom-hooks";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { validatedCallback } from "@/lib/validatedCallback";
+import CryptoJS  from 'crypto-js';
 
 export const saveUserResultAction = validatedCallback({
   inputValidation: z.object({
@@ -15,6 +16,8 @@ export const saveUserResultAction = validatedCallback({
     cpm: z.number(),
     accuracy: z.number().min(0).max(100),
     snippetId: z.string(),
+    data: z.string(),
+    hash: z.string(),
   }),
   callback: async (input) => {
     const user = await getCurrentUser();
@@ -63,6 +66,15 @@ export const saveUserResultAction = validatedCallback({
     const topLanguages = Object.keys(languagesMap)
       .sort((a, b) => languagesMap[b] - languagesMap[a])
       .splice(0, 3);
+
+    // verify hash:
+    const uniqueKey = 'your-unique-key';
+    const hashedData = CryptoJS.HmacSHA256(input.data, uniqueKey).toString();
+
+    if( hashedData != input.hash.toString() ){
+      console.log(input.hash.toString(), hashedData);
+      throw new Error("Invalid Request: Data tampered");
+    }
 
     return await prisma.$transaction(async (tx) => {
       const result = await tx.result.create({

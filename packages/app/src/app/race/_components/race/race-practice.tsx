@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { saveUserResultAction } from "../../actions";
+import CryptoJS  from 'crypto-js';
 
 // utils
 import { calculateAccuracy, calculateCPM, noopKeys } from "./utils";
@@ -96,6 +97,17 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
           },
         ])
       );
+      
+      const uniqueKey = 'your-unique-key';
+      const data = {
+        timeTaken,
+        errors: totalErrors,
+        cpm: calculateCPM(code.length - 1, timeTaken),
+        accuracy: calculateAccuracy(code.length - 1, totalErrors),
+        snippetId: snippet.id,
+      };
+      const jsonData = JSON.stringify(data);
+      const hashedData = CryptoJS.HmacSHA256(jsonData, uniqueKey).toString();
 
       if (user) {
         saveUserResultAction({
@@ -104,6 +116,8 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
           cpm: calculateCPM(code.length - 1, timeTaken),
           accuracy: calculateAccuracy(code.length - 1, totalErrors),
           snippetId: snippet.id,
+          data: jsonData,
+          hash: hashedData,
         })
           .then((result) => {
             router.push(`/result?resultId=${result.id}`);
