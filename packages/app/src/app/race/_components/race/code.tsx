@@ -1,14 +1,13 @@
 import { cn } from "@/lib/utils";
+import React from "react";
 
 type CodeProps = {
   code: string;
   input: string;
+  preRef?: React.MutableRefObject<HTMLPreElement | null>;
 };
 
-export default function Code({
-  code,
-  input,
-}: CodeProps) {
+export default function Code({ code, input, preRef }: CodeProps) {
   const array: number[] = [];
   const currentCharacter = input.slice(-1);
   const expectedCharacter = code.charAt(input.length - 1);
@@ -20,8 +19,9 @@ export default function Code({
   return (
     <>
       <pre
-        className="text-monochrome mb-4 overflow-auto font-medium px-2 w-full"
+        className="text-monochrome mb-4 overflow-auto font-medium w-full"
         data-cy="code-snippet-preformatted"
+        ref={preRef}
       >
         {code.split("").map((char, index) => (
           <span
@@ -31,8 +31,7 @@ export default function Code({
                 code[index] !== " " && array.includes(index),
               "border-red-500 opacity-100":
                 code[index] === " " && array.includes(index),
-              "bg-yellow-200 opacity-80 text-black":
-                input.length === index,
+              "bg-yellow-200 opacity-80 text-black": input.length === index,
               "opacity-100": input.length !== index && input[index] === char,
             })}
           >

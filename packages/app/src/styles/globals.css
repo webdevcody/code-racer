@@ -42,6 +42,15 @@
     --radius: 0.5rem;
 
     --monochrome-color: 0 0% 0%;
+
+    --achievement-progress-gradient: linear-gradient(
+      115deg,
+      rgb(79, 207, 112),
+      rgb(250, 214, 72),
+      rgb(167, 103, 229),
+      rgb(18, 188, 254),
+      rgb(68, 206, 123)
+    );
   }
 
   .dark {

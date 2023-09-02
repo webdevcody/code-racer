@@ -20,6 +20,7 @@ import { catchError } from "@/lib/utils";
 import type { Snippet } from "@prisma/client";
 import type { User } from "next-auth";
 import type { ChartTimeStamp, ReplayTimeStamp } from "./types";
+import { useEffectOnce } from "react-use";
 
 type RacePracticeProps = {
   user?: User;
@@ -32,19 +33,38 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
   const [totalErrors, setTotalErrors] = useState(0);
   const [chartTimeStamp, setChartTimeStamp] = useState<ChartTimeStamp[]>([]);
   const [replayTimeStamp, setReplayTimeStamp] = useState<ReplayTimeStamp[]>([]);
-
+  const [windowStart, setWindowStart] = useState<number>(0);
+  const [windowEnd, setWindowEnd] = useState<number>(0);
+  const [scrollPosition, setScrollPosition] = useState(0);
   const inputElement = useRef<HTMLInputElement | null>(null);
   const code = snippet.code.trimEnd();
   const router = useRouter();
   const isRaceFinished = input === code;
 
   const isUserOnAndroid = useCheckForUserNavigator("android");
-
+  //for auto scroll
+  const preElement = useRef<HTMLPreElement | null>(null);
+  const scrollUpperLimit = 7;
+  const scrollLowerLimit = 7 - 1; //1 is deducted because when scrolling backwards, we count from the left side
+  const spanElementWidth = 10.4; //the span element will always have this width
   useEffect(() => {
     localStorage.removeItem("chartTimeStamp");
     if (!inputElement.current) return;
     inputElement.current.focus();
   });
+
+  useEffectOnce(() => {
+    if (preElement.current) {
+      setWindowEnd(
+        Math.floor(
+          preElement.current?.getBoundingClientRect().width / spanElementWidth
+        )
+      );
+    }
+  });
+  useEffect(() => {
+    preElement.current?.scrollTo(scrollPosition, 0);
+  }, [scrollPosition]);
 
   useEffect(() => {
     if (isRaceFinished) {
@@ -62,7 +82,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
             cpm: calculateCPM(input.length, timeTaken),
             time: Date.now(),
           },
-        ]),
+        ])
       );
 
       localStorage.setItem(
@@ -74,7 +94,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
             textIndicatorPosition: input.length,
             time: Date.now(),
           },
-        ]),
+        ])
       );
 
       if (user) {
@@ -94,7 +114,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
       }
     }
   });
-  
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function handleInputEvent(e: any /** React.FormEvent<HTMLInputElement>*/) {
     if (!isUserOnAndroid) return;
@@ -120,6 +140,8 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
   }
 
   function handleKeyboardDownEvent(e: React.KeyboardEvent<HTMLInputElement>) {
+    //scroll to the cursor position
+    preElement.current?.scrollTo(scrollPosition, 0);
     // For ANDROID.
     // since the enter button on a mobile keyboard/keypad actually
     // returns a e.key of "Enter" onkeydown, we just set a condition for that.
@@ -131,11 +153,11 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
           }
           if (input !== code.slice(0, input.length)) return;
           Enter();
-        break;
+          break;
         // this is to delete the characters when "Enter" is pressed;
         case "Backspace":
           Backspace();
-        break;
+          break;
       }
       return;
     }
@@ -245,9 +267,35 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
     if (input.length === 0) {
       return;
     }
-    setInput((prevInput) => prevInput.slice(0, -1));
-
     const character = input.slice(-1);
+    setInput((prevInput) => {
+      const updatedInput = prevInput.slice(0, -1);
+
+      if (character === "\n") {
+        const lineNumber = updatedInput.split("\n").length;
+        const totalCharactersInput = Number(
+          updatedInput.split("\n")[lineNumber - 1]?.length
+        );
+        setScrollPosition(
+          (totalCharactersInput -
+            Math.floor(
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (preElement.current?.getBoundingClientRect().width as any) /
+                spanElementWidth
+            ) +
+            scrollUpperLimit +
+            1) *
+            spanElementWidth
+          // spanElement?.current?.getBoundingClientRect().width
+        );
+        setWindowEnd(totalCharactersInput + scrollUpperLimit + 1);
+        setWindowStart(totalCharactersInput + scrollUpperLimit + 1 - 67);
+      } else {
+        handleScrollNegative(updatedInput);
+      }
+      return updatedInput;
+    });
+
     if (character !== " " && character !== "\n") {
       setChartTimeStamp((prevArray) => prevArray.slice(0, -1));
     }
@@ -269,6 +317,18 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
         indent += " ";
         i++;
       }
+      preElement.current?.scrollTo(0, 0);
+
+      setWindowEnd(
+        Math.floor(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (preElement?.current?.getBoundingClientRect().width as any) /
+            spanElementWidth
+        )
+      );
+
+      setWindowStart(0);
+      setScrollPosition(0);
       setInput((prevInput) => prevInput + "\n" + indent);
     }
   }
@@ -277,7 +337,12 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
     if (e.key !== code.slice(input.length, input.length + 1)) {
       setTotalErrors((prevTotalErrors) => prevTotalErrors + 1);
     }
-    setInput((prevInput) => prevInput + e.key);
+    setInput((prevInput) => {
+      const updated = prevInput + e.key;
+
+      handleScrollPositive(updated);
+      return updated;
+    });
 
     if (e.key !== " ") {
       const currTime = Date.now();
@@ -308,6 +373,38 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
     setTotalErrors(0);
     setReplayTimeStamp([]);
     setChartTimeStamp([]);
+    setWindowEnd(
+      Math.floor(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (preElement.current?.getBoundingClientRect().width as any) /
+          spanElementWidth
+      )
+    );
+  }
+  //function to handle scroll to the right
+  function handleScrollPositive(updatedInput: string) {
+    const lineNumber = input.split("\n").length;
+    const totalCharactersInput = Number(
+      updatedInput.split("\n")[lineNumber - 1]?.length
+    );
+    if (windowEnd - totalCharactersInput <= scrollUpperLimit) {
+      setWindowEnd((previousValue) => previousValue + 1);
+      setWindowStart((prev) => prev + 1);
+      setScrollPosition((prev) => prev + spanElementWidth);
+    }
+  }
+  //function to handle scroll to the left when backspaced
+  function handleScrollNegative(updatedInput: string) {
+    const lineNumber = input.split("\n").length;
+    const totalCharactersInput = Number(
+      updatedInput.split("\n")[lineNumber - 1]?.length
+    );
+
+    if (totalCharactersInput - windowStart <= scrollLowerLimit) {
+      setWindowStart((previousValue) => previousValue - 1);
+      setWindowEnd((previousValue) => previousValue - 1);
+      setScrollPosition((prev) => prev - spanElementWidth);
+    }
   }
 
   return (
@@ -326,7 +423,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
       <Header user={user} snippet={snippet} handleRestart={handleRestart} />
       <section className="flex">
         <LineNumbers code={code} currentLineNumber={input.split("\n").length} />
-        <Code code={code} input={input} />
+        <Code code={code} input={input} preRef={preElement} />
         <input
           type="text"
           ref={inputElement}
