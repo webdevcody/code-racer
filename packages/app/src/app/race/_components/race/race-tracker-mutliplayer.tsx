@@ -2,7 +2,6 @@ import { ProgressBar, ProgressIndicator } from "@/components/ui/progress-bar";
 import Image from "next/image";
 import type { User } from "next-auth";
 import React from "react";
-import { getParticipantUser } from "../../actions";
 
 export default function RaceTrackerMultiplayer({ position, participantId }: {
   position: number;
@@ -14,7 +13,8 @@ export default function RaceTrackerMultiplayer({ position, participantId }: {
 
   async function fetchParticipantUser() {
     if (participantId) {
-      const user = await getParticipantUser({ participantId });
+      /** null for now */
+      const user = null;
       if (user) {
         setParticipantUser(user as User);
       }

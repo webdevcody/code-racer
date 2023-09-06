@@ -7,16 +7,12 @@ import { socket } from "@/lib/socket";
 // Types
 import type { User } from "next-auth";
 import { Prisma } from "@prisma/client";
-import { RaceStatus } from "@code-racer/wss/src/types";
+import { RaceStatus } from "@code-racer/wss/src/consts"; 
 import { GameStateUpdatePayload } from "@code-racer/wss/src/events/server-to-client";
 
-import MultiplayerLoadingLobby from "@/app/race/_components/multiplayer-loading-lobby";
 import GameMultiplayer from "@/app/race/_components/race/game-multiplayer";
-
-type Participant = Omit<
-  GameStateUpdatePayload["raceState"]["participants"][number],
-  "socketId"
->;
+import { MultiplayerLoadingLobby } from "../../_components/multiplayer-loading-lobby";
+import type { Participant } from "@code-racer/wss/src/store/memory";
 
 export default function RaceMultiplayerRoom({
   user,
@@ -32,7 +28,7 @@ export default function RaceMultiplayerRoom({
   const [raceStatus, setRaceStatus] = React.useState<RaceStatus | null>(null);
   const [raceStartCountdown, setRaceStartCountdown] = useState<number>(0);
 
-  const [participants, setParticipants] = React.useState<Participant[]>([]);
+  const [participants, setParticipants] = React.useState<Array<Participant>>([]);
 
   // Connection to wss
   useEffect(() => {
