@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { isValidUUID } from "@/lib/utils";
 
+
 export const languageTypes = z.union([
   z.literal("c++"),
   z.literal("c#"),
@@ -14,6 +15,8 @@ export const languageTypes = z.union([
   z.literal("swift"),
   z.literal("typescript"),
 ], { invalid_type_error: "Please choose an existing language." });
+
+export type LanguageType = z.infer<typeof languageTypes>;
 
 export const createRoomSchema = z.object({
   language: languageTypes

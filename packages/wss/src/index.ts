@@ -4,7 +4,7 @@ config();
 import express from "express";
 import http from "http";
 import { Server } from "socket.io";
-import { Game } from "./game";
+import { Game } from "./new-game";
 import { ClientToServerEvents } from "./events/client-to-server";
 import { ServerToClientEvents } from "./events/server-to-client";
 

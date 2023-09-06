@@ -14,4 +14,6 @@ export const RACE_STATUS = {
 	FINISHED: "finished",
 } as const;
 
+export const IS_IN_DEVELOPMENT = true;
+
 export type RaceStatus = (typeof RACE_STATUS)[keyof typeof RACE_STATUS];
