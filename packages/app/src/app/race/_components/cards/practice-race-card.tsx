@@ -7,13 +7,17 @@ import React, { SetStateAction, useState } from "react";
 import { useRouter } from "next/navigation";
 import LanguageDropDown from "@/app/add-snippet/_components/language-dropdown";
 import { bruno_ace_sc } from "@/lib/fonts";
+import { z } from "zod";
+import { languageTypes } from "@/lib/validations/room";
+
+type LanguageType = z.infer<typeof languageTypes>;
 
 export default function PracticeRaceCard() {
-  const [selectedPracticeLanguage, setSelectedPracticeLanguage] = useState("");
+  const [selectedPracticeLanguage, setSelectedPracticeLanguage] = useState<LanguageType | undefined>();
   const [error, setError] = useState("");
   const router = useRouter();
 
-  function handleSetCodeLanguage(props: SetStateAction<string>) {
+  function handleSetCodeLanguage(props: SetStateAction<LanguageType | undefined>) {
     setSelectedPracticeLanguage(props);
     setError("");
   }
@@ -65,7 +69,7 @@ export default function PracticeRaceCard() {
             <span className="text-red-500">{error}</span>
           </div>
           <Button
-            disabled={selectedPracticeLanguage === ""}
+            disabled={selectedPracticeLanguage === undefined}
             variant="black"
             className="relative justify-start border"
             data-cy="practice-button"

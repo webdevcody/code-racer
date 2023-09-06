@@ -1,8 +1,6 @@
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Users } from "lucide-react";
-import { useSession } from "next-auth/react";
-import { useToast } from "@/components/ui/use-toast";
 import { bruno_ace_sc } from "@/lib/fonts";
 import Link from "next/link";
 import { cn } from "@/lib/utils";

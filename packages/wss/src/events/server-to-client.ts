@@ -1,7 +1,7 @@
 import type { Prisma, RaceParticipant } from "@code-racer/app/src/lib/prisma";
 import type { UserRacePresencePayload } from "./common";
-import type { RaceStatus } from "@/consts";
-import type { Participant } from "@/store/memory";
+import type { RaceStatus } from "../consts";
+import type { Participant } from "../store/memory";
 
 type NewType = {
 	participants: Array<string>;
@@ -13,7 +13,7 @@ type Race = NewType;
 export type GameStateUpdatePayload = {
 	raceState: {
 		id: string;
-		status: "waiting" | "countdown" | "running" | "finished";
+		status: RaceStatus;
 		participants: Participant[];
 		countdown?: number;
 	};

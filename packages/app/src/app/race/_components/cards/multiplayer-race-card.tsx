@@ -8,15 +8,19 @@ import { bruno_ace_sc } from "@/lib/fonts";
 import LanguageDropDown from "@/app/add-snippet/_components/language-dropdown";
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
+import { z } from "zod";
+import { languageTypes } from "@/lib/validations/room";
+
+type LanguageType = z.infer<typeof languageTypes>;
 
 export default function MultiplayerRaceCard({ enabled }: { enabled: boolean }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [selectedMultiplayerLanguage, setSelectedMultiplayerLanguage] =
-    useState("");
+    useState<LanguageType | undefined>();
 
-  function handleSetCodeLanguage(props: SetStateAction<string>) {
+  function handleSetCodeLanguage(props: SetStateAction<LanguageType | undefined>) {
     setSelectedMultiplayerLanguage(props);
     setError("");
   }
@@ -81,7 +85,7 @@ export default function MultiplayerRaceCard({ enabled }: { enabled: boolean }) {
               </div>
               <Button
                 disabled={
-                  !enabled || isLoading || selectedMultiplayerLanguage === ""
+                  !enabled || isLoading || selectedMultiplayerLanguage === undefined
                 }
                 variant="black"
                 className="relative justify-start border"
