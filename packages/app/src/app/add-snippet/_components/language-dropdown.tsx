@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import React from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useEffect } from "react";
 import { cn } from "@/lib/utils";
@@ -18,6 +18,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { snippetLanguages } from "@/config/languages";
+import { languageTypes } from "@/lib/validations/room";
+import { z } from "zod";
+
+type LanguageTypes = z.infer<typeof languageTypes>;
 
 const LanguageDropdown = ({
   className,
@@ -25,20 +29,22 @@ const LanguageDropdown = ({
   onChange,
 }: {
   className?: string;
-  value: string;
-  // eslint-disable-next-line no-unused-vars
-  onChange: (props: React.SetStateAction<string>) => void;
+  value: LanguageTypes | undefined;
+  onChange: (_props: React.SetStateAction<LanguageTypes | undefined>) => void;
 }) => {
   const [open, setOpen] = React.useState(false);
   const [search, setSearch] = React.useState("");
 
   useEffect(() => {
-    const savedCodeLanguage = window.localStorage.getItem("codeLanguage");
-    if (savedCodeLanguage) {
-      onChange(savedCodeLanguage);
+    if (localStorage) {
+      const savedCodeLanguage = localStorage.getItem("codeLanguage");
+      const parsedSavedCodeLanguage = languageTypes.parse(savedCodeLanguage);
+      if (savedCodeLanguage) {
+        onChange(parsedSavedCodeLanguage);
+      }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [onChange]);
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -51,7 +57,7 @@ const LanguageDropdown = ({
         >
           {value
             ? snippetLanguages.find((language) => language.value === value)
-                ?.label
+              ?.label
             : "Select language..."}
           <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
         </Button>
@@ -75,12 +81,11 @@ const LanguageDropdown = ({
                   key={language.label}
                   value={language.value}
                   onSelect={(currentValue) => {
-                    const newCodeLanguage =
-                      currentValue === value ? "" : currentValue;
-                    onChange(newCodeLanguage);
+                    const parsedValue = languageTypes.parse(currentValue);
+                    onChange(parsedValue);
                     window.localStorage.setItem(
                       "codeLanguage",
-                      newCodeLanguage,
+                      parsedValue,
                     );
                     setOpen(false);
                   }}

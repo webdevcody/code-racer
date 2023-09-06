@@ -1,39 +1,24 @@
-import { useState, useEffect } from "react";
+"use client";
+
+import type { Participant } from "@code-racer/wss/src/store/memory";
+
 import { useSearchParams } from "next/navigation";
-import type { User } from "next-auth";
+
 import LobbyUser from "./lobby-user";
-import { getParticipantUser } from "../actions";
+
 import { bruno_ace_sc } from "@/lib/fonts";
 
 interface MultiplayerLoadingLobbyProps {
-  participants: User[];
+  participants: Array<Participant>;
   children?: React.ReactNode;
 }
 
-export default function MultiplayerLoadingLobby({
+export function MultiplayerLoadingLobby({
   participants,
   children,
 }: MultiplayerLoadingLobbyProps) {
-  const [lobby, setLobby] = useState<User[]>([]);
   const searchParams = useSearchParams();
   const lang = searchParams ? searchParams.get("lang") : "";
-
-  useEffect(() => {
-    async function getUsers() {
-      const users = await Promise.all(
-        participants.map(async (participant) => {
-          const userParticipant = await getParticipantUser({
-            participantId: participant.id,
-          });
-          return {
-            ...(userParticipant as User),
-          };
-        }),
-      );
-      setLobby(users);
-    }
-    getUsers();
-  }, [participants]);
 
   return (
     <div className="flex flex-col items-center space-y-10">
@@ -48,8 +33,8 @@ export default function MultiplayerLoadingLobby({
       </h2>
       <div className="flex justify-center space-x-10">
         {/* {lobby && lobby} */}
-        {lobby &&
-          lobby.map((participant, idx) => (
+        {participants &&
+          participants.map((participant, idx) => (
             <LobbyUser key={idx} participant={participant} />
           ))}
       </div>

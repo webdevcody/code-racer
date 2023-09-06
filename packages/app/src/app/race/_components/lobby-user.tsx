@@ -1,8 +1,9 @@
+import type{ Participant } from "@code-racer/wss/src/store/memory";
+
 import Image from "next/image";
-import type { User } from "next-auth";
 
 interface LobbyUserProps {
-  participant?: User;
+  participant?: Participant;
 }
 
 export default function LobbyUser({ participant }: LobbyUserProps) {

@@ -110,34 +110,8 @@ export const saveUserResultAction = validatedCallback({
   },
 });
 
-export const getParticipantUser = validatedCallback({
-  inputValidation: z.object({
-    participantId: z.string(),
-  }),
-  callback: async (input) => {
-    const participant = await prisma.raceParticipant.findUnique({
-      where: {
-        id: input.participantId,
-      },
-    });
-
-    if (!participant || !participant.userId) return null;
-
-    const user = await prisma.user.findUnique({
-      where: {
-        id: participant.userId,
-      },
-      select: {
-        name: true,
-        image: true,
-      },
-    });
-
-    return user;
-  },
-});
-
-/**
- * This should create a private room for the user
- * Not implemented
- **/
+/** PLEASE DO SERVER ACTION CALLS ON THE WEBSOCKET SERVER
+ *  INSTEAD SINCE IT IS TECHNICALLY A SERVER
+ *  AND WE ARE MAKING PRISMA CALLS IN IT AS WELL,
+ *  SO WE SHOULD DO IT ON THE SERVER.
+ */

@@ -1,98 +1,75 @@
 "use client";
 
-import * as React from "react";
+import type { SendNotificationPayload } from "@code-racer/wss/src/events/server-to-client";
 
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import React from "react";
+import z from "zod";
 
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { createRoomSchema } from "@/lib/validations/room";
+
+import { languageTypes } from "@/lib/validations/room";
 import LanguageDropdown from "@/app/add-snippet/_components/language-dropdown";
-import CopyButton from "@/components/ui/copy-button";
-import { Icons } from "@/components/icons";
-import type { User } from "next-auth";
+
 import { socket } from "@/lib/socket";
 import { useRouter } from "next/navigation";
 import { toast } from "@/components/ui/use-toast";
-import { Language } from "@/config/languages";
+import { Icons } from "@/components/icons";
 
 // import CopyButton from '@/components/CopyButton'
 
-type CreateRoomForm = z.infer<typeof createRoomSchema>;
+type LanguageTypes = z.infer<typeof languageTypes>;
 
-export const CreateRoomForm = () => {
+const CreateRoomForm = () => {
   const [isLoading, setIsLoading] = React.useState(false);
-
+  const [language, setLanguage] = React.useState<LanguageTypes | undefined>();
   const router = useRouter();
 
-  const form = useForm<CreateRoomForm>({
-    resolver: zodResolver(createRoomSchema),
-    defaultValues: {
-      language: localStorage.getItem("codeLanguage") ?? "",
-    },
-  });
-
-  function onSubmit({ language }: CreateRoomForm) {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    socket.connect();
     setIsLoading(true);
-    socket.emit("UserCreateRoom", {
-      // TODO: make typescript happy
-      language: language as Language,
-    });
-  }
+    const parsedLanguage = languageTypes.parse(language);
+    socket.emit("UserCreateRoom", { language: parsedLanguage });
+  };
 
   React.useEffect(() => {
-    socket.on("RoomCreated", (payload) => {
-      router.push(`/race/${payload.roomId}`);
-    });
+    const handleRoomCreation = ({ roomId }: { roomId: string }) => {
+      router.push(`/race/${roomId}`);
+    }
 
-    socket.on("SendNotification", (payload) => {
-      toast({
-        title: payload.title,
-        description: payload.description,
-        variant: payload.variant,
-      });
-
+    const receiveNotification = ({
+      title,
+      description,
+      variant
+    }: SendNotificationPayload) => {
+      toast({ title, description, variant });
       setIsLoading(false);
-    });
-  }, []);
+    };
+
+    socket.on("RoomCreated", handleRoomCreation);
+    socket.on("SendNotification", receiveNotification);
+
+    return () => {
+      socket.off("RoomCreated", handleRoomCreation);
+      socket.off("SendNotification", receiveNotification);
+    }
+  }, [router]);
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-4"
-      >
-        <FormField
-          control={form.control}
-          name="language"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-foreground">Language</FormLabel>
-              <FormControl>
-                <LanguageDropdown {...field} />
-              </FormControl>
-              <FormMessage className="text-xs" />
-            </FormItem>
-          )}
-        />
-
-        <Button type="submit" className="mt-2 w-full">
-          {isLoading ? (
-            <Icons.spinner className="h-4 w-4 animate-spin" />
-          ) : (
-            "Create a room"
-          )}
-        </Button>
-      </form>
-    </Form>
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col gap-4"
+    >
+      <LanguageDropdown value={language} onChange={setLanguage} />
+      <Button type="submit" className="mt-2 w-full">
+        {isLoading ? (
+          <Icons.spinner className="h-4 w-4 animate-spin" />
+        ) : (
+          "Create a room"
+        )}
+      </Button>
+    </form>
   );
 };
+
+export { CreateRoomForm };

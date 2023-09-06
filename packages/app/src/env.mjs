@@ -15,7 +15,9 @@ export const env = createEnv({
       .or(z.undefined().transform(() => false)),
   },
   skipValidation: process.env.SKIP_ENV_VALIDATION === "true",
-  client: {},
+  client: {
+    NEXT_PUBLIC_WSS_URL: z.string().min(1)
+  },
   // NOTE: specifying runtimeEnv is not necessary for Next,js >= 13.4.4
   // runtimeEnv: {},
   // you only need to destructure client variables:

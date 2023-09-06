@@ -4,7 +4,6 @@ import { Language } from "@/config/languages";
 import { GameStateUpdatePayload } from "@code-racer/wss/src/events/server-to-client";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
-import { io } from "socket.io-client";
 import { saveUserResultAction } from "../../actions";
 import { getSnippetById } from "../../(play)/loaders";
 
@@ -21,7 +20,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import MultiplayerLoadingLobby from "../multiplayer-loading-lobby";
 import { ReportButton } from "./buttons/report-button";
 import Code from "./code";
 import RaceDetails from "./race-details";
@@ -31,7 +29,7 @@ import RaceTrackerMultiplayer from "./race-tracker-mutliplayer";
 import { socket } from "@/lib/socket";
 
 // Types
-import { type RaceStatus, raceStatus } from "@code-racer/wss/src/types";
+import { type RaceStatus, RACE_STATUS } from "@code-racer/wss/src/consts"; 
 import type { Race, Snippet } from "@prisma/client";
 import type { User } from "next-auth";
 import { ChartTimeStamp, ReplayTimeStamp } from "./types";
@@ -83,7 +81,7 @@ export function GameMultiplayer({
       )
     : null;
 
-  const isRaceFinished = currentRaceStatus === raceStatus.FINISHED;
+  const isRaceFinished = currentRaceStatus === RACE_STATUS.FINISHED;
   const showRaceTimer = !!startTime && !isRaceFinished;
 
   const isUserOnAdroid = useCheckForUserNavigator("android");
@@ -127,14 +125,15 @@ export function GameMultiplayer({
     if (!position) return;
 
     const gameLoop = setInterval(() => {
-      if (currentRaceStatus === raceStatus.RUNNING) {
-        socket.emit("PositionUpdate", {
-          socketId: socket.id,
-          raceParticipantId: participantId,
-          position,
-          raceId,
-        });
-      }
+      /** TO BE FIXED */
+      // if (currentRaceStatus === RACE_STATUS.RUNNING) {
+      //   socket.emit("PositionUpdate", {
+      //     socketId: socket.id,
+      //     raceParticipantId: participantId,
+      //     position,
+      //     raceId,
+      //   });
+      // }
     }, 200);
 
     return () => clearInterval(gameLoop);
@@ -424,7 +423,7 @@ function changeTimeStamps(e: any) {
         }}
         role="none"
       >
-        {currentRaceStatus === raceStatus.RUNNING && (
+        {currentRaceStatus === RACE_STATUS.RUNNING && (
           <>
             {raceId && code
               ? participants.map((p) => (
@@ -484,7 +483,7 @@ function changeTimeStamps(e: any) {
             You must fix all errors before you can finish the race!
           </span>
         ) : null}
-        {currentRaceStatus === raceStatus.FINISHED && (
+        {currentRaceStatus === RACE_STATUS.FINISHED && (
           <div className="flex flex-col items-center space-y-8 text-2xl font-bold">
             <div className="w-8 h-8 border-4 border-t-4 rounded-full border-muted-foreground border-t-warning animate-spin"></div>
             Loading race results, please wait...

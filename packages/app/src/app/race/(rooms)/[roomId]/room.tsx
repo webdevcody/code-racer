@@ -1,24 +1,22 @@
 "use client";
 
-import * as React from "react";
+import type { RaceStatus } from "@code-racer/wss/src/consts";
+import type { Participant } from "@code-racer/wss/src/store/memory";
+
+import React from "react";
+import { User } from "next-auth";
 
 import { Prisma } from "@/lib/prisma";
 import { socket } from "@/lib/socket";
-import { useEffect } from "react";
-import { type RaceStatus } from "@code-racer/wss/src/types";
-import { User } from "next-auth";
-import MultiplayerLoadingLobby from "@/app/race/_components/multiplayer-loading-lobby";
-import { Button } from "@/components/ui/button";
 
-import { GameStateUpdatePayload } from "@code-racer/wss/src/events/server-to-client";
+import { MultiplayerLoadingLobby } from "@/app/race/_components/multiplayer-loading-lobby";
+
+import { GameStateUpdatePayload, RoomJoinedResponsePayload, SendNotificationPayload, UpdateParticipantsPayload } from "@code-racer/wss/src/events/server-to-client";
 import GameMultiplayer from "../../_components/race/game-multiplayer";
+
 import { toast } from "@/components/ui/use-toast";
 import CopyButton from "@/components/ui/copy-button";
-
-type Participant = Omit<
-  GameStateUpdatePayload["raceState"]["participants"][number],
-  "socketId"
->;
+import { Button } from "@/components/ui/button";
 
 export function Room({ user, roomId }: { user?: User; roomId: string }) {
   const [race, setRace] = React.useState<Prisma.RaceGetPayload<
@@ -28,7 +26,7 @@ export function Room({ user, roomId }: { user?: User; roomId: string }) {
   const [raceStatus, setRaceStatus] = React.useState<RaceStatus | null>(null);
   const [raceStartCountdown, setRaceStartCountdown] = React.useState<number>(0);
 
-  const [participants, setParticipants] = React.useState<Participant[]>([]);
+  const [participants, setParticipants] = React.useState<Array<Participant>>([]);
 
   const notStarted = raceStatus === "waiting" || raceStatus === "countdown";
 
@@ -37,42 +35,49 @@ export function Room({ user, roomId }: { user?: User; roomId: string }) {
   const canStartRace =
     isRoomLeader && participants.length > 1 && raceStatus === "waiting";
 
-  useEffect(() => {
+  React.useEffect(() => {
     socket.emit("UserJoinRoom", {
       userId: user?.id,
       raceId: roomId,
     });
 
-    socket.on("RoomJoined", async (payload) => {
-      const { race, participants, raceStatus, participantId } = payload;
+    const handleRoomJoined = (payload: RoomJoinedResponsePayload) => {
+      console.log(payload);
 
-      console.log(race, participants, notStarted);
-
-      setRace(race);
-      setParticipants(participants);
-      setRaceStatus(raceStatus);
-      setRaceParticipantId(participantId);
-    });
-
-    socket.on("UpdateParticipants", async (payload) => {
+      setRace(payload.race);
       setParticipants(payload.participants);
-    });
+      setRaceStatus(payload.raceStatus);
+      setRaceParticipantId(payload.participantId);
+    }
 
-    socket.on("GameStateUpdate", (payload) => {
+    const handleUpdateParticipants = (payload: UpdateParticipantsPayload) => {
+      setParticipants(payload.participants);
+    }
+
+    const handleGameStateUpdate = (payload: GameStateUpdatePayload) => {
       setParticipants(payload.raceState.participants);
       setRaceStatus(payload.raceState.status);
       setRaceStartCountdown(payload.raceState.countdown ?? 0);
-    });
+    }
 
-    socket.on("SendNotification", (payload) => {
+    const handleNotification = (payload: SendNotificationPayload) => {
       toast(payload);
-    });
+    };
+
+    socket.on("RoomJoined", handleRoomJoined);
+    socket.on("UpdateParticipants", handleUpdateParticipants);
+    socket.on("GameStateUpdate", handleGameStateUpdate);
+    socket.on("SendNotification", handleNotification);
 
     return () => {
-      socket.disconnect();
-      socket.off("connect");
+      // socket.disconnect();
+      // socket.off("connect");
+      socket.off("RoomJoined", handleRoomJoined);
+      socket.off("UpdateParticipants", handleUpdateParticipants);
+      socket.off("GameStateUpdate", handleGameStateUpdate);
+      socket.off("SendNotification", handleNotification);
     };
-  }, []);
+  }, [notStarted, roomId, user?.id]);
 
   function handleGameStart() {
     socket.emit("StartRaceCountdown", { raceId: roomId });

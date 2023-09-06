@@ -1,12 +1,16 @@
 "use client";
 
-import * as React from "react";
+import React from "react";
+import z from "zod";
+
+import { useRouter } from "next/navigation";
 
 import { useForm } from "react-hook-form";
-import * as z from "zod";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
+
 import {
   Form,
   FormControl,
@@ -19,9 +23,7 @@ import {
 import { joinRoomSchema } from "@/lib/validations/room";
 import { Icons } from "@/components/icons";
 import { Input } from "@/components/ui/input";
-import type { User } from "next-auth";
-import { socket } from "@/lib/socket";
-import { useRouter } from "next/navigation";
+
 // import CopyButton from '@/components/CopyButton'
 
 type JoinRoomForm = z.infer<typeof joinRoomSchema>;

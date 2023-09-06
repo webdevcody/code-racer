@@ -15,12 +15,13 @@
   "plugins": ["@typescript-eslint"],
   "rules": {
     "quotes": ["error", "double", { "allowTemplateLiterals": true }],
-    "no-unused-vars": "warn",
+    "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
     "@typescript-eslint/no-empty-interface": "warn",
-    "@typescript-eslint/no-unused-vars": "warn",
+    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
 
     "import/extensions": 0,
     "import/no-extraneous-dependencies": 0,
-    "import/prefer-default-export": 0
+    "import/prefer-default-export": 0,
+    "@typescript-eslint/no-array-constructor": "off"
   }
 }

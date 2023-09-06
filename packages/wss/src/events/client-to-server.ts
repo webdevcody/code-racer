@@ -1,43 +1,39 @@
-import {
-  Language,
-  snippetLanguages,
-} from "@code-racer/app/src/config/languages";
-import { UserRacePresencePayload } from "./common";
-import { Socket } from "socket.io";
-import { RaceParticipant } from "@code-racer/app/src/lib/prisma";
+import type { Language } from "@code-racer/app/src/config/languages";
+import type { UserRacePresencePayload } from "./common";
+import type { RaceParticipant } from "@code-racer/app/src/lib/prisma";
 
 export type PositionUpdatePayload = UserRacePresencePayload & {
-  raceId: string;
-  position: number;
+	raceId: string;
+	position: number;
 };
 
 export type UserCreateRequestPayload = {
-  language: string;
-  userId?: string;
+	language: string;
+	userId?: string;
 };
 
 export type UserRaceRequestPayload = {
-  raceId: string;
-  participantId: RaceParticipant["id"];
+	raceId: string;
+	participantId: RaceParticipant["id"];
 };
 
 export type UserGetRacePayload = {
-  language: string;
-  userId?: string;
+	language: Language;
+	userId?: string;
 };
 
 export type UserCreateRoomPayload = {
-  language: Language;
+	language: Language;
 };
 
 export interface ClientToServerEvents {
-  PositionUpdate: (payload: PositionUpdatePayload) => void;
-  UserRaceEnter: (payload: UserRacePresencePayload) => void;
-  UserRaceLeave: (payload: UserRacePresencePayload) => void;
-  UserCreateRequest: (payload: UserCreateRequestPayload) => void;
-  UserGetRace: (payload: UserGetRacePayload) => void;
-  UserRaceRequest: (payload: UserRaceRequestPayload) => void;
-  UserCreateRoom: (payload: UserCreateRoomPayload) => void;
-  UserJoinRoom: (payload: { raceId: string; userId?: string }) => void;
-  StartRaceCountdown: (payload: { raceId: string }) => void;
+	PositionUpdate: (_payload: PositionUpdatePayload) => void;
+	UserRaceEnter: (_payload: UserRacePresencePayload) => void;
+	UserRaceLeave: (_payload: UserRacePresencePayload) => void;
+	UserCreateRequest: (_payload: UserCreateRequestPayload) => void;
+	UserGetRace: (_payload: UserGetRacePayload) => void;
+	UserRaceRequest: (_payload: UserRaceRequestPayload) => void;
+	UserCreateRoom: (_payload: UserCreateRoomPayload) => void;
+	UserJoinRoom: (_payload: { raceId: string; userId?: string }) => void;
+	StartRaceCountdown: (_payload: { raceId: string }) => void;
 }
