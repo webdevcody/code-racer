@@ -1,7 +1,7 @@
 import type { Prisma, RaceParticipant } from "@code-racer/app/src/lib/prisma";
-import type { UserRacePresencePayload } from "./common";
 import type { RaceStatus } from "../consts";
 import type { Participant } from "../store/memory";
+import { Room, UserSessionMemory } from "@/new-game";
 
 type NewType = {
 	participants: Array<string>;
@@ -48,15 +48,22 @@ export type SendNotificationPayload = {
 };
 
 export interface ServerToClientEvents {
-	GameStateUpdate: (_payload: GameStateUpdatePayload) => void;
-	UserRaceEnter: (_payload: UserRacePresencePayload) => void;
-	UserRaceLeave: (_payload: UserRacePresencePayload) => void;
-	UserRaceResponse: (_payload: UserRaceResponsePayload) => void;
-	UserEnterFullRace: () => void;
-	RoomJoined: (_payload: RoomJoinedResponsePayload) => void;
-	RoomCreated: (_payload: { roomId: string }) => void;
-	UpdateParticipants: (_payload: UpdateParticipantsPayload) => void;
+
+	SendError: (_payload: Error) => void;
 	SendNotification: (_payload: SendNotificationPayload) => void;
-	UserRoomRaceResponse: (_payload: UserRoomRaceResponsePayload) => void;
-	Error: (_payload: Error) => void;
+
+	SendRoomInformation: (_payload: Room) => void;
+	SendRoomID: (_payload: string) => void;
+
+	// GameStateUpdate: (_payload: GameStateUpdatePayload) => void;
+	// UserRaceEnter: (_payload: UserRacePresencePayload) => void;
+	// UserRaceLeave: (_payload: UserRacePresencePayload) => void;
+	// UserRaceResponse: (_payload: UserRaceResponsePayload) => void;
+	// UserEnterFullRace: () => void;
+	// RoomJoined: (_payload: RoomJoinedResponsePayload) => void;
+	// RoomCreated: (_payload: { roomId: string }) => void;
+	// UpdateParticipants: (_payload: UpdateParticipantsPayload) => void;
+	// SendNotification: (_payload: SendNotificationPayload) => void;
+	// UserRoomRaceResponse: (_payload: UserRoomRaceResponsePayload) => void;
+	// Error: (_payload: Error) => void;
 }

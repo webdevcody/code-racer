@@ -1,74 +1,78 @@
 "use client";
 
-import React from "react";
-import z from "zod";
+import type { RoomProps } from "../rooms/renderer";
 
+import React from "react";
 import { useRouter } from "next/navigation";
 
-import { useForm } from "react-hook-form";
-
-import { zodResolver } from "@hookform/resolvers/zod";
-
 import { Button } from "@/components/ui/button";
-
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-
-import { joinRoomSchema } from "@/lib/validations/room";
 import { Icons } from "@/components/icons";
+
+import { connectToSocket, socket } from "@/lib/socket";
 import { Input } from "@/components/ui/input";
+import { FALLBACK_IMG, RANDOM_USERNAME } from "@/config/consts";
 
-// import CopyButton from '@/components/CopyButton'
-
-type JoinRoomForm = z.infer<typeof joinRoomSchema>;
-
-export const JoinRoomForm = () => {
+export const JoinRoomForm: React.FC<RoomProps> = React.memo(({ session }) => {
+  const [roomID, setRoomID] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
+  const [error, setError] = React.useState("");
 
   const router = useRouter();
 
-  const form = useForm<JoinRoomForm>({
-    resolver: zodResolver(joinRoomSchema),
-  });
-
-  function onSubmit({ roomId }: JoinRoomForm) {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!roomID) {
+      setError("Please pass in a Room ID to join.");
+      return;
+    }
     setIsLoading(true);
-    router.push(`/race/${roomId}`);
-  }
+    if (!socket.connected) {
+      connectToSocket({
+        userID: session?.id,
+        displayName: session?.name ?? RANDOM_USERNAME,
+        displayImage: session?.image ?? FALLBACK_IMG
+      });
+    }
+    setIsLoading(true);
+    socket.emit("CheckIfRoomIDExists", roomID);
+    setRoomID("");
+  };
+
+  React.useEffect(() => {
+    const handleRoomCreation = (roomID: string) => {
+      setIsLoading(false);
+      router.replace(`?roomID=${encodeURIComponent(roomID)}`);
+    }
+
+    socket.on("SendRoomID", handleRoomCreation);
+    return () => {
+      socket.off("SendRoomID", handleRoomCreation);
+    }
+  }, [router]);
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-4"
-      >
-        <FormField
-          control={form.control}
-          name="roomId"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-foreground">Room id</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage className="text-xs" />
-            </FormItem>
-          )}
-        />
-        <Button type="submit" className="mt-2 w-full">
-          {isLoading ? (
-            <Icons.spinner className="h-4 w-4 animate-spin" />
-          ) : (
-            "Join a room"
-          )}
-        </Button>
-      </form>
-    </Form>
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col gap-4"
+    >
+      <label htmlFor="roomid-input" className="sr-only">Room ID</label>
+      <Input
+        aria-label="Room ID"
+        title="Room ID"
+        placeholder="Enter the ID of the room you'd like to join."
+        value={roomID}
+        onChange={(e) => setRoomID(e.target.value)}
+      />
+      <Button type="submit" className="mt-2 w-full">
+        {isLoading ? (
+          <Icons.spinner className="h-4 w-4 animate-spin" />
+        ) : ("Join room")}
+      </Button>
+      {error && (
+        <p className="text-destructive">{error}</p>
+      )}
+    </form>
   );
-};
+});
+
+JoinRoomForm.displayName = "JoinRoomForm";

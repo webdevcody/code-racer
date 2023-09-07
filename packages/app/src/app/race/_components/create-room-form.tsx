@@ -1,59 +1,60 @@
 "use client";
 
-import type { SendNotificationPayload } from "@code-racer/wss/src/events/server-to-client";
+import type { RoomProps } from "../rooms/renderer";
+import type { LanguageType } from "@/lib/validations/room";
 
 import React from "react";
-import z from "zod";
+import { useRouter } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
-
-import { languageTypes } from "@/lib/validations/room";
 import LanguageDropdown from "@/app/add-snippet/_components/language-dropdown";
 
-import { socket } from "@/lib/socket";
-import { useRouter } from "next/navigation";
-import { toast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/icons";
 
-// import CopyButton from '@/components/CopyButton'
+import { connectToSocket, socket } from "@/lib/socket";
+import { FALLBACK_IMG, RANDOM_USERNAME } from "@/config/consts";
 
-type LanguageTypes = z.infer<typeof languageTypes>;
 
-const CreateRoomForm = () => {
+export const CreateRoomForm: React.FC<RoomProps> = React.memo(({ session }) => {
+  const [language, setLanguage] = React.useState<LanguageType | undefined>();
   const [isLoading, setIsLoading] = React.useState(false);
-  const [language, setLanguage] = React.useState<LanguageTypes | undefined>();
+  const [error, setError] = React.useState("");
+
   const router = useRouter();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    socket.connect();
+    if (!language) {
+      setError("Please choose a language.");
+      return;
+    }
     setIsLoading(true);
-    const parsedLanguage = languageTypes.parse(language);
-    socket.emit("UserCreateRoom", { language: parsedLanguage });
+
+    if (!socket.connected) {
+      connectToSocket({
+        userID: session?.id ?? socket.id,
+        displayName: session?.name ?? RANDOM_USERNAME,
+        displayImage: session?.image ?? FALLBACK_IMG
+      });
+    }
+
+    socket.emit("CreateRoom", {
+      userID: session?.id ?? socket.id,
+      language
+    });
   };
 
   React.useEffect(() => {
-    const handleRoomCreation = ({ roomId }: { roomId: string }) => {
-      router.push(`/race/${roomId}`);
-    }
-
-    const receiveNotification = ({
-      title,
-      description,
-      variant
-    }: SendNotificationPayload) => {
-      toast({ title, description, variant });
+    const handleRoomCreation = (roomID: string) => {
       setIsLoading(false);
-    };
-
-    socket.on("RoomCreated", handleRoomCreation);
-    socket.on("SendNotification", receiveNotification);
-
-    return () => {
-      socket.off("RoomCreated", handleRoomCreation);
-      socket.off("SendNotification", receiveNotification);
+      router.replace(`?roomID=${encodeURIComponent(roomID)}`);
     }
-  }, [router]);
+
+    socket.on("SendRoomID", handleRoomCreation);
+    return () => {
+      socket.off("SendRoomID", handleRoomCreation);
+    }
+  }, [router, session]);
 
   return (
     <form
@@ -68,8 +69,11 @@ const CreateRoomForm = () => {
           "Create a room"
         )}
       </Button>
+      {error && (
+        <p className="text-destructive">{error}</p>
+      )}
     </form>
   );
-};
+});
 
-export { CreateRoomForm };
+CreateRoomForm.displayName = "CreateRoomForm";

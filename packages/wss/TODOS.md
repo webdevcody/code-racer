@@ -8,4 +8,6 @@
 
 - NOTE: Please do all database calls (for example, if you need a user's info) on the websocket server if you are going to need it for the multiplayer section. It's recommended looking up socket.io's documentations since they provide greate examples as well.
 
+- A race should only be saved to a user (in the database) if the room where they are connected to is already in a RACE_STATUS of playing. So, all handling of user connections and room entrance should be handled in the memory (temporary), and we should set conditions when we want to permanently store records of, e.g., add the race to the user's race history, add the race to the list of races in the database, etc.
+
 - And others...
