@@ -9,7 +9,7 @@ import { socket } from "@/lib/socket";
 import { useRouter } from "next/navigation";
 
 export const NotificationCatcher: React.FC<{ children: React.ReactNode }> = ({
-  children
+  children,
 }) => {
   const router = useRouter();
 
@@ -17,7 +17,7 @@ export const NotificationCatcher: React.FC<{ children: React.ReactNode }> = ({
     const showToast = ({
       title,
       description,
-      variant
+      variant,
     }: SendNotificationPayload) => {
       toast({
         title,
@@ -62,7 +62,7 @@ export const NotificationCatcher: React.FC<{ children: React.ReactNode }> = ({
         description: error.message,
         variant: "destructive",
       });
-    }
+    };
 
     socket.on("connect_error", handleError);
     socket.on("SendError", handleError);

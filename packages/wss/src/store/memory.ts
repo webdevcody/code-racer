@@ -4,7 +4,7 @@ import {
 	type RaceParticipant,
 } from "@code-racer/app/src/lib/prisma";
 
-import type{ RaceStatus } from "../consts";
+import type { RaceStatus } from "../consts";
 
 export type SocketId = string;
 export type Timestamp = number;

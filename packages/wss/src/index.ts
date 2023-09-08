@@ -11,7 +11,9 @@ import { ServerToClientEvents } from "./events/server-to-client";
 const PORT = process.env.PORT;
 
 if (!PORT) {
-	throw new Error("Expected process.env.PORT to have been set, but it was not. Please write make a .env file.");
+	throw new Error(
+		"Expected process.env.PORT to have been set, but it was not. Please write make a .env file.",
+	);
 }
 
 const app = express();

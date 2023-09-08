@@ -31,7 +31,7 @@ export default async function SnippetsPage({
     typeof sort === "string"
       ? (sort.split(".") as [
           keyof Snippet | undefined,
-          "asc" | "desc" | undefined,
+          "asc" | "desc" | undefined
         ])
       : [];
 

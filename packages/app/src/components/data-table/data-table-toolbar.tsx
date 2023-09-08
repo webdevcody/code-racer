@@ -50,7 +50,7 @@ export function DataTableToolbar<TData>({
                   }
                   className="h-8 w-[150px] lg:w-[250px]"
                 />
-              ),
+              )
           )}
         {filterableColumns.length > 0 &&
           filterableColumns.map(
@@ -62,7 +62,7 @@ export function DataTableToolbar<TData>({
                   title={column.title}
                   options={column.options}
                 />
-              ),
+              )
           )}
         {isFiltered && (
           <Button
@@ -102,7 +102,7 @@ export function DataTableToolbar<TData>({
                   variant: "outline",
                   size: "sm",
                   className: "h-8",
-                }),
+                })
               )}
             >
               <PlusCircledIcon className="mr-2 h-4 w-4" aria-hidden="true" />

@@ -76,4 +76,3 @@ function useConfetti() {
 }
 
 export { tossConfetti, useConfetti };
-

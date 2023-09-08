@@ -81,9 +81,7 @@ const PlayMultiplayerRaceCard: React.FC<Props> = ({ enabled }) => {
                 <span className="text-red-500">{error}</span>
               </div>
               <Button
-                disabled={
-                  !enabled || isLoading || language === undefined
-                }
+                disabled={!enabled || isLoading || language === undefined}
                 variant="black"
                 className="relative justify-start border"
               >

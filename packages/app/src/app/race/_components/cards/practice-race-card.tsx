@@ -15,13 +15,17 @@ import { useSession } from "next-auth/react";
 type LanguageType = z.infer<typeof languageTypes>;
 
 export default function PracticeRaceCard() {
-  const [selectedPracticeLanguage, setSelectedPracticeLanguage] = useState<LanguageType | undefined>();
+  const [selectedPracticeLanguage, setSelectedPracticeLanguage] = useState<
+    LanguageType | undefined
+  >();
   const [error, setError] = useState("");
   const router = useRouter();
 
   const { data } = useSession();
 
-  function handleSetCodeLanguage(props: SetStateAction<LanguageType | undefined>) {
+  function handleSetCodeLanguage(
+    props: SetStateAction<LanguageType | undefined>
+  ) {
     setSelectedPracticeLanguage(props);
     setError("");
   }
@@ -32,7 +36,7 @@ export default function PracticeRaceCard() {
     if (!selectedPracticeLanguage)
       return setError("please select a language to practice");
     router.push(
-      `/race/practice?lang=${encodeURIComponent(selectedPracticeLanguage)}`, // Make sure it is URL encoded
+      `/race/practice?lang=${encodeURIComponent(selectedPracticeLanguage)}` // Make sure it is URL encoded
     );
   }
 
@@ -42,8 +46,8 @@ export default function PracticeRaceCard() {
         onClick={() => {
           socket.auth = {
             displayName: data?.user.name ?? "Random12345",
-            displayImage: data?.user.image ?? "/static/placeholder-image.jpg"
-          }
+            displayImage: data?.user.image ?? "/static/placeholder-image.jpg",
+          };
 
           socket.connect();
         }}
@@ -85,7 +89,7 @@ export default function PracticeRaceCard() {
                 className={cn(
                   "w-full",
                   buttonVariants({ variant: "ghost" }),
-                  error && "border-red-500",
+                  error && "border-red-500"
                 )}
                 value={selectedPracticeLanguage}
                 onChange={handleSetCodeLanguage}

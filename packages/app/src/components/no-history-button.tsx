@@ -1,12 +1,13 @@
-"use client"
+"use client";
 
 import * as React from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { VariantProps } from "class-variance-authority";
 
-interface NoHistoryButtonProps extends React.HTMLAttributes<HTMLButtonElement>,
-VariantProps<typeof buttonVariants> {
+interface NoHistoryButtonProps
+  extends React.HTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {
   children: React.ReactNode;
   path: string;
 }

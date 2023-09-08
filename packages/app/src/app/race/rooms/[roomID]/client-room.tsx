@@ -15,14 +15,15 @@ type Props = {
   roomID: string;
 } & RoomProps;
 
-export const ClientRoom: React.FC<Props> = React.memo(({
-  session,
-  roomID
-}) => {
-  const [isSocketConnected, setIsSocketConnected] = React.useState(socket.connected);
+export const ClientRoom: React.FC<Props> = React.memo(({ session, roomID }) => {
+  const [isSocketConnected, setIsSocketConnected] = React.useState(
+    socket.connected
+  );
   const [shouldRenderRoom, setShouldRenderRoom] = React.useState(false);
 
-  const [listOfPlayers, setListOfPlayers] = React.useState<Array<ParticipantInformation>>([]);
+  const [listOfPlayers, setListOfPlayers] = React.useState<
+    Array<ParticipantInformation>
+  >([]);
   const [roomOwnerID, setRoomOwnerID] = React.useState("");
 
   /** VERIFY ROOM ID */
@@ -31,7 +32,7 @@ export const ClientRoom: React.FC<Props> = React.memo(({
       connectToSocket({
         userID: session?.id,
         displayName: session?.name ?? RANDOM_USERNAME,
-        displayImage: session?.image ?? FALLBACK_IMG
+        displayImage: session?.image ?? FALLBACK_IMG,
       });
       setIsSocketConnected(true);
     }
@@ -55,7 +56,7 @@ export const ClientRoom: React.FC<Props> = React.memo(({
 
     const handleSendRoomOwnerID = (roomOwnerID: string) => {
       setRoomOwnerID(roomOwnerID);
-    }
+    };
 
     socket.on("PlayerJoinedOrLeftRoom", handlePlayerJoinedRoom);
     socket.on("SendRoomID", handleRoomIDVerified);
@@ -71,7 +72,10 @@ export const ClientRoom: React.FC<Props> = React.memo(({
   return (
     <div className="py-12 max-h-[60rem]">
       {!shouldRenderRoom && (
-        <div>Verifying room ID... &#40;If the page stays like this for some time, please try refreshing the page.	&#41;</div>
+        <div>
+          Verifying room ID... &#40;If the page stays like this for some time,
+          please try refreshing the page. &#41;
+        </div>
       )}
 
       {shouldRenderRoom && (

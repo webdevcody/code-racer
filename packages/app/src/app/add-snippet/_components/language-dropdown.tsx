@@ -57,7 +57,7 @@ const LanguageDropdown = ({
         >
           {value
             ? snippetLanguages.find((language) => language.value === value)
-              ?.label
+                ?.label
             : "Select language..."}
           <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
         </Button>
@@ -74,7 +74,7 @@ const LanguageDropdown = ({
           <CommandGroup className="overflow-y-auto">
             {snippetLanguages
               .filter((language) =>
-                language.label.toLowerCase().includes(search.toLowerCase()),
+                language.label.toLowerCase().includes(search.toLowerCase())
               )
               .map((language) => (
                 <CommandItem
@@ -83,10 +83,7 @@ const LanguageDropdown = ({
                   onSelect={(currentValue) => {
                     const parsedValue = languageTypes.parse(currentValue);
                     onChange(parsedValue);
-                    window.localStorage.setItem(
-                      "codeLanguage",
-                      parsedValue,
-                    );
+                    window.localStorage.setItem("codeLanguage", parsedValue);
                     setOpen(false);
                   }}
                   data-cy={`${language.value}-value`}
@@ -94,7 +91,7 @@ const LanguageDropdown = ({
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === language.value ? "opacity-100" : "opacity-0",
+                      value === language.value ? "opacity-100" : "opacity-0"
                     )}
                   />
                   {language.label}

@@ -25,7 +25,8 @@ export default async function MultiplayerRacePage({
   return (
     <main className="flex flex-col items-center justify-between py-10 lg:p-24">
       {/* <RaceMultiplayerRoom user={user} language={searchParams.lang as Language} /> */}
-      <p>Page is under maintenance. Please come again at a later time.
+      <p>
+        Page is under maintenance. Please come again at a later time.
         <br />
         We apologize for the inconvenience.
       </p>

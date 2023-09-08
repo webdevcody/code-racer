@@ -13,7 +13,7 @@ export default function RaceTimer({
   useEffect(() => {
     function updateElapsedTime() {
       setElapsedTime((previousTime) =>
-        (+previousTime + DEFAULT_UPDATE_INTERVAL_MS / 1000).toFixed(1),
+        (+previousTime + DEFAULT_UPDATE_INTERVAL_MS / 1000).toFixed(1)
       );
     }
 

@@ -48,7 +48,7 @@ export default async function ContributorsPage({
   const contributors = await getContributors();
   const totalPage = Math.ceil(contributors.length / per_page);
   const contributorCommitActivities = await getContributorCodeChanges(
-    contributors,
+    contributors
   );
   const repoCommitActivity = await getRepoWeeklyCodeChanges();
   const [since, additions, deletions] =
@@ -94,11 +94,11 @@ export default async function ContributorsPage({
             className="mt-3"
             nextURL={`/contributors?page=${Math.min(
               page + 1,
-              totalPage,
+              totalPage
             )}&per_page=${per_page}`}
             prevURL={`/contributors?page=${Math.max(
               page - 1,
-              1,
+              1
             )}&per_page=${per_page}`}
             firstURL={`/contributors?page=1&per_page=${per_page}`}
             lastURL={`/contributors?page=${totalPage}&per_page=${per_page}`}
@@ -116,7 +116,7 @@ export default async function ContributorsPage({
               contributor={contributor}
               contributorsCodeChanges={
                 contributorCommitActivities.find(
-                  (e) => e.login === contributor.login,
+                  (e) => e.login === contributor.login
                 ) ?? { additions: 0, deletions: 0, login: contributor.login }
               }
             />
@@ -127,11 +127,11 @@ export default async function ContributorsPage({
         className="flex justify-center w-full mt-6"
         nextURL={`/contributors?page=${Math.min(
           page + 1,
-          totalPage,
+          totalPage
         )}&per_page=${per_page}`}
         prevURL={`/contributors?page=${Math.max(
           page - 1,
-          1,
+          1
         )}&per_page=${per_page}`}
         firstURL={`/contributors?page=1&per_page=${per_page}`}
         lastURL={`/contributors?page=${totalPage}&per_page=${per_page}`}

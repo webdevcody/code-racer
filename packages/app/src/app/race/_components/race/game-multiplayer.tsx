@@ -29,7 +29,7 @@ import RaceTrackerMultiplayer from "./race-tracker-mutliplayer";
 import { socket } from "@/lib/socket";
 
 // Types
-import { type RaceStatus, RACE_STATUS } from "@code-racer/wss/src/consts"; 
+import { type RaceStatus, RACE_STATUS } from "@code-racer/wss/src/consts";
 import type { Race, Snippet } from "@prisma/client";
 import type { User } from "next-auth";
 import { ChartTimeStamp, ReplayTimeStamp } from "./types";
@@ -77,7 +77,7 @@ export function GameMultiplayer({
 
   const position = code
     ? parseFloat(
-        (((input.length - errors.length) / code.length) * 100).toFixed(2),
+        (((input.length - errors.length) / code.length) * 100).toFixed(2)
       )
     : null;
 
@@ -138,8 +138,6 @@ export function GameMultiplayer({
 
     return () => clearInterval(gameLoop);
   }, [currentRaceStatus, position, participantId, raceId]);
-
-
 
   function handleInputEvent(e: any /** React.FormEvent<HTMLInputElement>*/) {
     if (!isUserOnAdroid) return;
@@ -294,55 +292,55 @@ export function GameMultiplayer({
     ]);
   }
 
-// since this logic of setting timestamps will be reused
-function changeTimeStamps(e: any) {
-  if (!code) return;
-  let value: string;
+  // since this logic of setting timestamps will be reused
+  function changeTimeStamps(e: any) {
+    if (!code) return;
+    let value: string;
 
-  // if keyboardDown event is the one that calls this
-  if (e.key) {
-    value = e.key;
-    // so, this is where we can access the value of the key pressed on mobile
-  } else {
-    const data = e.nativeEvent.data;
-
-    if (e.nativeEvent.inputType === "deleteContentBackward") {
-      // the 2nd to the last character
-      const latestValue = input[input.length - 2];
-      if (!latestValue) {
-        value = "";
-      } else {
-        value = latestValue;
-      }
-    } else if (e.nativeEvent.inputType === "insertText") {
-      value = data;
+    // if keyboardDown event is the one that calls this
+    if (e.key) {
+      value = e.key;
+      // so, this is where we can access the value of the key pressed on mobile
     } else {
-      value = "Enter";
-    }
-  }
+      const data = e.nativeEvent.data;
 
-  if (value === code[input.length - 1] && value !== " ") {
-    const currTime = Date.now();
-    const timeTaken = startTime ? (currTime - startTime.getTime()) / 1000 : 0;
-    setChartTimeStamp((prev) => [
+      if (e.nativeEvent.inputType === "deleteContentBackward") {
+        // the 2nd to the last character
+        const latestValue = input[input.length - 2];
+        if (!latestValue) {
+          value = "";
+        } else {
+          value = latestValue;
+        }
+      } else if (e.nativeEvent.inputType === "insertText") {
+        value = data;
+      } else {
+        value = "Enter";
+      }
+    }
+
+    if (value === code[input.length - 1] && value !== " ") {
+      const currTime = Date.now();
+      const timeTaken = startTime ? (currTime - startTime.getTime()) / 1000 : 0;
+      setChartTimeStamp((prev) => [
+        ...prev,
+        {
+          char: value,
+          accuracy: calculateAccuracy(input.length, totalErrors),
+          cpm: calculateCPM(input.length, timeTaken),
+          time: currTime,
+        },
+      ]);
+    }
+    setReplayTimeStamp((prev) => [
       ...prev,
       {
-        char: value,
-        accuracy: calculateAccuracy(input.length, totalErrors),
-        cpm: calculateCPM(input.length, timeTaken),
-        time: currTime,
+        char: input.slice(-1),
+        textIndicatorPosition: input.length,
+        time: Date.now(),
       },
     ]);
   }
-  setReplayTimeStamp((prev) => [
-    ...prev,
-    {
-      char: input.slice(-1),
-      textIndicatorPosition: input.length,
-      time: Date.now(),
-    },
-  ]);
-}
 
   function handleRestart() {
     setStartTime(null);
@@ -368,7 +366,7 @@ function changeTimeStamps(e: any) {
             cpm: calculateCPM(input.length, timeTaken),
             time: Date.now(),
           },
-        ]),
+        ])
       );
 
       localStorage.setItem(
@@ -380,7 +378,7 @@ function changeTimeStamps(e: any) {
             textIndicatorPosition: input.length,
             time: Date.now(),
           },
-        ]),
+        ])
       );
 
       if (!snippet || !code) {
@@ -436,8 +434,11 @@ function changeTimeStamps(e: any) {
               : null}
             <div className="flex justify-between mb-2 md:mb-4">
               <Heading
-                title={snippet?.name ? 
-                  "Type " + " Snippet " + snippet?.name : "Type this code"}
+                title={
+                  snippet?.name
+                    ? "Type " + " Snippet " + snippet?.name
+                    : "Type this code"
+                }
                 description="Start typing to get racing"
               />
               {user && snippet && (

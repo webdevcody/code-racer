@@ -40,7 +40,7 @@ export async function getRandomSnippet(input: {
 }
 
 export async function getSnippetById(
-  snippetId: string,
+  snippetId: string
 ): Promise<Snippet | null> {
   return await prisma.snippet.findUnique({
     where: {

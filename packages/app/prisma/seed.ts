@@ -50,18 +50,21 @@ async function main() {
     await prisma.user.upsert({
       where: { id: user.id },
       create: user,
-      update: { averageAccuracy: user.averageAccuracy, averageCpm: user.averageCpm }
+      update: {
+        averageAccuracy: user.averageAccuracy,
+        averageCpm: user.averageCpm,
+      },
     });
 
     await prisma.achievement.upsert({
       where: {
         userId_achievementType: {
           userId: user.id,
-          achievementType: "FIFTH_RACE"
-        }
+          achievementType: "FIFTH_RACE",
+        },
       },
       create: { userId: user.id, achievementType: "FIFTH_RACE" },
-      update: {}
+      update: {},
     });
   }
 }

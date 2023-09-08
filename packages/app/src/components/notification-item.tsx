@@ -15,7 +15,7 @@ const NotificationItem = ({ notification }: NotificationItemProps) => {
       <span
         className={cn(
           "flex justify-center items-center w-8",
-          notification.read && "text-muted-foreground",
+          notification.read && "text-muted-foreground"
         )}
       >
         {notification?.read && (
@@ -29,7 +29,7 @@ const NotificationItem = ({ notification }: NotificationItemProps) => {
         <span
           className={cn(
             "text-md font-semibold",
-            notification.read && "text-muted-foreground",
+            notification.read && "text-muted-foreground"
           )}
           data-cy="notification-item-title-field"
         >
@@ -38,7 +38,7 @@ const NotificationItem = ({ notification }: NotificationItemProps) => {
         <span
           className={cn(
             "text-sm",
-            notification.read && "text-muted-foreground",
+            notification.read && "text-muted-foreground"
           )}
           data-cy="notification-item-description-field"
         >
@@ -47,7 +47,7 @@ const NotificationItem = ({ notification }: NotificationItemProps) => {
         <span
           className={cn(
             "text-xs",
-            notification.read && "text-muted-foreground",
+            notification.read && "text-muted-foreground"
           )}
           data-cy="notification-item-createdAt-field"
         >

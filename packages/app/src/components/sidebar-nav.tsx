@@ -30,7 +30,7 @@ export function SidebarNav({ items }: { items: NavItem[] }) {
                 pathname === item.href
                   ? "bg-muted font-medium text-foreground"
                   : "text-muted-foreground",
-                item.disabled && "pointer-events-none opacity-60",
+                item.disabled && "pointer-events-none opacity-60"
               )}
             >
               <Icon

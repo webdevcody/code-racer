@@ -37,7 +37,7 @@ export function SnippetsTable({
             onCheckedChange={(value) => {
               table.toggleAllPageRowsSelected(!!value);
               setSelectedRowIds((prev) =>
-                prev.length === data.length ? [] : data.map((row) => row.id),
+                prev.length === data.length ? [] : data.map((row) => row.id)
               );
             }}
             aria-label="Select all"
@@ -52,7 +52,7 @@ export function SnippetsTable({
               setSelectedRowIds((prev) =>
                 value
                   ? [...prev, row.original.id]
-                  : prev.filter((id) => id !== row.original.id),
+                  : prev.filter((id) => id !== row.original.id)
               );
             }}
             aria-label="Select row"
@@ -115,15 +115,15 @@ export function SnippetsTable({
         cell: ({ cell }) => {
           const language = cell.getValue() as Snippet["language"];
           const findLanguageLabel = snippetLanguages.find((snippetLanguage) => {
-              if (snippetLanguage.value === language) {
-                    return snippetLanguage
-              }
-          })
+            if (snippetLanguage.value === language) {
+              return snippetLanguage;
+            }
+          });
           return findLanguageLabel?.label;
         },
       },
     ],
-    [data],
+    [data]
   );
 
   async function deleteSelectedRows() {
@@ -133,8 +133,8 @@ export function SnippetsTable({
           deleteSnippetAction({
             id,
             path: "/dashboard/snippets",
-          }),
-        ),
+          })
+        )
       );
     } catch (err) {
       catchError(err);

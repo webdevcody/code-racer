@@ -3,9 +3,12 @@ import Image from "next/image";
 import type { User } from "next-auth";
 import React from "react";
 
-export default function RaceTrackerMultiplayer({ position, participantId }: {
+export default function RaceTrackerMultiplayer({
+  position,
+  participantId,
+}: {
   position: number;
-  participantId: string
+  participantId: string;
 }) {
   const [participantUser, setParticipantUser] = React.useState<
     User | undefined
@@ -28,12 +31,8 @@ export default function RaceTrackerMultiplayer({ position, participantId }: {
         <ProgressIndicator progress={position}>
           <Image
             className="absolute left-0 top-[-50%] border-2 border-monochrome rounded-full transition-all duration-100"
-            src={
-              participantUser?.image ?? "/placeholder-image.jpg"
-            }
-            alt={
-              `${participantUser?.name} avatar` ?? "user avatar"
-            }
+            src={participantUser?.image ?? "/placeholder-image.jpg"}
+            alt={`${participantUser?.name} avatar` ?? "user avatar"}
             height={30}
             width={30}
             style={{ left: `${position}%` }}

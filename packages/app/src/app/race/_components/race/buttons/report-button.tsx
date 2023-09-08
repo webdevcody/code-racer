@@ -71,8 +71,8 @@ export function ReportButton({
 
           router.push(
             `${pathname}?lang=${encodeURIComponent(
-              language,
-            )}&snippetId=${encodeURIComponent(snippet.id)}`,
+              language
+            )}&snippetId=${encodeURIComponent(snippet.id)}`
           );
           router.refresh();
           handleRestart();

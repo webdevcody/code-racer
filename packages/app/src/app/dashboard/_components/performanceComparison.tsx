@@ -24,14 +24,14 @@ const parseDomain = (usersData: Result[], obj: ObjectKey) => [
   0,
   Math.max(
     ...usersData.map((value) =>
-      obj === "cpm" ? value.cpm : Number(value.accuracy),
-    ),
+      obj === "cpm" ? value.cpm : Number(value.accuracy)
+    )
   ),
 ];
 
 const renderTooltip = (
   props: TooltipProps<ValueType, NameType>,
-  obj: ObjectKey,
+  obj: ObjectKey
 ) => {
   const { active, payload } = props;
 
@@ -108,7 +108,7 @@ function BubbleChart({
               <Cell key={`cell-${index}`} fill="#A2FF86" />
             ) : (
               <Cell key={`cell-${index}`} fill="#E21818" />
-            ),
+            )
           )}
         </Scatter>
       </ScatterChart>

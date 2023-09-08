@@ -38,7 +38,11 @@ const formDataSchema = z.object({
 
 type FormData = z.infer<typeof formDataSchema>;
 
-export default function AddSnippetForm({ lang }: { lang: z.infer<typeof languageTypes> }) {
+export default function AddSnippetForm({
+  lang,
+}: {
+  lang: z.infer<typeof languageTypes>;
+}) {
   const { toast, dismiss } = useToast();
 
   const form = useForm<FormData>({
@@ -108,7 +112,7 @@ export default function AddSnippetForm({ lang }: { lang: z.infer<typeof language
         responseData?.message === "snippet-created-and-achievement-unlocked"
       ) {
         const firstSnippetAchievement = achievements.find(
-          (achievement) => achievement.type === "FIRST_SNIPPET",
+          (achievement) => achievement.type === "FIRST_SNIPPET"
         );
         if (firstSnippetAchievement)
           unlockAchievement({

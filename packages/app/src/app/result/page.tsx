@@ -10,7 +10,7 @@ import {
   getBestCPM,
   getCurrentRaceResult,
   getSnippetVote,
-  getUserResultsForSnippet
+  getUserResultsForSnippet,
 } from "./loaders";
 
 // Components

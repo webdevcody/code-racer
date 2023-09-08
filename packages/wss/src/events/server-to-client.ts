@@ -10,7 +10,7 @@ export type SendNotificationPayload = {
 export type SendRoomIDPayload = {
 	roomID: string;
 	roomOwnerID: string;
-}
+};
 
 export interface ServerToClientEvents {
 	SendError: (_payload: Error) => void;
@@ -19,10 +19,10 @@ export interface ServerToClientEvents {
 	SendRoomID: (_payload: SendRoomIDPayload) => void;
 
 	PlayerJoinedOrLeftRoom: (_payload: Array<ParticipantInformation>) => void;
-	
+
 	SendGameStatusOfRoom: (_payload: RaceStatus) => void;
 	SendRoomOwnerID: (_payload: string) => void;
-	
+
 	// GameStateUpdate: (_payload: GameStateUpdatePayload) => void;
 	// UserRaceEnter: (_payload: UserRacePresencePayload) => void;
 	// UserRaceLeave: (_payload: UserRacePresencePayload) => void;

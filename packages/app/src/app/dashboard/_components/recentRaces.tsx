@@ -48,8 +48,8 @@ export function RecentRacesTable({
         cell: ({ cell }) => {
           const snippet = cell.getValue() as Snippet;
 
-          return <span>{snippet.name ?? "-"}</span>
-        }
+          return <span>{snippet.name ?? "-"}</span>;
+        },
       },
       {
         accessorKey: "snippet",
@@ -57,11 +57,11 @@ export function RecentRacesTable({
         cell: ({ cell }) => {
           const snippet = cell.getValue() as Snippet;
           const language = snippetLanguages.find((language) => {
-              if (language.value === snippet.language) {
-                    return language.label
-              }
-          })
-          
+            if (language.value === snippet.language) {
+              return language.label;
+            }
+          });
+
           return language?.label;
         },
       },
@@ -114,7 +114,7 @@ export function RecentRacesTable({
         },
       },
     ],
-    [],
+    []
   );
 
   return (

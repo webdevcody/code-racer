@@ -9,11 +9,11 @@ type MiddlewareAuth = {
   userID: string | null | undefined;
   displayName: string;
   displayImage: string;
-}
+};
 
 export const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
   process.env.NEXT_PUBLIC_WSS_URL ?? "http://localhost:3001",
-  { transports: ["websocket"], autoConnect: false },
+  { transports: ["websocket"], autoConnect: false }
 );
 
 export const connectToSocket = (authDetails: MiddlewareAuth) => {

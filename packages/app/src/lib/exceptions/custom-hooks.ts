@@ -9,7 +9,7 @@
  */
 export class ContextDoesNotExistError extends Error {
   constructor(
-    message = "Please make sure that the component using this is wrapped in the provider of the context you are trying the use.",
+    message = "Please make sure that the component using this is wrapped in the provider of the context you are trying the use."
   ) {
     super(message);
     this.name = "ContextDoesNotExistError";

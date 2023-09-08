@@ -21,11 +21,12 @@ export default function RacePage() {
         <PracticeRaceCard />
         {env.NODE_ENV === "development" ? (
           <Fragment>
-            <PlayMultiplayerRaceCard enabled={env.NODE_ENV === "development" ? true : env.MULTIPLAYER} />
+            <PlayMultiplayerRaceCard
+              enabled={env.NODE_ENV === "development" ? true : env.MULTIPLAYER}
+            />
             <RaceRoomCard />
           </Fragment>
         ) : undefined}
-
       </div>
     </main>
   );

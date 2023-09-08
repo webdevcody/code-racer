@@ -45,7 +45,7 @@ export default function RootLayout({
         className={cn(
           "min-h-screen flex flex-col bg-background",
           inter.className,
-          bruno_ace_sc.variable,
+          bruno_ace_sc.variable
         )}
       >
         <NextTopLoader showSpinner={false} color="#E7B008" />

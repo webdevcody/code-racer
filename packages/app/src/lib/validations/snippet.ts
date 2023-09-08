@@ -3,7 +3,7 @@ import { snippetLanguages } from "@/config/languages";
 
 export const snippetSchema = z.object({
   language: z.enum(
-    snippetLanguages.map((lang) => lang.value) as [string, ...string[]],
+    snippetLanguages.map((lang) => lang.value) as [string, ...string[]]
   ),
   code: z
     .string()
@@ -17,7 +17,11 @@ export const snippetSchema = z.object({
     }),
   name: z
     .string()
-    .max(50, { message: "The name for the snippet must be less than 50 characters long."})
-    .min(2, { message: "The name for the snippet must be more than 2 characters long."}),
+    .max(50, {
+      message: "The name for the snippet must be less than 50 characters long.",
+    })
+    .min(2, {
+      message: "The name for the snippet must be more than 2 characters long.",
+    }),
   onReview: z.boolean().optional(),
 });

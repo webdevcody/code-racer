@@ -23,11 +23,10 @@ export const JoinRoomForm: React.FC = React.memo(() => {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex flex-col gap-4"
-    >
-      <label htmlFor="roomid-input" className="sr-only">Room ID</label>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <label htmlFor="roomid-input" className="sr-only">
+        Room ID
+      </label>
       <Input
         aria-label="Room ID"
         title="Room ID"
@@ -37,15 +36,13 @@ export const JoinRoomForm: React.FC = React.memo(() => {
           if (error) {
             setError("");
           }
-          setRoomID(e.target.value)
+          setRoomID(e.target.value);
         }}
       />
       <Button type="submit" className="mt-2 w-full">
         Join Room
       </Button>
-      {error && (
-        <p className="text-destructive">{error}</p>
-      )}
+      {error && <p className="text-destructive">{error}</p>}
     </form>
   );
 });

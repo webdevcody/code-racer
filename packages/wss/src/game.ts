@@ -115,9 +115,9 @@ export class Game {
 							user: {
 								select: {
 									name: true,
-									image: true
-								}
-							}
+									image: true,
+								},
+							},
 						},
 					})
 					.then((result) => {
@@ -131,14 +131,15 @@ export class Game {
 						}
 
 						const RANDOM_NAME = "CuteKoala123";
-						const FALLBACK_IMG_URL = "https://code-race-eight.vercel.app/static/placeholder-image.png";
+						const FALLBACK_IMG_URL =
+							"https://code-race-eight.vercel.app/static/placeholder-image.png";
 
 						this.MemoryStore.addParticipantToRace(roomID, {
 							id: userId ?? socket.id,
 							position: 0,
 							finishedAt: null,
-							image:  result.user?.image ?? FALLBACK_IMG_URL,
-							name: result.user?.name ?? RANDOM_NAME
+							image: result.user?.image ?? FALLBACK_IMG_URL,
+							name: result.user?.name ?? RANDOM_NAME,
 						});
 
 						socket.emit("RoomJoined", {

@@ -30,7 +30,7 @@ type TResultChart = {
 
 export function ResultChart({ code }: TResultChart) {
   const data = JSON.parse(localStorage.getItem("chartTimeStamp") || "[]");
-  const [chartTimeStamp, ] = useState<ChartTimeStamp[]>(data);
+  const [chartTimeStamp] = useState<ChartTimeStamp[]>(data);
   const [activeCharIndex, setActiveCharIndex] = useState<number>();
 
   return (
@@ -120,7 +120,7 @@ const RenderCode = ({ code, activeCharIndex, chartTimeStamp }: RenderCode) => {
 
 function RenderTooltip(
   props: TooltipProps<ValueType, NameType>,
-  setActiveCharIndex: React.Dispatch<React.SetStateAction<number | undefined>>,
+  setActiveCharIndex: React.Dispatch<React.SetStateAction<number | undefined>>
 ) {
   const { active, payload } = props;
 

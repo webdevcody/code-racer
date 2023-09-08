@@ -14,13 +14,15 @@ type Props = {
 const SECOND = 1000;
 
 const CountdownScreen: React.FC<Props> = React.memo(({ roomID }) => {
-  const [count, setCount] = React.useState(siteConfig.multiplayer.startGameCountdown);
+  const [count, setCount] = React.useState(
+    siteConfig.multiplayer.startGameCountdown
+  );
 
   React.useEffect(() => {
     /** USING TIMEOUT BECAUSE useRef timer does not work. */
     const timeout = setTimeout(() => {
-        setCount((currentCount) => currentCount - 1);
-      }, SECOND);
+      setCount((currentCount) => currentCount - 1);
+    }, SECOND);
     return () => {
       clearTimeout(timeout);
     };
@@ -30,7 +32,7 @@ const CountdownScreen: React.FC<Props> = React.memo(({ roomID }) => {
     if (count === 0) {
       socket.emit("ChangeGameStatusOfRoom", {
         roomID,
-        raceStatus: RACE_STATUS.RUNNING
+        raceStatus: RACE_STATUS.RUNNING,
       });
     }
   }, [count, roomID]);
