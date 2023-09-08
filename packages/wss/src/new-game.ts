@@ -28,8 +28,25 @@ type UserSession = {
   roomIDs: Array<string>;
 }
 
-export type Room = {
+export type ParticipantInformation = {
+  userID: string;
+  displayName: string;
+  displayImage: string;
+}
+
+export type Participant = {
+  userID: string;
+  progress: number;
+
+  isFinished: boolean;
+
+  /** Time taken in seconds */
+  timeTaken: number;
+}
+
+type Room = {
   participants: UserSessionMemory;
+  roomOwnerID: string;
   roomID: string;
   race: Race;
   gameStatus: RaceStatus;
@@ -155,6 +172,22 @@ export class UserSessionMemory implements LinkedListInterface<UserSession> {
       currentNode = currentNode.next;
     }
     return currentNode;
+  }
+
+  getAllUsers(): Array<ParticipantInformation> {
+    let currentNode = this.head;
+    const arrayOfUsers = new Array<ParticipantInformation>();
+
+    for (let idx = 0; currentNode && idx < this.length; ++idx) {
+      arrayOfUsers.push({
+        userID: currentNode.value.userID,
+        displayImage: currentNode.value.displayImage,
+        displayName: currentNode.value.displayName
+      });
+      currentNode = currentNode.next;
+    }
+
+    return arrayOfUsers;
   }
 
   private getNode(item: UserSession | string): Node<UserSession> | undefined {
@@ -329,12 +362,12 @@ class Memory {
 
   removeUserSessionFromRoom(roomID: string, userSession: UserSession | string): Room | undefined {
     const room = this.rooms.get(roomID)?.value;
-    const user = this.findUser(userSession);
-    user?.roomIDs.pop();
-    room?.participants.remove(userSession);
-    const ROOM_IS_EMPTY = room?.participants.length === 0;
-    if (ROOM_IS_EMPTY) {
-      this.removeRoom(room);
+    if (room) {
+      room?.participants.remove(userSession);
+      const ROOM_IS_EMPTY = room?.participants.length === 0;
+      if (ROOM_IS_EMPTY) {
+        this.removeRoom(room);
+      }
     }
     return room;
   }
@@ -365,9 +398,9 @@ export class Game {
     this.server.on("connection", (socket) => {
       if (IS_IN_DEVELOPMENT) {
         console.log("User has connected.");
-        socket.emit("SendNotification", {
-          title: "User has connected"
-        });
+        // socket.emit("SendNotification", {
+        //   title: "User has connected"
+        // });
       }
 
       const session = {
@@ -390,24 +423,44 @@ export class Game {
           this.Memory.removeUser(socket.userID);
           return;
         }
-        console.log("--- BEFORE REMOVING ROOMS ---");
-        console.log(this.Memory);
-        for (let idx = roomsUserIsIn.length - 1; idx >= 1 ; --idx) {
-          this.Memory.removeUserSessionFromRoom(roomsUserIsIn[idx], socket.userID);
-          console.log("--- REMOVED ONE ROOM ID ---");
-          socket.to(roomsUserIsIn[idx]).emit("SendNotification", {
+
+        roomsUserIsIn.forEach((roomID) => {
+          if (roomID === socket.id) {
+            return;
+          }
+          const ROOM_EXISTS = this.Memory.removeUserSessionFromRoom(roomID, socket.userID);
+
+          if (ROOM_EXISTS) {
+
+            const firstParticipant = ROOM_EXISTS.participants.getItemAt(0);
+
+            if (firstParticipant) {
+              ROOM_EXISTS.roomOwnerID = firstParticipant.value.userID;
+              this.server.to(roomID).emit("SendRoomOwnerID", ROOM_EXISTS.roomOwnerID);
+            }
+
+            this.server.to(roomID).emit("PlayerJoinedOrLeftRoom", ROOM_EXISTS.participants.getAllUsers());
+          }
+          socket.to(roomID).emit("SendNotification", {
             title: "Someone left!",
             description: socket.displayName + " has left the room!"
           });
-        }
-        console.log("--- AFTER REMOVING ROOMS WHERE USER IS IN.");
-        console.log(this.Memory);
+        });
+
         this.Memory.removeUser(socket.userID);
-        console.log("--- AFTER REMOVING USER SESSION ---");
-        console.log(this.Memory);
       });
 
       socket.on("CreateRoom", async ({ userID, language }) => {
+        if (!userID) {
+          console.warn("userID is not provided! Please provide it to create a room.");
+          return;
+        }
+
+        socket.emit("SendNotification", {
+          title: "Creating Room",
+          description: "Your room is being created...",
+        });
+
         const snippet = await getRandomSnippet({ language });
 
         if (!snippet) {
@@ -420,7 +473,7 @@ export class Game {
         }
 
         const roomID = uuidv4();
-        console.log(userID);
+
         const userSession = this.Memory.findUser(userID);
 
         if (!userSession) {
@@ -432,6 +485,7 @@ export class Game {
         }
 
         userSession.roomIDs.push(roomID);
+        socket.join(roomID);
         const UserSessioMemoryForRoom = new UserSessionMemory();
         UserSessioMemoryForRoom.append(userSession);
         const room = {
@@ -442,17 +496,22 @@ export class Game {
             endedAt: null,
             createdAt: new Date()
           },
+          roomOwnerID: userSession.userID,
           roomID,
           participants: UserSessioMemoryForRoom,
           gameStatus: RACE_STATUS.WAITING
         };
 
         this.Memory.addRoom(room);
-        console.log(this.Memory);
-        console.log("--- INSIDE OF ROOM ---");
-        console.log(this.Memory.findRoom(room));
 
-        socket.emit("SendRoomID", room.roomID);
+        socket.emit("SendNotification", {
+          title: "Room Created",
+          description: "Success! Your room has been created."
+        });
+        socket.emit("SendRoomID", {
+          roomID,
+          roomOwnerID: room.roomOwnerID
+        });
       });
 
       socket.on("CheckIfRoomIDExists", (roomID) => {
@@ -461,7 +520,7 @@ export class Game {
           socket.emit("SendNotification", {
             title: "Room Not Found",
             description: "The room ID does not exist. Perhaps it is yet to be created or it got deleted? Try creating a new one.",
-            variant: "middle"
+            variant: "destructive"
           });
           return;
         }
@@ -475,12 +534,34 @@ export class Game {
           return;
         }
 
+        if (foundRoom.gameStatus === RACE_STATUS.RUNNING) {
+          socket.emit("SendNotification", {
+            title: "Race Has Started!",
+            description: "The race for this room has already started. Please try creating a new one.",
+          });
+          return;
+        }
+
+        /** This means that the user who's joining was the one
+         *  that created the room.
+         */
         const USER_JOINED_THE_ROOM_ALREADY = foundRoom.participants.get(socket.userID);
         if (USER_JOINED_THE_ROOM_ALREADY) {
+          socket.emit("SendRoomID", {
+            roomID,
+            roomOwnerID: foundRoom.roomOwnerID
+          });
+          /** Since we call the event, "CheckIfRoomIDExists" when a user
+           *  is in a [roomID] page, we just emit the amount of participants
+           *  since we also call this event when a user creates a room.
+           *  This is because the "CreateRoom" event already adds the user to the list of participants of the
+           *  created room.
+           */
+          this.server.to(roomID).emit("PlayerJoinedOrLeftRoom", foundRoom.participants.getAllUsers());
           return;
         }
         const userSession = this.Memory.findUser(socket.userID);
-        
+
         if (!userSession) {
           if (IS_IN_DEVELOPMENT) {
             console.warn("Memory handling error. User session is not in memory despite them connecting to the server.");
@@ -488,22 +569,70 @@ export class Game {
           return;
         }
 
-        socket.join(roomID);
-        userSession.roomIDs.push(roomID);
+        const USER_HAVE_NOT_JOINED_YET = !socket.rooms.has(roomID);
+        if (USER_HAVE_NOT_JOINED_YET) {
+          socket.join(roomID);
+          userSession.roomIDs.push(roomID);
+        }
 
         foundRoom.participants.append(userSession);
-        console.log(this.Memory);
-        console.log("--- INSIDE OF ROOM ---");
-        console.log(this.Memory.findRoom(foundRoom));
 
-        socket.emit("SendRoomID", roomID);
+        this.server.to(roomID).emit("PlayerJoinedOrLeftRoom", foundRoom.participants.getAllUsers());
+
+        socket.emit("SendRoomID", {
+          roomID,
+          roomOwnerID: foundRoom.roomOwnerID
+        });
         socket.to(roomID).emit("SendNotification", {
           title: "Someone joined!",
-          description: socket.displayName  + " has joined the room!",
+          description: socket.displayName + " has joined the room!",
           variant: "middle"
         });
       });
 
+
+      socket.on("CheckGameStatusOfRoom", (roomID) => {
+        const foundRoom = this.Memory.findRoom(roomID);
+
+        if (!foundRoom) {
+          if (IS_IN_DEVELOPMENT) {
+            console.warn("The room ID provided by CheckGameStatusOfRoom does not exist. This is a memory handling error since the room should exist.");
+          }
+          return;
+        }
+
+        this.server.to(roomID).emit("SendGameStatusOfRoom", foundRoom.gameStatus);
+      });
+
+      socket.on("ChangeGameStatusOfRoom", ({ roomID, raceStatus }) => {
+        const foundRoom = this.Memory.findRoom(roomID);
+        if (!foundRoom) {
+          if (IS_IN_DEVELOPMENT) {
+            console.warn("Memory handling error. Trying to change the status of a room, but it does not exist in memory. Perhaps the roomID provided was wrong?");
+          }
+          socket.emit("SendError", new Error("Failed to change the state of the room. Please try again or create a new room."));
+          return;
+        }
+
+        const STARTING_GAME = foundRoom.gameStatus === RACE_STATUS.WAITING && raceStatus === RACE_STATUS.RUNNING;
+
+        if (STARTING_GAME && foundRoom.participants.length <= 1) {
+          socket.emit("SendError", new Error("Cannot start a multiplayer race with only one player."));
+          return;
+        } 
+        
+        const RESETTING_GAME = foundRoom.gameStatus !== RACE_STATUS.WAITING && raceStatus === RACE_STATUS.WAITING;
+        if (RESETTING_GAME) {
+          this.server.to(roomID).emit("SendNotification", {
+            title: "Resetting Game",
+            description: "Resetting the game since you are the only player left."
+          });
+        }
+
+        foundRoom.gameStatus = raceStatus;
+
+        this.server.to(roomID).emit("SendGameStatusOfRoom", foundRoom.gameStatus);
+      });
     });
   }
 
@@ -518,9 +647,9 @@ export class Game {
         socket.userID = auth.userID;
         const foundUser = this.Memory.findUser(socket.userID);
 
-      if (foundUser) {
-        return next(new Error("Your account is already in use. Please disconnect your active account or use a different browser."));
-      }
+        if (foundUser) {
+          return next(new Error("Your account is already connected to our websocket server. Please disconnect your connected account or use a different browser."));
+        }
       } else {
         socket.userID = socket.id;
       }

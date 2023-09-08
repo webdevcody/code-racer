@@ -31,6 +31,7 @@ export default function CopyButton({ value }: CopyButtonProps) {
         copyToClipboard(value);
         setHasCopied(true);
       }}
+      title={hasCopied ? "Copied!" : "Copy"}
     >
       <span className="sr-only">Copy</span>
       {hasCopied ? (

@@ -22,8 +22,17 @@ export const NotificationCatcher: React.FC<{ children: React.ReactNode }> = ({
       toast({
         title,
         description,
-        variant
+        variant,
+        duration: 2000,
       });
+
+      if (title === "Error") {
+        if (socket.connected) {
+          socket.disconnect();
+        }
+
+        router.replace("/race/rooms");
+      }
 
       if (title === "Room Not Found") {
         if (socket.connected) {
@@ -38,13 +47,20 @@ export const NotificationCatcher: React.FC<{ children: React.ReactNode }> = ({
         }
         router.replace("/race/rooms");
       }
+
+      if (title === "Race Has Started!") {
+        if (socket.connected) {
+          socket.disconnect();
+        }
+        router.replace("/race/rooms");
+      }
     };
 
     const handleError = (error: Error) => {
       showToast({
         title: error.name,
         description: error.message,
-        variant: "destructive"
+        variant: "destructive",
       });
     }
 

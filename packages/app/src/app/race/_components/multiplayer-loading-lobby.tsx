@@ -4,8 +4,6 @@ import type { Participant } from "@code-racer/wss/src/store/memory";
 
 import { useSearchParams } from "next/navigation";
 
-import LobbyUser from "./lobby-user";
-
 import { bruno_ace_sc } from "@/lib/fonts";
 
 interface MultiplayerLoadingLobbyProps {
@@ -33,10 +31,6 @@ export function MultiplayerLoadingLobby({
       </h2>
       <div className="flex justify-center space-x-10">
         {/* {lobby && lobby} */}
-        {participants &&
-          participants.map((participant, idx) => (
-            <LobbyUser key={idx} participant={participant} />
-          ))}
       </div>
       {children}
     </div>

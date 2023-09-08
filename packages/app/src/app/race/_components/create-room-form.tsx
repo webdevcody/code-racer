@@ -1,7 +1,9 @@
 "use client";
 
-import type { RoomProps } from "../rooms/renderer";
+import type { RoomProps } from "../rooms/page";
 import type { LanguageType } from "@/lib/validations/room";
+import type { SendRoomIDPayload } from "@code-racer/wss/src/events/server-to-client";
+
 
 import React from "react";
 import { useRouter } from "next/navigation";
@@ -9,15 +11,12 @@ import { useRouter } from "next/navigation";
 import LanguageDropdown from "@/app/add-snippet/_components/language-dropdown";
 
 import { Button } from "@/components/ui/button";
-import { Icons } from "@/components/icons";
 
 import { connectToSocket, socket } from "@/lib/socket";
 import { FALLBACK_IMG, RANDOM_USERNAME } from "@/config/consts";
 
-
 export const CreateRoomForm: React.FC<RoomProps> = React.memo(({ session }) => {
   const [language, setLanguage] = React.useState<LanguageType | undefined>();
-  const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState("");
 
   const router = useRouter();
@@ -28,11 +27,10 @@ export const CreateRoomForm: React.FC<RoomProps> = React.memo(({ session }) => {
       setError("Please choose a language.");
       return;
     }
-    setIsLoading(true);
 
     if (!socket.connected) {
       connectToSocket({
-        userID: session?.id ?? socket.id,
+        userID: session?.id,
         displayName: session?.name ?? RANDOM_USERNAME,
         displayImage: session?.image ?? FALLBACK_IMG
       });
@@ -45,9 +43,8 @@ export const CreateRoomForm: React.FC<RoomProps> = React.memo(({ session }) => {
   };
 
   React.useEffect(() => {
-    const handleRoomCreation = (roomID: string) => {
-      setIsLoading(false);
-      router.replace(`?roomID=${encodeURIComponent(roomID)}`);
+    const handleRoomCreation = ({ roomID }: SendRoomIDPayload) => {
+      router.push(`/race/rooms/${encodeURIComponent(roomID)}`);
     }
 
     socket.on("SendRoomID", handleRoomCreation);
@@ -63,11 +60,7 @@ export const CreateRoomForm: React.FC<RoomProps> = React.memo(({ session }) => {
     >
       <LanguageDropdown value={language} onChange={setLanguage} />
       <Button type="submit" className="mt-2 w-full">
-        {isLoading ? (
-          <Icons.spinner className="h-4 w-4 animate-spin" />
-        ) : (
-          "Create a room"
-        )}
+        Create a room
       </Button>
       {error && (
         <p className="text-destructive">{error}</p>

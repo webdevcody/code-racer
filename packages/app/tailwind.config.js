@@ -137,6 +137,18 @@ module.exports = {
           "0%": { transform: "rotate(0deg)" },
           "100%": { transform: "rotate(180deg)" },
         },
+        "counter": {
+          "0%": {
+            opacity: 0.5,
+          },
+          "10%": {
+            transform: "scale(2)"
+          },
+          "100%": {
+            opacity: 1,
+            transform: "scale(1)"
+          }
+        }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -149,6 +161,7 @@ module.exports = {
         blink: "blink 1.5s ease infinite",
         fade: "fade 1s ease-in-out",
         gradient: "gradient 0.75s linear infinite",
+        counter: "counter 1s ease-in-out infinite"
       },
     },
   },

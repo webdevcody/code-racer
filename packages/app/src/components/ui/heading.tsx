@@ -7,7 +7,7 @@ type HeadingTags = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 type HeadingProps =
   | {
     title: string;
-    description: string | undefined;
+    description?: string;
     centered?: boolean;
     fontFamily?: "bruno_ace_sc";
     typeOfHeading?: HeadingTags;

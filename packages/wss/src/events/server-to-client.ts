@@ -1,45 +1,5 @@
-import type { Prisma, RaceParticipant } from "@code-racer/app/src/lib/prisma";
-import type { RaceStatus } from "../consts";
-import type { Participant } from "../store/memory";
-import { Room, UserSessionMemory } from "@/new-game";
-
-type NewType = {
-	participants: Array<string>;
-	status: RaceStatus;
-};
-
-type Race = NewType;
-
-export type GameStateUpdatePayload = {
-	raceState: {
-		id: string;
-		status: RaceStatus;
-		participants: Participant[];
-		countdown?: number;
-	};
-};
-
-export type UserRaceResponsePayload = {
-	race: Prisma.RaceGetPayload<Record<string, never>>;
-	participants: Participant[];
-	raceParticipantId: RaceParticipant["id"];
-	raceStatus: RaceStatus;
-};
-
-export type RoomJoinedResponsePayload = {
-	race: Prisma.RaceGetPayload<{ include: { participants: true } }>;
-	participants: Participant[];
-	raceStatus: RaceStatus;
-	participantId: string;
-};
-
-export type UpdateParticipantsPayload = {
-	participants: Participant[];
-};
-
-export type UserRoomRaceResponsePayload = {
-	race: Race;
-};
+import { RaceStatus } from "@/consts";
+import type { ParticipantInformation } from "@/new-game";
 
 export type SendNotificationPayload = {
 	title?: string;
@@ -47,14 +7,22 @@ export type SendNotificationPayload = {
 	variant?: "default" | "destructive" | "middle";
 };
 
-export interface ServerToClientEvents {
+export type SendRoomIDPayload = {
+	roomID: string;
+	roomOwnerID: string;
+}
 
+export interface ServerToClientEvents {
 	SendError: (_payload: Error) => void;
 	SendNotification: (_payload: SendNotificationPayload) => void;
 
-	SendRoomInformation: (_payload: Room) => void;
-	SendRoomID: (_payload: string) => void;
+	SendRoomID: (_payload: SendRoomIDPayload) => void;
 
+	PlayerJoinedOrLeftRoom: (_payload: Array<ParticipantInformation>) => void;
+	
+	SendGameStatusOfRoom: (_payload: RaceStatus) => void;
+	SendRoomOwnerID: (_payload: string) => void;
+	
 	// GameStateUpdate: (_payload: GameStateUpdatePayload) => void;
 	// UserRaceEnter: (_payload: UserRacePresencePayload) => void;
 	// UserRaceLeave: (_payload: UserRacePresencePayload) => void;
