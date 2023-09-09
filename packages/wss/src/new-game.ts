@@ -1,7 +1,6 @@
 import type { Server } from "socket.io";
 import type { ClientToServerEvents } from "./events/client-to-server";
 import type { ServerToClientEvents } from "./events/server-to-client";
-import type { Race } from "@code-racer/app/src/lib/prisma";
 
 import {
 	GAME_CONFIG,
@@ -11,6 +10,7 @@ import {
 } from "./consts";
 import { getRandomSnippet } from "@code-racer/app/src/app/race/(play)/loaders";
 import { v4 as uuidv4 } from "uuid";
+import { Language } from "@code-racer/app/src/config/languages";
 
 declare module "socket.io" {
 	interface Socket {
@@ -49,11 +49,28 @@ export type Participant = {
 	timeTaken: number;
 };
 
+export type CustomSnippet = {
+	id: string;
+	name: string | null;
+	code: string;
+	language: Language;
+};
+
+export type RoomInformation = {
+	snippet: CustomSnippet;
+	startedAt: Date | null;
+	endedAt: Date | null;
+	roomOwnerID: string;
+};
+
 type Room = {
 	participants: UserSessionMemory;
 	roomOwnerID: string;
 	roomID: string;
-	race: Race;
+	snippet: CustomSnippet
+	createdAt: Date | null;
+	startedAt: Date | null;
+	endedAt: Date | null;
 	gameStatus: RaceStatus;
 };
 
@@ -517,13 +534,15 @@ export class Game {
 				const UserSessioMemoryForRoom = new UserSessionMemory();
 				UserSessioMemoryForRoom.append(userSession);
 				const room = {
-					race: {
-						id: roomID,
-						snippetId: snippet.id,
-						startedAt: null,
-						endedAt: null,
-						createdAt: new Date(),
+					snippet: {
+						id: snippet.id,
+						name: snippet.name,
+						code: snippet.code,
+						language
 					},
+					startedAt: null,
+					endedAt: null,
+					createdAt: new Date(),
 					roomOwnerID: userSession.userID,
 					roomID,
 					participants: UserSessioMemoryForRoom,
@@ -694,6 +713,25 @@ export class Game {
 					.to(roomID)
 					.emit("SendGameStatusOfRoom", foundRoom.gameStatus);
 			});
+
+			socket.on("RequestRoomInformation", (roomID) => {
+				const foundRoom = this.Memory.findRoom(roomID);
+
+				if (!foundRoom) {
+					if (IS_IN_DEVELOPMENT) {
+						console.warn("Memory handling error. Requesting for room information which should be done when a game starts, but the room cannot be found. Perhaps the room ID was mistyped?");
+					}
+					return;
+				}
+
+				this.server.to(roomID).emit("SendRoomInformation", {
+					snippet: foundRoom.snippet,
+					endedAt: foundRoom.endedAt,
+					startedAt: foundRoom.startedAt,
+					roomOwnerID: foundRoom.roomOwnerID
+				});
+			});
+
 		});
 	}
 

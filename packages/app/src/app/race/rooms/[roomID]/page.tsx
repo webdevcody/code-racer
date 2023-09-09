@@ -1,8 +1,13 @@
 import type { NextPage } from "next";
-import { ClientRoom } from "./client-room";
-import { getCurrentUser } from "@/lib/session";
+
 import { Fragment } from "react";
+
+import { ClientRoom } from "./client-room";
+
+import { getCurrentUser } from "@/lib/session";
+
 import { Heading } from "@/components/ui/heading";
+
 import { siteConfig } from "@/config/site";
 
 type Props = {

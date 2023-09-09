@@ -1,18 +1,22 @@
 "use client";
+
+import React, { Fragment, SetStateAction, useState } from "react";
+
+import { z } from "zod";
+import { useRouter } from "next/navigation";
+
+import { ArrowRight, Target } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { ArrowRight, Target } from "lucide-react";
-import { cn } from "@/lib/utils";
-import React, { Fragment, SetStateAction, useState } from "react";
-import { useRouter } from "next/navigation";
-import LanguageDropDown from "@/app/add-snippet/_components/language-dropdown";
-import { bruno_ace_sc } from "@/lib/fonts";
-import { z } from "zod";
-import { languageTypes } from "@/lib/validations/room";
-import { socket } from "@/lib/socket";
-import { useSession } from "next-auth/react";
 
-type LanguageType = z.infer<typeof languageTypes>;
+import { cn } from "@/lib/utils";
+
+import LanguageDropDown from "@/app/add-snippet/_components/language-dropdown";
+
+import { bruno_ace_sc } from "@/lib/fonts";
+import { languageTypes } from "@/lib/validations/room";
+
+type LanguageType = z.infer<typeof languageTypes>
 
 export default function PracticeRaceCard() {
   const [selectedPracticeLanguage, setSelectedPracticeLanguage] = useState<
@@ -20,8 +24,6 @@ export default function PracticeRaceCard() {
   >();
   const [error, setError] = useState("");
   const router = useRouter();
-
-  const { data } = useSession();
 
   function handleSetCodeLanguage(
     props: SetStateAction<LanguageType | undefined>
@@ -42,25 +44,6 @@ export default function PracticeRaceCard() {
 
   return (
     <Fragment>
-      <Button
-        onClick={() => {
-          socket.auth = {
-            displayName: data?.user.name ?? "Random12345",
-            displayImage: data?.user.image ?? "/static/placeholder-image.jpg",
-          };
-
-          socket.connect();
-        }}
-      >
-        Connect to WSS
-      </Button>
-      <Button
-        onClick={() => {
-          socket.disconnect();
-        }}
-      >
-        Disconnect to WSS
-      </Button>
       <Card
         className="flex flex-col justify-between flex-1 border-2 border-warning"
         data-cy="practice-card"
@@ -97,6 +80,7 @@ export default function PracticeRaceCard() {
               <span className="text-red-500">{error}</span>
             </div>
             <Button
+              type="submit"
               disabled={selectedPracticeLanguage === undefined}
               variant="black"
               className="relative justify-start border"

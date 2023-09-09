@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { z, ZodTypeAny } from "zod";
 
 type ValidatedCallbackOptions<
@@ -8,8 +9,8 @@ type ValidatedCallbackOptions<
   outputValidation?: OutputValidation;
   inputValidation?: InputValidation;
   callback: InputValidation extends ZodTypeAny
-    ? (input: z.infer<InputValidation>) => any
-    : (input: CallbackInput) => any;
+    ? (_input: z.infer<InputValidation>) => any
+    : (_input: CallbackInput) => any;
 };
 
 export function validatedCallback<

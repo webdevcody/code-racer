@@ -81,6 +81,7 @@ export const siteConfig = {
         bracketSameLine: false,
         arrowParens: "avoid",
         insertPragma: false,
+        proseWrap: "always",
         htmlWhitespaceSensitivity: "css",
         vueIndentScriptAndStyle: false,
         endOfLine: "lf",

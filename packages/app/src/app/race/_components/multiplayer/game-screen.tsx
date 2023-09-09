@@ -1,7 +1,7 @@
 "use client";
 
 import { RACE_STATUS, type RaceStatus } from "@code-racer/wss/src/consts";
-import type { RoomProps } from "../rooms/page";
+import type { RoomProps } from "../../rooms/page";
 
 import React from "react";
 import dynamic from "next/dynamic";

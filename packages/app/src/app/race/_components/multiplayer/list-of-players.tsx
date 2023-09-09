@@ -1,7 +1,7 @@
 "use client";
 
 import type { ParticipantInformation } from "@code-racer/wss/src/new-game";
-import type { RoomProps } from "../rooms/page";
+import type { RoomProps } from "../../rooms/page";
 
 import React from "react";
 

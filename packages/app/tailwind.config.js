@@ -102,9 +102,8 @@ module.exports = {
           "100%": { transform: "translate(-2539.6383913420013px, 0)" },
         },
         blink: {
-          "0%": { background: "hsl(var(--warning-light))", color: "#878c8e" },
-          "50%": { background: "transparent" },
-          "100%": { background: "hsl(var(--warning-light))", color: "#878c8e" },
+          "0%, 100%": { background: "hsl(var(--warning-light) / 0.5)" },
+          "50%": { background: "hsl(var(--warning-light))"}
         },
         fade: {
           "0%": { opacity: 0.5 },
@@ -147,6 +146,20 @@ module.exports = {
           "100%": {
             opacity: 1,
             transform: "scale(1)"
+          },
+          "pulseloading": {
+            "0%": {
+              opacity: 0,
+              transform: "scale(1)"
+            },
+            "70%": {
+              opacity: 1,
+              transform: "scale(2)"
+            },
+            "100%": {
+              opacity: 1,
+              transform: "scale(2)"
+            }
           }
         }
       },
@@ -158,10 +171,11 @@ module.exports = {
         "star-rotate": "half-rotate 1s linear infinite",
         "star-scale": "fast-scale 1.2s ease-out forwards infinite",
         dash: "dash linear infinite",
-        blink: "blink 1.5s ease infinite",
+        blink: "blink 1s infinite",
         fade: "fade 1s ease-in-out",
         gradient: "gradient 0.75s linear infinite",
-        counter: "counter 1s ease-in-out infinite"
+        counter: "counter 1s ease-in-out infinite",
+        "pulse-loading": "pulseloading 1s ease-in-out infinite",
       },
     },
   },

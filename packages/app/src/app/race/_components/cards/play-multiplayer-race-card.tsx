@@ -61,7 +61,7 @@ const PlayMultiplayerRaceCard: React.FC<Props> = ({ enabled }) => {
           })}
         >
           {!enabled && (
-            <Button className="w-full" variant="black" disabled>
+            <Button type="submit" className="w-full" variant="black" disabled>
               Create Room (Coming Soon)
             </Button>
           )}
@@ -81,6 +81,7 @@ const PlayMultiplayerRaceCard: React.FC<Props> = ({ enabled }) => {
                 <span className="text-red-500">{error}</span>
               </div>
               <Button
+                type="submit"
                 disabled={!enabled || isLoading || language === undefined}
                 variant="black"
                 className="relative justify-start border"

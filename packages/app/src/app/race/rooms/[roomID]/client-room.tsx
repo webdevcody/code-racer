@@ -8,8 +8,9 @@ import React from "react";
 
 import { connectToSocket, socket } from "@/lib/socket";
 import { FALLBACK_IMG, RANDOM_USERNAME } from "@/config/consts";
-import { ListOfPlayers } from "../../_components/list-of-players";
-import { GameScreen } from "../../_components/game-screen";
+
+import { ListOfPlayers } from "../../_components/multiplayer/list-of-players";
+import { GameScreen } from "../../_components/multiplayer/game-screen";
 
 type Props = {
   roomID: string;

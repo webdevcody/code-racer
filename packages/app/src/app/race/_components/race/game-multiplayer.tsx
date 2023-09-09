@@ -1,7 +1,6 @@
 "use client";
 
 import { Language } from "@/config/languages";
-import { GameStateUpdatePayload } from "@code-racer/wss/src/events/server-to-client";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { saveUserResultAction } from "../../actions";
@@ -102,10 +101,6 @@ export function GameMultiplayer({
   // Connection to wss
   useEffect(() => {
     startRaceEventHandlers();
-    socket.emit("UserRaceRequest", {
-      raceId,
-      participantId,
-    });
 
     // return () => {
     //   socket.disconnect();

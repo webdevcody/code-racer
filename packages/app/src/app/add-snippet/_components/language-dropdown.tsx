@@ -1,9 +1,10 @@
 "use client";
 
 import React from "react";
+import { z } from "zod";
+
 import { Check, ChevronsUpDown } from "lucide-react";
-import { useEffect } from "react";
-import { cn } from "@/lib/utils";
+
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -17,11 +18,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { snippetLanguages } from "@/config/languages";
-import { languageTypes } from "@/lib/validations/room";
-import { z } from "zod";
 
-type LanguageTypes = z.infer<typeof languageTypes>;
+import { snippetLanguages } from "@/config/languages";
+
+import { languageTypes } from "@/lib/validations/room";
+import { cn } from "@/lib/utils";
+
+type LanguageTypes = z.infer<typeof languageTypes>
+
 
 const LanguageDropdown = ({
   className,
@@ -35,7 +39,19 @@ const LanguageDropdown = ({
   const [open, setOpen] = React.useState(false);
   const [search, setSearch] = React.useState("");
 
-  useEffect(() => {
+  const itemToShow = React.useMemo(() => {
+    if (value) {
+      for (let idx = 0; idx < snippetLanguages.length; ++idx) {
+        if (snippetLanguages[idx].value === value) {
+          return snippetLanguages[idx].label;
+        }
+      }
+    } else {
+      return "Select language...";
+    }
+  }, [value]);
+
+  React.useEffect(() => {
     if (localStorage) {
       const savedCodeLanguage = localStorage.getItem("codeLanguage");
       const parsedSavedCodeLanguage = languageTypes.parse(savedCodeLanguage);
@@ -55,10 +71,7 @@ const LanguageDropdown = ({
           className={cn("justify-between w-full px-4 py-3", className)}
           data-cy="language-dropdown"
         >
-          {value
-            ? snippetLanguages.find((language) => language.value === value)
-                ?.label
-            : "Select language..."}
+          {itemToShow}
           <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
         </Button>
       </PopoverTrigger>
@@ -83,7 +96,10 @@ const LanguageDropdown = ({
                   onSelect={(currentValue) => {
                     const parsedValue = languageTypes.parse(currentValue);
                     onChange(parsedValue);
-                    window.localStorage.setItem("codeLanguage", parsedValue);
+                    window.localStorage.setItem(
+                      "codeLanguage",
+                      parsedValue,
+                    );
                     setOpen(false);
                   }}
                   data-cy={`${language.value}-value`}
@@ -91,7 +107,7 @@ const LanguageDropdown = ({
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === language.value ? "opacity-100" : "opacity-0"
+                      { "opacity-0": value !== language.value }
                     )}
                   />
                   {language.label}
@@ -103,8 +119,6 @@ const LanguageDropdown = ({
     </Popover>
   );
 };
-
-LanguageDropdown.displayName = "LanguageDropdown";
 
 LanguageDropdown.displayName = "LanguageDropdown";
 

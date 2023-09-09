@@ -1,11 +1,11 @@
 import { RacePage } from "../page-objects/pages/RacePage";
 export class RaceBL {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public static runTypingRace(spans: any): RacePage {
+  public static runTypingRace(spans: Array<HTMLSpanElement>): RacePage {
     const NEW_LINE = "⏎\n";
     let code = "";
     let isIndentWhiteSpace = false;
-    for (let i = 0; i < spans.length; i++) {
+    for (let i = 0; i < spans.length; ++i) {
       const char = spans[i].innerText;
       if (char !== " " && isIndentWhiteSpace) {
         // Encounter non-whitespace character when isIndentWhiteSpace=true
@@ -23,7 +23,7 @@ export class RaceBL {
         isIndentWhiteSpace = true;
       }
     }
-    cy.get('[data-cy="race-practice-input"]').type(code, {
+    cy.get("[data-cy='race-practice-input']").type(code, {
       force: true,
       parseSpecialCharSequences: false,
       delay: 30,

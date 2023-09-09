@@ -1,11 +1,6 @@
 import { RaceStatus } from "@/consts";
 import type { Language } from "@code-racer/app/src/config/languages";
 
-export type EnterRoomPayload = {
-	userID: string;
-	roomID: string;
-};
-
 export type CreateRoomPayload = {
 	userID: string;
 	language: Language;
@@ -17,14 +12,14 @@ export type ChangeGameStatusOfRoomPayload = {
 };
 
 export interface ClientToServerEvents {
-	EnterRoom: (_payload: EnterRoomPayload) => void;
-
 	CreateRoom: (_payload: CreateRoomPayload) => void;
 
-	CheckIfRoomIDExists: (_payload: string) => void;
+	CheckIfRoomIDExists: (_roomID: string) => void;
 
 	CheckGameStatusOfRoom: (_payload: string) => void;
 	ChangeGameStatusOfRoom: (_payload: ChangeGameStatusOfRoomPayload) => void;
+
+	RequestRoomInformation: (_roomID: string) => void;
 
 	// PositionUpdate: (_payload: PositionUpdatePayload) => void;
 

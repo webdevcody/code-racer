@@ -1,5 +1,5 @@
 import { RaceStatus } from "@/consts";
-import type { ParticipantInformation } from "@/new-game";
+import type { ParticipantInformation, RoomInformation } from "@/new-game";
 
 export type SendNotificationPayload = {
 	title?: string;
@@ -23,6 +23,7 @@ export interface ServerToClientEvents {
 	SendGameStatusOfRoom: (_payload: RaceStatus) => void;
 	SendRoomOwnerID: (_payload: string) => void;
 
+	SendRoomInformation: (_payload: RoomInformation) => void;
 	// GameStateUpdate: (_payload: GameStateUpdatePayload) => void;
 	// UserRaceEnter: (_payload: UserRacePresencePayload) => void;
 	// UserRaceLeave: (_payload: UserRacePresencePayload) => void;
