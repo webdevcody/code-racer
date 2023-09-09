@@ -34,7 +34,7 @@ const RaceDispatchStateSchema = z.object({
   chartTimeStamp: chartTimeStampSchema,
   replayTimestamp: replayTimestampSchema,
   displayedErrorMessage: z.string(),
-  totalTime: z.number()
+  totalTime: z.number(),
 });
 const RaceDispatchActionSchema = z.object({
   type: z.union([
@@ -46,7 +46,7 @@ const RaceDispatchActionSchema = z.object({
     z.literal("change_replay_timestamp"),
     z.literal("reset"),
     z.literal("display_error_message"),
-    z.literal("add_total_time")
+    z.literal("add_total_time"),
   ]),
   payload: z
     .union([
@@ -64,37 +64,37 @@ const RaceDispatchActionSchema = z.object({
 export type RaceDispatchStateSchemaType = z.infer<
   typeof RaceDispatchStateSchema
 >;
-chartTimeStampSchema
+chartTimeStampSchema;
 /** Respective actions to payload:
- *  
+ *
  *  Input State Change
  *  ===
  *  @requires string
- *  
+ *
  *  Snippet State Change
  *  ---
- *  @requires Snippet 
- *  
+ *  @requires Snippet
+ *
  *  Total Errors State Chamge
  *  ---
  *  @requires number "(How many errors to add?)"
- *  
+ *
  *  Set Start Time
  *  ---
  *  @requires Date | void
- *  
+ *
  *  Chart Time Stamp State Change
  *  ---
  *  @requires chartTimeStampSchema
- *  
+ *
  *  Replay Time Stamp State Change
  *  ---
  *  @requires replayTimestampSchema
- *  
+ *
  *  Reset State
  *  ---
  *  @requires void
- *  
+ *
  *  Display Error Message
  *  ---
  *  @requires string
@@ -115,14 +115,14 @@ export const RaceDispatchInitialState: RaceDispatchStateSchemaType = {
     name: "",
     language: "c#",
     id: "",
-    code: ""
+    code: "",
   },
   totalErrors: 0,
   startTime: undefined,
   chartTimeStamp: [],
   replayTimestamp: [],
   displayedErrorMessage: "",
-  totalTime: 0
+  totalTime: 0,
 };
 
 export const RaceDispatch = (
@@ -197,6 +197,6 @@ export const RaceDispatch = (
     startTime: state.startTime,
     chartTimeStamp: state.chartTimeStamp,
     displayedErrorMessage: state.displayedErrorMessage,
-    totalTime: state.totalTime
+    totalTime: state.totalTime,
   } satisfies RaceDispatchStateSchemaType;
 };

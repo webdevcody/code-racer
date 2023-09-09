@@ -11,13 +11,15 @@ type Props = {
   input: string;
   code: string;
   didUserMistype: boolean;
-}
+};
 
 /** Requires a ref to focus on the TextArea element! A function handler for that is onDivClick.*/
 const TypingCard = React.memo(
   React.forwardRef<HTMLTextAreaElement, Props>(
-    ({ handleInputChange, handleKeyDownEvent, input, code, didUserMistype }, ref) => {
-
+    (
+      { handleInputChange, handleKeyDownEvent, input, code, didUserMistype },
+      ref
+    ) => {
       return (
         <React.Fragment>
           <pre
@@ -78,10 +80,7 @@ const Character: React.FC<CharacterProps> = React.memo(
             underline: ERROR_CHARACTER && char !== " ",
           })}
         >
-          {char === "\n"
-            ? "⏎\n"
-            : char
-          }
+          {char === "\n" ? "⏎\n" : char}
         </span>
         {idx < maxLength && (
           <Character

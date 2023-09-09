@@ -10,7 +10,7 @@ import {
   deleteVoteAction,
   downVoteSnippetAction,
   upvoteSnippetAction,
-} from "./actions";
+} from "../actions";
 
 export function Voting({
   // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars

@@ -1,4 +1,8 @@
+
 import * as React from "react";
+import Link from "next/link";
+import Image from "next/image";
+
 import {
   Table,
   TableBody,
@@ -8,10 +12,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import Link from "next/link";
-import { getTopTen, getUserSnippetPlacement } from "./loaders";
 import { Heading } from "@/components/ui/heading";
-import Image from "next/image";
+
+import { getTopTen, getUserSnippetPlacement } from "../loaders";
 
 export async function TopTable({ snippetId }: { snippetId?: string }) {
   const topten = await getTopTen(snippetId);
@@ -21,6 +24,7 @@ export async function TopTable({ snippetId }: { snippetId?: string }) {
     <>
       {userPlacement && (
         <Heading
+          title="Ranking"
           description={`Your current placement among this snippet is #${userPlacement}.`}
         />
       )}

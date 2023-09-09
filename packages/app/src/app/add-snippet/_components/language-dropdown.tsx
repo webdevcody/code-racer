@@ -24,8 +24,7 @@ import { snippetLanguages } from "@/config/languages";
 import { languageTypes } from "@/lib/validations/room";
 import { cn } from "@/lib/utils";
 
-type LanguageTypes = z.infer<typeof languageTypes>
-
+type LanguageTypes = z.infer<typeof languageTypes>;
 
 const LanguageDropdown = ({
   className,
@@ -96,19 +95,15 @@ const LanguageDropdown = ({
                   onSelect={(currentValue) => {
                     const parsedValue = languageTypes.parse(currentValue);
                     onChange(parsedValue);
-                    window.localStorage.setItem(
-                      "codeLanguage",
-                      parsedValue,
-                    );
+                    window.localStorage.setItem("codeLanguage", parsedValue);
                     setOpen(false);
                   }}
                   data-cy={`${language.value}-value`}
                 >
                   <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      { "opacity-0": value !== language.value }
-                    )}
+                    className={cn("mr-2 h-4 w-4", {
+                      "opacity-0": value !== language.value,
+                    })}
                   />
                   {language.label}
                 </CommandItem>

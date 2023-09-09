@@ -16,7 +16,7 @@ import LanguageDropDown from "@/app/add-snippet/_components/language-dropdown";
 import { bruno_ace_sc } from "@/lib/fonts";
 import { languageTypes } from "@/lib/validations/room";
 
-type LanguageType = z.infer<typeof languageTypes>
+type LanguageType = z.infer<typeof languageTypes>;
 
 export default function PracticeRaceCard() {
   const [selectedPracticeLanguage, setSelectedPracticeLanguage] = useState<

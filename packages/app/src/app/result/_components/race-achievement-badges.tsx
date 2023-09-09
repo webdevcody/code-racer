@@ -1,5 +1,5 @@
 import { AchievementBadge } from "@/components/achievement";
-import { getFifthRaceBadge, getFirstRaceBadge } from "./loaders";
+import { getFifthRaceBadge, getFirstRaceBadge } from "../loaders";
 
 export async function RaceAchievementBadges() {
   const [firstRaceBadge, fifthRaceBadge] = await Promise.all([

@@ -51,15 +51,15 @@ export const useHandleRaceEvents = () => {
     if (!code) {
       return 0;
     }
-    const position = Math.floor((MAX_TRACKER_POSITION / code.length) * state.input.length)
+    const position = Math.floor(
+      (MAX_TRACKER_POSITION / code.length) * state.input.length
+    );
     if (position >= MAX_TRACKER_POSITION) {
       return MAX_TRACKER_POSITION;
     } else {
       return position;
     }
-  },
-    [code, state.input]
-  );
+  }, [code, state.input]);
 
   const isUserFinished = React.useMemo(() => {
     if (!code) {
@@ -67,9 +67,7 @@ export const useHandleRaceEvents = () => {
     } else {
       return state.input === code;
     }
-  },
-    [state.input, code]
-  );
+  }, [state.input, code]);
 
   const amountOfLineBreaks = React.useMemo(
     () => searchForLineBreak(code ?? ""),
@@ -85,7 +83,7 @@ export const useHandleRaceEvents = () => {
     const updateElapsedTime = () => {
       dispatch({
         type: "add_total_time",
-        payload: TIMER_INTERVAL / 1000
+        payload: TIMER_INTERVAL / 1000,
       });
     };
 
@@ -208,8 +206,8 @@ export const useHandleRaceEvents = () => {
   const handleReset = React.useCallback(() => {
     dispatch({ type: "reset" });
     if (timerRef.current) {
-       clearInterval(timerRef.current);
-       timerRef.current = null;
+      clearInterval(timerRef.current);
+      timerRef.current = null;
     }
   }, []);
 

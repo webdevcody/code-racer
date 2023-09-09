@@ -36,7 +36,7 @@ export async function getRandomSnippet(input: {
       NOT: {
         id: {
           in: input.reportedSnippets ?? [],
-        }
+        },
       },
     },
     take: 1,

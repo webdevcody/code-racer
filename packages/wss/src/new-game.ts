@@ -67,7 +67,7 @@ type Room = {
 	participants: UserSessionMemory;
 	roomOwnerID: string;
 	roomID: string;
-	snippet: CustomSnippet
+	snippet: CustomSnippet;
 	createdAt: Date | null;
 	startedAt: Date | null;
 	endedAt: Date | null;
@@ -538,7 +538,7 @@ export class Game {
 						id: snippet.id,
 						name: snippet.name,
 						code: snippet.code,
-						language
+						language,
 					},
 					startedAt: null,
 					endedAt: null,
@@ -719,7 +719,9 @@ export class Game {
 
 				if (!foundRoom) {
 					if (IS_IN_DEVELOPMENT) {
-						console.warn("Memory handling error. Requesting for room information which should be done when a game starts, but the room cannot be found. Perhaps the room ID was mistyped?");
+						console.warn(
+							"Memory handling error. Requesting for room information which should be done when a game starts, but the room cannot be found. Perhaps the room ID was mistyped?",
+						);
 					}
 					return;
 				}
@@ -728,10 +730,9 @@ export class Game {
 					snippet: foundRoom.snippet,
 					endedAt: foundRoom.endedAt,
 					startedAt: foundRoom.startedAt,
-					roomOwnerID: foundRoom.roomOwnerID
+					roomOwnerID: foundRoom.roomOwnerID,
 				});
 			});
-
 		});
 	}
 
