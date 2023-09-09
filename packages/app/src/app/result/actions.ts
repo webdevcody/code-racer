@@ -197,7 +197,7 @@ export const deleteVoteAction = validatedCallback({
         },
       });
 
-      if (previousVote!.type === "DOWN") {
+      if (previousVote.type === "DOWN") {
         await tx.snippet.update({
           where: {
             id: snippetId,
@@ -223,5 +223,45 @@ export const deleteVoteAction = validatedCallback({
     });
 
     revalidatePath("/result");
+  },
+});
+
+export const getTopTen = validatedCallback({
+  outputValidation: z
+    .object({
+      id: z.string(),
+      accuracy: z.number(),
+      cpm: z.number(),
+      user: z.object({
+        id: z.string(),
+        name: z.string(),
+        averageAccuracy: z.number(),
+        averageCpm: z.number(),
+        image: z.string(),
+      }),
+    })
+    .array(),
+  inputValidation: z.string().optional(),
+  callback: async (snippet) => {
+    const results = await prisma.result.findMany({
+      where: {
+        snippetId: snippet,
+      },
+      distinct: ["userId"],
+      take: 10,
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            averageAccuracy: true,
+            averageCpm: true,
+            image: true,
+          },
+        },
+      },
+    });
+    console.log(results[0]);
+    return results;
   },
 });

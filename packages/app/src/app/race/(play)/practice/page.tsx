@@ -8,10 +8,13 @@ import { getSnippetById } from "../loaders";
 
 import { getCurrentUser } from "@/lib/session";
 
-import { RacePracticeCard } from "../../_components/practice/race-practice-card";
-
 import { Heading } from "@/components/ui/heading";
 import { languageTypes } from "@/lib/validations/room";
+import dynamic from "next/dynamic";
+
+const RacePracticeCard = dynamic(
+  () => import("../../_components/practice/race-practice-card")
+);
 
 type PracticeRacePageProps = {
   searchParams: {

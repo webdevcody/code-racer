@@ -5,7 +5,7 @@ import type { CustomSnippet } from "@code-racer/wss/src/new-game";
 import React from "react";
 
 import { RaceDispatch, RaceDispatchInitialState } from "./race-dispatch";
-import { noopKeys } from "./race-utils";
+import { calculateAccuracy, calculateCPM, noopKeys } from "./race-utils";
 import { searchForLineBreak } from "@/lib/utils";
 
 const MAX_TRACKER_POSITION = 100;
@@ -79,6 +79,7 @@ export const useHandleRaceEvents = () => {
     [state.input]
   );
 
+  /** TIMER LOGIC */
   React.useEffect(() => {
     const updateElapsedTime = () => {
       dispatch({
@@ -101,6 +102,33 @@ export const useHandleRaceEvents = () => {
     clearInterval(timerRef.current);
     timerRef.current = null;
   }, [isUserFinished]);
+  /** TIMER LOGIC */
+
+  const changeTimeStamps = React.useCallback(
+    (value: string) => {
+      if (state.startTime) {
+        const currentTime = Date.now();
+        const timeTaken = +(
+          (currentTime - state.startTime.getTime()) /
+          1000
+        ).toFixed(2);
+
+        dispatch({
+          type: "change_timestamp",
+          payload: [
+            {
+              word: value,
+              accuracy: calculateAccuracy(value.length, timeTaken),
+              cpm: calculateCPM(value.length, timeTaken),
+              time: timeTaken,
+              errors: state.totalErrors,
+            },
+          ],
+        });
+      }
+    },
+    [state.startTime, state.totalErrors]
+  );
 
   /** We are using an onChange handler
    *  to simplify logic.
@@ -117,19 +145,23 @@ export const useHandleRaceEvents = () => {
         const USER_PRESSED_BACKSPACE_AND_ONLY_ONE_CHAR_WAS_MISTYPED =
           inputValue === code?.slice(0, inputValue.length);
         if (USER_PRESSED_BACKSPACE_AND_ONLY_ONE_CHAR_WAS_MISTYPED) {
+          changeTimeStamps(inputValue);
           dispatch({
             type: "change_input",
             payload: inputValue,
           });
         }
       } else {
+        changeTimeStamps(inputValue);
         dispatch({
           type: "change_input",
           payload: inputValue,
         });
       }
+
       const LAST_CHARACTER_OF_USER_INPUT_IS_NOT_EQUAL_TO_CODE_BASED_ON_INPUT_LENGTH =
         inputValue !== code?.slice(0, inputValue.length);
+
       if (
         LAST_CHARACTER_OF_USER_INPUT_IS_NOT_EQUAL_TO_CODE_BASED_ON_INPUT_LENGTH
       ) {
@@ -145,7 +177,7 @@ export const useHandleRaceEvents = () => {
         return;
       }
     },
-    [state.displayedErrorMessage, code]
+    [state.displayedErrorMessage, code, changeTimeStamps]
   );
 
   /** Responsible for:
@@ -178,16 +210,21 @@ export const useHandleRaceEvents = () => {
             if (
               !LAST_CHARACTER_OF_USER_INPUT_IS_NOT_EQUAL_TO_CODE_BASED_ON_INPUT_LENGTH
             ) {
+              const newValueAfterCalculatingWhitespaces = handleEnter(
+                state.input,
+                code
+              );
+              changeTimeStamps(newValueAfterCalculatingWhitespaces);
               dispatch({
                 type: "change_input",
-                payload: handleEnter(state.input, code),
+                payload: newValueAfterCalculatingWhitespaces,
               });
             }
           }
           break;
       }
     },
-    [state.input, state.startTime, code]
+    [state.input, state.startTime, code, changeTimeStamps]
   );
 
   const handleChangeSnippet = React.useCallback((snippet: CustomSnippet) => {
@@ -211,17 +248,6 @@ export const useHandleRaceEvents = () => {
     }
   }, []);
 
-  /**
-   *  TODO:
-   *  ---
-   *  Implement Report Handling
-   */
-  const handleReportSnippet = React.useCallback(() => {
-    if (state.snippet) {
-      handleReset();
-    }
-  }, [state.snippet, handleReset]);
-
   return {
     state,
     code,
@@ -232,7 +258,6 @@ export const useHandleRaceEvents = () => {
     handleInputChange,
     handleKeyDownEvent,
     handleChangeSnippet,
-    handleReportSnippet,
     handleReset,
   };
 };

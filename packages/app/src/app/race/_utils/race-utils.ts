@@ -26,23 +26,31 @@ export function calculateCPM(
   numberOfCharacters: number,
   secondsTaken: number
 ): number {
-  const minutesTaken = secondsTaken / 60;
-  const cpm = Math.round(numberOfCharacters / minutesTaken);
-  if (Number.isNaN(cpm)) {
-    // result chart graph needs a 0 value
+  if (numberOfCharacters === 0 || secondsTaken === 0) {
     return 0;
+  } else {
+    const minutesTaken = secondsTaken / 60;
+    const cpm = Math.round(numberOfCharacters / minutesTaken);
+    if (Number.isNaN(cpm)) {
+      return 0;
+    }
+    return cpm;
   }
-  return cpm;
 }
 
 export function calculateAccuracy(
   numberOfCharacters: number,
   errorsCount: number
 ): number {
-  const accuracy = (1 - errorsCount / numberOfCharacters) * 100;
-  if (Number.isNaN(accuracy)) {
-    // result chart graph needs a 0 value
-    return 0;
+  /** since 0 / num === cannot be divided, accuracy would be null */
+  if (numberOfCharacters === 0 || errorsCount === 0) {
+    return 100;
+  } else {
+    const accuracy = (1 - errorsCount / numberOfCharacters) * 100;
+    if (Number.isNaN(accuracy)) {
+      // result chart graph needs a 0 value
+      return 0;
+    }
+    return accuracy;
   }
-  return accuracy;
 }

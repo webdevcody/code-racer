@@ -1,23 +1,24 @@
-import { getCurrentUser } from "@/lib/session";
-import dynamic from "next/dynamic";
+import React from "react";
 
-const AuthenticatedPage = dynamic(() => import("./(pages)/authenticated"));
-const UnauthenticatedPage = dynamic(() => import("./(pages)/unauthenticated"));
+import { Heading } from "@/components/ui/heading";
 
-type ResultPageProps = {
-  searchParams: {
-    resultId: string;
-    snippetId: string;
-  };
-};
+import MainContent from "./main-content";
 
-export default async function ResultPage({ searchParams }: ResultPageProps) {
-  const user = await getCurrentUser();
+export default function ResultPage() {
+  return (
+    <React.Fragment>
+      <header className="pt-12">
+        <Heading
+          typeOfHeading="h1"
+          size="h1"
+          title="Your Race Results"
+          description="You were amazing! Now, let's see your results below."
+        />
+      </header>
 
-  return user ? (
-    <AuthenticatedPage user={user} resultId={searchParams.resultId} />
-  ) : (
-    <UnauthenticatedPage snippetId={searchParams.snippetId} />
+      <main className="py-12">
+        <MainContent />
+      </main>
+    </React.Fragment>
   );
 }
-

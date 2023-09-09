@@ -1,3 +1,5 @@
+import "server-only";
+
 import { achievements } from "@/config/achievements";
 import { convertDecimalsToNumbers } from "@/lib/convertDecimalsToNumbers";
 import { prisma } from "@/lib/prisma";
@@ -6,7 +8,6 @@ import { formatDate } from "@/lib/utils";
 import { validatedCallback } from "@/lib/validatedCallback";
 import { Result, Snippet } from "@prisma/client";
 import { redirect } from "next/navigation";
-import "server-only";
 import { z } from "zod";
 
 export type ParsedRacesResult = Omit<Result, "createdAt"> & {
@@ -152,49 +153,6 @@ export async function getSnippetVote(snippetId: string) {
     },
   });
 }
-
-export const getTopTen = validatedCallback({
-  outputValidation: z
-    .object({
-      id: z.string(),
-      accuracy: z.number(),
-      cpm: z.number(),
-      user: z.object({
-        id: z.string(),
-        name: z.string(),
-        averageAccuracy: z.number(),
-        averageCpm: z.number(),
-        image: z.string(),
-      }),
-    })
-    .array(),
-  inputValidation: z.string().optional(),
-  callback: async (snippet) => {
-    const results = await prisma.result.findMany({
-      where: {
-        snippetId: snippet,
-      },
-      orderBy: {
-        cpm: "desc",
-      },
-      take: 10,
-      distinct: ["userId"],
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            averageAccuracy: true,
-            averageCpm: true,
-            image: true,
-          },
-        },
-      },
-    });
-
-    return convertDecimalsToNumbers(results);
-  },
-});
 
 export async function getUserSnippetPlacement(snippetId?: Snippet["id"]) {
   const user = await getCurrentUser();

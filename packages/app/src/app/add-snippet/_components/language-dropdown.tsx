@@ -21,7 +21,7 @@ import {
 
 import { snippetLanguages } from "@/config/languages";
 
-import { languageTypes } from "@/lib/validations/room";
+import { type LanguageType, languageTypes } from "@/lib/validations/room";
 import { cn } from "@/lib/utils";
 
 type LanguageTypes = z.infer<typeof languageTypes>;
@@ -53,9 +53,12 @@ const LanguageDropdown = ({
   React.useEffect(() => {
     if (localStorage) {
       const savedCodeLanguage = localStorage.getItem("codeLanguage");
-      const parsedSavedCodeLanguage = languageTypes.parse(savedCodeLanguage);
-      if (savedCodeLanguage) {
-        onChange(parsedSavedCodeLanguage);
+      const isLanguageValid =
+        languageTypes.safeParse(savedCodeLanguage).success;
+      if (isLanguageValid) {
+        onChange(savedCodeLanguage as LanguageType);
+      } else {
+        onChange("c++");
       }
     }
   }, [onChange]);

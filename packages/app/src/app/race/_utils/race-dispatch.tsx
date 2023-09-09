@@ -11,18 +11,13 @@ const snippetSchema = z.object({
 });
 
 const dateType = z.date().or(z.string().transform((val) => new Date(val)));
-const chartTimeStampSchema = z.array(
+export const timeStampSchema = z.array(
   z.object({
-    char: z.string(),
+    word: z.string(),
     accuracy: z.number(),
     cpm: z.number(),
     time: z.number(),
-  })
-);
-const replayTimestampSchema = z.array(
-  z.object({
-    char: z.string(),
-    time: z.number(),
+    errors: z.number(),
   })
 );
 
@@ -31,8 +26,7 @@ const RaceDispatchStateSchema = z.object({
   snippet: snippetSchema,
   startTime: z.optional(dateType),
   totalErrors: z.number(),
-  chartTimeStamp: chartTimeStampSchema,
-  replayTimestamp: replayTimestampSchema,
+  timeStamp: timeStampSchema,
   displayedErrorMessage: z.string(),
   totalTime: z.number(),
 });
@@ -42,8 +36,7 @@ const RaceDispatchActionSchema = z.object({
     z.literal("change_snippet"),
     z.literal("add_errors"),
     z.literal("set_start_time"),
-    z.literal("change_chart_timestamp"),
-    z.literal("change_replay_timestamp"),
+    z.literal("change_timestamp"),
     z.literal("reset"),
     z.literal("display_error_message"),
     z.literal("add_total_time"),
@@ -54,8 +47,7 @@ const RaceDispatchActionSchema = z.object({
       snippetSchema,
       z.number(),
       dateType,
-      chartTimeStampSchema,
-      replayTimestampSchema,
+      timeStampSchema,
       z.null(),
     ])
     .optional(),
@@ -64,7 +56,7 @@ const RaceDispatchActionSchema = z.object({
 export type RaceDispatchStateSchemaType = z.infer<
   typeof RaceDispatchStateSchema
 >;
-chartTimeStampSchema;
+
 /** Respective actions to payload:
  *
  *  Input State Change
@@ -83,13 +75,9 @@ chartTimeStampSchema;
  *  ---
  *  @requires Date | void
  *
- *  Chart Time Stamp State Change
+ *  Time Stamp State Change
  *  ---
- *  @requires chartTimeStampSchema
- *
- *  Replay Time Stamp State Change
- *  ---
- *  @requires replayTimestampSchema
+ *  @requires TimeStampSchema
  *
  *  Reset State
  *  ---
@@ -119,8 +107,7 @@ export const RaceDispatchInitialState: RaceDispatchStateSchemaType = {
   },
   totalErrors: 0,
   startTime: undefined,
-  chartTimeStamp: [],
-  replayTimestamp: [],
+  timeStamp: [],
   displayedErrorMessage: "",
   totalTime: 0,
 };
@@ -145,11 +132,9 @@ export const RaceDispatch = (
       }
       state.totalErrors += action.payload;
       break;
-    case "change_chart_timestamp":
-      state.chartTimeStamp = chartTimeStampSchema.parse(action.payload);
-      break;
-    case "change_replay_timestamp":
-      state.replayTimestamp = replayTimestampSchema.parse(action.payload);
+    case "change_timestamp":
+      const parsedTimeStampPayload = timeStampSchema.parse(action.payload);
+      state.timeStamp.push(parsedTimeStampPayload[0]);
       break;
     case "set_start_time":
       if (action.payload) {
@@ -166,8 +151,7 @@ export const RaceDispatch = (
       break;
     case "reset":
       state.input = "";
-      state.chartTimeStamp = [];
-      state.replayTimestamp = [];
+      state.timeStamp = [];
       state.startTime = undefined;
       state.totalErrors = 0;
       state.displayedErrorMessage = "";
@@ -193,9 +177,8 @@ export const RaceDispatch = (
     input: state.input,
     totalErrors: state.totalErrors,
     snippet: state.snippet,
-    replayTimestamp: state.replayTimestamp,
+    timeStamp: state.timeStamp,
     startTime: state.startTime,
-    chartTimeStamp: state.chartTimeStamp,
     displayedErrorMessage: state.displayedErrorMessage,
     totalTime: state.totalTime,
   } satisfies RaceDispatchStateSchemaType;

@@ -13,7 +13,10 @@ type Props = {
   didUserMistype: boolean;
 };
 
-/** Requires a ref to focus on the TextArea element! A function handler for that is onDivClick.*/
+/** Requires a ref to focus on the TextArea element! A function handler for that is onDivClick.
+ *  We can also have a disabler for when, for example, we report a snippet or get a new one.
+ *  We don't want to user to continue typing when we are fetching a new snippet for them.
+ */
 const TypingCard = React.memo(
   React.forwardRef<HTMLTextAreaElement, Props>(
     (
