@@ -2,7 +2,6 @@ import { Fragment } from "react";
 
 import { Heading } from "@/components/ui/heading";
 
-import PlayMultiplayerRaceCard from "./_components/cards/play-multiplayer-race-card";
 import PracticeRaceCard from "./_components/cards/practice-race-card";
 import RaceRoomCard from "./_components/cards/race-room-card";
 
@@ -21,9 +20,6 @@ export default function RacePage() {
         <PracticeRaceCard />
         {env.NODE_ENV === "development" ? (
           <Fragment>
-            <PlayMultiplayerRaceCard
-              enabled={env.NODE_ENV === "development" ? true : env.MULTIPLAYER}
-            />
             <RaceRoomCard />
           </Fragment>
         ) : undefined}

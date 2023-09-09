@@ -14,6 +14,24 @@ export const RACE_STATUS = {
 	FINISHED: "finished",
 } as const;
 
+export const ROOM_KEYS = {
+	participants: "participants",
+	roomOwnerID: "roomOwnerID",
+	roomID: "roomID",
+	snippet: "snippet",
+	createdAt: "createdAt",
+	startedAt: "startedAt",
+	endedAt: "endedAt",
+	gameStatus: "gameStatus"
+} as const;
+
+export const USER_SESSION_KEYS = {
+	userID: "userID",
+	displayName: "displayName",
+	displayImage: "displayImage",
+	roomIDs: "roomIDs",
+} as const;
+
 export const IS_IN_DEVELOPMENT = true;
 
 export type RaceStatus = (typeof RACE_STATUS)[keyof typeof RACE_STATUS];

@@ -16,7 +16,7 @@ type Props = {
   roomID: string;
 } & RoomProps;
 
-export const RaceMultiplayerCard: React.FC<Props> = React.memo(
+const RaceMultiplayerCard: React.FC<Props> = React.memo(
   ({ roomID, session }) => {
     const {
       handleChangeSnippet,
@@ -72,3 +72,4 @@ export const RaceMultiplayerCard: React.FC<Props> = React.memo(
 );
 
 RaceMultiplayerCard.displayName = "RaceMultiplayerCard";
+export default RaceMultiplayerCard;

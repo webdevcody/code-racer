@@ -8,7 +8,6 @@ import { socket } from "@/lib/socket";
 import type { User } from "next-auth";
 import { Prisma } from "@prisma/client";
 import { RaceStatus } from "@code-racer/wss/src/consts";
-import { GameStateUpdatePayload } from "@code-racer/wss/src/events/server-to-client";
 
 import GameMultiplayer from "@/app/race/_components/race/game-multiplayer";
 import { MultiplayerLoadingLobby } from "../../_components/multiplayer-loading-lobby";

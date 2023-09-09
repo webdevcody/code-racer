@@ -1,146 +1,151 @@
-import {
-	prisma,
-	type Race,
-	type RaceParticipant,
-} from "@code-racer/app/src/lib/prisma";
+import type { LinkedListInterface, Node } from "./types";
 
-import type { RaceStatus } from "../consts";
-
-export type SocketId = string;
-export type Timestamp = number;
-
-export type RaceWithParticipants = {
-	race: Race;
-	participants: Array<Participant>;
-	status: RaceStatus;
-};
-
-export type Participant = {
-	id: RaceParticipant["id"];
-	position: number;
-	finishedAt: Timestamp | null;
-	image: string;
-	name: string;
-};
-
-export class MemoryStore {
-	private races: Map<string, RaceWithParticipants>;
-	private participants: Map<SocketId, Participant>;
-
-	constructor() {
-		this.races = new Map<string, RaceWithParticipants>();
-		this.participants = new Map<SocketId, Participant>();
-	}
-
-	findRace(id: string): RaceWithParticipants | undefined {
-		return this.races.get(id);
-	}
-
-	saveRace(id: string, race: RaceWithParticipants) {
-		this.races.set(id, race);
-	}
-
-	getAllRaces(): Array<RaceWithParticipants> {
-		return [...this.races.values()];
-	}
-
-	removeRace(roomID: string): void {
-		this.races.delete(roomID);
-	}
-
-	findRaceWhereParticipantIsIn(
-		userID: string,
-	): RaceWithParticipants | undefined {
-		const races = this.getAllRaces();
-
-		for (let idx = 0; idx < races.length; ++idx) {
-			const participants = races[idx].participants;
-			for (let j = 0; j < participants.length; ++j) {
-				if (participants[j].id === userID) {
-					return races[idx];
-				}
-			}
-		}
-
-		return undefined;
-	}
-
-	findAllParticipants(roomID: string): undefined | Array<Participant> {
-		return this.races.get(roomID)?.participants;
-	}
-
-	findParticipant(id: string): Participant | undefined {
-		return this.participants.get(id);
-	}
-
-	addParticipantToRace(roomID: string, participant: Participant): void | Error {
-		const race = this.races.get(roomID);
-		if (!race) {
-			return new Error("No race to join.");
-		}
-		race?.participants.push(participant);
-	}
-
-	saveParticipant(userID: string, participantDetails: Participant) {
-		this.participants.set(userID, participantDetails);
-	}
-
-	deleteAllParticipantsFromRace(roomID: string): void {
-		const race = this.findRace(roomID);
-		if (!race) {
-			return;
-		}
-
-		for (let idx = 0; idx < race.participants.length; ++idx) {
-			race.participants.pop();
-			this.participants.delete(race.participants[idx].id);
-		}
-	}
-
-	deleteRaceParticipant(
-		raceParticipantId: string,
-		room?: RaceWithParticipants,
-	) {
-		if (!room) {
-			room = this.findRaceWhereParticipantIsIn(raceParticipantId);
-		}
-		if (!room) {
-			console.error(
-				"Player left a room that does not exist! Memory Manipulation went wrong! Cannot find race for participant deletion...",
-			);
-			return;
-		}
-		this.participants.delete(raceParticipantId);
-
-		this.removeParticipantFromRace(room.race.id, raceParticipantId);
-		return prisma.raceParticipant.delete({
-			where: {
-				id: raceParticipantId,
-			},
-		});
-	}
-
-	private removeParticipantFromRace(roomID: string, userID: string): void {
-		const race = this.races.get(roomID);
-		if (!race?.participants) {
-			return;
-		}
-		const participants = race.participants;
-		const removedParticipants = new Array<Participant>();
-
-		for (let idx = participants.length - 1; idx >= 0; --idx) {
-			if (participants[idx].id === userID) {
-				participants.pop();
-			} else {
-				const removedParticipant = participants.pop();
-				if (removedParticipant) {
-					removedParticipants.push(removedParticipant);
-				}
-			}
-		}
-
-		for (let idx = 0; idx < removedParticipants.length; ++idx) {
-			participants.push(removedParticipants[idx]);
-		}
+class LinkedListNode<T> implements Node<T> {
+	public value: T;
+	public next: LinkedListNode<T> | undefined;
+	constructor(item: T) {
+		this.value = item;
+		this.next = undefined;
 	}
 }
+
+/** T for the item,
+ *  K for key
+ * 
+ *  Always provide a key to look for if 
+ *  performing search operations such as deletion
+ */
+class LinkedListMemory<T, K extends keyof T> implements LinkedListInterface<T, K> {
+	public length: number;
+	private head: LinkedListNode<T> | undefined;
+	private tail: LinkedListNode<T> | undefined;
+
+	constructor() {
+		this.length = 0;
+		this.head = undefined;
+		this.tail = undefined;
+	}
+
+	append(item: T): void {
+		const node = new LinkedListNode(item);
+		this.length = this.length + 1;
+
+		if (!this.tail) {
+			this.head = node;
+			this.tail = node;
+			return;
+		}
+
+		const MEMORY_HAS_SINGLE_ITEM = !this.head?.next;
+		if (this.head && MEMORY_HAS_SINGLE_ITEM) {
+			this.head.next = this.tail;
+		}
+		this.tail.next = node;
+		this.tail = node;
+	}
+
+	prepend(item: T): void {
+		const node = new LinkedListNode(item);
+		this.length = this.length - 1;
+
+		if (!this.head) {
+			this.head = node;
+			this.tail = node;
+			return;
+		}
+
+		node.next = this.head;
+		this.head = node;
+	}
+
+	remove(item: T, keyToMatchFor: K): Node<T> | undefined {
+		return this.removeNode(item, keyToMatchFor);
+	}
+
+	removeItemIfStringEqualToKeyValue(item: string, key: K): Node<T> | undefined {
+		return this.removeNode(item, key);
+	}
+
+	get(item: T, keyToMatchFor: K): Node<T> | undefined {
+		return this.getNode(item, keyToMatchFor);
+	}
+
+	getItemIfStringEqualToKeyValue(item: string, key: K): Node<T> | undefined {
+		return this.getNode(item, key);
+	}
+
+	getItemAt(idx: number): Node<T> | undefined {
+		let currentNode =  this.head;
+		for (let i = 0; currentNode && i < idx; ++i) {
+			currentNode = currentNode.next;
+		}
+		return currentNode;
+	}
+
+	private removeNode(item: T | string, key: K): Node<T> | undefined {
+		if (this.length === 1) {
+			this.length = this.length - 1;
+			this.tail = undefined;
+			this.head = undefined;
+			return;
+		}
+
+		let currentNode = this.head;
+		let previousNode = undefined;
+
+		for (let idx = 0; currentNode && idx < this.length; ++idx) {
+			if (typeof item === "string") {
+				if (currentNode.value=== item) {
+					break;
+				}
+			} else {
+				if (item[key] === currentNode.value[key]) {
+					break;
+				};
+			}
+			previousNode = currentNode;
+			currentNode = currentNode.next;
+		}
+
+		if (!currentNode) {
+			return undefined;
+		}
+
+		this.length = this.length - 1;
+
+		if (currentNode === this.head) {
+			this.head = currentNode.next;
+		}
+
+		if (previousNode) {
+			if (previousNode.next === this.tail) {
+				/** If the item to be removed is the tail of this list. */
+				previousNode.next = undefined;
+				this.tail = previousNode;
+			} else {
+				previousNode.next = currentNode.next;
+			}
+			return currentNode;
+		}
+	}
+
+	private getNode(item: T | string, keyToMatchFor: K): Node<T> | undefined {
+		let currentNode = this.head;
+		for (let idx = 0; currentNode && idx < this.length; ++idx) {
+			if (typeof item === "string") {
+				if (item === currentNode.value[keyToMatchFor]) {
+					break;
+				}
+			} else {
+				if (item[keyToMatchFor] === currentNode.value[keyToMatchFor]) {
+					break;
+				}
+			}		
+			currentNode = currentNode.next;
+		}
+		return currentNode;
+	}
+
+}
+
+export default LinkedListMemory;
