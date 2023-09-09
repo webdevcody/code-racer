@@ -18,6 +18,7 @@ export const ReplayCode = ({ code }: TReplayCode) => {
   const [replayTimeStamp, setReplayTimeStamp] = useState<ReplayTimeStamp[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlayingFinished, setIsPlayingFinished] = useState(false);
 
   useEffect(() => {
     const getReplay = () => {
@@ -29,23 +30,21 @@ export const ReplayCode = ({ code }: TReplayCode) => {
   }, []);
 
   useEffect(() => {
-    let timeout: NodeJS.Timeout;
+    const isPlayingActive = isPlaying && replayTimeStamp;
+    if (!isPlayingActive) return;
 
-    if (isPlaying && replayTimeStamp && currentIndex < replayTimeStamp.length) {
-      const currentTimestamp = replayTimeStamp[currentIndex];
-      let nextTimestampDelay = 0;
-
-      if (currentIndex + 1 < replayTimeStamp.length) {
-        nextTimestampDelay =
-          replayTimeStamp[currentIndex + 1].time - currentTimestamp.time;
-      } else {
-        return;
-      }
-
-      timeout = setTimeout(() => {
-        setCurrentIndex(currentIndex + 1);
-      }, nextTimestampDelay);
+    const nextIndex = currentIndex + 1;
+    if (nextIndex === replayTimeStamp.length) {
+      setIsPlayingFinished(true);
+      return;
     }
+
+    const currentTimestamp = replayTimeStamp[currentIndex];
+    const nextTimestampDelay = replayTimeStamp[nextIndex].time - currentTimestamp.time;
+
+    const timeout = setTimeout(() => {
+      setCurrentIndex(currentIndex + 1);
+    }, nextTimestampDelay);
 
     return () => clearTimeout(timeout);
   }, [currentIndex, isPlaying, replayTimeStamp]);
@@ -55,6 +54,7 @@ export const ReplayCode = ({ code }: TReplayCode) => {
   };
 
   const handleRestart = () => {
+    setIsPlayingFinished(false);
     setIsPlaying(false);
     setCurrentIndex(0);
   };
@@ -70,16 +70,18 @@ export const ReplayCode = ({ code }: TReplayCode) => {
   return (
     <div className="py-2 w-full bg-accent text-2xl text-primary relative group">
       <div className="opacity-0 group-hover:opacity-100 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex space-x-2  z-10">
-        {isPlaying ? (
-          <PauseIcon
-            onClick={handlePlayPause}
-            className="w-12 h-12 text-primary cursor-pointer"
-          />
-        ) : (
-          <PlayIcon
-            onClick={handlePlayPause}
-            className="w-12 h-12 text-primary cursor-pointer"
-          />
+        {!isPlayingFinished && (
+          isPlaying ? (
+            <PauseIcon
+              onClick={handlePlayPause}
+              className="w-12 h-12 text-primary cursor-pointer"
+            />
+          ) : (
+            <PlayIcon
+              onClick={handlePlayPause}
+              className="w-12 h-12 text-primary cursor-pointer"
+            />
+          )
         )}
 
         <RefreshCcw
