@@ -1,4 +1,4 @@
-# Contributing
+# CONTRIBUTING
 
 When contributing to this repository, please first discuss the change you wish to make via [issues](https://github.com/webdevcody/code-racer/issues), [discord](https://discord.gg/4kGbBaa).
 
@@ -70,7 +70,7 @@ To get started with Code Racer locally, follow these steps
    npm i
    ```
 
-8. Start the database
+8. Start the Database
 
    ```sh
    npm run dev:db
