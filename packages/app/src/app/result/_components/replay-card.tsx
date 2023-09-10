@@ -32,6 +32,7 @@ const ReplayCard: React.FC<Props> = React.memo(({ timeStamp }) => {
       if (interval.current) {
         clearInterval(interval.current);
         interval.current = null;
+        setPlayState("pause");
       }
     }
   }, [currentTimeStamp, timeStamp]);
@@ -74,9 +75,12 @@ const ReplayCard: React.FC<Props> = React.memo(({ timeStamp }) => {
                 onClick={() => {
                   if (playState === "pause") {
                     const REPLAY_FINISHED_SNIPPET =
-                      currentTimeStamp < timeStamp.length;
+                      currentTimeStamp >= timeStamp.length - 1;
 
-                    if (!interval.current && REPLAY_FINISHED_SNIPPET) {
+                    if (!interval.current) {
+                      if (REPLAY_FINISHED_SNIPPET) {
+                        setCurrentTimeStamp(0);
+                      }
                       interval.current = setInterval(() => {
                         setCurrentTimeStamp((currentTimeStamp) => {
                           return currentTimeStamp + 1;

@@ -7,24 +7,29 @@ import React from "react";
 import { useHandleRooms } from "../../_utils/useHandleRooms";
 import dynamic from "next/dynamic";
 
-const ListOfPlayers = dynamic(() => import("../../_components/multiplayer/list-of-players"), {
-  ssr: false
-});
+const ListOfPlayers = dynamic(
+  () => import("../../_components/multiplayer/list-of-players"),
+  {
+    ssr: false,
+  }
+);
 
-const GameScreen = dynamic(() => import("../../_components/multiplayer/game-screen"), {
-  ssr: false
-});
+const GameScreen = dynamic(
+  () => import("../../_components/multiplayer/game-screen"),
+  {
+    ssr: false,
+  }
+);
 
 type Props = {
   roomID: string;
 } & RoomProps;
 
 export const ClientRoom: React.FC<Props> = React.memo(({ session, roomID }) => {
-  const {
-    state,
-    changeGameStatus,
-    IS_PLAYER_CURRENT_USER
-  } = useHandleRooms({ session, roomID });
+  const { state, changeGameStatus, IS_PLAYER_CURRENT_USER } = useHandleRooms({
+    session,
+    roomID,
+  });
 
   return (
     <div className="py-12 max-h-[60rem]">
@@ -44,6 +49,7 @@ export const ClientRoom: React.FC<Props> = React.memo(({ session, roomID }) => {
               IS_PLAYER_CURRENT_USER={IS_PLAYER_CURRENT_USER}
               gameStatus={state.gameStatus}
               changeGameState={changeGameStatus}
+              session={session}
             />
             <ListOfPlayers
               roomOwnerID={state.roomOwnerID}

@@ -6,10 +6,10 @@ import React from "react";
 
 import { RaceDispatch, RaceDispatchInitialState } from "./race-dispatch";
 import { calculateAccuracy, calculateCPM, noopKeys } from "./race-utils";
-import { searchForLineBreak } from "@/lib/utils";
+import { searchForLineBreak } from "../../../lib/utils";
 
-const MAX_TRACKER_POSITION = 100;
-const TIMER_INTERVAL = 100;
+export const MAX_TRACKER_POSITION = 100;
+export const TIMER_INTERVAL = 100;
 
 /** This is to handle skipping over
  *  spaces on new lines.
@@ -43,7 +43,7 @@ export const useHandleRaceEvents = () => {
   const timerRef = React.useRef<NodeJS.Timer | null>(null);
 
   const code = React.useMemo(
-    () => state.snippet?.code.trimEnd(),
+    () => state.snippet?.code?.trimEnd(),
     [state.snippet?.code]
   );
 

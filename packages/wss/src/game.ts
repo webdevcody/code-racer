@@ -1,6 +1,18 @@
 import type { Server, Socket } from "socket.io";
-import type { Game, GameMemoryStoreInterface, MiddlewareAuth } from "./store/types";
-import type { ChangeGameStatusOfRoomPayload, ClientToServerEvents, CreateRoomPayload } from "./events/client-to-server";
+import type {
+	Game,
+	GameMemoryStoreInterface,
+	MiddlewareAuth,
+	RunningGameInformation,
+} from "./store/types";
+import type {
+	ChangeGameStatusOfRoomPayload,
+	ClientToServerEvents,
+	CreateRoomPayload,
+	SendUserHasFinishedPayload,
+	UpdateProgressPayload,
+	UpdateTimeStampPayload,
+} from "./events/client-to-server";
 import type { ServerToClientEvents } from "./events/server-to-client";
 
 import { getRandomSnippet } from "@code-racer/app/src/app/race/(play)/loaders";
@@ -10,6 +22,7 @@ import { GameMemoryStore } from "./store/memory";
 
 import { GAME_CONFIG, IS_IN_DEVELOPMENT, RACE_STATUS } from "./consts";
 import UserSessionMemoryStore from "./store/user-session";
+import ParticipantMemoryStore from "./store/participant";
 
 declare module "socket.io" {
 	interface Socket {
@@ -20,65 +33,65 @@ declare module "socket.io" {
 }
 
 /** Logic for the game:
- * 
+ *
  * 1. Middleware:
  * - Detect if a user is logged in on the client. To detect this, we check if a userID is provided in the auth handshake or not.
- *    
+ *
  * - If a logged in user connected to the server, prevent them from connecting on other clients (e.g. other tabs & browsers).
  *     This is necessary since we are using userIDs to check for uniqueness and this will be used to save a logged in user's data.
- *    
+ *
  * - If a user is not logged on the client, we use the generated id of the socket (socket.id).
- * 
+ *
  * 2. Connection to Socket:
  * - We add the userSession to the memory of UserSessionMemoryStore
- * 
+ *
  * 3. Disconnection to Socket:
  * - Find the user from the list of userSessions in the memory and get the roomIDs they joined in.
- * 
+ *
  * - Loop through each room.
- * 
+ *
  * - If the loop is at the room === to socket.id, skip to the next iteration.
- * 
+ *
  * - Remove the userSession of the user from the room stored in memory (room.participants).
- * 
+ *
  * - If the room still exists, then change the room owner === to the userSesssion at the head of the list of participants,
  *  pretty much the user that joined after the owner.
- * 
+ *
  * - Emit the room information to all sockets connected to update the roomOwner
- * 
+ *
  * - Remove the disconnected user from the memory.
- * 
+ *
  * 4. Room creation:
  * - If userID (can be a sessionID, or the socketID of the client) is not provided by the client, then we return an Error.
- * 
+ *
  * - Get a random snippet from the database based on the provided language.
- * 
+ *
  * - If no snippet was returned by the getRandomSnippet() function, then we return an Error (we assume that no snippet exists for that language.).
- * 
+ *
  * - We find the user in the memory based on their userID.
- * 
+ *
  * - If no user was found, then an error occured.
- * 
+ *
  * - Add the room to the Array<roomID> of the saved userSession and join the socket to the room
- * 
+ *
  * - Add the room to memory.
- * 
+ *
  * - Send the roomID to the client (a signal that confirms everything went smoothly).
- * 
+ *
  * - Send a notification
  */
 class TypingGame implements Game {
 	public readonly MAXIMUM_PLAYER_COUNT: number;
+	private readonly MAXIMUM_ROOMS_IN_MEMORY: number;
 
 	public memory: GameMemoryStoreInterface;
 	public server: Server<ClientToServerEvents, ServerToClientEvents>;
 
-	constructor(
-		server: Server<ClientToServerEvents, ServerToClientEvents>
-	) {
+	constructor(server: Server<ClientToServerEvents, ServerToClientEvents>) {
 		this.server = server;
 		this.memory = new GameMemoryStore();
 		this.MAXIMUM_PLAYER_COUNT = GAME_CONFIG.MAX_PARTICIPANTS_PER_RACE;
+		this.MAXIMUM_ROOMS_IN_MEMORY = GAME_CONFIG.MAX_NUMBER_OF_ROOMS;
 	}
 
 	initializeGame(): void {
@@ -90,42 +103,194 @@ class TypingGame implements Game {
 				console.log("A user has connected.");
 			}
 
-			socket.on("disconnect", (reason) => this.handleDisconnect(socket, reason));
-			socket.on("CreateRoom", ({ userID, language }) => this.handleRoomCreation(socket, { userID, language }));
-			socket.on("CheckIfRoomIDExists", (roomID) => this.handleCheckIfRoomIDExists(socket, roomID));
-			socket.on("CheckGameStatusOfRoom", (roomID) => this.handleCheckGameStatusOfRoom(socket, roomID));
-			socket.on("ChangeGameStatusOfRoom", ({ roomID, raceStatus }) => this.handleChangeGameStatusOfRoom(socket, { roomID, raceStatus }));
-			socket.on("RequestRoomInformation", (roomID) => this.handleRequestRoomInformation(socket, roomID));
+			socket.on("disconnect", (reason) =>
+				this.handleDisconnect(socket, reason),
+			);
+			socket.on("CreateRoom", ({ userID, language }) =>
+				this.handleRoomCreation(socket, { userID, language }),
+			);
 
+			socket.on("CheckIfRoomIDExists", (roomID) =>
+				this.handleCheckIfRoomIDExists(socket, roomID),
+			);
+			socket.on("CheckGameStatusOfRoom", (roomID) =>
+				this.handleCheckGameStatusOfRoom(roomID),
+			);
+
+			socket.on("ChangeGameStatusOfRoom", ({ roomID, raceStatus }) =>
+				this.handleChangeGameStatusOfRoom(socket, { roomID, raceStatus }),
+			);
+
+			socket.on("RequestRoomSnippet", (roomID) =>
+				this.handleRequestRoomSnippet(socket, roomID),
+			);
+			socket.on("RequestRunningGameInformation", (roomID) =>
+				this.handleRequestRunningGameInformation(socket, roomID),
+			);
+			socket.on("RequestAllPlayersProgress", (roomID) =>
+				this.handleRequestAllPlayersProgress(socket, roomID),
+			);
+
+			socket.on("SendUserProgress", this.handleSendUserProgress);
+			socket.on("SendUserTimeStamp", this.handleSendUserTimeStamp);
+			socket.on("SendUserHasFinished", this.handleSendUserHasFinished);
 		});
 	}
 
-	private handleRequestRoomInformation(
+	private handleRequestAllPlayersProgress(
 		socket: Socket<ClientToServerEvents, ServerToClientEvents>,
-		roomID: string
+		roomID: string,
 	): void {
-		const foundRoom = this.memory.findRoomByRoomID(roomID);
+		const foundRunningRoom = this.memory.findRunningGame(roomID);
 
-		if (!foundRoom) {
-			if (IS_IN_DEVELOPMENT) {
-				console.warn(
-					"Memory handling error. Requesting for room information which should be done when a game starts, but the room cannot be found. Perhaps the room ID was mistyped?",
-				);
-			}
+		if (!foundRunningRoom) {
+			console.warn(
+				"Could not find a running room! Trying to get all players' progress on a room that does not exist.",
+			);
 			return;
 		}
 
-		this.server.to(roomID).emit("SendRoomInformation", {
-			snippet: foundRoom.snippet,
-			endedAt: foundRoom.endedAt,
-			startedAt: foundRoom.startedAt,
-			roomOwnerID: foundRoom.roomOwnerID,
+		socket
+			.to(roomID)
+			.emit(
+				"SendAllPlayersProgress",
+				foundRunningRoom.participants.getAllParticipantsProgressExcept(
+					socket.userID,
+				),
+			);
+	}
+
+	private handleSendUserHasFinished({
+		timeTaken,
+		userID,
+		roomID,
+	}: SendUserHasFinishedPayload): void {
+		const foundRunningRoom = this.memory.findRunningGame(roomID);
+
+		if (!foundRunningRoom) {
+			console.warn(
+				"Could not find a running room! Trying to update a user's finish state on a room that does not exist.",
+			);
+			return;
+		}
+
+		foundRunningRoom.participants.updateTimeTaken(userID, timeTaken);
+
+		const RACE_FINISHED =
+			foundRunningRoom.participants.checkIfAllParticipantsHavFinished();
+
+		if (RACE_FINISHED) {
+			const foundRoom = this.memory.findRoomByRoomID(roomID);
+
+			if (!foundRoom) {
+				console.warn(
+					"A running game exists but a room for that game does not exist! Memory handling error.",
+				);
+				return;
+			}
+
+			if (!foundRoom.startedAt) {
+				console.warn(
+					"Error! A room's key of 'startedAt' does not have a value.",
+				);
+			}
+
+			foundRoom.endedAt = new Date();
+			foundRoom.gameStatus = RACE_STATUS.FINISHED;
+			this.server.to(roomID).emit("GameFinished", {
+				endedAt: foundRoom.endedAt,
+				startedAt: foundRoom.startedAt as Date,
+				roomID: roomID,
+				participants: foundRunningRoom.participants.getAllParticipants(),
+			});
+		}
+	}
+
+	private handleSendUserTimeStamp({
+		userID,
+		roomID,
+		cpm,
+		accuracy,
+		totalErrors,
+	}: UpdateTimeStampPayload): void {
+		const foundRunningRoom = this.memory.findRunningGame(roomID);
+
+		if (!foundRunningRoom) {
+			console.warn(
+				"Could not find a running room! Trying to update a user timestamp on a room that does not exist.",
+			);
+			return;
+		}
+
+		foundRunningRoom.participants.updateTimeStamp(userID, {
+			cpm,
+			accuracy,
+			errors: totalErrors,
 		});
+	}
+
+	private handleSendUserProgress({
+		userID,
+		progress,
+		roomID,
+	}: UpdateProgressPayload): void {
+		const foundRunningRoom = this.memory.findRunningGame(roomID);
+
+		if (!foundRunningRoom) {
+			console.warn(
+				"Could not find a running room! Trying to update a user progress on a room that does not exist.",
+			);
+			return;
+		}
+
+		foundRunningRoom.participants.updateProgress(userID, progress);
+	}
+
+	/** Skip over to the socket that requested this
+	 *
+	 *  The client will emit this per GAME_INTERVAL (100ms right now)
+	 *  and we send updated information in here (we can separate it, but
+	 *  let's have it like this for now).
+	 */
+	private handleRequestRunningGameInformation(
+		socket: Socket<ClientToServerEvents, ServerToClientEvents>,
+		roomID: string,
+	): void {
+		const foundRunningRoom = this.memory.findRunningGame(roomID);
+
+		if (!foundRunningRoom) {
+			console.warn(
+				"Could not find room! This should exist when requesting for its infomartion in-game (during a typing race).",
+			);
+			return;
+		}
+
+		socket.broadcast.to(roomID).emit("SendRunningGameInformation", {
+			roomID: roomID,
+			participants: foundRunningRoom.participants.getAllParticipantsExcept(
+				socket.userID,
+			),
+		});
+	}
+
+	/* emit the snippet of the room to the socket that requested it */
+	private handleRequestRoomSnippet(
+		socket: Socket<ClientToServerEvents, ServerToClientEvents>,
+		roomID: string,
+	): void {
+		const foundRoom = this.memory.findRoomByRoomID(roomID);
+		if (!foundRoom) {
+			console.warn(
+				"Room not found while requesting for a room's snippet! This room should exist.",
+			);
+			return;
+		}
+		socket.to(roomID).emit("SendRoomSnippet", foundRoom.snippet);
 	}
 
 	private handleChangeGameStatusOfRoom(
 		socket: Socket<ClientToServerEvents, ServerToClientEvents>,
-		{ roomID, raceStatus }: ChangeGameStatusOfRoomPayload
+		{ roomID, raceStatus }: ChangeGameStatusOfRoomPayload,
 	): void {
 		const foundRoom = this.memory.findRoomByRoomID(roomID);
 
@@ -156,29 +321,64 @@ class TypingGame implements Game {
 			return;
 		}
 
-		const RESSETING_GAME =
+		const RESETTING_GAME =
 			foundRoom.gameStatus !== RACE_STATUS.WAITING &&
+			foundRoom.gameStatus !== RACE_STATUS.FINISHED &&
 			raceStatus === RACE_STATUS.WAITING;
 
-		if (RESSETING_GAME) {
+		if (RESETTING_GAME) {
+			if (foundRoom.gameStatus === RACE_STATUS.RUNNING) {
+				const foundRunningRoom = this.memory.removeRunningGame(
+					foundRoom.roomID,
+				);
+				if (!foundRunningRoom) {
+					console.warn(
+						"Failed to remove a running game when resetting a room's state! Memory handling error.",
+					);
+				}
+			}
+
 			this.server.to(roomID).emit("SendNotification", {
 				title: "Resetting Game",
-				description:
-					"Resetting the game since you are the only player left.",
+				description: "Resetting the game since you are the only player left.",
 			});
 		}
 
 		foundRoom.gameStatus = raceStatus;
 
-		this.server
-			.to(roomID)
-			.emit("SendGameStatusOfRoom", foundRoom.gameStatus);
+		const GAME_STARTS = raceStatus === "running";
+		if (GAME_STARTS) {
+			foundRoom.startedAt = new Date();
+			const players = foundRoom.participants.getAllUsers();
+
+			const runningGameParticipants = new ParticipantMemoryStore();
+
+			for (let idx = 0; idx < players.length; ++idx) {
+				runningGameParticipants.append({
+					userID: players[idx].userID,
+					displayImage: players[idx].displayImage,
+					displayName: players[idx].displayName,
+					progress: 0,
+					isFinished: false,
+					accuracy: 0,
+					cpm: 0,
+					totalErrors: 0,
+					timeTaken: 0,
+				});
+			}
+
+			const activeRoom = {
+				roomID: foundRoom.roomID,
+				participants: runningGameParticipants,
+			} satisfies RunningGameInformation;
+
+			this.memory.addRunningGame(activeRoom);
+		}
+
+		this.server.to(roomID).emit("SendGameStatusOfRoom", foundRoom.gameStatus);
 	}
 
-	private handleCheckGameStatusOfRoom(
-		socket: Socket<ClientToServerEvents, ServerToClientEvents>,
-		roomID: string
-	): void {
+	private handleCheckGameStatusOfRoom(roomID: string): void {
 		const foundRoom = this.memory.findRoomByRoomID(roomID);
 
 		if (!foundRoom) {
@@ -190,14 +390,12 @@ class TypingGame implements Game {
 			return;
 		}
 
-		this.server
-			.to(roomID)
-			.emit("SendGameStatusOfRoom", foundRoom.gameStatus);
+		this.server.to(roomID).emit("SendGameStatusOfRoom", foundRoom.gameStatus);
 	}
 
 	private handleCheckIfRoomIDExists(
 		socket: Socket<ClientToServerEvents, ServerToClientEvents>,
-		roomID: string
+		roomID: string,
 	): void {
 		const foundRoom = this.memory.findRoomByRoomID(roomID);
 		if (!foundRoom) {
@@ -229,9 +427,11 @@ class TypingGame implements Game {
 		}
 
 		/** This means that the user who's joining was the one
-		*  that created the room.
-		*/
-		const USER_JOINED_THE_ROOM_ALREADY = foundRoom.participants.findUserByID(socket.userID);
+		 *  that created the room.
+		 */
+		const USER_JOINED_THE_ROOM_ALREADY = foundRoom.participants.findUserByID(
+			socket.userID,
+		);
 
 		if (USER_JOINED_THE_ROOM_ALREADY) {
 			socket.emit("SendRoomID", {
@@ -240,10 +440,7 @@ class TypingGame implements Game {
 			});
 			this.server
 				.to(roomID)
-				.emit(
-					"PlayerJoinedOrLeftRoom",
-					foundRoom.participants.getAllUsers(),
-				);
+				.emit("PlayerJoinedOrLeftRoom", foundRoom.participants.getAllUsers());
 			return;
 		}
 
@@ -271,19 +468,30 @@ class TypingGame implements Game {
 			roomOwnerID: foundRoom.roomOwnerID,
 		});
 		socket.to(roomID).emit("SendNotification", {
-			title: socket.displayName + " has joined the room."
+			title: socket.displayName + " has joined the room.",
 		});
 	}
 
 	private async handleRoomCreation(
 		socket: Socket<ClientToServerEvents, ServerToClientEvents>,
-		{ userID, language }: CreateRoomPayload
+		{ userID, language }: CreateRoomPayload,
 	): Promise<void> {
 		if (!userID) {
 			console.warn(
 				"userID is not provided! Please provide it to create a room.",
 			);
 			socket.emit("SendError", new Error("Something went wrong."));
+			return;
+		}
+
+		const amountOfRoomsInMemory = this.memory.getLengthOfRooms();
+
+		if (amountOfRoomsInMemory >= this.MAXIMUM_ROOMS_IN_MEMORY) {
+			socket.emit("SendNotification", {
+				title: "Server Full!",
+				description:
+					"The server is full of rooms right now. Please try again later.",
+			});
 			return;
 		}
 
@@ -348,7 +556,10 @@ class TypingGame implements Game {
 		});
 	}
 
-	private handleDisconnect(socket: Socket<ClientToServerEvents, ServerToClientEvents>, _reason: string): void {
+	private handleDisconnect(
+		socket: Socket<ClientToServerEvents, ServerToClientEvents>,
+		_reason: string,
+	): void {
 		const roomsUserIsIn = this.memory.findUserByID(socket.userID)?.roomIDs;
 
 		if (!roomsUserIsIn || roomsUserIsIn.length === 0) {
@@ -358,26 +569,35 @@ class TypingGame implements Game {
 
 		roomsUserIsIn.forEach((roomID) => {
 			/** Since socket.io automatically connects our socket
-						 *  to a room === to socket.id (so, we added it when saving the userSession).
-						 */
+			 *  to a room === to socket.id (so, we added it when saving the userSession).
+			 */
 			if (roomID === socket.id) {
 				return;
 			}
 
-			const ROOM_EXISTS = this.memory.removeUserSessionFromRoom(roomID, socket.userID);
+			const ROOM_EXISTS = this.memory.removeUserSessionFromRoom(
+				roomID,
+				socket.userID,
+			);
 
 			if (ROOM_EXISTS) {
-
 				const firstPlayer = ROOM_EXISTS.participants.getItemAt(0);
 				console.log(firstPlayer?.value);
 				if (firstPlayer) {
 					ROOM_EXISTS.roomOwnerID = firstPlayer.value.userID;
-					this.server.to(roomID).emit("PlayerJoinedOrLeftRoom", ROOM_EXISTS.participants.getAllUsers());
-					this.server.to(roomID).emit("SendRoomOwnerID", ROOM_EXISTS.roomOwnerID);
+					this.server
+						.to(roomID)
+						.emit(
+							"PlayerJoinedOrLeftRoom",
+							ROOM_EXISTS.participants.getAllUsers(),
+						);
+					this.server
+						.to(roomID)
+						.emit("SendRoomOwnerID", ROOM_EXISTS.roomOwnerID);
 				}
 
 				socket.to(roomID).emit("SendNotification", {
-					title: socket.displayName + " has left the room."
+					title: socket.displayName + " has left the room.",
 				});
 			}
 		});
@@ -385,12 +605,14 @@ class TypingGame implements Game {
 		this.memory.removeUserByID(socket.userID);
 	}
 
-	private connectUser(socket: Socket<ClientToServerEvents, ServerToClientEvents>): void {
+	private connectUser(
+		socket: Socket<ClientToServerEvents, ServerToClientEvents>,
+	): void {
 		this.memory.addUser({
 			userID: socket.userID,
 			displayImage: socket.displayImage,
 			displayName: socket.displayName,
-			roomIDs: new Array<string>(1).fill(socket.id)
+			roomIDs: new Array<string>(1).fill(socket.id),
 		});
 	}
 
@@ -404,7 +626,9 @@ class TypingGame implements Game {
 				const foundUser = this.memory.findUserByID(auth.userID);
 				if (foundUser) {
 					return next(
-						new Error("Your account is already connected to the server. Please disconnect and try again.")
+						new Error(
+							"Your account is already connected to the server. Please disconnect and try again.",
+						),
 					);
 				}
 				socket.userID = auth.userID;
@@ -417,7 +641,6 @@ class TypingGame implements Game {
 			next();
 		});
 	}
-
 }
 
 export default TypingGame;

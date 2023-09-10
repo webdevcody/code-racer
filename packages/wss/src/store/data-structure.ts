@@ -11,11 +11,13 @@ class LinkedListNode<T> implements Node<T> {
 
 /** T for the item,
  *  K for key
- * 
- *  Always provide a key to look for if 
+ *
+ *  Always provide a key to look for if
  *  performing search operations such as deletion
  */
-class LinkedListMemory<T, K extends keyof T> implements LinkedListInterface<T, K> {
+class LinkedListMemory<T, K extends keyof T>
+	implements LinkedListInterface<T, K>
+{
 	public length: number;
 	private head: LinkedListNode<T> | undefined;
 	private tail: LinkedListNode<T> | undefined;
@@ -78,7 +80,7 @@ class LinkedListMemory<T, K extends keyof T> implements LinkedListInterface<T, K
 		if (idx === 0) {
 			return this.head;
 		}
-		let currentNode =  this.head;
+		let currentNode = this.head;
 		for (let i = 0; currentNode && i < idx; ++i) {
 			currentNode = currentNode.next;
 		}
@@ -104,7 +106,7 @@ class LinkedListMemory<T, K extends keyof T> implements LinkedListInterface<T, K
 			} else {
 				if (item[key] === currentNode.value[key]) {
 					break;
-				};
+				}
 			}
 			previousNode = currentNode;
 			currentNode = currentNode.next;
@@ -143,12 +145,11 @@ class LinkedListMemory<T, K extends keyof T> implements LinkedListInterface<T, K
 				if (item[keyToMatchFor] === currentNode.value[keyToMatchFor]) {
 					break;
 				}
-			}		
+			}
 			currentNode = currentNode.next;
 		}
 		return currentNode;
 	}
-
 }
 
 export default LinkedListMemory;

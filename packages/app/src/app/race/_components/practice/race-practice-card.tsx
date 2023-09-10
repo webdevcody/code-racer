@@ -129,7 +129,9 @@ const RacePracticeCard: React.FC<Props> = React.memo(({ session, snippet }) => {
           return;
         }
 
-        textAreaRef.current.focus();
+        if (!textAreaRef.current.disabled) {
+          textAreaRef.current.focus();
+        }
       });
     }
   }, []);
@@ -146,66 +148,64 @@ const RacePracticeCard: React.FC<Props> = React.memo(({ session, snippet }) => {
   }, []);
 
   return (
-    <React.Fragment>
-      <div
-        className="relative focus-within:outline cursor-text focus-within:outline-4 focus-within:outline-border focus-within:outline-offset-4 focus-within:outline-offset-background dark:text-white text-black bg-slate-200/60 dark:bg-black/60 rounded-lg mx-auto dark:border-2 shadow-md shadow-black/20 px-4 py-8"
-        ref={onDivClick}
-      >
-        {!isUserFinished && (
-          <RacePracticeCardHeader
-            snippetID={snippet.id}
-            handleChangeSnippet={handleChangeSnippet}
-            language={state.snippet.language}
-            userID={session?.id}
-            disableTextArea={disableTextArea}
-          />
-        )}
-        <div className="pb-4">
-          <ProgressTracker
-            name={session?.name ?? RANDOM_USERNAME}
-            image={session?.image ?? FALLBACK_IMG}
-            progress={typingProgress}
-          />
-        </div>
-        <div className="flex gap-2 relative rounded-lg my-1">
-          <div className="grid border-r-2 border-yellow-600 m-1">
-            <RowLineTracker
-              currentLineNumber={currentLineNumber}
-              amountOfRows={amountOfLineBreaks}
-            />
-          </div>
-          <TypingCard
-            handleInputChange={handleInputChange}
-            handleKeyDownEvent={handleKeyDownEvent}
-            input={state.input}
-            code={state.snippet.code}
-            didUserMistype={state.displayedErrorMessage ? true : false}
-            ref={textAreaRef}
-          />
-        </div>
-        {state.displayedErrorMessage && (
-          <p className="px-4 text-sm mt-4 text-destructive">
-            {state.displayedErrorMessage}
-          </p>
-        )}
-        <RacePracticeCardFooter
-          startTime={state.startTime}
-          totalTime={state.totalTime}
-          handleReset={handleReset}
+    <div
+      className="relative focus-within:outline cursor-text focus-within:outline-4 focus-within:outline-border focus-within:outline-offset-4 focus-within:outline-offset-background dark:text-white text-black bg-slate-200/60 dark:bg-black/60 rounded-lg mx-auto dark:border-2 shadow-md shadow-black/20 px-4 py-8"
+      ref={onDivClick}
+    >
+      {!isUserFinished && (
+        <RacePracticeCardHeader
+          snippetID={snippet.id}
+          handleChangeSnippet={handleChangeSnippet}
+          language={state.snippet.language}
+          userID={session?.id}
+          disableTextArea={disableTextArea}
         />
-
-        {isUserFinished && transition && (
-          <div className="inset-0 m-auto grid place-items-center absolute z-20 w-full h-full rounded-lg bg-background/80 backdrop-blur-lg">
-            <div className="flex flex-col items-center justify-center gap-2">
-              <Loader className="animate-spin w-8 h-8" />
-              <p className="text-sm lg:text-base">
-                Good job! Your result is being saved...
-              </p>
-            </div>
-          </div>
-        )}
+      )}
+      <div className="pb-4">
+        <ProgressTracker
+          name={session?.name ?? RANDOM_USERNAME}
+          image={session?.image ?? FALLBACK_IMG}
+          progress={typingProgress}
+        />
       </div>
-    </React.Fragment>
+      <div className="flex gap-2 relative rounded-lg my-1">
+        <div className="grid border-r-2 border-yellow-600 m-1">
+          <RowLineTracker
+            currentLineNumber={currentLineNumber}
+            amountOfRows={amountOfLineBreaks}
+          />
+        </div>
+        <TypingCard
+          handleInputChange={handleInputChange}
+          handleKeyDownEvent={handleKeyDownEvent}
+          input={state.input}
+          code={state.snippet.code}
+          didUserMistype={state.displayedErrorMessage ? true : false}
+          ref={textAreaRef}
+        />
+      </div>
+      {state.displayedErrorMessage && (
+        <p className="px-4 text-sm mt-4 text-destructive">
+          {state.displayedErrorMessage}
+        </p>
+      )}
+      <RacePracticeCardFooter
+        startTime={state.startTime}
+        totalTime={state.totalTime}
+        handleReset={handleReset}
+      />
+
+      {isUserFinished && transition && (
+        <div className="inset-0 m-auto grid place-items-center absolute z-20 w-full h-full rounded-lg bg-background/80 backdrop-blur-lg">
+          <div className="flex flex-col items-center justify-center gap-2">
+            <Loader className="animate-spin w-8 h-8" />
+            <p className="text-sm lg:text-base">
+              Good job! Your result is being saved...
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
   );
 });
 

@@ -5,14 +5,14 @@ import { z } from "zod";
 const participantInformationSchema = z.object({
   userID: z.string(),
   displayName: z.string(),
-  displayImage: z.string()
+  displayImage: z.string(),
 });
 
 const gameStatusSchema = z.union([
   z.literal(RACE_STATUS.WAITING),
   z.literal(RACE_STATUS.COUNTDOWN),
   z.literal(RACE_STATUS.RUNNING),
-  z.literal(RACE_STATUS.FINISHED)
+  z.literal(RACE_STATUS.FINISHED),
 ]);
 
 const listOfPlayersSchema = z.array(participantInformationSchema);
@@ -31,24 +31,24 @@ const RoomDispatchActionsSchema = z.object({
     z.literal("change_list_of_players"),
     z.literal("change_should_render_room"),
     z.literal("change_socket_connection_state"),
-    z.literal("change_room_owner_id")
+    z.literal("change_room_owner_id"),
   ]),
   payload: z.union([
     gameStatusSchema,
     listOfPlayersSchema,
     z.string(),
-    z.boolean()
-  ])
+    z.boolean(),
+  ]),
 });
 
-export type RoomDispatchStateType = z.infer<typeof RoomDispatchStateSchema>
-export type RoomDispatchActionType = z.infer<typeof RoomDispatchActionsSchema>
+export type RoomDispatchStateType = z.infer<typeof RoomDispatchStateSchema>;
+export type RoomDispatchActionType = z.infer<typeof RoomDispatchActionsSchema>;
 
 const throwError = (type: string) => {
   throw new Error(
     "Invalid action payload type for action type " +
-    type +
-    ". It must be a number."
+      type +
+      ". It must be a number."
   );
 };
 
@@ -57,12 +57,12 @@ export const RoomDispatchInitialState: RoomDispatchStateType = {
   listOfPlayers: [],
   shouldRenderRoom: false,
   isSocketConnected: socket.connected,
-  roomOwnerID: ""
+  roomOwnerID: "",
 };
 
 export const RoomDispatch = (
   state: RoomDispatchStateType,
-  action: RoomDispatchActionType,
+  action: RoomDispatchActionType
 ) => {
   switch (action.type) {
     case "change_game_status":
@@ -75,7 +75,7 @@ export const RoomDispatch = (
       if (typeof action.payload !== "string") {
         throwError(action.type);
         break;
-      };
+      }
       state.roomOwnerID = action.payload;
       break;
     case "change_should_render_room":
@@ -98,6 +98,6 @@ export const RoomDispatch = (
     listOfPlayers: state.listOfPlayers,
     roomOwnerID: state.roomOwnerID,
     shouldRenderRoom: state.shouldRenderRoom,
-    isSocketConnected: state.isSocketConnected
+    isSocketConnected: state.isSocketConnected,
   } satisfies RoomDispatchStateType;
 };

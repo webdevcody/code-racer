@@ -15,7 +15,7 @@ type Props = {
 
 /** Requires a ref to focus on the TextArea element! A function handler for that is onDivClick.
  *  We can also have a disabler for when, for example, we report a snippet or get a new one.
- *  We don't want to user to continue typing when we are fetching a new snippet for them.
+ *  We don't want the user to continue typing when we are fetching a new snippet for them.
  */
 const TypingCard = React.memo(
   React.forwardRef<HTMLTextAreaElement, Props>(
@@ -26,7 +26,7 @@ const TypingCard = React.memo(
       return (
         <React.Fragment>
           <pre
-            className="p-1 break-words whitespace-pre-wrap overflow-auto"
+            className="p-1 break-words whitespace-pre-wrap overflow-auto select-none"
             data-cy="code-snippet-preformatted"
           >
             <Character

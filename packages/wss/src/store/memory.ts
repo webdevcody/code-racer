@@ -1,66 +1,174 @@
-import type { GameMemoryStoreInterface, ParticipantInformation, Room, UserSession } from "./types";
+import type {
+	GameMemoryStoreInterface,
+	Participant,
+	ParticipantInformation,
+	Room,
+	RunningGameInformation,
+	UserSession,
+} from "./types";
 
 import RoomMemoryStore from "./room";
 import UserSessionMemoryStore from "./user-session";
+import RunningTypingGameMemoryStore from "./running-race";
 
 /** Handles all the state within a game. For example,
  *  adding a new room, removing a room, adding
  *  players to a room, etc.
  */
 export class GameMemoryStore implements GameMemoryStoreInterface {
-  private rooms: RoomMemoryStore;
-  private players: UserSessionMemoryStore;
-  constructor() {
-    this.rooms = new RoomMemoryStore();
-    this.players = new UserSessionMemoryStore();
-  }
+	private rooms: RoomMemoryStore;
+	private players: UserSessionMemoryStore;
+	private running_rooms: RunningTypingGameMemoryStore;
 
-  addUser(userSession: UserSession): void {
-    this.players.addUser(userSession);
-  }
+	constructor() {
+		this.rooms = new RoomMemoryStore();
+		this.players = new UserSessionMemoryStore();
+		this.running_rooms = new RunningTypingGameMemoryStore();
+	}
 
-  findUser(userSession: UserSession): UserSession | undefined {
-    return this.players.findUser(userSession);
-  }
-  findUserByID(userID: string): UserSession | undefined {
-    return this.players.findUserByID(userID);
-  }
-  removeUser(userSession: UserSession): UserSession | undefined {
-    return this.removeUser(userSession);
-  }
-  removeUserByID(userID: string): UserSession | undefined {
-    return this.players.removeUserByID(userID);
-  }
-  
-  getAllUsers(): ParticipantInformation[] {
-    return this.players.getAllUsers();
-  }
+	getLengthOfRooms(): number {
+		return this.rooms.length;
+	}
 
-  addRoom(room: Room): void {
-    this.rooms.addRoom(room);
-  }
+	getLengthOfUserSessions(): number {
+		return this.players.length;
+	}
 
-  findRoom(room: Room): Room | undefined {
-    return this.rooms.findRoom(room);
-  }
+	getLengthOfActiveRooms(): number {
+		return this.running_rooms.length;
+	}
 
-  findRoomByRoomID(roomID: string): Room | undefined {
-    return this.rooms.findRoomByRoomID(roomID);
-  }
+	addRunningGame(room: RunningGameInformation): void {
+		this.running_rooms.addRunningGame(room);
+	}
 
-  removeRoom(room: Room): Room | undefined {
-    return this.rooms.removeRoom(room);
-  }
+	removeRunningGame(roomID: string): RunningGameInformation | undefined {
+		return this.running_rooms.removeRunningGame(roomID);
+	}
 
-  removeRoomByRoomID(roomID: string): Room | undefined {
-    return this.rooms.removeRoomByRoomID(roomID);
-  }
+	findRunningGame(roomID: string): RunningGameInformation | undefined {
+		return this.running_rooms.getRunningGame(roomID);
+	}
 
-  addUserSessionToRoom(roomID: string, userSession: UserSession): Room | undefined {
-    return this.rooms.addUserSessionToRoom(roomID, userSession);
-  }
+	addParticipantToRunningRace(roomID: string, participant: Participant): void {
+		this.running_rooms.addParticipant(roomID, participant);
+	}
 
-  removeUserSessionFromRoom(roomID: string, userSessionOrUserID: string | UserSession): Room | undefined {
-    return this.rooms.removeUserSessionFromRoom(roomID, userSessionOrUserID);
-  }
+	updateProgressOfParticipant(
+		roomID: string,
+		userID: string,
+		amount: number,
+	): Participant | undefined {
+		return this.running_rooms.updateProgressOfParticipant(
+			roomID,
+			userID,
+			amount,
+		);
+	}
+
+	updateAccuracyOfParticipant(
+		roomID: string,
+		userID: string,
+		accuracy: number,
+	): Participant | undefined {
+		return this.running_rooms.updateAccuracyOfParticipant(
+			roomID,
+			userID,
+			accuracy,
+		);
+	}
+
+	updateCpmOfParticipant(
+		roomID: string,
+		userID: string,
+		cpm: number,
+	): Participant | undefined {
+		return this.running_rooms.updateCpmOfParticipant(roomID, userID, cpm);
+	}
+
+	updateTotalErrorsOfParticipant(
+		roomID: string,
+		userID: string,
+		amount: number,
+	): Participant | undefined {
+		return this.running_rooms.updateTotalErrorsOfParticipant(
+			roomID,
+			userID,
+			amount,
+		);
+	}
+
+	updateTimeTakenOfParticipant(
+		roomID: string,
+		userID: string,
+		timeInSeconds: number,
+	): Participant | undefined {
+		return this.running_rooms.updateTimeTakenOfParticipant(
+			roomID,
+			userID,
+			timeInSeconds,
+		);
+	}
+
+	removeParticipantFromRunningRace(
+		roomID: string,
+		userID: string,
+	): Participant | undefined {
+		return this.running_rooms.removeParticipant(roomID, userID);
+	}
+
+	addUser(userSession: UserSession): void {
+		this.players.addUser(userSession);
+	}
+
+	findUser(userSession: UserSession): UserSession | undefined {
+		return this.players.findUser(userSession);
+	}
+	findUserByID(userID: string): UserSession | undefined {
+		return this.players.findUserByID(userID);
+	}
+	removeUser(userSession: UserSession): UserSession | undefined {
+		return this.removeUser(userSession);
+	}
+	removeUserByID(userID: string): UserSession | undefined {
+		return this.players.removeUserByID(userID);
+	}
+
+	getAllUsers(): ParticipantInformation[] {
+		return this.players.getAllUsers();
+	}
+
+	addRoom(room: Room): void {
+		this.rooms.addRoom(room);
+	}
+
+	findRoom(room: Room): Room | undefined {
+		return this.rooms.findRoom(room);
+	}
+
+	findRoomByRoomID(roomID: string): Room | undefined {
+		return this.rooms.findRoomByRoomID(roomID);
+	}
+
+	removeRoom(room: Room): Room | undefined {
+		return this.rooms.removeRoom(room);
+	}
+
+	removeRoomByRoomID(roomID: string): Room | undefined {
+		return this.rooms.removeRoomByRoomID(roomID);
+	}
+
+	addUserSessionToRoom(
+		roomID: string,
+		userSession: UserSession,
+	): Room | undefined {
+		return this.rooms.addUserSessionToRoom(roomID, userSession);
+	}
+
+	removeUserSessionFromRoom(
+		roomID: string,
+		userSessionOrUserID: string | UserSession,
+	): Room | undefined {
+		return this.rooms.removeUserSessionFromRoom(roomID, userSessionOrUserID);
+	}
 }

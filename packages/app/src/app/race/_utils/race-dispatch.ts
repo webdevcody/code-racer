@@ -11,15 +11,15 @@ const snippetSchema = z.object({
 });
 
 const dateType = z.date().or(z.string().transform((val) => new Date(val)));
-export const timeStampSchema = z.array(
-  z.object({
-    word: z.string(),
-    accuracy: z.number(),
-    cpm: z.number(),
-    time: z.number(),
-    errors: z.number(),
-  })
-);
+const singleTimeStampSchema = z.object({
+  word: z.string(),
+  accuracy: z.number(),
+  cpm: z.number(),
+  time: z.number(),
+  errors: z.number(),
+});
+
+export const timeStampSchema = z.array(singleTimeStampSchema);
 
 const RaceDispatchStateSchema = z.object({
   input: z.string(),
@@ -130,7 +130,7 @@ export const RaceDispatch = (
       if (typeof action.payload !== "number") {
         return throwError(action.type);
       }
-      state.totalErrors += action.payload;
+      state.totalErrors = state.totalErrors + action.payload;
       break;
     case "change_timestamp":
       const parsedTimeStampPayload = timeStampSchema.parse(action.payload);

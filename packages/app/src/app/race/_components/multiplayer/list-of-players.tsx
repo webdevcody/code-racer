@@ -13,7 +13,7 @@ type Props = {
   listOfPlayers: Array<ParticipantInformation>;
   roomOwnerID: string;
   IS_PLAYER_CURRENT_USER: boolean;
-}
+};
 
 const ListOfPlayers: React.FC<Props> = React.memo(
   ({ listOfPlayers, roomOwnerID, IS_PLAYER_CURRENT_USER }) => {

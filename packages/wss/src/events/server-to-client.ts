@@ -1,5 +1,9 @@
 import { RaceStatus } from "../consts";
-import type { ParticipantInformation, RoomInformation } from "../store/types";
+import type {
+	CustomSnippet,
+	ParticipantInformation,
+	RunningGameInformationPayload,
+} from "../store/types";
 
 export type SendNotificationPayload = {
 	title?: string;
@@ -10,6 +14,18 @@ export type SendNotificationPayload = {
 export type SendRoomIDPayload = {
 	roomID: string;
 	roomOwnerID: string;
+};
+
+export type GameFinishedPayload = {
+	endedAt: Date;
+	startedAt: Date;
+} & RunningGameInformationPayload;
+
+export type ParticipantsProgressPayload = {
+	userID: string;
+	displayImage: string;
+	displayName: string;
+	progress: number;
 };
 
 export interface ServerToClientEvents {
@@ -23,16 +39,13 @@ export interface ServerToClientEvents {
 	SendGameStatusOfRoom: (_payload: RaceStatus) => void;
 	SendRoomOwnerID: (_payload: string) => void;
 
-	SendRoomInformation: (_payload: RoomInformation) => void;
-	// GameStateUpdate: (_payload: GameStateUpdatePayload) => void;
-	// UserRaceEnter: (_payload: UserRacePresencePayload) => void;
-	// UserRaceLeave: (_payload: UserRacePresencePayload) => void;
-	// UserRaceResponse: (_payload: UserRaceResponsePayload) => void;
-	// UserEnterFullRace: () => void;
-	// RoomJoined: (_payload: RoomJoinedResponsePayload) => void;
-	// RoomCreated: (_payload: { roomId: string }) => void;
-	// UpdateParticipants: (_payload: UpdateParticipantsPayload) => void;
-	// SendNotification: (_payload: SendNotificationPayload) => void;
-	// UserRoomRaceResponse: (_payload: UserRoomRaceResponsePayload) => void;
-	// Error: (_payload: Error) => void;
+	SendRoomSnippet: (_snippet: CustomSnippet) => void;
+
+	SendRunningGameInformation: (_payload: RunningGameInformationPayload) => void;
+
+	GameFinished: (_payload: GameFinishedPayload) => void;
+
+	SendAllPlayersProgress: (
+		_payload: Array<ParticipantsProgressPayload>,
+	) => void;
 }

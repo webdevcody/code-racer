@@ -5,6 +5,7 @@ export const GAME_CONFIG = {
 	MAX_PARTICIPANTS_PER_RACE: siteConfig.multiplayer.maxParticipantsPerRace,
 	GAME_LOOP_INTERVAL: 500,
 	GAME_MAX_POSITION: 100,
+	MAX_NUMBER_OF_ROOMS: 50,
 } as const;
 
 export const RACE_STATUS = {
@@ -22,7 +23,23 @@ export const ROOM_KEYS = {
 	createdAt: "createdAt",
 	startedAt: "startedAt",
 	endedAt: "endedAt",
-	gameStatus: "gameStatus"
+	gameStatus: "gameStatus",
+} as const;
+
+export const PARTICIPANT_KEYS = {
+	userID: "userID",
+	progress: "progress",
+	displayImage: "displayImage",
+	isFinished: "isFinished",
+	accuracy: "accuracy",
+	cpm: "cpm",
+	totalErrors: "totalErrors",
+	timeTaken: "timeTaken",
+} as const;
+
+export const RUNNING_RACE_KEYS = {
+	participants: "participants",
+	roomID: "roomID",
 } as const;
 
 export const USER_SESSION_KEYS = {

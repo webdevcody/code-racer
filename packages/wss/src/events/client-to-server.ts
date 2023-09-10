@@ -11,6 +11,31 @@ export type ChangeGameStatusOfRoomPayload = {
 	raceStatus: RaceStatus;
 };
 
+/** POTENTIAL FEATURE:
+ *  Add the word in the timestamp as well
+ *  so we can have a videolike experience
+ *  for the user wherein they see
+ *  where their enemies are currently at.
+ */
+type UpdatePayload = {
+	userID: string;
+	roomID: string;
+};
+
+export type UpdateTimeStampPayload = {
+	cpm: number;
+	totalErrors: number;
+	accuracy: number;
+} & UpdatePayload;
+
+export type UpdateProgressPayload = {
+	progress: number;
+} & UpdatePayload;
+
+export type SendUserHasFinishedPayload = {
+	timeTaken: number;
+} & UpdatePayload;
+
 export interface ClientToServerEvents {
 	CreateRoom: (_payload: CreateRoomPayload) => void;
 
@@ -19,7 +44,15 @@ export interface ClientToServerEvents {
 	CheckGameStatusOfRoom: (_payload: string) => void;
 	ChangeGameStatusOfRoom: (_payload: ChangeGameStatusOfRoomPayload) => void;
 
-	RequestRoomInformation: (_roomID: string) => void;
+	RequestRoomSnippet: (_roomID: string) => void;
+
+	RequestRunningGameInformation: (_roomID: string) => void;
+
+	SendUserTimeStamp: (_payload: UpdateTimeStampPayload) => void;
+	SendUserProgress: (_payload: UpdateProgressPayload) => void;
+	SendUserHasFinished: (_payload: SendUserHasFinishedPayload) => void;
+
+	RequestAllPlayersProgress: (_roomID: string) => void;
 
 	// PositionUpdate: (_payload: PositionUpdatePayload) => void;
 

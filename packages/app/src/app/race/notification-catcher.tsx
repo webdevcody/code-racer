@@ -26,33 +26,17 @@ export const NotificationCatcher: React.FC<{ children: React.ReactNode }> = ({
         duration: 2000,
       });
 
-      if (title === "Error") {
-        if (socket.connected) {
-          socket.disconnect();
-        }
-
-        router.replace("/race/rooms");
-      }
-
-      if (title === "Room Not Found") {
-        if (socket.connected) {
-          socket.disconnect();
-        }
-        router.replace("/race/rooms");
-      }
-
-      if (title === "Room Full!") {
-        if (socket.connected) {
-          socket.disconnect();
-        }
-        router.replace("/race/rooms");
-      }
-
-      if (title === "Race Has Started!") {
-        if (socket.connected) {
-          socket.disconnect();
-        }
-        router.replace("/race/rooms");
+      switch (title) {
+        case "Error":
+        case "Room Not Found":
+        case "Room Full!":
+        case "Race Has Started!":
+        case "Server Full!":
+          if (socket.connected) {
+            socket.disconnect();
+          }
+          router.replace("/race/rooms");
+          break;
       }
     };
 
