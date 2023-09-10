@@ -1,23 +1,22 @@
 "use client";
 
-import type { RoomInformation } from "@code-racer/wss/src/new-game";
+import type { RoomInformation } from "@code-racer/wss/src/store/types";
 
 import React from "react";
 import dynamic from "next/dynamic";
 
-import { useHandleRaceEvents } from "../../_utils/useHandleRaceEvents";
 import { socket } from "@/lib/socket";
-import { RoomProps } from "../../rooms/page";
+import { useHandleRaceEvents } from "../../_utils/useHandleRaceEvents";
 import { Loader } from "lucide-react";
 
 const TypingCard = dynamic(() => import("../common/typing-card"));
 
 type Props = {
   roomID: string;
-} & RoomProps;
+}
 
 const RaceMultiplayerCard: React.FC<Props> = React.memo(
-  ({ roomID, session }) => {
+  ({ roomID }) => {
     const {
       handleChangeSnippet,
       handleInputChange,

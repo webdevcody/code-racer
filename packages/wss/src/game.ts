@@ -1,11 +1,9 @@
 import type { Server, Socket } from "socket.io";
-
-import { getRandomSnippet } from "@code-racer/app/src/app/race/(play)/loaders";
-
 import type { Game, GameMemoryStoreInterface, MiddlewareAuth } from "./store/types";
 import type { ChangeGameStatusOfRoomPayload, ClientToServerEvents, CreateRoomPayload } from "./events/client-to-server";
 import type { ServerToClientEvents } from "./events/server-to-client";
 
+import { getRandomSnippet } from "@code-racer/app/src/app/race/(play)/loaders";
 import { v4 as uuidv4 } from "uuid";
 
 import { GameMemoryStore } from "./store/memory";
@@ -259,8 +257,11 @@ class TypingGame implements Game {
 			return;
 		}
 
-		socket.join(roomID);
-		userSession.roomIDs.push(roomID);
+		if (!socket.rooms.has(roomID)) {
+			socket.join(roomID);
+			userSession.roomIDs.push(roomID);
+		}
+
 		foundRoom.participants.addUser(userSession);
 		this.server
 			.to(roomID)
@@ -355,12 +356,10 @@ class TypingGame implements Game {
 			return;
 		}
 
-		for (let idx = 0; idx < roomsUserIsIn.length; ++idx) {
-			const roomID = roomsUserIsIn[idx];
-
+		roomsUserIsIn.forEach((roomID) => {
 			/** Since socket.io automatically connects our socket
-			 *  to a room === to socket.id (so, we added it when saving the userSession).
-			 */
+						 *  to a room === to socket.id (so, we added it when saving the userSession).
+						 */
 			if (roomID === socket.id) {
 				return;
 			}
@@ -368,20 +367,22 @@ class TypingGame implements Game {
 			const ROOM_EXISTS = this.memory.removeUserSessionFromRoom(roomID, socket.userID);
 
 			if (ROOM_EXISTS) {
-				const firstPlayer = ROOM_EXISTS.participants.getItemAt(0);
 
+				const firstPlayer = ROOM_EXISTS.participants.getItemAt(0);
+				console.log(firstPlayer?.value);
 				if (firstPlayer) {
 					ROOM_EXISTS.roomOwnerID = firstPlayer.value.userID;
 					this.server.to(roomID).emit("PlayerJoinedOrLeftRoom", ROOM_EXISTS.participants.getAllUsers());
+					this.server.to(roomID).emit("SendRoomOwnerID", ROOM_EXISTS.roomOwnerID);
 				}
 
 				socket.to(roomID).emit("SendNotification", {
 					title: socket.displayName + " has left the room."
 				});
 			}
+		});
 
-			this.memory.removeUserByID(socket.userID);
-		}
+		this.memory.removeUserByID(socket.userID);
 	}
 
 	private connectUser(socket: Socket<ClientToServerEvents, ServerToClientEvents>): void {

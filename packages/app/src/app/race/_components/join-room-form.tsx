@@ -27,8 +27,10 @@ export const JoinRoomForm: React.FC = React.memo(() => {
       displayName: username ?? RANDOM_USERNAME,
       displayImage: FALLBACK_IMG,
     });
-    router.push(`/race/rooms/${encodeURIComponent(roomID)}`);
+    router.push(`/race/rooms/${encodeURIComponent(roomID)}?displayName=${encodeURIComponent(username)}`);
     setRoomID("");
+    setUsername("");
+    setError("");
   };
 
   return (

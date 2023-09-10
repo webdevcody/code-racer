@@ -75,6 +75,9 @@ class LinkedListMemory<T, K extends keyof T> implements LinkedListInterface<T, K
 	}
 
 	getItemAt(idx: number): Node<T> | undefined {
+		if (idx === 0) {
+			return this.head;
+		}
 		let currentNode =  this.head;
 		for (let i = 0; currentNode && i < idx; ++i) {
 			currentNode = currentNode.next;
@@ -95,7 +98,7 @@ class LinkedListMemory<T, K extends keyof T> implements LinkedListInterface<T, K
 
 		for (let idx = 0; currentNode && idx < this.length; ++idx) {
 			if (typeof item === "string") {
-				if (currentNode.value=== item) {
+				if (currentNode.value[key] === item) {
 					break;
 				}
 			} else {

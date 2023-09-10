@@ -1,6 +1,6 @@
 "use client";
 
-import type { CustomSnippet } from "@code-racer/wss/src/new-game";
+import type { CustomSnippet } from "@code-racer/wss/src/store/types";
 
 import React from "react";
 
