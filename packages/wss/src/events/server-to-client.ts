@@ -1,5 +1,5 @@
-import { RaceStatus } from "@/consts";
-import type { ParticipantInformation, RoomInformation } from "@/new-game";
+import { RaceStatus } from "../consts";
+import type { ParticipantInformation, RoomInformation } from "../store/types";
 
 export type SendNotificationPayload = {
 	title?: string;

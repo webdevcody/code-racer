@@ -1,10 +1,15 @@
+import type { Server } from "socket.io";
+import type { ClientToServerEvents } from "@/events/client-to-server";
+import type { ServerToClientEvents } from "@/events/server-to-client";
+import type UserSessionMemoryStore from "./user-session";
+
 /** T for the type of item,
- *  K if the item is an object
- *  and we need to match items based on a 
- *  specific key
+ *  K for the item's key.
+ *  Our use case is for userSession and
+ *  rooms
  */
 export interface LinkedListInterface<T, K extends keyof T> {
-  length: number;
+ length: number;
 	append(_item: T): void;
 	prepend(_item: T): void;
 	remove(_item: T, _keyToMatchFor: K): Node<T> | undefined;
@@ -16,13 +21,49 @@ export interface LinkedListInterface<T, K extends keyof T> {
 
 export interface RoomMemoryStoreInterface extends LinkedListInterface<Room, keyof Room> {
 	addRoom(_room: Room): void;
-	findRoom(_roomOrRoomID: Room | string, _whatKeyIsThisIn: keyof Room): Room | undefined;
-	removeRoom(_roomOrRoomID: Room | string, _whatKeyIsThisIn: keyof Room): Room | undefined;
+	findRoom(_room: Room): Room | undefined;
+	findRoomByRoomID(_roomID: string): Room | undefined;
+	removeRoom(_room: Room): Room | undefined;
+	removeRoomByRoomID(_roomID: string): Room | undefined;
 	addUserSessionToRoom(_roomID: string, _userSession: UserSession): Room | undefined;
+	removeUserSessionFromRoom(_roomID: string, _userSessionOrUserID: UserSession | string): Room | undefined;
 }
 
 export interface UserSessionMemoryStoreInterface extends LinkedListInterface<UserSession, keyof UserSession> {
+	addUser(_userSession: UserSession): void;
+	findUser(_userSession: UserSession): UserSession | undefined;
+	findUserByID(_userID: string): UserSession | undefined;
+	removeUser(_userSession: UserSession): UserSession | undefined;
+	removeUserByID(_userID: string): UserSession | undefined;
 	getAllUsers(): Array<ParticipantInformation>;
+}
+
+/** I don't know how
+ *  
+ *  this interface can inherit both the methods of
+ *  RoomMemoryStore and UserSessionMemoryStore, so here haha.
+ */
+export interface GameMemoryStoreInterface {
+	addUser(_userSession: UserSession): void;
+	findUser(_userSession: UserSession): UserSession | undefined;
+	findUserByID(_userID: string): UserSession | undefined;
+	removeUser(_userSession: UserSession): UserSession | undefined;
+	removeUserByID(_userID: string): UserSession | undefined;
+	getAllUsers(): Array<ParticipantInformation>;
+	addRoom(_room: Room): void;
+	findRoom(_room: Room): Room | undefined;
+	findRoomByRoomID(_roomID: string): Room | undefined;
+	removeRoom(_room: Room): Room | undefined;
+	removeRoomByRoomID(_roomID: string): Room | undefined;
+	addUserSessionToRoom(_roomID: string, _userSession: UserSession): Room | undefined;
+	removeUserSessionFromRoom(_roomID: string, _userSessionOrUserID: UserSession | string): Room | undefined;
+}
+
+export interface Game {
+	memory: GameMemoryStoreInterface;
+	server: Server<ClientToServerEvents, ServerToClientEvents>;
+	initializeGame(): void;
+	MAXIMUM_PLAYER_COUNT: number;
 }
 
 export interface Node<T> {
@@ -55,7 +96,7 @@ export type RoomInformation = {
 };
 
 export type Room = {
-	participants: UserSessionMemoryStoreInterface;
+	participants: UserSessionMemoryStore;
 	roomOwnerID: string;
 	roomID: string;
 	snippet: CustomSnippet;

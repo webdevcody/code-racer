@@ -1,13 +1,14 @@
 import type { UserSession, Room } from "./types";
-import { ROOM_KEYS, USER_SESSION_KEYS } from "@/consts";
-import LinkedListMemory from "./memory";
+import { ROOM_KEYS, USER_SESSION_KEYS } from "../consts";
+import LinkedListMemory from "./data-structure";
 
 /**
  *  Methods are provided to you already.
  * 
  *  If this needs to be configured or if the keys of 
  * 
- *  the object interface named Room
+ *  the object interface named Room changes, then do refer 
+ *  to the constant enum, ROOM_KEYS.
  */
 class RoomMemoryStore extends LinkedListMemory<Room, keyof Room> {
   constructor() {
@@ -18,28 +19,28 @@ class RoomMemoryStore extends LinkedListMemory<Room, keyof Room> {
     this.append(room);
   }
 
-  findRoom(roomOrRoomID: Room | string, whatKeyIsThisIn: keyof Room): Room | undefined {
-    if (typeof roomOrRoomID === "string") {
-      return this.getItemIfStringEqualToKeyValue(roomOrRoomID, whatKeyIsThisIn)?.value;
-    } else {
-      return this.get(roomOrRoomID, whatKeyIsThisIn)?.value;
-    }
+  findRoom(room: Room): Room | undefined {
+    return this.get(room, ROOM_KEYS.roomID)?.value;
   }
 
-  removeRoom(roomOrRoomID: Room | string, keyToMatchFor: keyof Room): Room | undefined {
-    if (typeof roomOrRoomID === "string") {
-      return this.removeItemIfStringEqualToKeyValue(roomOrRoomID, keyToMatchFor)?.value;
-    } else {
-      return this.remove(roomOrRoomID, keyToMatchFor)?.value;
-    }
+  findRoomByRoomID(roomID: string): Room | undefined {
+    return this.getItemIfStringEqualToKeyValue(roomID, ROOM_KEYS.roomID)?.value;
+  }
+
+  removeRoom(room: Room): Room | undefined {
+    return this.remove(room, ROOM_KEYS.roomID)?.value;
+  }
+
+  removeRoomByRoomID(roomID: string): Room | undefined {
+    return this.removeItemIfStringEqualToKeyValue(roomID, ROOM_KEYS.roomID)?.value;
   }
 
   addUserSessionToRoom(
     roomID: string,
-    userSession: UserSession
+    userSessionOrUserID: UserSession
   ): Room | undefined {
-    const room = this.findRoom(roomID, ROOM_KEYS.roomID);
-    room?.participants.append(userSession);
+    const room = this.findRoomByRoomID(roomID);
+    room?.participants.append(userSessionOrUserID);
     return room;
   }
 
@@ -56,11 +57,13 @@ class RoomMemoryStore extends LinkedListMemory<Room, keyof Room> {
       }
       const ROOM_IS_EMPTY = room.participants.length === 0;
       if (ROOM_IS_EMPTY) {
-        this.removeRoom(roomID, ROOM_KEYS.roomID);
+        this.removeRoomByRoomID(roomID);
       }
     }
     return room;
   }
+
+
 };
 
 export default RoomMemoryStore;

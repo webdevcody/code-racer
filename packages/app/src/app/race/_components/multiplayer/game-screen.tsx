@@ -38,10 +38,10 @@ export const GameScreen: React.FC<Props> = React.memo(
       [session?.id, roomOwnerID]
     );
 
-    const handleResetGame = React.useCallback(() => {
+    const handleChangeGameState = React.useCallback((status: RaceStatus) => {
       socket.emit("ChangeGameStatusOfRoom", {
         roomID,
-        raceStatus: RACE_STATUS.WAITING,
+        raceStatus: status,
       });
     }, [roomID]);
 
@@ -63,9 +63,9 @@ export const GameScreen: React.FC<Props> = React.memo(
         amountOfPlayers <= 1 && gameState && gameState !== "waiting" && roomID;
 
       if (GAME_STARTED_AND_PLAYERS_LEFT_WITH_ONE_PLAYER_REMAINING) {
-        handleResetGame();
+        handleChangeGameState(RACE_STATUS.WAITING);
       }
-    }, [handleResetGame, amountOfPlayers, gameState, roomID]);
+    }, [handleChangeGameState, amountOfPlayers, gameState, roomID]);
 
     return (
       <div className="md:w-[65%] lg:-[75%] dark:border-2 min-h-[10rem] rounded-lg shadow-md shadow-black/20 p-4">
@@ -74,7 +74,7 @@ export const GameScreen: React.FC<Props> = React.memo(
             roomID={roomID}
             amountOfPlayers={amountOfPlayers}
             IS_PLAYER_CURRENT_USER={IS_PLAYER_CURRENT_USER}
-            handleResetGame={handleResetGame}
+            handleChangeGameState={handleChangeGameState}
           />
         )}
         {gameState === RACE_STATUS.COUNTDOWN && <CountdownScreen roomID={roomID} />}

@@ -4,9 +4,10 @@ config();
 import express from "express";
 import http from "http";
 import { Server } from "socket.io";
-import { Game } from "./new-game";
+
 import { ClientToServerEvents } from "./events/client-to-server";
 import { ServerToClientEvents } from "./events/server-to-client";
+import TypingGame from "./game";
 
 const PORT = process.env.PORT;
 
@@ -25,7 +26,8 @@ const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
 	},
 });
 
-new Game(io);
+const game = new TypingGame(io);
+game.initializeGame();
 
 server.listen(PORT, () => {
 	console.log(`listening on *:${PORT}`);

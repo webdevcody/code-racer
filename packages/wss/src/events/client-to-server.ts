@@ -1,4 +1,4 @@
-import { RaceStatus } from "@/consts";
+import { RaceStatus } from "../consts";
 import type { Language } from "@code-racer/app/src/config/languages";
 
 export type CreateRoomPayload = {

@@ -1,10 +1,31 @@
 import { ParticipantInformation, UserSession } from "./types";
 
-import LinkedListMemory from "./memory";
+import LinkedListMemory from "./data-structure";
+import { USER_SESSION_KEYS } from "../consts";
 
 class UserSessionMemoryStore extends LinkedListMemory<UserSession, keyof UserSession> {
   constructor() {
     super();
+  }
+
+  addUser(userSession: UserSession): void {
+    this.append(userSession);
+  }
+
+  findUser(userSession: UserSession): UserSession | undefined {
+    return this.get(userSession, USER_SESSION_KEYS.userID)?.value;
+  }
+
+  findUserByID(userID: string): UserSession | undefined {
+    return this.getItemIfStringEqualToKeyValue(userID, USER_SESSION_KEYS.userID)?.value;
+  }
+
+  removeUser(userSession: UserSession): UserSession | undefined {
+    return this.remove(userSession, USER_SESSION_KEYS.userID)?.value;
+  }
+
+  removeUserByID(userID: string): UserSession | undefined {
+    return this.removeItemIfStringEqualToKeyValue(userID, USER_SESSION_KEYS.userID)?.value;
   }
   
   getAllUsers(): ParticipantInformation[] {

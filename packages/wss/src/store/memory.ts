@@ -1,151 +1,66 @@
-import type { LinkedListInterface, Node } from "./types";
+import type { GameMemoryStoreInterface, ParticipantInformation, Room, UserSession } from "./types";
 
-class LinkedListNode<T> implements Node<T> {
-	public value: T;
-	public next: LinkedListNode<T> | undefined;
-	constructor(item: T) {
-		this.value = item;
-		this.next = undefined;
-	}
-}
+import RoomMemoryStore from "./room";
+import UserSessionMemoryStore from "./user-session";
 
-/** T for the item,
- *  K for key
- * 
- *  Always provide a key to look for if 
- *  performing search operations such as deletion
+/** Handles all the state within a game. For example,
+ *  adding a new room, removing a room, adding
+ *  players to a room, etc.
  */
-class LinkedListMemory<T, K extends keyof T> implements LinkedListInterface<T, K> {
-	public length: number;
-	private head: LinkedListNode<T> | undefined;
-	private tail: LinkedListNode<T> | undefined;
+export class GameMemoryStore implements GameMemoryStoreInterface {
+  private rooms: RoomMemoryStore;
+  private players: UserSessionMemoryStore;
+  constructor() {
+    this.rooms = new RoomMemoryStore();
+    this.players = new UserSessionMemoryStore();
+  }
 
-	constructor() {
-		this.length = 0;
-		this.head = undefined;
-		this.tail = undefined;
-	}
+  addUser(userSession: UserSession): void {
+    this.players.addUser(userSession);
+  }
 
-	append(item: T): void {
-		const node = new LinkedListNode(item);
-		this.length = this.length + 1;
+  findUser(userSession: UserSession): UserSession | undefined {
+    return this.players.findUser(userSession);
+  }
+  findUserByID(userID: string): UserSession | undefined {
+    return this.players.findUserByID(userID);
+  }
+  removeUser(userSession: UserSession): UserSession | undefined {
+    return this.removeUser(userSession);
+  }
+  removeUserByID(userID: string): UserSession | undefined {
+    return this.players.removeUserByID(userID);
+  }
+  
+  getAllUsers(): ParticipantInformation[] {
+    return this.players.getAllUsers();
+  }
 
-		if (!this.tail) {
-			this.head = node;
-			this.tail = node;
-			return;
-		}
+  addRoom(room: Room): void {
+    this.rooms.addRoom(room);
+  }
 
-		const MEMORY_HAS_SINGLE_ITEM = !this.head?.next;
-		if (this.head && MEMORY_HAS_SINGLE_ITEM) {
-			this.head.next = this.tail;
-		}
-		this.tail.next = node;
-		this.tail = node;
-	}
+  findRoom(room: Room): Room | undefined {
+    return this.rooms.findRoom(room);
+  }
 
-	prepend(item: T): void {
-		const node = new LinkedListNode(item);
-		this.length = this.length - 1;
+  findRoomByRoomID(roomID: string): Room | undefined {
+    return this.rooms.findRoomByRoomID(roomID);
+  }
 
-		if (!this.head) {
-			this.head = node;
-			this.tail = node;
-			return;
-		}
+  removeRoom(room: Room): Room | undefined {
+    return this.rooms.removeRoom(room);
+  }
 
-		node.next = this.head;
-		this.head = node;
-	}
+  removeRoomByRoomID(roomID: string): Room | undefined {
+    return this.rooms.removeRoomByRoomID(roomID);
+  }
 
-	remove(item: T, keyToMatchFor: K): Node<T> | undefined {
-		return this.removeNode(item, keyToMatchFor);
-	}
+  addUserSessionToRoom(roomID: string, userSession: UserSession): Room | undefined {
+    return this.rooms.addUserSessionToRoom(roomID, userSession);
+  }
 
-	removeItemIfStringEqualToKeyValue(item: string, key: K): Node<T> | undefined {
-		return this.removeNode(item, key);
-	}
-
-	get(item: T, keyToMatchFor: K): Node<T> | undefined {
-		return this.getNode(item, keyToMatchFor);
-	}
-
-	getItemIfStringEqualToKeyValue(item: string, key: K): Node<T> | undefined {
-		return this.getNode(item, key);
-	}
-
-	getItemAt(idx: number): Node<T> | undefined {
-		let currentNode =  this.head;
-		for (let i = 0; currentNode && i < idx; ++i) {
-			currentNode = currentNode.next;
-		}
-		return currentNode;
-	}
-
-	private removeNode(item: T | string, key: K): Node<T> | undefined {
-		if (this.length === 1) {
-			this.length = this.length - 1;
-			this.tail = undefined;
-			this.head = undefined;
-			return;
-		}
-
-		let currentNode = this.head;
-		let previousNode = undefined;
-
-		for (let idx = 0; currentNode && idx < this.length; ++idx) {
-			if (typeof item === "string") {
-				if (currentNode.value=== item) {
-					break;
-				}
-			} else {
-				if (item[key] === currentNode.value[key]) {
-					break;
-				};
-			}
-			previousNode = currentNode;
-			currentNode = currentNode.next;
-		}
-
-		if (!currentNode) {
-			return undefined;
-		}
-
-		this.length = this.length - 1;
-
-		if (currentNode === this.head) {
-			this.head = currentNode.next;
-		}
-
-		if (previousNode) {
-			if (previousNode.next === this.tail) {
-				/** If the item to be removed is the tail of this list. */
-				previousNode.next = undefined;
-				this.tail = previousNode;
-			} else {
-				previousNode.next = currentNode.next;
-			}
-			return currentNode;
-		}
-	}
-
-	private getNode(item: T | string, keyToMatchFor: K): Node<T> | undefined {
-		let currentNode = this.head;
-		for (let idx = 0; currentNode && idx < this.length; ++idx) {
-			if (typeof item === "string") {
-				if (item === currentNode.value[keyToMatchFor]) {
-					break;
-				}
-			} else {
-				if (item[keyToMatchFor] === currentNode.value[keyToMatchFor]) {
-					break;
-				}
-			}		
-			currentNode = currentNode.next;
-		}
-		return currentNode;
-	}
-
+  removeUserSessionFromRoom(roomID: string, userSessionOrUserID: string | UserSession): Room | undefined {
+    return this.rooms.removeUserSessionFromRoom(roomID, userSessionOrUserID);
+  }
 }
-
-export default LinkedListMemory;
