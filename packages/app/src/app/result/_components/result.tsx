@@ -1,6 +1,6 @@
 "use client";
 
-import type { chartTimeStamp } from "../(pages)/authenticated";
+import type { chartTimeStamp } from "../main-content";
 import type {
   NameType,
   ValueType,

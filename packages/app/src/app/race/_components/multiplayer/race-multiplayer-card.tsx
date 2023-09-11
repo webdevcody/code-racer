@@ -65,6 +65,13 @@ const RaceMultiplayerCard: React.FC<Props> = React.memo(
      *  where their enemies are currently at.
      */
     React.useEffect(() => {
+      if (roomID) {
+        socket.emit("SendUserProgress", {
+          userID: session?.id ?? socket.id,
+          roomID,
+          progress: typingProgress,
+        });
+      }
       if (state.timeStamp.length > 0 && roomID) {
         const latestTimeStamp = state.timeStamp[state.timeStamp.length - 1];
         socket.emit("SendUserTimeStamp", {
@@ -75,17 +82,7 @@ const RaceMultiplayerCard: React.FC<Props> = React.memo(
           totalErrors: latestTimeStamp.errors,
         });
       }
-    }, [state.timeStamp, session, roomID]);
-
-    React.useEffect(() => {
-      if (roomID) {
-        socket.emit("SendUserProgress", {
-          userID: session?.id ?? socket.id,
-          roomID,
-          progress: typingProgress,
-        });
-      }
-    }, [typingProgress, session, roomID]);
+    }, [state.timeStamp, typingProgress, session, roomID]);
 
     React.useEffect(() => {
       if (roomID && isUserFinished) {
@@ -112,20 +109,21 @@ const RaceMultiplayerCard: React.FC<Props> = React.memo(
     }, []);
 
     return (
-      <div
-        className="relative focus-within:outline cursor-text focus-within:outline-4 focus-within:outline-border focus-within:outline-offset-4 focus-within:outline-offset-background dark:text-white text-black bg-slate-200/60 dark:bg-black/60 rounded-lg mx-auto dark:border-2 shadow-md shadow-black/20 px-4 py-8"
-        ref={onDivClick}
-      >
-        {!state.snippet && (
-          <div className="flex flex-col gap-4">
-            <Loader className="animate-spin w-6 h-6" />
-            Fetching snippet...
-          </div>
-        )}
+      <React.Fragment>
+        {!isUserFinished && (
+          <div
+            className="relative focus-within:outline cursor-text focus-within:outline-4 focus-within:outline-border focus-within:outline-offset-4 focus-within:outline-offset-background dark:text-white text-black bg-slate-200/60 dark:bg-black/60 rounded-lg mx-auto dark:border-2 shadow-md shadow-black/20 px-4 py-8"
+            ref={onDivClick}
+          >
+            {!state.snippet && (
+              <div className="flex flex-col gap-4">
+                <Loader className="animate-spin w-6 h-6" />
+                Fetching snippet...
+              </div>
+            )}
 
-        {state.snippet && (
-          <React.Fragment>
-            {!isUserFinished && (
+            {state.snippet && (
+
               <React.Fragment>
                 <section className="pb-4">
                   <h2 className="sr-only">
@@ -161,11 +159,10 @@ const RaceMultiplayerCard: React.FC<Props> = React.memo(
                 </div>
               </React.Fragment>
             )}
-
-            {isUserFinished && <UserFinishedWaitingScreen roomID={roomID} />}
-          </React.Fragment>
+          </div>
         )}
-      </div>
+        {isUserFinished && <UserFinishedWaitingScreen session={session} />}
+      </React.Fragment>
     );
   }
 );

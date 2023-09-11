@@ -30,7 +30,7 @@ const FinishedScreen: React.FC<Props> = React.memo(({
 
   return (
     <React.Fragment>
-
+      The has finished! Hooray!
     </React.Fragment>
   );
 });

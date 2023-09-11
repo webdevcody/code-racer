@@ -54,8 +54,8 @@ const TrackerContainer: React.FC<{
 } & RoomProps> = React.memo(({ currentPlayer, listOfPlayers, amountInRecursion, session }) => {
   return (
     <React.Fragment>
-      <div className="break-words overflow-auto whitespace-pre-wrap">
-        <div>{currentPlayer.displayName}{session?.id === currentPlayer.userID ? "(You)" : undefined}</div>
+      <div>
+      <span>{currentPlayer.displayName}{session?.id === currentPlayer.userID || socket.id === currentPlayer.userID ? "(You)" : undefined}</span>
         <ProgressTracker
           name={currentPlayer.displayName}
           image={currentPlayer.displayImage}

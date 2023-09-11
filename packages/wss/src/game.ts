@@ -135,7 +135,7 @@ class TypingGame implements Game {
 			 *  undefined if we just place the function as the 2nd parameter.
 			 */
 			socket.on("SendUserProgress", ({ userID, roomID, progress }) => this.handleSendUserProgress({ userID, roomID, progress }));
-			socket.on("SendUserTimeStamp", ({ userID, roomID, accuracy, cpm, totalErrors }) => this.handleSendUserTimeStamp({ userID, roomID, accuracy, cpm, totalErrors }));
+			socket.on("SendUserTimeStamp", ({ userID, roomID, accuracy, cpm, totalErrors }) => this.handleSendUserTimeStamp(socket, { userID, roomID, accuracy, cpm, totalErrors }));
 			socket.on("SendUserHasFinished", ({ userID, roomID, timeTaken }) => this.handleSendUserHasFinished({ userID, roomID, timeTaken }));
 		});
 	}
@@ -210,13 +210,15 @@ class TypingGame implements Game {
 		}
 	}
 
-	private handleSendUserTimeStamp({
-		userID,
-		roomID,
-		cpm,
-		accuracy,
-		totalErrors,
-	}: UpdateTimeStampPayload): void {
+	private handleSendUserTimeStamp(
+		socket: Socket<ClientToServerEvents, ServerToClientEvents>,
+		{
+			userID,
+			roomID,
+			cpm,
+			accuracy,
+			totalErrors,
+		}: UpdateTimeStampPayload): void {
 		const foundRunningRoom = this.memory.findRunningGame(roomID);
 
 		if (!foundRunningRoom) {
@@ -230,6 +232,10 @@ class TypingGame implements Game {
 			cpm,
 			accuracy,
 			errors: totalErrors,
+		});
+		this.server.to(roomID).emit("SendRunningGameInformation", {
+			roomID: roomID,
+			participants: foundRunningRoom.participants.getAllParticipants(),
 		});
 	}
 

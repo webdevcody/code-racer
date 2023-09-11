@@ -108,7 +108,15 @@ class ParticipantMemoryStore extends LinkedListMemory<
 			currentNode = currentNode.next;
 		}
 
-		return participants;
+		return participants.sort((a, b) => {
+			if (a.isFinished) {
+				return 1;
+			} else if (b.isFinished) {
+				return -1;
+			}
+
+			return 0;
+		});
 	}
 
 	getAllParticipantsExcept(userID: string): Array<Participant> {
