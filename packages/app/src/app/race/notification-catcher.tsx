@@ -32,6 +32,7 @@ export const NotificationCatcher: React.FC<{ children: React.ReactNode }> = ({
         case "Room Full!":
         case "Race Has Started!":
         case "Server Full!":
+        case "Room Is Not Accepting Players!":
           if (socket.connected) {
             socket.disconnect();
           }

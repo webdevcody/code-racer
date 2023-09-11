@@ -4,6 +4,7 @@ import type {
 	ParticipantInformation,
 	Room,
 	RunningGameInformation,
+	TimeStampType,
 	UserSession,
 } from "./types";
 
@@ -66,36 +67,8 @@ export class GameMemoryStore implements GameMemoryStoreInterface {
 		);
 	}
 
-	updateAccuracyOfParticipant(
-		roomID: string,
-		userID: string,
-		accuracy: number,
-	): Participant | undefined {
-		return this.running_rooms.updateAccuracyOfParticipant(
-			roomID,
-			userID,
-			accuracy,
-		);
-	}
-
-	updateCpmOfParticipant(
-		roomID: string,
-		userID: string,
-		cpm: number,
-	): Participant | undefined {
-		return this.running_rooms.updateCpmOfParticipant(roomID, userID, cpm);
-	}
-
-	updateTotalErrorsOfParticipant(
-		roomID: string,
-		userID: string,
-		amount: number,
-	): Participant | undefined {
-		return this.running_rooms.updateTotalErrorsOfParticipant(
-			roomID,
-			userID,
-			amount,
-		);
+	updateTimeStampOfParticipant(roomID: string, userID: string, timeStamp: TimeStampType): Participant | undefined {
+		return this.running_rooms.updateTimeStampOfParticipant(roomID, userID, timeStamp);
 	}
 
 	updateTimeTakenOfParticipant(

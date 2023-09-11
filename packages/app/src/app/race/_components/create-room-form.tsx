@@ -29,7 +29,7 @@ export const CreateRoomForm: React.FC<RoomProps> = React.memo(({ session }) => {
     connectToSocket({
       userID: session?.id ?? socket.id,
       displayName: session?.name ?? RANDOM_USERNAME,
-      displayImage: FALLBACK_IMG,
+      displayImage: session?.image ?? FALLBACK_IMG,
     });
     /** workaround to socket.id being undefined when socket is not connected. */
     setDidSubmit(true);

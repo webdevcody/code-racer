@@ -128,17 +128,20 @@ class TypingGame implements Game {
 				this.handleRequestRunningGameInformation(socket, roomID),
 			);
 			socket.on("RequestAllPlayersProgress", (roomID) =>
-				this.handleRequestAllPlayersProgress(socket, roomID)
+				this.handleRequestAllPlayersProgress(roomID)
 			);
 
-			socket.on("SendUserProgress", this.handleSendUserProgress);
-			socket.on("SendUserTimeStamp", this.handleSendUserTimeStamp);
-			socket.on("SendUserHasFinished", this.handleSendUserHasFinished);
+			/** Leave it as an arrow function since this.memory will be
+			 *  undefined if we just place the function as the 2nd parameter.
+			 */
+			socket.on("SendUserProgress", ({ userID, roomID, progress }) => this.handleSendUserProgress({ userID, roomID, progress }));
+			socket.on("SendUserTimeStamp", ({ userID, roomID, accuracy, cpm, totalErrors }) => this.handleSendUserTimeStamp({ userID, roomID, accuracy, cpm, totalErrors }));
+			socket.on("SendUserHasFinished", ({ userID, roomID, timeTaken }) => this.handleSendUserHasFinished({ userID, roomID, timeTaken }));
 		});
 	}
 
+	/** ON PAGE LOAD (we load all the progress trackers) */
 	private handleRequestAllPlayersProgress(
-		socket: Socket<ClientToServerEvents, ServerToClientEvents>,
 		roomID: string,
 	): void {
 		const foundRunningRoom = this.memory.findRunningGame(roomID);
@@ -154,12 +157,11 @@ class TypingGame implements Game {
 			.to(roomID)
 			.emit(
 				"SendAllPlayersProgress",
-				foundRunningRoom.participants.getAllParticipantsProgressExcept(
-					socket.userID,
-				),
+				foundRunningRoom.participants.getAllParticipantsProgress()
 			);
 	}
 
+	/** Also responsible for checking if teh game is considered finish or not */
 	private handleSendUserHasFinished({
 		timeTaken,
 		userID,
@@ -197,12 +199,14 @@ class TypingGame implements Game {
 
 			foundRoom.endedAt = new Date();
 			foundRoom.gameStatus = RACE_STATUS.FINISHED;
+			this.server.to(roomID).emit("SendGameStatusOfRoom", foundRoom.gameStatus);
 			this.server.to(roomID).emit("GameFinished", {
 				endedAt: foundRoom.endedAt,
 				startedAt: foundRoom.startedAt as Date,
 				roomID: roomID,
 				participants: foundRunningRoom.participants.getAllParticipants(),
 			});
+			this.memory.removeRunningGame(foundRoom.roomID);
 		}
 	}
 
@@ -229,11 +233,12 @@ class TypingGame implements Game {
 		});
 	}
 
-	private handleSendUserProgress({
-		userID,
-		progress,
-		roomID,
-	}: UpdateProgressPayload): void {
+	private handleSendUserProgress(
+		{
+			userID,
+			progress,
+			roomID,
+		}: UpdateProgressPayload): void {
 		const foundRunningRoom = this.memory.findRunningGame(roomID);
 
 		if (!foundRunningRoom) {
@@ -244,6 +249,7 @@ class TypingGame implements Game {
 		}
 
 		foundRunningRoom.participants.updateProgress(userID, progress);
+		this.server.to(roomID).emit("SendAllPlayersProgress", foundRunningRoom.participants.getAllParticipantsProgress());
 	}
 
 	/** Skip over to the socket that requested this
@@ -285,7 +291,7 @@ class TypingGame implements Game {
 			);
 			return;
 		}
-		socket.to(roomID).emit("SendRoomSnippet", foundRoom.snippet);
+		this.server.to(roomID).emit("SendRoomSnippet", foundRoom.snippet);
 	}
 
 	private handleChangeGameStatusOfRoom(
@@ -349,37 +355,38 @@ class TypingGame implements Game {
 			});
 		}
 
-		foundRoom.gameStatus = raceStatus;
-
 		const GAME_STARTS = raceStatus === "running";
 		if (GAME_STARTS) {
-			foundRoom.startedAt = new Date();
-			const players = foundRoom.participants.getAllUsers();
+			const foundExistingRunningGame = this.memory.findRunningGame(roomID);
 
-			const runningGameParticipants = new ParticipantMemoryStore();
+			if (!foundExistingRunningGame) {
+				foundRoom.startedAt = new Date();
+				const players = foundRoom.participants.getAllUsers();
 
-			for (let idx = 0; idx < players.length; ++idx) {
-				runningGameParticipants.append({
-					userID: players[idx].userID,
-					displayImage: players[idx].displayImage,
-					displayName: players[idx].displayName,
-					progress: 0,
-					isFinished: false,
-					accuracy: 0,
-					cpm: 0,
-					totalErrors: 0,
-					timeTaken: 0,
-				});
+				const runningGameParticipants = new ParticipantMemoryStore();
+
+				for (let idx = 0; idx < players.length; ++idx) {
+					runningGameParticipants.append({
+						userID: players[idx].userID,
+						displayImage: players[idx].displayImage,
+						displayName: players[idx].displayName,
+						progress: 0,
+						isFinished: false,
+						timeStamp: [],
+						timeTaken: 0,
+					});
+				}
+
+				const activeRoom = {
+					roomID: foundRoom.roomID,
+					participants: runningGameParticipants,
+				} satisfies RunningGameInformation;
+
+				this.memory.addRunningGame(activeRoom);
 			}
-
-			const activeRoom = {
-				roomID: foundRoom.roomID,
-				participants: runningGameParticipants,
-			} satisfies RunningGameInformation;
-
-			this.memory.addRunningGame(activeRoom);
 		}
 
+		foundRoom.gameStatus = raceStatus;
 		this.server.to(roomID).emit("SendGameStatusOfRoom", foundRoom.gameStatus);
 	}
 
@@ -418,6 +425,14 @@ class TypingGame implements Game {
 				title: "Room Full!",
 				description: `This room is full of participants. The current maximum players is ${this.MAXIMUM_PLAYER_COUNT} Try creating a new one.`,
 				variant: "destructive",
+			});
+			return;
+		}
+
+		if (foundRoom.gameStatus === RACE_STATUS.FINISHED) {
+			socket.emit("SendNotification", {
+				title: "Room Is Not Accepting Players!",
+				description: "The race for this room has just finished. Please wait for the owner to change the room's state to waiting again."
 			});
 			return;
 		}

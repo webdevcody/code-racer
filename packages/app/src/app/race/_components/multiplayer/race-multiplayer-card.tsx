@@ -8,16 +8,15 @@ import { Loader } from "lucide-react";
 
 import { socket } from "@/lib/socket";
 import { useHandleRaceEvents } from "../../_utils/useHandleRaceEvents";
-import { FALLBACK_IMG, RANDOM_USERNAME } from "@/config/consts";
 
 import TypingCard from "../common/typing-card";
-const ProgressTracker = dynamic(() => import("../common/progress-tracker"), {
-  ssr: false,
-});
 const RowLineTracker = dynamic(() => import("../common/row-line-tracker"), {
   ssr: false,
 });
 const SectionOfProgressTrackers = dynamic(() => import("./section-of-progress-trackers"), {
+  ssr: false
+});
+const UserFinishedWaitingScreen = dynamic(() => import("./user-finished-waiting-screen"), {
   ssr: false
 });
 
@@ -52,6 +51,13 @@ const RaceMultiplayerCard: React.FC<Props> = React.memo(
       };
     }, [roomID, handleChangeSnippet]);
 
+    React.useEffect(() => {
+      if (roomID) {
+        /** to load the progress trackers on page load */
+        socket.emit("RequestAllPlayersProgress", roomID);
+      }
+    }, [roomID]);
+
     /** POTENTIAL FEATURE:
      *  Add the word in the timestamp as well
      *  so we can have a videolike experience
@@ -72,7 +78,7 @@ const RaceMultiplayerCard: React.FC<Props> = React.memo(
     }, [state.timeStamp, session, roomID]);
 
     React.useEffect(() => {
-      if (typingProgress && roomID) {
+      if (roomID) {
         socket.emit("SendUserProgress", {
           userID: session?.id ?? socket.id,
           roomID,
@@ -125,17 +131,7 @@ const RaceMultiplayerCard: React.FC<Props> = React.memo(
                   <h2 className="sr-only">
                     Section of Progress Trackers of Players
                   </h2>
-
-                  <SectionOfProgressTrackers roomID={roomID} />
-
-                  <div className="flex flex-col gap-2">
-                    <div>You:</div>
-                    <ProgressTracker
-                      name={session?.name ?? RANDOM_USERNAME}
-                      image={session?.image ?? FALLBACK_IMG}
-                      progress={typingProgress}
-                    />
-                  </div>
+                  <SectionOfProgressTrackers session={session} />
                 </section>
 
                 <div className="flex gap-2 relative rounded-lg my-1">
@@ -154,8 +150,19 @@ const RaceMultiplayerCard: React.FC<Props> = React.memo(
                     ref={textAreaRef}
                   />
                 </div>
+                {state.displayedErrorMessage && (
+                  <p className="px-4 text-sm mt-4 text-destructive">
+                    {state.displayedErrorMessage}
+                  </p>
+                )}
+
+                <div className="text-sm lg:text-base">
+                  Elapsed time: {state.totalTime} seconds
+                </div>
               </React.Fragment>
             )}
+
+            {isUserFinished && <UserFinishedWaitingScreen roomID={roomID} />}
           </React.Fragment>
         )}
       </div>

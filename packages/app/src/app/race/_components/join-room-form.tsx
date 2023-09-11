@@ -9,7 +9,11 @@ import { Input } from "@/components/ui/input";
 import { connectToSocket, socket } from "@/lib/socket";
 import { FALLBACK_IMG, RANDOM_USERNAME } from "@/config/consts";
 
-export const JoinRoomForm: React.FC = React.memo(() => {
+type Props = {
+  image: string | null | undefined;
+}
+
+export const JoinRoomForm: React.FC<Props> = React.memo(({ image }) => {
   const [roomID, setRoomID] = React.useState("");
   const [username, setUsername] = React.useState("");
   const [error, setError] = React.useState("");
@@ -25,7 +29,7 @@ export const JoinRoomForm: React.FC = React.memo(() => {
     connectToSocket({
       userID: socket.id,
       displayName: username ?? RANDOM_USERNAME,
-      displayImage: FALLBACK_IMG,
+      displayImage: image ?? FALLBACK_IMG,
     });
     router.push(
       `/race/rooms/${encodeURIComponent(

@@ -59,25 +59,15 @@ export interface GameMemoryStoreInterface {
 		_userID: string,
 		_amount: number,
 	): Participant | undefined;
-	updateAccuracyOfParticipant(
-		_roomID: string,
-		_userID: string,
-		_accuracy: number,
-	): Participant | undefined;
-	updateCpmOfParticipant(
-		_roomID: string,
-		_userID: string,
-		_cpm: number,
-	): Participant | undefined;
-	updateTotalErrorsOfParticipant(
-		_roomID: string,
-		_userID: string,
-		_amount: number,
-	): Participant | undefined;
 	updateTimeTakenOfParticipant(
 		_roomID: string,
 		_userID: string,
 		_timeInSeconds: number,
+	): Participant | undefined;
+	updateTimeStampOfParticipant(
+		_roomID: string,
+		_userID: string,
+		_timeStamp: TimeStampType
 	): Participant | undefined;
 	removeParticipantFromRunningRace(
 		_roomID: string,
@@ -104,9 +94,7 @@ export type Participant = {
 	displayName: string;
 
 	isFinished: boolean;
-	accuracy: number;
-	cpm: number;
-	totalErrors: number;
+	timeStamp: TimeStampType[];
 
 	/** Time taken in seconds */
 	timeTaken: number;

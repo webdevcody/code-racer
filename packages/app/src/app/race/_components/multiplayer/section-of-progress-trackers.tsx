@@ -1,53 +1,25 @@
 "use client";
 import type { ParticipantsProgressPayload } from "@code-racer/wss/src/events/server-to-client";
+import type { RoomProps } from "../../rooms/page";
 
 import React from "react";
 
 import { socket } from "@/lib/socket";
 import ProgressTracker from "../common/progress-tracker";
 
-type Props = {
-  roomID: string;
-}
-
-const SectionOfProgressTrackers: React.FC<Props> = React.memo(({ roomID }) => {
+const SectionOfProgressTrackers: React.FC<RoomProps> = React.memo(({
+  session
+}) => {
   const [allPlayerProgress, setAllPlayerProgress] = React.useState<
     Array<ParticipantsProgressPayload>
   >([]);
 
   const handleUpdatePlayersProgress = React.useCallback(
     (payload: Array<ParticipantsProgressPayload>) => {
-      setAllPlayerProgress((currentState) => {
-        if (currentState.length === 0) {
-          return payload;
-        } else {
-          for (let idx = 0; idx < currentState.length; ++idx) {
-            for (let j = 0; j < payload.length; ++j) {
-              if (currentState[idx].userID === payload[j].userID) {
-                currentState[idx].progress = payload[j].progress;
-              }
-            }
-          }
-
-          return currentState;
-        }
-      });
+      setAllPlayerProgress(payload);
     },
     []
   );
-
-  const timerRef = React.useRef<NodeJS.Timer | undefined>();
-
-  React.useEffect(() => {
-    if (roomID) {
-      timerRef.current = setInterval(() => {
-        socket.emit("RequestAllPlayersProgress", roomID);
-      }, 100);
-    }
-    return () => {
-      clearInterval(timerRef.current);
-    };
-  }, [roomID]);
 
   React.useEffect(() => {
     socket.on("SendAllPlayersProgress", handleUpdatePlayersProgress);
@@ -68,6 +40,7 @@ const SectionOfProgressTrackers: React.FC<Props> = React.memo(({ roomID }) => {
           }}
           listOfPlayers={allPlayerProgress}
           amountInRecursion={0}
+          session={session}
         />
       )}
     </React.Fragment>
@@ -78,11 +51,11 @@ const TrackerContainer: React.FC<{
   currentPlayer: ParticipantsProgressPayload;
   listOfPlayers: Array<ParticipantsProgressPayload>;
   amountInRecursion: number;
-}> = React.memo(({ currentPlayer, listOfPlayers, amountInRecursion }) => {
+} & RoomProps> = React.memo(({ currentPlayer, listOfPlayers, amountInRecursion, session }) => {
   return (
     <React.Fragment>
-      <div>
-        <div>{currentPlayer.displayName}</div>
+      <div className="break-words overflow-auto whitespace-pre-wrap">
+        <div>{currentPlayer.displayName}{session?.id === currentPlayer.userID ? "(You)" : undefined}</div>
         <ProgressTracker
           name={currentPlayer.displayName}
           image={currentPlayer.displayImage}
@@ -99,6 +72,7 @@ const TrackerContainer: React.FC<{
           }}
           amountInRecursion={amountInRecursion + 1}
           listOfPlayers={listOfPlayers}
+          session={session}
         />
       )}
     </React.Fragment>

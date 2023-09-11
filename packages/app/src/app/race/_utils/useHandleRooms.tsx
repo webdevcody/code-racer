@@ -3,7 +3,7 @@
 import type { RoomProps } from "../rooms/page";
 import type { SendRoomIDPayload } from "@code-racer/wss/src/events/server-to-client";
 import type { ParticipantInformation } from "@code-racer/wss/src/store/types";
-import type { RaceStatus } from "@code-racer/wss/src/consts";
+import { type RaceStatus } from "@code-racer/wss/src/consts";
 
 import React from "react";
 import { useSearchParams } from "next/navigation";
@@ -70,17 +70,20 @@ const useHandleRooms = ({ session, roomID }: Props) => {
 
   const handlePlayerJoinedOrLeftRoom = React.useCallback(
     (players: Array<ParticipantInformation>) => {
-      const GAME_STARTED_AND_PLAYERS_LEFT_WITH_ONE_PLAYER_REMAINING =
-        players.length <= 1 && state.gameStatus !== "waiting" && roomID;
+      if (roomID) {
+        /** Let the owner manually change the state of the room to wating if the game in a room finished */
+        const GAME_STARTED_AND_PLAYERS_LEFT_WITH_ONE_PLAYER_REMAINING =
+          players.length <= 1 && state.gameStatus !== "waiting" && state.gameStatus !== "finished";
 
-      if (GAME_STARTED_AND_PLAYERS_LEFT_WITH_ONE_PLAYER_REMAINING) {
-        changeGameStatus("waiting");
+        if (GAME_STARTED_AND_PLAYERS_LEFT_WITH_ONE_PLAYER_REMAINING) {
+          changeGameStatus("waiting");
+        }
+
+        dispatch({
+          type: "change_list_of_players",
+          payload: players,
+        });
       }
-
-      dispatch({
-        type: "change_list_of_players",
-        payload: players,
-      });
     },
     [state.gameStatus, roomID, changeGameStatus]
   );

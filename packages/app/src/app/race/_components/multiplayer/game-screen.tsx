@@ -15,6 +15,9 @@ const WaitingScreen = dynamic(() => import("./waiting-screen"), {
 const RaceMultiplayerCard = dynamic(() => import("./race-multiplayer-card"), {
   ssr: false,
 });
+const FinishedScreen = dynamic(() => import("./finished-screen"), {
+  ssr: false
+});
 
 type Props = {
   roomID: string;
@@ -48,6 +51,9 @@ const GameScreen: React.FC<Props> = React.memo(
         )}
         {gameStatus === RACE_STATUS.RUNNING && (
           <RaceMultiplayerCard roomID={roomID} session={session} />
+        )}
+        {gameStatus === RACE_STATUS.FINISHED && (
+          <FinishedScreen roomID={roomID} changeGameState={changeGameState} />
         )}
       </div>
     );

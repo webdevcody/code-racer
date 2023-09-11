@@ -77,7 +77,7 @@ const RaceRoomPage: NextPage = async () => {
           </CardHeader>
 
           <CardContent>
-            <JoinRoomForm />
+            <JoinRoomForm image={session?.image} />
           </CardContent>
         </Card>
       </section>

@@ -1,4 +1,4 @@
-import type { Participant, RunningGameInformation } from "./types";
+import type { Participant, RunningGameInformation, TimeStampType } from "./types";
 import LinkedListMemory from "./data-structure";
 import { RUNNING_RACE_KEYS } from "../consts";
 
@@ -54,55 +54,20 @@ class RunningTypingGameMemoryStore extends LinkedListMemory<
 		return foundRunningRoom.participants.updateProgress(userID, amount);
 	}
 
-	updateAccuracyOfParticipant(
+	updateTimeStampOfParticipant(
 		roomID: string,
 		userID: string,
-		accuracy: number,
+		timeStamp: TimeStampType
 	): Participant | undefined {
 		const foundRunningRoom = this.getRunningGame(roomID);
 
 		if (!foundRunningRoom) {
 			console.warn(
-				"Trying to update the accuracy of a participant in a room that has not started yet! It is not included in the memory of running/ongoing races.",
+				"Trying to update the timestamp of a participant in a room that has not started yet! It does not exist in the memory of running/ongoing races."
 			);
 			return;
 		}
-
-		return foundRunningRoom.participants.updateAccuracy(userID, accuracy);
-	}
-
-	updateCpmOfParticipant(
-		roomID: string,
-		userID: string,
-		cpm: number,
-	): Participant | undefined {
-		const foundRunningRoom = this.getRunningGame(roomID);
-
-		if (!foundRunningRoom) {
-			console.warn(
-				"Trying to update the cpm of a participant in a room that has not started yet! It is not included in the memory of running/ongoing races.",
-			);
-			return;
-		}
-
-		return foundRunningRoom.participants.updateCpm(userID, cpm);
-	}
-
-	updateTotalErrorsOfParticipant(
-		roomID: string,
-		userID: string,
-		totalErrors: number,
-	): Participant | undefined {
-		const foundRunningRoom = this.getRunningGame(roomID);
-
-		if (!foundRunningRoom) {
-			console.warn(
-				"Trying to update the total errors of a participant in a room that has not started yet! It is not included in the memory of running/ongoing races.",
-			);
-			return;
-		}
-
-		return foundRunningRoom.participants.updateTotalErrors(userID, totalErrors);
+		return foundRunningRoom.participants.updateTimeStamp(userID, timeStamp);
 	}
 
 	updateTimeTakenOfParticipant(

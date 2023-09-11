@@ -3,7 +3,6 @@ import type { ParticipantsProgressPayload } from "../events/server-to-client";
 import { PARTICIPANT_KEYS } from "../consts";
 import LinkedListMemory from "./data-structure";
 
-
 const MAX_TRACKER_POSITION = 100;
 
 class ParticipantMemoryStore extends LinkedListMemory<
@@ -35,55 +34,6 @@ class ParticipantMemoryStore extends LinkedListMemory<
 		return foundParticipant.value;
 	}
 
-	updateAccuracy(userID: string, accuracy: number): Participant | undefined {
-		const foundParticipant = this.getItemIfStringEqualToKeyValue(
-			userID,
-			PARTICIPANT_KEYS.userID,
-		);
-		if (!foundParticipant) {
-			console.warn(
-				"Trying to update the accuracy of a non-existent participant.",
-			);
-			return undefined;
-		}
-
-		foundParticipant.value.accuracy = accuracy;
-		return foundParticipant.value;
-	}
-
-	updateCpm(userID: string, cpm: number): Participant | undefined {
-		const foundParticipant = this.getItemIfStringEqualToKeyValue(
-			userID,
-			PARTICIPANT_KEYS.userID,
-		);
-		if (!foundParticipant) {
-			console.warn("Trying to update the cpm of a non-existent participant.");
-			return undefined;
-		}
-
-		foundParticipant.value.cpm = cpm;
-		return foundParticipant.value;
-	}
-
-	updateTotalErrors(
-		userID: string,
-		totalErrors: number,
-	): Participant | undefined {
-		const foundParticipant = this.getItemIfStringEqualToKeyValue(
-			userID,
-			PARTICIPANT_KEYS.userID,
-		);
-		if (!foundParticipant) {
-			console.warn(
-				"Trying to update the total errors of a non-existent participant.",
-			);
-			return undefined;
-		}
-
-		foundParticipant.value.totalErrors = totalErrors;
-		return foundParticipant.value;
-	}
-
 	/** We update this when user finishes the snippet */
 	updateTimeTaken(userID: string, timeTaken: number): Participant | undefined {
 		const foundParticipant = this.getItemIfStringEqualToKeyValue(
@@ -102,9 +52,6 @@ class ParticipantMemoryStore extends LinkedListMemory<
 		return foundParticipant.value;
 	}
 
-	/** to avoid repeated loops when
-	 *  updating cpm, accuracy, & totalErrors
-	 */
 	updateTimeStamp(
 		userID: string,
 		timeStamp: TimeStampType,
@@ -120,9 +67,7 @@ class ParticipantMemoryStore extends LinkedListMemory<
 			return undefined;
 		}
 
-		foundParticipant.value.cpm = timeStamp.cpm;
-		foundParticipant.value.accuracy = timeStamp.accuracy;
-		foundParticipant.value.totalErrors = timeStamp.errors;
+		foundParticipant.value.timeStamp.push(timeStamp);
 		return foundParticipant.value;
 	}
 
@@ -155,11 +100,9 @@ class ParticipantMemoryStore extends LinkedListMemory<
 				userID: currentNode.value.userID,
 				displayImage: currentNode.value.displayImage,
 				displayName: currentNode.value.displayName,
-				cpm: currentNode.value.cpm,
-				accuracy: currentNode.value.accuracy,
+				timeStamp: currentNode.value.timeStamp,
 				progress: currentNode.value.progress,
 				timeTaken: currentNode.value.timeTaken,
-				totalErrors: currentNode.value.totalErrors,
 				isFinished: currentNode.value.isFinished,
 			});
 			currentNode = currentNode.next;
@@ -180,11 +123,9 @@ class ParticipantMemoryStore extends LinkedListMemory<
 				userID: currentNode.value.userID,
 				displayImage: currentNode.value.displayImage,
 				displayName: currentNode.value.displayName,
-				cpm: currentNode.value.cpm,
-				accuracy: currentNode.value.accuracy,
+				timeStamp: currentNode.value.timeStamp,
 				progress: currentNode.value.progress,
 				timeTaken: currentNode.value.timeTaken,
-				totalErrors: currentNode.value.totalErrors,
 				isFinished: currentNode.value.isFinished,
 			});
 			currentNode = currentNode.next;
@@ -193,15 +134,18 @@ class ParticipantMemoryStore extends LinkedListMemory<
 		return participants;
 	}
 
-	getAllParticipantsProgressExcept(
-		userID: string,
+	/** Provide a userID if you want to exclude a user */
+	getAllParticipantsProgress(
+		userID?: string,
 	): Array<ParticipantsProgressPayload> {
 		let currentNode = this.getItemAt(0);
 		const participants = new Array<ParticipantsProgressPayload>();
 
 		for (let idx = 0; currentNode && idx < this.length; ++idx) {
-			if (currentNode.value.userID === userID) {
-				continue;
+			if (userID) {
+				if (currentNode.value.userID === userID) {
+					continue;
+				}
 			}
 			participants.push({
 				userID: currentNode.value.userID,
