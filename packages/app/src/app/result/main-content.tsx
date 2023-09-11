@@ -12,6 +12,7 @@ import { SESSION_STORAGE_KEY_TIMESTAMP } from "@/app/race/_components/practice/r
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import LikeDislikeSnippet from "./_components/like-dislike-snippet";
+import { useSession } from "next-auth/react";
 
 const Result = dynamic(() => import("./_components/result"), {
   ssr: false,
@@ -46,6 +47,7 @@ const MainContent: NextPage = () => {
   const [snippetID, setSnippetID] = React.useState("");
 
   const router = useRouter();
+  const { data } = useSession();
 
   React.useEffect(() => {
     if (!sessionStorage) {
@@ -82,9 +84,9 @@ const MainContent: NextPage = () => {
           >
             Practice With This Snippet Again
           </Button>
-          <div>
+          {data && <div>
             <LikeDislikeSnippet snippetId={snippetID} />
-          </div>
+          </div>}
         </div>
         <nav className="w-fit">
           <ul className="dark:bg-secondary/20 rounded-lg p-1 flex items-center gap-1">
