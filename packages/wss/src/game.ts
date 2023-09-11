@@ -282,7 +282,7 @@ class TypingGame implements Game {
 		roomID,
 	}: UpdateProgressPayload): void {
 		const foundRunningRoom = this.memory.findRunningGame(roomID);
-
+		console.log("USERID",userID);
 		if (!foundRunningRoom) {
 			console.warn(
 				"Could not find a running room! Trying to update a user progress on a room that does not exist.",
@@ -412,6 +412,7 @@ class TypingGame implements Game {
 
 			if (!foundExistingRunningGame) {
 				const players = foundRoom.participants.getAllUsers();
+				console.log("STARTING_GAME", players);
 
 				const runningGameParticipants = new ParticipantMemoryStore();
 
@@ -565,6 +566,7 @@ class TypingGame implements Game {
 				title: "Server Full!",
 				description:
 					"The server is full of rooms right now. Please try again later.",
+				variant: "destructive"
 			});
 			return;
 		}

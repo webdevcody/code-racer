@@ -11,9 +11,10 @@ import { FALLBACK_IMG, RANDOM_USERNAME } from "@/config/consts";
 
 type Props = {
   image: string | null | undefined;
+  sessionID: string | null | undefined;
 };
 
-export const JoinRoomForm: React.FC<Props> = React.memo(({ image }) => {
+export const JoinRoomForm: React.FC<Props> = React.memo(({ sessionID, image }) => {
   const [roomID, setRoomID] = React.useState("");
   const [username, setUsername] = React.useState("");
   const [error, setError] = React.useState("");
@@ -27,7 +28,7 @@ export const JoinRoomForm: React.FC<Props> = React.memo(({ image }) => {
       return;
     }
     connectToSocket({
-      userID: socket.id,
+      userID: sessionID ?? socket.id,
       displayName: username ?? RANDOM_USERNAME,
       displayImage: image ?? FALLBACK_IMG,
     });

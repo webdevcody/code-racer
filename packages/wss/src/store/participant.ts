@@ -24,7 +24,7 @@ class ParticipantMemoryStore extends LinkedListMemory<
 			);
 			return undefined;
 		}
-
+		
 		if (amount >= MAX_TRACKER_POSITION) {
 			foundParticipant.value.progress = MAX_TRACKER_POSITION;
 		} else {
