@@ -91,7 +91,7 @@ const useHandleRooms = ({ session, roomID }: Props) => {
       connectToSocket({
         userID: session?.id,
         displayImage: session?.image ?? FALLBACK_IMG,
-        displayName: session?.name ?? displayName ?? RANDOM_USERNAME,
+        displayName: displayName ?? session?.name ?? RANDOM_USERNAME,
       });
       dispatch({ type: "change_socket_connection_state", payload: true });
     }

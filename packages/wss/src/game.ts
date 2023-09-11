@@ -128,7 +128,7 @@ class TypingGame implements Game {
 				this.handleRequestRunningGameInformation(socket, roomID),
 			);
 			socket.on("RequestAllPlayersProgress", (roomID) =>
-				this.handleRequestAllPlayersProgress(socket, roomID),
+				this.handleRequestAllPlayersProgress(socket, roomID)
 			);
 
 			socket.on("SendUserProgress", this.handleSendUserProgress);
@@ -150,7 +150,7 @@ class TypingGame implements Game {
 			return;
 		}
 
-		socket
+		this.server
 			.to(roomID)
 			.emit(
 				"SendAllPlayersProgress",
@@ -177,7 +177,7 @@ class TypingGame implements Game {
 		foundRunningRoom.participants.updateTimeTaken(userID, timeTaken);
 
 		const RACE_FINISHED =
-			foundRunningRoom.participants.checkIfAllParticipantsHavFinished();
+			foundRunningRoom.participants.checkIfAllParticipantsHaveFinished();
 
 		if (RACE_FINISHED) {
 			const foundRoom = this.memory.findRoomByRoomID(roomID);
@@ -191,7 +191,7 @@ class TypingGame implements Game {
 
 			if (!foundRoom.startedAt) {
 				console.warn(
-					"Error! A room's key of 'startedAt' does not have a value.",
+					"Error! A room's key of 'startedAt' does not have a value even though it has finished.",
 				);
 			}
 
@@ -328,9 +328,14 @@ class TypingGame implements Game {
 
 		if (RESETTING_GAME) {
 			if (foundRoom.gameStatus === RACE_STATUS.RUNNING) {
+				console.log("--- BEFORE REMOVING RUNNING GAME ---");
+				console.log(this.memory);
 				const foundRunningRoom = this.memory.removeRunningGame(
 					foundRoom.roomID,
 				);
+
+				console.log("--- AFTER REMOVING RUNNING GAME ---");
+				console.log(this.memory);
 				if (!foundRunningRoom) {
 					console.warn(
 						"Failed to remove a running game when resetting a room's state! Memory handling error.",
@@ -480,7 +485,8 @@ class TypingGame implements Game {
 			console.warn(
 				"userID is not provided! Please provide it to create a room.",
 			);
-			socket.emit("SendError", new Error("Something went wrong."));
+			const error = new Error("Something went wrong.");
+			socket.emit("SendError", error);
 			return;
 		}
 
@@ -494,6 +500,11 @@ class TypingGame implements Game {
 			});
 			return;
 		}
+
+		socket.emit("SendNotification", {
+			title: "Creating Room",
+			description: "Your room is being created..."
+		});
 
 		const snippet = await getRandomSnippet({ language });
 

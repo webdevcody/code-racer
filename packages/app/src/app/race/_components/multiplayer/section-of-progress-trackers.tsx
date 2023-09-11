@@ -8,7 +8,7 @@ import ProgressTracker from "../common/progress-tracker";
 
 type Props = {
   roomID: string;
-};
+}
 
 const SectionOfProgressTrackers: React.FC<Props> = React.memo(({ roomID }) => {
   const [allPlayerProgress, setAllPlayerProgress] = React.useState<
@@ -17,20 +17,35 @@ const SectionOfProgressTrackers: React.FC<Props> = React.memo(({ roomID }) => {
 
   const handleUpdatePlayersProgress = React.useCallback(
     (payload: Array<ParticipantsProgressPayload>) => {
-      setAllPlayerProgress(payload);
+      setAllPlayerProgress((currentState) => {
+        if (currentState.length === 0) {
+          return payload;
+        } else {
+          for (let idx = 0; idx < currentState.length; ++idx) {
+            for (let j = 0; j < payload.length; ++j) {
+              if (currentState[idx].userID === payload[j].userID) {
+                currentState[idx].progress = payload[j].progress;
+              }
+            }
+          }
+
+          return currentState;
+        }
+      });
     },
     []
   );
 
+  const timerRef = React.useRef<NodeJS.Timer | undefined>();
+
   React.useEffect(() => {
-    if (!roomID) {
-      return;
+    if (roomID) {
+      timerRef.current = setInterval(() => {
+        socket.emit("RequestAllPlayersProgress", roomID);
+      }, 100);
     }
-    const timeout = setTimeout(() => {
-      socket.emit("RequestAllPlayersProgress", roomID);
-    }, 50);
     return () => {
-      clearTimeout(timeout);
+      clearInterval(timerRef.current);
     };
   }, [roomID]);
 
@@ -42,16 +57,20 @@ const SectionOfProgressTrackers: React.FC<Props> = React.memo(({ roomID }) => {
   }, [handleUpdatePlayersProgress]);
 
   return (
-    <TrackerContainer
-      currentPlayer={{
-        displayImage: allPlayerProgress[0].displayImage,
-        displayName: allPlayerProgress[0].displayName,
-        userID: allPlayerProgress[0].userID,
-        progress: allPlayerProgress[0].progress,
-      }}
-      listOfPlayers={allPlayerProgress}
-      amountInRecursion={0}
-    />
+    <React.Fragment>
+      {allPlayerProgress.length > 0 && (
+        <TrackerContainer
+          currentPlayer={{
+            displayImage: allPlayerProgress[0].displayImage,
+            displayName: allPlayerProgress[0].displayName,
+            userID: allPlayerProgress[0].userID,
+            progress: allPlayerProgress[0].progress,
+          }}
+          listOfPlayers={allPlayerProgress}
+          amountInRecursion={0}
+        />
+      )}
+    </React.Fragment>
   );
 });
 
@@ -70,7 +89,7 @@ const TrackerContainer: React.FC<{
           progress={currentPlayer.progress}
         />
       </div>
-      {amountInRecursion < listOfPlayers.length && (
+      {amountInRecursion < listOfPlayers.length - 1 && (
         <TrackerContainer
           currentPlayer={{
             displayImage: listOfPlayers[amountInRecursion + 1].displayImage,

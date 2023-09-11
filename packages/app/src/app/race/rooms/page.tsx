@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import type {
   Participant,
   ParticipantInformation,
-} from "@code-racer/wss/src/new-game";
+} from "@code-racer/wss/src/store/types";
 
 import React from "react";
 

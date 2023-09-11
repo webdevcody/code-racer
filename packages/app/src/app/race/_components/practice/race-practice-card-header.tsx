@@ -1,7 +1,7 @@
 "use client";
 
 import type { Language } from "@/config/languages";
-import type { CustomSnippet } from "@code-racer/wss/src/new-game";
+import type { CustomSnippet } from "@code-racer/wss/src/store/types";
 
 import React from "react";
 

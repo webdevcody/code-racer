@@ -17,7 +17,7 @@ import { FALLBACK_IMG, RANDOM_USERNAME } from "@/config/consts";
 export const CreateRoomForm: React.FC<RoomProps> = React.memo(({ session }) => {
   const [language, setLanguage] = React.useState<LanguageType | undefined>();
   const [error, setError] = React.useState("");
-
+  const [didSubmit, setDidSubmit] = React.useState(false);
   const router = useRouter();
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -26,20 +26,33 @@ export const CreateRoomForm: React.FC<RoomProps> = React.memo(({ session }) => {
       setError("Please choose a language.");
       return;
     }
+    connectToSocket({
+      userID: session?.id ?? socket.id,
+      displayName: session?.name ?? RANDOM_USERNAME,
+      displayImage: FALLBACK_IMG,
+    });
+    /** workaround to socket.id being undefined when socket is not connected. */
+    setDidSubmit(true);
+  };
 
-    if (!socket.connected) {
-      connectToSocket({
-        userID: session?.id,
-        displayName: session?.name ?? RANDOM_USERNAME,
-        displayImage: session?.image ?? FALLBACK_IMG,
+  const submit = React.useCallback(() => {
+    if (language) {
+      socket.emit("CreateRoom", {
+        userID: session?.id ?? socket.id,
+        language,
       });
     }
+  }, [session, language]);
 
-    socket.emit("CreateRoom", {
-      userID: session?.id ?? socket.id,
-      language,
-    });
-  };
+  React.useEffect(() => {
+    if (!didSubmit) {
+      return;
+    }
+    socket.on("connect", submit);
+    return () => {
+      socket.off("connect", submit);
+    }
+  }, [didSubmit, submit]);
 
   React.useEffect(() => {
     const handleRoomCreation = ({ roomID }: SendRoomIDPayload) => {

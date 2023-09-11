@@ -89,10 +89,11 @@ class LinkedListMemory<T, K extends keyof T>
 
 	private removeNode(item: T | string, key: K): Node<T> | undefined {
 		if (this.length === 1) {
+			const tmp = this.head;
 			this.length = this.length - 1;
 			this.tail = undefined;
 			this.head = undefined;
-			return;
+			return tmp;
 		}
 
 		let currentNode = this.head;

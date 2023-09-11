@@ -91,7 +91,7 @@ const RacePracticeCard: React.FC<Props> = React.memo(({ session, snippet }) => {
             })
           );
 
-          if (session) {
+          if (session?.id) {
             saveUserResultAction({
               timeTaken: state.totalTime,
               errors: state.totalErrors,
@@ -101,11 +101,11 @@ const RacePracticeCard: React.FC<Props> = React.memo(({ session, snippet }) => {
                 state.totalErrors
               ).toFixed(2),
               snippetId: state.snippet.id,
-            })
-              .then(() => {
-                router.replace("/result");
-              })
-              .catch(catchError);
+            }).then(() => {
+              router.replace("/result");
+            }).catch(catchError);
+          } else {
+            router.replace("/result");
           }
         });
       }
@@ -118,7 +118,7 @@ const RacePracticeCard: React.FC<Props> = React.memo(({ session, snippet }) => {
     state.totalTime,
     code,
     router,
-    session,
+    session?.id,
     transition,
   ]);
 

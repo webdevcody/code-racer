@@ -1,9 +1,10 @@
 import type { Participant, TimeStampType } from "./types";
-import type { ParticipantsProgressPayload } from "@/events/server-to-client";
+import type { ParticipantsProgressPayload } from "../events/server-to-client";
 import { PARTICIPANT_KEYS } from "../consts";
 import LinkedListMemory from "./data-structure";
 
-import { MAX_TRACKER_POSITION } from "@code-racer/app/src/app/race/_utils/useHandleRaceEvents";
+
+const MAX_TRACKER_POSITION = 100;
 
 class ParticipantMemoryStore extends LinkedListMemory<
 	Participant,
@@ -125,7 +126,7 @@ class ParticipantMemoryStore extends LinkedListMemory<
 		return foundParticipant.value;
 	}
 
-	checkIfAllParticipantsHavFinished(): boolean {
+	checkIfAllParticipantsHaveFinished(): boolean {
 		let currentNode = this.getItemAt(0);
 
 		for (let idx = 0; currentNode && idx < this.length; ++idx) {

@@ -33,9 +33,9 @@ export default async function PracticeRacePage({
   if (searchParams.snippetId && typeof searchParams.snippetId === "string") {
     snippet = await getSnippetById(searchParams.snippetId);
   } else if (searchParams.lang) {
-    const language = searchParams.lang;
+    const language = languageTypes.parse(searchParams.lang);
     snippet = await getRandomSnippet({
-      language: languageTypes.parse(language),
+      language: language,
     });
   }
 
@@ -70,16 +70,19 @@ export default async function PracticeRacePage({
                 description="No snippet exists for this specific snippetID or language. Maybe try creating one?"
               />
             </div>
-            <Link
-              href={
-                "/add-snippet?" +
-                (searchParams.lang
-                  ? `lang=${encodeURIComponent(searchParams.lang)}`
-                  : `snippetId=${encodeURIComponent(searchParams.snippetId)}`)
-              }
-            >
-              Create one now
-            </Link>
+            <div className="mt-4">
+              <Link
+                className="py-2 px-4 rounded-md bg-secondary hover:bg-secondary/80 text-secondary-foreground"
+                href={
+                  "/add-snippet?" +
+                  (searchParams.lang
+                    ? `lang=${encodeURIComponent(searchParams.lang)}`
+                    : `snippetId=${encodeURIComponent(searchParams.snippetId)}`)
+                }
+              >
+                Create one now
+              </Link>
+            </div>
           </div>
         )}
 

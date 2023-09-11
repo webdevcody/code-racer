@@ -20,21 +20,21 @@ export type ChangeGameStatusOfRoomPayload = {
 type UpdatePayload = {
 	userID: string;
 	roomID: string;
-};
+}
 
 export type UpdateTimeStampPayload = {
 	cpm: number;
 	totalErrors: number;
 	accuracy: number;
-} & UpdatePayload;
+} & UpdatePayload
 
 export type UpdateProgressPayload = {
 	progress: number;
-} & UpdatePayload;
+} & UpdatePayload
 
 export type SendUserHasFinishedPayload = {
 	timeTaken: number;
-} & UpdatePayload;
+} & UpdatePayload
 
 export interface ClientToServerEvents {
 	CreateRoom: (_payload: CreateRoomPayload) => void;
