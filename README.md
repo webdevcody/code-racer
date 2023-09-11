@@ -93,6 +93,7 @@ Happy coding and enjoy the race!
 4. [You need to write tests when this starts to happen](https://www.youtube.com/watch?v=PzrhclEQp-M)
 5. [CodeRacer had a major security issue](https://www.youtube.com/watch?v=FigpqBGqwK4)
 6. [Stop calling prisma inside server components](https://www.youtube.com/watch?v=sLIoCfKK5SA)
+7. [Working on our Community Project Code Racer (Next, Tailwind, ShadCN/UI, Prisma)](https://www.youtube.com/watch?v=n1Q8AMgN-Bo)
 
 <details>
   <summary>
