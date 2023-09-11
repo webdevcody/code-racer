@@ -13,12 +13,18 @@ import TypingCard from "../common/typing-card";
 const RowLineTracker = dynamic(() => import("../common/row-line-tracker"), {
   ssr: false,
 });
-const SectionOfProgressTrackers = dynamic(() => import("./section-of-progress-trackers"), {
-  ssr: false
-});
-const UserFinishedWaitingScreen = dynamic(() => import("./user-finished-waiting-screen"), {
-  ssr: false
-});
+const SectionOfProgressTrackers = dynamic(
+  () => import("./section-of-progress-trackers"),
+  {
+    ssr: false,
+  }
+);
+const UserFinishedWaitingScreen = dynamic(
+  () => import("./user-finished-waiting-screen"),
+  {
+    ssr: false,
+  }
+);
 
 type Props = {
   roomID: string;
@@ -36,9 +42,15 @@ const RaceMultiplayerCard: React.FC<Props> = React.memo(
       typingProgress,
       currentLineNumber,
       amountOfLineBreaks,
+      startTimer,
     } = useHandleRaceEvents();
 
     const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
+
+    /** Start the timer on page load */
+    React.useEffect(() => {
+      startTimer();
+    }, [startTimer]);
 
     /** Get snippet once */
     React.useEffect(() => {
@@ -123,7 +135,6 @@ const RaceMultiplayerCard: React.FC<Props> = React.memo(
             )}
 
             {state.snippet && (
-
               <React.Fragment>
                 <section className="pb-4">
                   <h2 className="sr-only">
@@ -154,14 +165,18 @@ const RaceMultiplayerCard: React.FC<Props> = React.memo(
                   </p>
                 )}
 
-                <div className="text-sm lg:text-base">
-                  Elapsed time: {state.totalTime} seconds
-                </div>
+                {state.totalTime > 0 && (
+                  <div className="text-sm lg:text-base pl-2 mt-4">
+                    Elapsed time: {state.totalTime} seconds
+                  </div>
+                )}
               </React.Fragment>
             )}
           </div>
         )}
-        {isUserFinished && <UserFinishedWaitingScreen session={session} />}
+        {isUserFinished && (
+          <UserFinishedWaitingScreen roomID={roomID} session={session} />
+        )}
       </React.Fragment>
     );
   }

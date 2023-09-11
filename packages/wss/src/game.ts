@@ -3,6 +3,7 @@ import type {
 	Game,
 	GameMemoryStoreInterface,
 	MiddlewareAuth,
+	Room,
 	RunningGameInformation,
 } from "./store/types";
 import type {
@@ -128,22 +129,67 @@ class TypingGame implements Game {
 				this.handleRequestRunningGameInformation(socket, roomID),
 			);
 			socket.on("RequestAllPlayersProgress", (roomID) =>
-				this.handleRequestAllPlayersProgress(roomID)
+				this.handleRequestAllPlayersProgress(roomID),
+			);
+			socket.on("RequestFinishedGame", (roomID) =>
+				this.handleRequestFinishedGame(roomID),
 			);
 
 			/** Leave it as an arrow function since this.memory will be
 			 *  undefined if we just place the function as the 2nd parameter.
 			 */
-			socket.on("SendUserProgress", ({ userID, roomID, progress }) => this.handleSendUserProgress({ userID, roomID, progress }));
-			socket.on("SendUserTimeStamp", ({ userID, roomID, accuracy, cpm, totalErrors }) => this.handleSendUserTimeStamp(socket, { userID, roomID, accuracy, cpm, totalErrors }));
-			socket.on("SendUserHasFinished", ({ userID, roomID, timeTaken }) => this.handleSendUserHasFinished({ userID, roomID, timeTaken }));
+			socket.on("SendUserProgress", ({ userID, roomID, progress }) =>
+				this.handleSendUserProgress({ userID, roomID, progress }),
+			);
+			socket.on(
+				"SendUserTimeStamp",
+				({ userID, roomID, accuracy, cpm, totalErrors }) =>
+					this.handleSendUserTimeStamp({
+						userID,
+						roomID,
+						accuracy,
+						cpm,
+						totalErrors,
+					}),
+			);
+			socket.on("SendUserHasFinished", ({ userID, roomID, timeTaken }) =>
+				this.handleSendUserHasFinished({ userID, roomID, timeTaken }),
+			);
+		});
+	}
+
+	private handleRequestFinishedGame(roomID: string): void {
+		const foundRunningRoom = this.memory.findRunningGame(roomID);
+
+		if (!foundRunningRoom) {
+			console.warn(
+				"Could not find a running room! Trying to get a running game that just finished on a room that does not exist.",
+			);
+			return;
+		}
+
+		if (!foundRunningRoom.startedAt) {
+			console.warn(
+				"Error! A room's key of 'startedAt' does not have a value even though it has finished.",
+			);
+		}
+
+		if (!foundRunningRoom.endedAt) {
+			console.warn(
+				"Error! A room's key of 'endedAt' does not have a value even though it has finished.",
+			);
+		}
+
+		this.server.to(roomID).emit("GameFinished", {
+			endedAt: foundRunningRoom.endedAt ?? new Date(),
+			startedAt: foundRunningRoom.startedAt as Date,
+			roomID: roomID,
+			participants: foundRunningRoom.participants.getAllParticipants(),
 		});
 	}
 
 	/** ON PAGE LOAD (we load all the progress trackers) */
-	private handleRequestAllPlayersProgress(
-		roomID: string,
-	): void {
+	private handleRequestAllPlayersProgress(roomID: string): void {
 		const foundRunningRoom = this.memory.findRunningGame(roomID);
 
 		if (!foundRunningRoom) {
@@ -157,7 +203,7 @@ class TypingGame implements Game {
 			.to(roomID)
 			.emit(
 				"SendAllPlayersProgress",
-				foundRunningRoom.participants.getAllParticipantsProgress()
+				foundRunningRoom.participants.getAllParticipantsProgress(),
 			);
 	}
 
@@ -191,34 +237,25 @@ class TypingGame implements Game {
 				return;
 			}
 
-			if (!foundRoom.startedAt) {
+			if (!foundRunningRoom.startedAt) {
 				console.warn(
 					"Error! A room's key of 'startedAt' does not have a value even though it has finished.",
 				);
 			}
 
-			foundRoom.endedAt = new Date();
+			foundRunningRoom.endedAt = new Date();
 			foundRoom.gameStatus = RACE_STATUS.FINISHED;
 			this.server.to(roomID).emit("SendGameStatusOfRoom", foundRoom.gameStatus);
-			this.server.to(roomID).emit("GameFinished", {
-				endedAt: foundRoom.endedAt,
-				startedAt: foundRoom.startedAt as Date,
-				roomID: roomID,
-				participants: foundRunningRoom.participants.getAllParticipants(),
-			});
-			this.memory.removeRunningGame(foundRoom.roomID);
 		}
 	}
 
-	private handleSendUserTimeStamp(
-		socket: Socket<ClientToServerEvents, ServerToClientEvents>,
-		{
-			userID,
-			roomID,
-			cpm,
-			accuracy,
-			totalErrors,
-		}: UpdateTimeStampPayload): void {
+	private handleSendUserTimeStamp({
+		userID,
+		roomID,
+		cpm,
+		accuracy,
+		totalErrors,
+	}: UpdateTimeStampPayload): void {
 		const foundRunningRoom = this.memory.findRunningGame(roomID);
 
 		if (!foundRunningRoom) {
@@ -239,12 +276,11 @@ class TypingGame implements Game {
 		});
 	}
 
-	private handleSendUserProgress(
-		{
-			userID,
-			progress,
-			roomID,
-		}: UpdateProgressPayload): void {
+	private handleSendUserProgress({
+		userID,
+		progress,
+		roomID,
+	}: UpdateProgressPayload): void {
 		const foundRunningRoom = this.memory.findRunningGame(roomID);
 
 		if (!foundRunningRoom) {
@@ -255,7 +291,12 @@ class TypingGame implements Game {
 		}
 
 		foundRunningRoom.participants.updateProgress(userID, progress);
-		this.server.to(roomID).emit("SendAllPlayersProgress", foundRunningRoom.participants.getAllParticipantsProgress());
+		this.server
+			.to(roomID)
+			.emit(
+				"SendAllPlayersProgress",
+				foundRunningRoom.participants.getAllParticipantsProgress(),
+			);
 	}
 
 	/** Skip over to the socket that requested this
@@ -277,11 +318,9 @@ class TypingGame implements Game {
 			return;
 		}
 
-		socket.broadcast.to(roomID).emit("SendRunningGameInformation", {
+		this.server.to(roomID).emit("SendRunningGameInformation", {
 			roomID: roomID,
-			participants: foundRunningRoom.participants.getAllParticipantsExcept(
-				socket.userID,
-			),
+			participants: foundRunningRoom.participants.getAllParticipants(),
 		});
 	}
 
@@ -335,11 +374,10 @@ class TypingGame implements Game {
 
 		const RESETTING_GAME =
 			foundRoom.gameStatus !== RACE_STATUS.WAITING &&
-			foundRoom.gameStatus !== RACE_STATUS.FINISHED &&
 			raceStatus === RACE_STATUS.WAITING;
 
 		if (RESETTING_GAME) {
-			if (foundRoom.gameStatus === RACE_STATUS.RUNNING) {
+			if (foundRoom.gameStatus === RACE_STATUS.RUNNING || foundRoom.gameStatus === RACE_STATUS.FINISHED) {
 				console.log("--- BEFORE REMOVING RUNNING GAME ---");
 				console.log(this.memory);
 				const foundRunningRoom = this.memory.removeRunningGame(
@@ -355,10 +393,17 @@ class TypingGame implements Game {
 				}
 			}
 
-			this.server.to(roomID).emit("SendNotification", {
-				title: "Resetting Game",
-				description: "Resetting the game since you are the only player left.",
-			});
+			if (foundRoom.participants.length <= 1) {
+				this.server.to(roomID).emit("SendNotification", {
+					title: "Resetting Game",
+					description: "Resetting the game since you are the only player left.",
+				});
+			} else {
+				this.server.to(roomID).emit("SendNotification", {
+					title: "Resetting Game",
+					description: "Let the games begin once again!",
+				});
+			}
 		}
 
 		const GAME_STARTS = raceStatus === "running";
@@ -366,7 +411,6 @@ class TypingGame implements Game {
 			const foundExistingRunningGame = this.memory.findRunningGame(roomID);
 
 			if (!foundExistingRunningGame) {
-				foundRoom.startedAt = new Date();
 				const players = foundRoom.participants.getAllUsers();
 
 				const runningGameParticipants = new ParticipantMemoryStore();
@@ -386,6 +430,8 @@ class TypingGame implements Game {
 				const activeRoom = {
 					roomID: foundRoom.roomID,
 					participants: runningGameParticipants,
+					startedAt: new Date(),
+					endedAt: null,
 				} satisfies RunningGameInformation;
 
 				this.memory.addRunningGame(activeRoom);
@@ -438,7 +484,8 @@ class TypingGame implements Game {
 		if (foundRoom.gameStatus === RACE_STATUS.FINISHED) {
 			socket.emit("SendNotification", {
 				title: "Room Is Not Accepting Players!",
-				description: "The race for this room has just finished. Please wait for the owner to change the room's state to waiting again."
+				description:
+					"The race for this room has just finished. Please wait for the owner to change the room's state to waiting again.",
 			});
 			return;
 		}
@@ -524,7 +571,7 @@ class TypingGame implements Game {
 
 		socket.emit("SendNotification", {
 			title: "Creating Room",
-			description: "Your room is being created..."
+			description: "Your room is being created...",
 		});
 
 		const snippet = await getRandomSnippet({ language });
@@ -568,14 +615,12 @@ class TypingGame implements Game {
 				code: snippet.code,
 				language,
 			},
-			startedAt: null,
-			endedAt: null,
 			createdAt: new Date(),
 			roomOwnerID: userSession.userID,
 			roomID,
 			participants: UserSessioMemoryForRoom,
 			gameStatus: RACE_STATUS.WAITING,
-		};
+		} satisfies Room;
 
 		this.memory.addRoom(room);
 		socket.emit("SendNotification", {
@@ -614,7 +659,6 @@ class TypingGame implements Game {
 
 			if (ROOM_EXISTS) {
 				const firstPlayer = ROOM_EXISTS.participants.getItemAt(0);
-				console.log(firstPlayer?.value);
 				if (firstPlayer) {
 					ROOM_EXISTS.roomOwnerID = firstPlayer.value.userID;
 					this.server

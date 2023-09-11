@@ -180,6 +180,10 @@ export const useHandleRaceEvents = () => {
     [state.displayedErrorMessage, code, changeTimeStamps]
   );
 
+  const startTimer = React.useCallback(() => {
+    dispatch({ type: "set_start_time" });
+  }, []);
+
   /** Responsible for:
    *  1. Escape key (Restart [In multiplayer race, this must be disabled to allow fairness.])
    *  2. Enter key
@@ -190,7 +194,7 @@ export const useHandleRaceEvents = () => {
       const USER_STARTED_TYPING = !state.input && !state.startTime;
 
       if (USER_STARTED_TYPING) {
-        dispatch({ type: "set_start_time" });
+        startTimer();
       }
 
       if (noopKeys.includes(e.key)) {
@@ -224,7 +228,7 @@ export const useHandleRaceEvents = () => {
           break;
       }
     },
-    [state.input, state.startTime, code, changeTimeStamps]
+    [state.input, state.startTime, code, changeTimeStamps, startTimer]
   );
 
   const handleChangeSnippet = React.useCallback((snippet: CustomSnippet) => {
@@ -259,5 +263,6 @@ export const useHandleRaceEvents = () => {
     handleKeyDownEvent,
     handleChangeSnippet,
     handleReset,
+    startTimer,
   };
 };

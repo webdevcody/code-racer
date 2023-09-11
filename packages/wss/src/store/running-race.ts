@@ -1,4 +1,8 @@
-import type { Participant, RunningGameInformation, TimeStampType } from "./types";
+import type {
+	Participant,
+	RunningGameInformation,
+	TimeStampType,
+} from "./types";
 import LinkedListMemory from "./data-structure";
 import { RUNNING_RACE_KEYS } from "../consts";
 
@@ -57,13 +61,13 @@ class RunningTypingGameMemoryStore extends LinkedListMemory<
 	updateTimeStampOfParticipant(
 		roomID: string,
 		userID: string,
-		timeStamp: TimeStampType
+		timeStamp: TimeStampType,
 	): Participant | undefined {
 		const foundRunningRoom = this.getRunningGame(roomID);
 
 		if (!foundRunningRoom) {
 			console.warn(
-				"Trying to update the timestamp of a participant in a room that has not started yet! It does not exist in the memory of running/ongoing races."
+				"Trying to update the timestamp of a participant in a room that has not started yet! It does not exist in the memory of running/ongoing races.",
 			);
 			return;
 		}

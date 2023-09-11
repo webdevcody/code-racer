@@ -26,7 +26,7 @@ type Props = {
 } & RoomProps;
 
 export const ClientRoom: React.FC<Props> = React.memo(({ session, roomID }) => {
-  const { state, changeGameStatus, IS_PLAYER_CURRENT_USER } = useHandleRooms({
+  const { state, changeGameStatus, IS_PLAYER_CURRENT_ROOM_OWNER } = useHandleRooms({
     session,
     roomID,
   });
@@ -40,13 +40,13 @@ export const ClientRoom: React.FC<Props> = React.memo(({ session, roomID }) => {
         </div>
       )}
 
-      <div className="flex flex-col md:flex-row gap-12">
+      <div className="flex flex-col lg:flex-row gap-12">
         {state.shouldRenderRoom && (
           <React.Fragment>
             <GameScreen
               roomID={roomID}
               amountOfPlayers={state.listOfPlayers.length}
-              IS_PLAYER_CURRENT_USER={IS_PLAYER_CURRENT_USER}
+              IS_PLAYER_CURRENT_ROOM_OWNER={IS_PLAYER_CURRENT_ROOM_OWNER}
               gameStatus={state.gameStatus}
               changeGameState={changeGameStatus}
               session={session}
@@ -54,7 +54,7 @@ export const ClientRoom: React.FC<Props> = React.memo(({ session, roomID }) => {
             <ListOfPlayers
               roomOwnerID={state.roomOwnerID}
               listOfPlayers={state.listOfPlayers}
-              IS_PLAYER_CURRENT_USER={IS_PLAYER_CURRENT_USER}
+              session={session}
             />
           </React.Fragment>
         )}

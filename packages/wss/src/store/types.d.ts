@@ -67,7 +67,7 @@ export interface GameMemoryStoreInterface {
 	updateTimeStampOfParticipant(
 		_roomID: string,
 		_userID: string,
-		_timeStamp: TimeStampType
+		_timeStamp: TimeStampType,
 	): Participant | undefined;
 	removeParticipantFromRunningRace(
 		_roomID: string,
@@ -106,6 +106,8 @@ export type RunningGameInformationPayload = {
 };
 
 export type RunningGameInformation = {
+	startedAt: Date | null;
+	endedAt: Date | null;
 	roomID: string;
 	participants: ParticipantMemoryStore;
 };
@@ -123,8 +125,6 @@ export type Room = {
 	roomID: string;
 	snippet: CustomSnippet;
 	createdAt: Date | null;
-	startedAt: Date | null;
-	endedAt: Date | null;
 	gameStatus: RaceStatus;
 };
 

@@ -28,7 +28,7 @@ const useHandleRooms = ({ session, roomID }: Props) => {
 
   const searchParams = useSearchParams();
 
-  const IS_PLAYER_CURRENT_USER = React.useMemo(
+  const IS_PLAYER_CURRENT_ROOM_OWNER = React.useMemo(
     () => session?.id === state.roomOwnerID || socket.id === state.roomOwnerID,
     [session?.id, state.roomOwnerID]
   );
@@ -73,7 +73,9 @@ const useHandleRooms = ({ session, roomID }: Props) => {
       if (roomID) {
         /** Let the owner manually change the state of the room to wating if the game in a room finished */
         const GAME_STARTED_AND_PLAYERS_LEFT_WITH_ONE_PLAYER_REMAINING =
-          players.length <= 1 && state.gameStatus !== "waiting" && state.gameStatus !== "finished";
+          players.length <= 1 &&
+          state.gameStatus !== "waiting" &&
+          state.gameStatus !== "finished";
 
         if (GAME_STARTED_AND_PLAYERS_LEFT_WITH_ONE_PLAYER_REMAINING) {
           changeGameStatus("waiting");
@@ -132,7 +134,7 @@ const useHandleRooms = ({ session, roomID }: Props) => {
 
   return {
     state,
-    IS_PLAYER_CURRENT_USER,
+    IS_PLAYER_CURRENT_ROOM_OWNER,
     changeGameStatus,
   };
 };

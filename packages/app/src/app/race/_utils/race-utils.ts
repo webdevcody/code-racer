@@ -1,3 +1,5 @@
+import { TimeStampType } from "@code-racer/wss/src/store/types";
+
 export const noopKeys = [
   "Alt",
   "ArrowUp",
@@ -53,4 +55,31 @@ export function calculateAccuracy(
     }
     return accuracy;
   }
+}
+
+export function calculateAvgInTimeStamp(
+  timeStamp: TimeStampType[]
+): TimeStampType {
+  let avgAccuracy = 0;
+  let avgCpm = 0;
+  let averageErrors = 0;
+  let accuracySum = 0;
+  let cpmSum = 0;
+  let errorSum = 0;
+
+  for (let idx = 0; idx < timeStamp.length; ++idx) {
+    accuracySum += timeStamp[idx].accuracy;
+    cpmSum += timeStamp[idx].cpm;
+    errorSum += timeStamp[idx].errors;
+  }
+
+  avgAccuracy = +(accuracySum / timeStamp.length).toFixed(2);
+  avgCpm = +(cpmSum / timeStamp.length).toFixed(2);
+  averageErrors = +(errorSum / timeStamp.length).toFixed(2);
+
+  return {
+    cpm: isNaN(avgCpm) ? 0 : avgCpm,
+    accuracy: isNaN(avgAccuracy) ? 0 : avgAccuracy,
+    errors: isNaN(averageErrors) ? 0 : averageErrors,
+  };
 }

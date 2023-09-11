@@ -16,14 +16,14 @@ const RaceMultiplayerCard = dynamic(() => import("./race-multiplayer-card"), {
   ssr: false,
 });
 const FinishedScreen = dynamic(() => import("./finished-screen"), {
-  ssr: false
+  ssr: false,
 });
 
 type Props = {
   roomID: string;
   amountOfPlayers: number;
   gameStatus: RaceStatus;
-  IS_PLAYER_CURRENT_USER: boolean;
+  IS_PLAYER_CURRENT_ROOM_OWNER: boolean;
   changeGameState: (_status: RaceStatus) => void;
 } & RoomProps;
 
@@ -33,16 +33,16 @@ const GameScreen: React.FC<Props> = React.memo(
     session,
     amountOfPlayers,
     gameStatus,
-    IS_PLAYER_CURRENT_USER,
+    IS_PLAYER_CURRENT_ROOM_OWNER,
     changeGameState,
   }) => {
     return (
-      <div className="md:w-[65%] lg:-[75%] dark:border-2 min-h-[10rem] rounded-lg shadow-md shadow-black/20 p-4">
+      <div className="lg:w-[65%] dark:border-2 min-h-[10rem] rounded-lg shadow-md shadow-black/20 p-4">
         {gameStatus === RACE_STATUS.WAITING && (
           <WaitingScreen
             roomID={roomID}
             amountOfPlayers={amountOfPlayers}
-            IS_PLAYER_CURRENT_USER={IS_PLAYER_CURRENT_USER}
+            IS_PLAYER_CURRENT_ROOM_OWNER={IS_PLAYER_CURRENT_ROOM_OWNER}
             changeGameState={changeGameState}
           />
         )}
@@ -53,7 +53,12 @@ const GameScreen: React.FC<Props> = React.memo(
           <RaceMultiplayerCard roomID={roomID} session={session} />
         )}
         {gameStatus === RACE_STATUS.FINISHED && (
-          <FinishedScreen roomID={roomID} changeGameState={changeGameState} />
+          <FinishedScreen
+            session={session}
+            IS_PLAYER_CURRENT_OWNER={IS_PLAYER_CURRENT_ROOM_OWNER}
+            changeGameState={changeGameState}
+            roomID={roomID}
+          />
         )}
       </div>
     );

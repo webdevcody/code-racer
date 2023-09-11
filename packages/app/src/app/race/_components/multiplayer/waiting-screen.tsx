@@ -9,12 +9,12 @@ import CopyButton from "@/components/ui/copy-button";
 type WaitingScreenProps = {
   roomID: string;
   amountOfPlayers: number;
-  IS_PLAYER_CURRENT_USER: boolean;
+  IS_PLAYER_CURRENT_ROOM_OWNER: boolean;
   changeGameState: (_status: RaceStatus) => void;
 };
 
 const WaitingScreen: React.FC<WaitingScreenProps> = React.memo(
-  ({ roomID, amountOfPlayers, IS_PLAYER_CURRENT_USER, changeGameState }) => {
+  ({ roomID, amountOfPlayers, IS_PLAYER_CURRENT_ROOM_OWNER, changeGameState }) => {
     return (
       <React.Fragment>
         <div className="mb-12">
@@ -25,7 +25,7 @@ const WaitingScreen: React.FC<WaitingScreenProps> = React.memo(
           </div>
         </div>
 
-        {IS_PLAYER_CURRENT_USER && (
+        {IS_PLAYER_CURRENT_ROOM_OWNER && (
           <div>
             <span>You are the room owner of this room.</span>
             <Button
@@ -40,7 +40,7 @@ const WaitingScreen: React.FC<WaitingScreenProps> = React.memo(
           </div>
         )}
 
-        {!IS_PLAYER_CURRENT_USER && (
+        {!IS_PLAYER_CURRENT_ROOM_OWNER && (
           <div>Waiting for the room owner to start the race...</div>
         )}
       </React.Fragment>

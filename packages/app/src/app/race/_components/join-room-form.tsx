@@ -11,7 +11,7 @@ import { FALLBACK_IMG, RANDOM_USERNAME } from "@/config/consts";
 
 type Props = {
   image: string | null | undefined;
-}
+};
 
 export const JoinRoomForm: React.FC<Props> = React.memo(({ image }) => {
   const [roomID, setRoomID] = React.useState("");

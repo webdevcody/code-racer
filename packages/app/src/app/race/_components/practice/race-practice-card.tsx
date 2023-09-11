@@ -101,9 +101,11 @@ const RacePracticeCard: React.FC<Props> = React.memo(({ session, snippet }) => {
                 state.totalErrors
               ).toFixed(2),
               snippetId: state.snippet.id,
-            }).then(() => {
-              router.replace("/result");
-            }).catch(catchError);
+            })
+              .then(() => {
+                router.replace("/result");
+              })
+              .catch(catchError);
           } else {
             router.replace("/result");
           }
@@ -176,6 +178,7 @@ const RacePracticeCard: React.FC<Props> = React.memo(({ session, snippet }) => {
           />
         </div>
         <TypingCard
+          isUserFinished={isUserFinished}
           handleInputChange={handleInputChange}
           handleKeyDownEvent={handleKeyDownEvent}
           input={state.input}

@@ -1,6 +1,7 @@
 "use client";
 
 import type { ParticipantInformation } from "@code-racer/wss/src/store/types";
+import type { RoomProps } from "../../rooms/page";
 
 import React from "react";
 import { CrownIcon } from "lucide-react";
@@ -8,17 +9,17 @@ import { CrownIcon } from "lucide-react";
 import Image from "next/image";
 
 import { Heading } from "@/components/ui/heading";
+import { socket } from "@/lib/socket";
 
 type Props = {
   listOfPlayers: Array<ParticipantInformation>;
   roomOwnerID: string;
-  IS_PLAYER_CURRENT_USER: boolean;
-};
+} & RoomProps;
 
 const ListOfPlayers: React.FC<Props> = React.memo(
-  ({ listOfPlayers, roomOwnerID, IS_PLAYER_CURRENT_USER }) => {
+  ({ listOfPlayers, roomOwnerID, session }) => {
     return (
-      <section className="md:w-[35%] lg:w-[25%] overflow-y-auto flex flex-col gap-4 dark:border-2 shadow-md shadow-black/20 p-4 rounded-lg">
+      <section className="lg:w-[25%] overflow-y-auto flex flex-col gap-4 dark:border-2 shadow-md shadow-black/20 p-4 rounded-lg">
         <Heading title="Players" size="h4" typeOfHeading="h2" />
         {listOfPlayers.map((player) => {
           return (
@@ -36,7 +37,7 @@ const ListOfPlayers: React.FC<Props> = React.memo(
                 )}
                 <span className="overflow-auto break-words whitespace-pre-wrap">
                   {player.displayName}&nbsp;
-                  {IS_PLAYER_CURRENT_USER && "(You)"}
+                  {session?.id === player.userID || player.userID === socket.id ? "(You)" : undefined}
                 </span>
               </span>
             </div>

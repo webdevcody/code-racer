@@ -62,7 +62,7 @@ export const siteConfig = {
   },
 
   multiplayer: {
-    maxParticipantsPerRace: 4,
+    maxParticipantsPerRace: 2,
     startGameCountdown: 10,
   },
 

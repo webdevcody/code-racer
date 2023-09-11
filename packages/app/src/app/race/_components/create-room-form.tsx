@@ -51,7 +51,7 @@ export const CreateRoomForm: React.FC<RoomProps> = React.memo(({ session }) => {
     socket.on("connect", submit);
     return () => {
       socket.off("connect", submit);
-    }
+    };
   }, [didSubmit, submit]);
 
   React.useEffect(() => {
@@ -68,7 +68,7 @@ export const CreateRoomForm: React.FC<RoomProps> = React.memo(({ session }) => {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <LanguageDropdown value={language} onChange={setLanguage} />
-      <Button type="submit" className="mt-2 w-full">
+      <Button disabled={didSubmit} type="submit" className="mt-2 w-full">
         Create a room
       </Button>
       {error && <p className="text-destructive">{error}</p>}

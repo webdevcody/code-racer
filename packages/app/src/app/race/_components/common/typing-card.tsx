@@ -11,6 +11,7 @@ type Props = {
   input: string;
   code: string;
   didUserMistype: boolean;
+  isUserFinished?: boolean;
 };
 
 /** Requires a ref to focus on the TextArea element! A function handler for that is onDivClick.
@@ -20,7 +21,7 @@ type Props = {
 const TypingCard = React.memo(
   React.forwardRef<HTMLTextAreaElement, Props>(
     (
-      { handleInputChange, handleKeyDownEvent, input, code, didUserMistype },
+      { handleInputChange, handleKeyDownEvent, input, code, didUserMistype, isUserFinished },
       ref
     ) => {
       return (
@@ -46,6 +47,7 @@ const TypingCard = React.memo(
               className="w-full h-full resize-none opacity-0 disabled:opacity-0 disabled:pointer-events-none pointer-events-none"
               data-cy="race-practice-input"
               autoComplete="off"
+              disabled={isUserFinished}
               ref={ref}
             />
           </div>

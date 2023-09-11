@@ -67,8 +67,16 @@ export class GameMemoryStore implements GameMemoryStoreInterface {
 		);
 	}
 
-	updateTimeStampOfParticipant(roomID: string, userID: string, timeStamp: TimeStampType): Participant | undefined {
-		return this.running_rooms.updateTimeStampOfParticipant(roomID, userID, timeStamp);
+	updateTimeStampOfParticipant(
+		roomID: string,
+		userID: string,
+		timeStamp: TimeStampType,
+	): Participant | undefined {
+		return this.running_rooms.updateTimeStampOfParticipant(
+			roomID,
+			userID,
+			timeStamp,
+		);
 	}
 
 	updateTimeTakenOfParticipant(
