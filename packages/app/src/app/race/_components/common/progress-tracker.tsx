@@ -19,7 +19,7 @@ const ProgressTracker: React.FC<Props> = React.memo(
             className="ease-in duration-200"
           >
             <Avatar
-              style={{ left: progress * 0.96 + "%" }}
+              style={{ left: Math.ceil(progress * 0.98) + "%" }}
               className="w-7 h-7 absolute left-0 top-[-50%] border-2 border-monochrome rounded-full transition-[left] duration-200 ease-in"
             >
               <AvatarFallback>{name.charAt(0)}</AvatarFallback>

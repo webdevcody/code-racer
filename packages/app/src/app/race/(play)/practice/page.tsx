@@ -119,10 +119,6 @@ export default async function PracticeRacePage({
                 </ol>
               </li>
               <li>
-                When you press Enter without the ⏎ symbol and you are not on a
-                whitespace, nothing will happen.
-              </li>
-              <li>
                 When you press Enter on a ⏎ symbol &#40;Going to a new
                 line&#41;, you will be able to go to the next line and the
                 whitespaces will automatically be typed in for you.

@@ -26,17 +26,18 @@ export const noopKeys = [
 
 export function calculateCPM(
   numberOfCharacters: number,
-  secondsTaken: number
+  secondsTaken: number,
+  numberOfErrors: number
 ): number {
   if (numberOfCharacters === 0 || secondsTaken === 0) {
     return 0;
   } else {
     const minutesTaken = secondsTaken / 60;
-    const cpm = Math.round(numberOfCharacters / minutesTaken);
+    const cpm = Math.round((numberOfCharacters / 5 - numberOfErrors) /  minutesTaken);
     if (Number.isNaN(cpm)) {
       return 0;
     }
-    return cpm;
+    return cpm < 0 ? 0 : cpm;
   }
 }
 
@@ -45,15 +46,15 @@ export function calculateAccuracy(
   errorsCount: number
 ): number {
   /** since 0 / num === cannot be divided, accuracy would be null */
-  if (numberOfCharacters === 0 || errorsCount === 0) {
+  if (errorsCount === 0 || numberOfCharacters === 0) {
     return 100;
   } else {
-    const accuracy = (1 - errorsCount / numberOfCharacters) * 100;
+    const accuracy = (errorsCount / numberOfCharacters) * 100;
     if (Number.isNaN(accuracy)) {
       // result chart graph needs a 0 value
       return 0;
     }
-    return accuracy;
+    return accuracy < 0 ? 0 : accuracy;
   }
 }
 

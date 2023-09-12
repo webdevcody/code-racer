@@ -24,6 +24,10 @@ const handleEnter = (input: string, code: string): string => {
       newInput += code[idx];
     }
   }
+
+  if (newInput === input) {
+    newInput += " ";
+  }
   return newInput;
 };
 
@@ -102,7 +106,6 @@ export const useHandleRaceEvents = () => {
     clearInterval(timerRef.current);
     timerRef.current = null;
   }, [isUserFinished]);
-  /** TIMER LOGIC */
 
   const changeTimeStamps = React.useCallback(
     (value: string) => {
@@ -118,8 +121,8 @@ export const useHandleRaceEvents = () => {
           payload: [
             {
               word: value,
-              accuracy: calculateAccuracy(value.length, timeTaken),
-              cpm: calculateCPM(value.length, timeTaken),
+              accuracy: calculateAccuracy(value.length, state.totalErrors),
+              cpm: calculateCPM(value.length, timeTaken, state.totalErrors),
               time: timeTaken,
               errors: state.totalErrors,
             },
