@@ -283,7 +283,7 @@ class TypingGame implements Game {
 		roomID,
 	}: UpdateProgressPayload): void {
 		const foundRunningRoom = this.memory.findRunningGame(roomID);
-		console.log("USERID",userID);
+		console.log("USERID", userID);
 		if (!foundRunningRoom) {
 			console.warn(
 				"Could not find a running room! Trying to update a user progress on a room that does not exist.",
@@ -379,15 +379,7 @@ class TypingGame implements Game {
 
 		if (RESETTING_GAME) {
 			if (foundRoom.gameStatus === RACE_STATUS.RUNNING || foundRoom.gameStatus === RACE_STATUS.FINISHED) {
-				const foundRunningRoom = this.memory.removeRunningGame(
-					foundRoom.roomID,
-				);
-
-				if (!foundRunningRoom) {
-					console.warn(
-						"Failed to remove a running game when resetting a room's state! Memory handling error.",
-					);
-				}
+				this.memory.removeRunningGame(foundRoom.roomID,);
 			}
 
 			if (foundRoom.participants.length <= 1) {
@@ -507,10 +499,12 @@ class TypingGame implements Game {
 			return;
 		}
 
-		socket.join(roomID);
-		userSession.roomIDs.push(roomID);
+		if (!socket.rooms.has(roomID)) {
+			socket.join(roomID);
+			userSession.roomIDs.push(roomID);
+			foundRoom.participants.addUser(userSession);
+		}
 
-		foundRoom.participants.addUser(userSession);
 		this.server
 			.to(roomID)
 			.emit("PlayerJoinedOrLeftRoom", foundRoom.participants.getAllUsers());
@@ -652,9 +646,9 @@ class TypingGame implements Game {
 				socket.to(roomID).emit("SendNotification", {
 					title: socket.displayName + " has left the room.",
 				});
-			} else {
-				this.memory.removeRunningGame(roomID);
 			}
+
+			this.memory.removeRunningGame(roomID);
 		});
 
 		this.memory.removeUserByID(socket.userID);
