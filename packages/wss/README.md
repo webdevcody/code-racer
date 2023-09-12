@@ -6,27 +6,28 @@ The recent refactor uses a Linked List to handle all of the state to try and ach
 
 Throughout the lifecycle, the server can emit successes, errors or fails in tasks because of conditions such as, for example, a room is full of users. There is a wrapper for the overall wrapper for the layout of the rooms page that will catch these notifications and forcibly disconnect the user based on the title of the notification. The snippet is as follows:
 
+
 ```ts
-    /** On the layout */
-    const Layout: NextPage<{ children: React.ReactNode }> = ({ children }) => {
-        return <NotificationCatcher>{children}</NotificationCatcher>;
-    };
+/** On the layout */
+const Layout: NextPage<{ children: React.ReactNode }> = ({ children }) => {
+    return <NotificationCatcher>{children}</NotificationCatcher>;
+};
 
-    /** On the NotificationCatcher component */
+/** On the NotificationCatcher component */
 
-    "use client";
+"use client";
 
-    import type { SendNotificationPayload } from "@code-racer/wss/src/events/server-to-client";
+import type { SendNotificationPayload } from "@code-racer/wss/src/events/server-to-client";
 
-    import React from "react";
+import React from "react";
 
-    import { toast } from "@/components/ui/use-toast";
-    import { socket } from "@/lib/socket";
-    import { useRouter } from "next/navigation";
+import { toast } from "@/components/ui/use-toast";
+import { socket } from "@/lib/socket";
+import { useRouter } from "next/navigation";
 
-    export const NotificationCatcher: React.FC<{ children: React.ReactNode }> = ({
-    children,
-    }) => {
+export const NotificationCatcher: React.FC<{ children: React.ReactNode }> = ({
+children,
+}) => {
     const router = useRouter();
 
     React.useEffect(() => {
@@ -55,7 +56,7 @@ Throughout the lifecycle, the server can emit successes, errors or fails in task
             router.replace("/race/rooms");
             break;
         }
-        };
+            };
 
         const handleError = (error: Error) => {
         showToast({
@@ -69,8 +70,8 @@ Throughout the lifecycle, the server can emit successes, errors or fails in task
         socket.on("SendError", handleError);
         socket.on("SendNotification", showToast);
         /** To avoid memory leaks, we cleanup or destroy this
-         *  event listener on component unmount.
-         */
+            *  event listener on component unmount.
+            */
         return () => {
         socket.off("connect_error", handleError);
         socket.off("SendError", handleError);
@@ -79,9 +80,10 @@ Throughout the lifecycle, the server can emit successes, errors or fails in task
     }, [children, router]);
 
     return children;
-    };
+};
 
 ```
+
 
 The lifecycle is as follows:
 
@@ -91,8 +93,9 @@ The lifecycle is as follows:
 2. They will see two cards at this page. One gives them the ability to create a room and the other to join one.
 3. Before a player connects to the server, a middleware will handle the client and the server's handshake. The snippet is as follows:
 
+
 ```ts
- private middleware(): void {
+private middleware(): void {
     /** We get all information about the user
      *  from the client to avoid doing database calls
      *  just to get their displayName and displayImage.
@@ -157,7 +160,9 @@ The lifecycle is as follows:
  };
 ```
 
+
 4. After the middleware does its job and a user successfully connects, the server will receive the event, "connection", and the first thing we prompt the server to do is to save the user session in memory. The snippet is as follows:
+
 
 ```ts
     /** roomIDs is necessary
@@ -171,14 +176,19 @@ The lifecycle is as follows:
 	});
 ```
 
+
 5. When a player creates a room, they will be connected to the server and the client will then emit to the websocket server the event, "CreateRoom".
 6. This event will need two parameters, "userID" & "language". The server, upon receiving this event, will run checks and will not create a room if:
+
  - userID is not provided
  - The amount of rooms in memory >= the maximum amount of rooms specified as a constant in the server.
  - No snippet exists on the database for the chosen language.
  - If we fail to add the session of the user with the given userID.
+
+
 7. If all checks pass, we will generate a random id, using "uuid", and push that generated roomID to the stored user session's list/array of roomIDs and join the socket on that roomID.
 8. Then, since the participants, which hold all information about the users in the room, is also the same type of that responsible for storing user sessions, we just create a new instance of it for the created room. Below is an example snippet:
+
 
 ```ts
     const UserSessioMemoryForRoom = new UserSessionMemoryStore();
@@ -198,21 +208,31 @@ The lifecycle is as follows:
 	} satisfies Room;
 ```
 
+
 9. We then add the generated room object in the memory and emit to the server that it was a success and along with the roomID through the event, "SendRoomID".
 10. Upon receiving the event, "SendRoomID", on the client, the user will then be redirected towars the page, "/race/rooms/`${roomID}`" by pushing this link to the browser's history stack with router.push().
 11. Upon arriving on this page, we will get the roomID from the url params and the session of the user, using "getCurrentUser()", to see if they are logged in or not. All logic for the room handling, game, and such will be handled by the component name, "ClientRoom", and this shall receive two props:
- a. roomID
- b. session
+
+ - roomID
+ - session
+
+
 12. On this component, we have a useEffect that will emit to the client the event, "CheckIfRoomIDExists".
 12. Upon receiving the event, "CheckIfRoomIDExists", the server will do the following checks, and will not let the user join this room if:
+
  - No room exists in the memory with the provided roomID from the event.
  - The room currently has an amount of users >= the maximum amount of users a room can have.
  - The room's status is not waiting.
  - If the user's session was not stored in memory.
+
+
 13. After passing all checks, the server will add the roomID to the user's session list of roomIDs and join the socket to that room. Then, the server will emit a notification and send the updated list of users in a room to the client to update the visuals.
 14. There are rules as to when a user will disconnect from the room they are in. They are as follows:
+
  - When they refresh the page.
  - When the navigate away from the page.
+
+
 15. If a user is alone in a room, and they disconnect, the room they are in will be removed, thus, they won't be able to rejoin that room. They must create a new one.
 16. To be able to play, there must be more than one player in a room. If started with only one player, then the server will emit an error.
 17. A user can start the game if they are the owner of the room.
@@ -221,8 +241,12 @@ The lifecycle is as follows:
 will emit to the server that the room should be "running" at this point.
 20. During "countdown" and "running" states, if the client emits to the server that the game should have a state of "waiting" again, then the race will restart no matter what.
 21. A client will emit this if the following conditions are met:
+
  - A player leaves the room and only one player will be left.
+
+
 22. Upon the start of the race, the server will store the information of the race in memory again. The schema of this state is as follows:
+
 
 ```ts
     interface RunningGameInformation {
@@ -232,6 +256,7 @@ will emit to the server that the room should be "running" at this point.
         endedAt: Date
     }
 ```
+
 
 23. While on a race, the client will emit all information to the server. Then, the server will store this information, such as, timestamp, progress, etc., in memory.
 24. When a user finishes finished the race before the others, the client will emit this to the server with the information regarding the time it took for them to finish therace. Then, they will see a realtime progress of the other competitors. Right now, the timestamp and progress can only be seen. A potential feature could be to show a replay of other players' currently types words.
