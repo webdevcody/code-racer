@@ -463,12 +463,15 @@ class TypingGame implements Game {
 		}
 
 		if (foundRoom.participants.length >= this.MAXIMUM_PLAYER_COUNT) {
-			socket.emit("SendNotification", {
-				title: "Room Full!",
-				description: `This room is full of participants. The current maximum players is ${this.MAXIMUM_PLAYER_COUNT} Try creating a new one.`,
-				variant: "destructive",
-			});
-			return;
+			const USER_IS_IN_ROOM = foundRoom.participants.findUserByID(socket.userID);
+			if (!USER_IS_IN_ROOM) {
+				socket.emit("SendNotification", {
+					title: "Room Full!",
+					description: `This room is full of participants. The current maximum players is ${this.MAXIMUM_PLAYER_COUNT} Try creating a new one.`,
+					variant: "destructive",
+				});
+				return;
+			} 
 		}
 
 		if (foundRoom.gameStatus === RACE_STATUS.FINISHED) {
