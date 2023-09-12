@@ -358,6 +358,7 @@ class TypingGame implements Game {
 					"Failed to change the state of the room. Please try again or create a new room.",
 				),
 			);
+			socket.disconnect(true);
 			return;
 		}
 
@@ -370,6 +371,7 @@ class TypingGame implements Game {
 				"SendError",
 				new Error("Cannot start a multiplayer race with only one player."),
 			);
+			socket.disconnect(true);
 			return;
 		}
 
@@ -459,6 +461,7 @@ class TypingGame implements Game {
 					"The room ID does not exist. Perhaps it is yet to be created or it got deleted? Try creating a new one.",
 				variant: "destructive",
 			});
+			socket.disconnect(true);
 			return;
 		}
 
@@ -470,6 +473,7 @@ class TypingGame implements Game {
 					description: `This room is full of participants. The current maximum players is ${this.MAXIMUM_PLAYER_COUNT} Try creating a new one.`,
 					variant: "destructive",
 				});
+				socket.disconnect(true);
 				return;
 			} 
 		}
@@ -480,6 +484,7 @@ class TypingGame implements Game {
 				description:
 					"The race for this room has just finished. Please wait for the owner to change the room's state to waiting again.",
 			});
+			socket.disconnect(true);
 			return;
 		}
 
@@ -489,6 +494,7 @@ class TypingGame implements Game {
 				description:
 					"The race for this room has already started. Please try creating a new one.",
 			});
+			socket.disconnect(true);
 			return;
 		}
 
@@ -530,6 +536,7 @@ class TypingGame implements Game {
 			);
 			const error = new Error("Something went wrong.");
 			socket.emit("SendError", error);
+			socket.disconnect(true);
 			return;
 		}
 
@@ -542,6 +549,7 @@ class TypingGame implements Game {
 					"The server is full of rooms right now. Please try again later.",
 				variant: "destructive"
 			});
+			socket.disconnect(true);
 			return;
 		}
 
@@ -575,6 +583,7 @@ class TypingGame implements Game {
 					"Failed to create room. Please try again or submit an issue on GitHub.",
 				),
 			);
+			socket.disconnect(true);
 			return;
 		}
 
