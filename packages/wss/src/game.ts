@@ -99,6 +99,7 @@ class TypingGame implements Game {
 		this.middleware();
 
 		this.server.on("connection", (socket) => {
+			console.log(this.memory);
 			this.connectUser(socket);
 			if (IS_IN_DEVELOPMENT) {
 				console.log("A user has connected.");
@@ -378,14 +379,10 @@ class TypingGame implements Game {
 
 		if (RESETTING_GAME) {
 			if (foundRoom.gameStatus === RACE_STATUS.RUNNING || foundRoom.gameStatus === RACE_STATUS.FINISHED) {
-				console.log("--- BEFORE REMOVING RUNNING GAME ---");
-				console.log(this.memory);
 				const foundRunningRoom = this.memory.removeRunningGame(
 					foundRoom.roomID,
 				);
 
-				console.log("--- AFTER REMOVING RUNNING GAME ---");
-				console.log(this.memory);
 				if (!foundRunningRoom) {
 					console.warn(
 						"Failed to remove a running game when resetting a room's state! Memory handling error.",
@@ -500,24 +497,6 @@ class TypingGame implements Game {
 			return;
 		}
 
-		/** This means that the user who's joining was the one
-		 *  that created the room.
-		 */
-		const USER_JOINED_THE_ROOM_ALREADY = foundRoom.participants.findUserByID(
-			socket.userID,
-		);
-
-		if (USER_JOINED_THE_ROOM_ALREADY) {
-			socket.emit("SendRoomID", {
-				roomID,
-				roomOwnerID: foundRoom.roomOwnerID,
-			});
-			this.server
-				.to(roomID)
-				.emit("PlayerJoinedOrLeftRoom", foundRoom.participants.getAllUsers());
-			return;
-		}
-
 		const userSession = this.memory.findUserByID(socket.userID);
 		if (!userSession) {
 			if (IS_IN_DEVELOPMENT) {
@@ -528,10 +507,8 @@ class TypingGame implements Game {
 			return;
 		}
 
-		if (!socket.rooms.has(roomID)) {
-			socket.join(roomID);
-			userSession.roomIDs.push(roomID);
-		}
+		socket.join(roomID);
+		userSession.roomIDs.push(roomID);
 
 		foundRoom.participants.addUser(userSession);
 		this.server
@@ -588,7 +565,6 @@ class TypingGame implements Game {
 			return;
 		}
 
-		const roomID = uuidv4();
 		const userSession = this.memory.findUserByID(userID);
 		if (!userSession) {
 			if (IS_IN_DEVELOPMENT) {
@@ -605,8 +581,7 @@ class TypingGame implements Game {
 			return;
 		}
 
-		userSession.roomIDs.push(roomID);
-		socket.join(roomID);
+		const roomID = uuidv4();
 
 		const UserSessioMemoryForRoom = new UserSessionMemoryStore();
 
@@ -677,6 +652,8 @@ class TypingGame implements Game {
 				socket.to(roomID).emit("SendNotification", {
 					title: socket.displayName + " has left the room.",
 				});
+			} else {
+				this.memory.removeRunningGame(roomID);
 			}
 		});
 
