@@ -52,7 +52,10 @@
 
 We welcome contributions from the community! If you'd like to contribute to Code Racer, please refer to [CONTRIBUTING.md](./CONTRIBUTING.md). We have these base guidelines:
 
+- visit the code-race repo
 - Fork the repository
+- copy the url (either https or ssh) of repo under code button
+- open your local terminal and paste the copied url to clone the repo
 - Create a new branch for your feature or bug fix
 - Make your changes and test thoroughly
 - Commit your changes with clear commit messages
