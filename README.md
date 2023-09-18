@@ -12,7 +12,7 @@
 <div align="center">
   <!-- TO ADD more Badges use -> https://shields.io/ -->
 
-  <img alt="GitHub contributors" src="https://img.shields.io/github/contributors-anon/webdevcody/code-racer">
+  <img alt="GitHub contributors" src="https://img.shields.io/github/contributors/webdevcody/code-racer">
   <img alt="Repo License" src="https://img.shields.io/github/license/webdevcody/code-racer">
   <img alt="Website Status" src="https://img.shields.io/website?url=https%3A%2F%2Fcode-racer-eight.vercel.app">
 
