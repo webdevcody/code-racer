@@ -69,12 +69,21 @@ export const saveUserResultAction = validatedCallback({
 
     // verify hash:
     const uniqueKey = 'your-unique-key';
-    const hashedData = CryptoJS.HmacSHA256(input.data, uniqueKey).toString();
+    const data = {
+      timeTaken: input.timeTaken,
+      errors: input.errors,
+      cpm: input.cpm,
+      accuracy: input.accuracy,
+      snippetId: input.snippetId,
+    };
+    const jsonData = JSON.stringify(data);
+    const hashedData = CryptoJS.HmacSHA256(jsonData, uniqueKey).toString();
 
     if( hashedData != input.hash.toString() ){
-      console.log(input.hash.toString(), hashedData);
-      throw new Error("Invalid Request: Data tampered");
+      console.log(jsonData, input.hash.toString(), hashedData);
+      throw new Error("Invalid Request: Tampered Data");
     }
+    else console.log("Nice");
 
     return await prisma.$transaction(async (tx) => {
       const result = await tx.result.create({
