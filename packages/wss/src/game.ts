@@ -475,7 +475,7 @@ class TypingGame implements Game {
 				});
 				socket.disconnect(true);
 				return;
-			} 
+			}
 		}
 
 		if (foundRoom.gameStatus === RACE_STATUS.FINISHED) {
@@ -512,18 +512,18 @@ class TypingGame implements Game {
 			socket.join(roomID);
 			userSession.roomIDs.push(roomID);
 			foundRoom.participants.addUser(userSession);
+			socket.emit("SendRoomID", {
+				roomID,
+				roomOwnerID: foundRoom.roomOwnerID,
+			});
+			socket.to(roomID).emit("SendNotification", {
+				title: socket.displayName + " has joined the room.",
+			});
 		}
-
+		
 		this.server
-			.to(roomID)
-			.emit("PlayerJoinedOrLeftRoom", foundRoom.participants.getAllUsers());
-		socket.emit("SendRoomID", {
-			roomID,
-			roomOwnerID: foundRoom.roomOwnerID,
-		});
-		socket.to(roomID).emit("SendNotification", {
-			title: socket.displayName + " has joined the room.",
-		});
+		.to(roomID)
+		.emit("PlayerJoinedOrLeftRoom", foundRoom.participants.getAllUsers());
 	}
 
 	private async handleRoomCreation(

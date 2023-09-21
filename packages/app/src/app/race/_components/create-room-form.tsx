@@ -4,7 +4,7 @@ import type { RoomProps } from "../rooms/page";
 import type { LanguageType } from "@/lib/validations/room";
 import type { SendRoomIDPayload } from "@code-racer/wss/src/events/server-to-client";
 
-import React from "react";
+import React, { useRef } from "react";
 import { useRouter } from "next/navigation";
 
 import LanguageDropdown from "@/app/add-snippet/_components/language-dropdown";
@@ -20,6 +20,8 @@ export const CreateRoomForm: React.FC<RoomProps> = React.memo(({ session }) => {
   const [didSubmit, setDidSubmit] = React.useState(false);
   const router = useRouter();
 
+  const timerRef = useRef<NodeJS.Timeout | undefined>();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!language) {
@@ -33,6 +35,15 @@ export const CreateRoomForm: React.FC<RoomProps> = React.memo(({ session }) => {
     });
     /** workaround to socket.id being undefined when socket is not connected. */
     setDidSubmit(true);
+
+    if (!timerRef.current) {
+      timerRef.current = setTimeout(() => {
+        setDidSubmit(false);
+      }, 1000);
+    } else {
+      clearTimeout(timerRef.current);
+      timerRef.current = undefined;
+    }
   };
 
   const submit = React.useCallback(() => {

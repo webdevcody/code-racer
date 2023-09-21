@@ -27,7 +27,7 @@ const handleEnter = (input: string, code: string): string => {
 
   if (newInput === input) {
     newInput += " ";
-  }
+ }
   return newInput;
 };
 
@@ -221,11 +221,25 @@ export const useHandleRaceEvents = () => {
                 state.input,
                 code
               );
+
               changeTimeStamps(newValueAfterCalculatingWhitespaces);
               dispatch({
                 type: "change_input",
                 payload: newValueAfterCalculatingWhitespaces,
               });
+
+              
+              if (newValueAfterCalculatingWhitespaces !== code.slice(0, newValueAfterCalculatingWhitespaces.length)) {
+                dispatch({
+                  type: "add_errors",
+                  payload: 1,
+                });
+                dispatch({
+                  type: "display_error_message",
+                  payload:
+                    "Please follow the following code. You won't be able to insert a character that is not equal to the displayed code.",
+                });
+              }
             }
           }
           break;
