@@ -69,7 +69,7 @@ const Result: React.FC<Props> = React.memo(({ timeStamp }) => {
           </div>
           <div className="dark:border-2 shadow-lg shadow-black/20 rounded-lg p-4 flex flex-col gap-2">
             <div>Average Accuracy</div>
-            <div>{calculateAverageInChart(timeStamp, "accuracy")}</div>
+            <div>{calculateAverageInChart(timeStamp, "accuracy")}%</div>
           </div>
           <div className="dark:border-2 shadow-lg shadow-black/20 rounded-lg p-4 flex flex-col gap-2">
             <div>Average Mistakes</div>
