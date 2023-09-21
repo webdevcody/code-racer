@@ -95,7 +95,7 @@ const RacePracticeCard: React.FC<Props> = React.memo(({ session, snippet }) => {
             saveUserResultAction({
               timeTaken: state.totalTime,
               errors: state.totalErrors,
-              cpm: +calculateCPM(code.length - 1, state.totalErrors).toFixed(2),
+              cpm: +calculateCPM(code.length - 1, state.totalTime, state.totalErrors).toFixed(2),
               accuracy: +calculateAccuracy(
                 code.length - 1,
                 state.totalErrors
