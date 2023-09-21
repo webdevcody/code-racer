@@ -97,7 +97,7 @@ class LinkedListMemory<T, K extends keyof T>
 		}
 
 		let currentNode = this.head;
-		let previousNode = undefined;
+		let previousNode = undefined as LinkedListNode<T> | undefined;
 
 		for (let idx = 0; currentNode && idx < this.length; ++idx) {
 			if (typeof item === "string") {
