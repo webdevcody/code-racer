@@ -2,8 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
-import { saveUserResultAction } from "../../actions";
-import CryptoJS  from 'crypto-js';
+import { getUserTokenAndStamp, saveUserResultAction } from "../../actions";
+import CryptoJS  from "crypto-js";
 
 // utils
 import { calculateAccuracy, calculateCPM, noopKeys } from "./utils";
@@ -98,34 +98,39 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
         ])
       );
       
-      const uniqueKey = 'your-unique-key';
-      const data = {
-        timeTaken,
-        errors: totalErrors,
-        cpm: calculateCPM(code.length - 1, timeTaken),
-        accuracy: calculateAccuracy(code.length - 1, totalErrors),
-        snippetId: snippet.id,
-      };
-      const jsonData = JSON.stringify(data);
-      const hashedData = CryptoJS.HmacSHA256(jsonData, uniqueKey).toString();
+      getUserTokenAndStamp()
+        .then((result) => {
+          const tokenAndStamp = result;
+          const data = {
+            timeTaken,
+            errors: totalErrors,
+            cpm: calculateCPM(code.length - 1, timeTaken),
+            accuracy: calculateAccuracy(code.length - 1, totalErrors),
+            snippetId: snippet.id,
+            stamp: tokenAndStamp!["stamp"],
+          };
+          const jsonData = JSON.stringify(data);
+          const hashedData = CryptoJS.HmacSHA256(jsonData, tokenAndStamp!["key"]).toString();
 
-      if (user) {
-        saveUserResultAction({
-          timeTaken,
-          errors: totalErrors,
-          cpm: calculateCPM(code.length - 1, timeTaken),
-          accuracy: calculateAccuracy(code.length - 1, totalErrors),
-          snippetId: snippet.id,
-          data: jsonData,
-          hash: hashedData,
+          if (user) {
+            saveUserResultAction({
+              timeTaken,
+              errors: totalErrors,
+              cpm: calculateCPM(code.length - 1, timeTaken),
+              accuracy: calculateAccuracy(code.length - 1, totalErrors),
+              snippetId: snippet.id,
+              hash: hashedData,
+            })
+              .then((result) => {
+                router.push(`/result?resultId=${result.id}`);
+              })
+              .catch((error) => catchError(error));
+          } else {
+            router.push(`/result?snippetId=${snippet.id}`);
+          }
         })
-          .then((result) => {
-            router.push(`/result?resultId=${result.id}`);
-          })
-          .catch((error) => catchError(error));
-      } else {
-        router.push(`/result?snippetId=${snippet.id}`);
-      }
+        .catch((error) => catchError(error));
+      
     }
   });
 

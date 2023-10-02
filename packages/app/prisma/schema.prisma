@@ -39,6 +39,7 @@ model User {
 
     signToken           String      @default("")
     signTokenValidity   DateTime    @default(dbgenerated("NOW() - interval '1 year'"))
+    stamp               String      @default("")
 
     averageAccuracy Decimal @default(0) @db.Decimal(5, 2)
     averageCpm      Decimal @default(0) @db.Decimal(6, 2)
