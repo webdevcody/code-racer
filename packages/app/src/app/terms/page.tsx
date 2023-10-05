@@ -7,7 +7,7 @@ const page = () => {
       <h1>CodeRacer - Terms of Service</h1>
       <p><strong>Effective Date:</strong> [Date]</p>
       
-      <p>Welcome to CodeRacer! These Terms of Service ("Terms") constitute a legal agreement between you and CodeRacer. Please read these Terms carefully before using our platform, which is accessible at <a href="https://code-racer-eight.vercel.app/">https://code-racer-eight.vercel.app/</a>. By using CodeRacer, you agree to be bound by these Terms.</p>
+      <p>Welcome to CodeRacer! These Terms of Service ({`"Terms"`}) constitute a legal agreement between you and CodeRacer. Please read these Terms carefully before using our platform, which is accessible at <a href="https://code-racer-eight.vercel.app/">https://code-racer-eight.vercel.app/</a>. By using CodeRacer, you agree to be bound by these Terms.</p>
       
       <h2>1. User Accounts</h2>
       <p>
@@ -45,7 +45,7 @@ const page = () => {
 
       <h2>6. Limitation of Liability</h2>
       <p>
-        <strong>6.1. Disclaimer:</strong> CodeRacer is provided "as is," and we make no warranties or representations about the accuracy or reliability of the platform. Your use of CodeRacer is at your own risk.
+        <strong>6.1. Disclaimer:</strong> CodeRacer is provided {`"as is,"`} and we make no warranties or representations about the accuracy or reliability of the platform. Your use of CodeRacer is at your own risk.
       </p>
 
       <h2>7. Changes to Terms</h2>
@@ -58,6 +58,7 @@ const page = () => {
         <strong>8.1. Questions:</strong> If you have any questions or concerns about these Terms, please contact us at <a href="mailto:contact@coderacer.com">contact@coderacer.com</a>.
       </p>
     </div>
+  </>
   );
 };
 
