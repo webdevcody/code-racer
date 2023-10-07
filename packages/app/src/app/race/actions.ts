@@ -11,23 +11,25 @@ import CryptoJS from "crypto-js";
 export const getUserTokenAndStamp = async () => {
   const user = await getCurrentUser();
 
-  if (!user) throw new UnauthorizedError();
+  if (!user)
+    return {
+      key: "deFau1tk3y",
+      stamp: "11011011",
+    };
 
   const userData = await prisma.user.findUnique({
     where: { id: user.id },
   });
 
-  console.log("userdata:", userData)
-  if(!userData) return;
+  if (!userData) return;
 
   let signToken = userData.signToken;
   let stamp = userData.stamp;
-  
-  if(userData!.signTokenValidity.getTime() < Date.now()){
-    stamp = Math.random().toString(36).substring(2,7); 
-    signToken = Math.random().toString(36).substring(2,22);
-    
-    console.log("Token invalid. Issue new token", userData.signToken, userData.stamp, signToken, stamp)
+
+  if (userData!.signTokenValidity.getTime() < Date.now()) {
+    stamp = Math.random().toString(36).substring(2, 7);
+    signToken = Math.random().toString(36).substring(2, 22);
+
     await prisma.$transaction(async (tx) => {
       await tx.user.update({
         where: {
@@ -36,20 +38,16 @@ export const getUserTokenAndStamp = async () => {
         data: {
           stamp: stamp,
           signToken: signToken,
-          signTokenValidity: new Date(Date.now() + 1000*60*60*24*7),
+          signTokenValidity: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
         },
-      })
-    })
+      });
+    });
   }
-
-  console.log("Valid?", userData!.signTokenValidity.getTime() < Date.now())
-  console.log("Sign token (old new):",userData.signToken, signToken)
-  console.log("Stamp (old new):", userData.stamp, stamp)
 
   return {
-    "key": signToken,
-    "stamp": stamp,
-  }
+    key: signToken,
+    stamp: stamp,
+  };
 };
 
 export const saveUserResultAction = validatedCallback({
@@ -65,7 +63,42 @@ export const saveUserResultAction = validatedCallback({
   callback: async (input) => {
     const user = await getCurrentUser();
 
-    if (!user) throw new UnauthorizedError();
+    if (!user) {
+      // verify hash:
+      const tokenAndStamp = await getUserTokenAndStamp();
+      const data = {
+        timeTaken: input.timeTaken,
+        errors: input.errors,
+        cpm: input.cpm,
+        accuracy: input.accuracy,
+        snippetId: input.snippetId,
+        stamp: tokenAndStamp!["stamp"],
+      };
+      const jsonData = JSON.stringify(data);
+      const hashedData = CryptoJS.HmacSHA256(
+        jsonData,
+        tokenAndStamp!["key"]
+      ).toString();
+
+      if (hashedData != input.hash.toString()) {
+        return "Invalid Request: Tampered Data";
+      } else {
+        return {
+          takenTime: input.timeTaken.toString(),
+          errorCount: input.errors,
+          cpm: input.cpm,
+          accuracy: new Prisma.Decimal(input.accuracy),
+          snippetId: input.snippetId,
+          RaceParticipant: input.raceParticipantId
+            ? {
+                connect: {
+                  id: input.raceParticipantId,
+                },
+              }
+            : undefined,
+        };
+      }
+    }
 
     const userData = await prisma.user.findUnique({
       where: { id: user.id },
@@ -111,7 +144,6 @@ export const saveUserResultAction = validatedCallback({
       .splice(0, 3);
 
     // verify hash:
-    console.log("Verfying")
     const tokenAndStamp = await getUserTokenAndStamp();
     const data = {
       timeTaken: input.timeTaken,
@@ -122,16 +154,17 @@ export const saveUserResultAction = validatedCallback({
       stamp: tokenAndStamp!["stamp"],
     };
     const jsonData = JSON.stringify(data);
-    const hashedData = CryptoJS.HmacSHA256(jsonData, tokenAndStamp!["key"]).toString();
-    
-    const stamp = Math.random().toString(36).substring(2,7);
+    const hashedData = CryptoJS.HmacSHA256(
+      jsonData,
+      tokenAndStamp!["key"]
+    ).toString();
+
+    const stamp = Math.random().toString(36).substring(2, 7);
 
     if (hashedData != input.hash.toString()) {
-      console.log(jsonData, input.hash.toString(), hashedData);
       return "Invalid Request: Tampered Data";
-    } else {
-      // Request is valid
     }
+
     return await prisma.$transaction(async (tx) => {
       const result = await tx.result.create({
         data: {
