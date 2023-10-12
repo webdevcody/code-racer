@@ -5,8 +5,9 @@ import { GameStateUpdatePayload } from "@code-racer/wss/src/events/server-to-cli
 import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
-import { saveUserResultAction } from "../../actions";
+import { getUserTokenAndStamp, saveUserResultAction } from "../../actions";
 import { getSnippetById } from "../../(play)/loaders";
+import CryptoJS from "crypto-js";
 
 // utils
 import { calculateAccuracy, calculateCPM, noopKeys } from "./utils";
@@ -389,27 +390,46 @@ function changeTimeStamps(e: any) {
         return;
       }
 
-      if (user) {
-        saveUserResultAction({
-          raceParticipantId: participantId,
-          timeTaken,
-          errors: totalErrors,
-          cpm: calculateCPM(code.length - 1, timeTaken),
-          accuracy: calculateAccuracy(code.length - 1, totalErrors),
-          snippetId: snippet.id,
+      getUserTokenAndStamp()
+        .then((result) => {
+          const tokenAndStamp = result;
+          const data = {
+            timeTaken,
+            errors: totalErrors,
+            cpm: calculateCPM(code.length - 1, timeTaken),
+            accuracy: calculateAccuracy(code.length - 1, totalErrors),
+            snippetId: snippet.id,
+            stamp: tokenAndStamp!["stamp"],
+          };
+          const jsonData = JSON.stringify(data);
+          const hashedData = CryptoJS.HmacSHA256(
+            jsonData,
+            tokenAndStamp!["key"]
+          ).toString();
+          if (user) {
+            saveUserResultAction({
+              raceParticipantId: participantId,
+              timeTaken,
+              errors: totalErrors,
+              cpm: calculateCPM(code.length - 1, timeTaken),
+              accuracy: calculateAccuracy(code.length - 1, totalErrors),
+              snippetId: snippet.id,
+              hash: hashedData,
+            })
+              .then((result) => {
+                if (!result) {
+                  return router.refresh();
+                }
+                router.push(`/result?resultId=${result.id}`);
+              })
+              .catch((error) => {
+                catchError(error);
+              });
+          } else {
+            router.push(`/result?snippetId=${snippet.id}`);
+          }
         })
-          .then((result) => {
-            if (!result) {
-              return router.refresh();
-            }
-            router.push(`/result?resultId=${result.id}`);
-          })
-          .catch((error) => {
-            catchError(error);
-          });
-      } else {
-        router.push(`/result?snippetId=${snippet.id}`);
-      }
+        .catch((error) => catchError(error));
 
       setSubmittingResults(false);
     }
