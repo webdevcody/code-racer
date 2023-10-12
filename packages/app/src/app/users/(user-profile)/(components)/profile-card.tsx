@@ -161,7 +161,7 @@ function EditMode({
       </div>
       <div className="w-full">
         <div className="w-full relative">
-          <Label htmlFor="biography-input">Biography*</Label>
+          <Label htmlFor="biography-input">Biography</Label>
           <div className="absolute right-1 top-1 text-sm">
             {biography?.length} / 128
           </div>
