@@ -89,13 +89,15 @@ function EditMode({
   const [isLoading, setIsLoading] = React.useState(false);
   const { toast, dismiss } = useToast();
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  const isUnchanged = name === displayName && bio === biography;
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
 
     // if the user clicks save but all information is the same,
     // just return.
-    if (name === displayName && bio === biography) {
+    if (isUnchanged) {
       changeMode();
       setIsLoading(false);
       return;
@@ -104,7 +106,7 @@ function EditMode({
     toast(
       {
         title: "Updating Information",
-        description: "Your information is being updated..",
+        description: "Your information is being updated...",
         variant: "default",
       },
       "loading-toast"
@@ -132,7 +134,7 @@ function EditMode({
       changeMode();
       setIsLoading(false);
     }
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
@@ -155,13 +157,13 @@ function EditMode({
           disabled={isLoading}
           className="mt-1"
         />
-        {!name ? (
+        {!name && (
           <p className="text-destructive text-sm mt-1">Name cannot be empty.</p>
-        ) : null}
+        )}
       </div>
       <div className="w-full">
         <div className="w-full relative">
-          <Label htmlFor="biography-input">Biography*</Label>
+          <Label htmlFor="biography-input">Biography</Label>
           <div className="absolute right-1 top-1 text-sm">
             {biography?.length} / 128
           </div>
