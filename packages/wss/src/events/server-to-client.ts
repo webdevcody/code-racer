@@ -1,70 +1,51 @@
-import { Prisma, RaceParticipant } from "@code-racer/app/src/lib/prisma";
-import { UserRacePresencePayload } from "./common";
-import { SocketId } from "../game";
-import { RaceStatus } from "../types";
-
-type NewType = {
-  participants: SocketId[];
-  status: RaceStatus;
-};
-
-type Race = NewType;
-
-type Timestamp = number;
-
-type Participant = {
-  id: string;
-  socketId: string;
-  position: number;
-  finishedAt: Timestamp | null;
-};
-
-export type GameStateUpdatePayload = {
-  raceState: {
-    id: string;
-    status: "waiting" | "countdown" | "running" | "finished";
-    participants: Participant[];
-    countdown?: number;
-  };
-};
-
-export type UserRaceResponsePayload = {
-  race: Prisma.RaceGetPayload<Record<string, never>>;
-  participants: Participant[];
-  raceParticipantId: RaceParticipant["id"];
-  raceStatus: RaceStatus;
-};
-
-export type RoomJoinedResponsePayload = {
-  race: Prisma.RaceGetPayload<{ include: { participants: true } }>;
-  participants: Participant[];
-  raceStatus: RaceStatus;
-  participantId: string;
-};
-
-export type UpdateParticipantsPayload = {
-  participants: Participant[];
-};
-
-export type UserRoomRaceResponsePayload = {
-  race: Race;
-};
+import { RaceStatus } from "../consts";
+import type {
+	CustomSnippet,
+	ParticipantInformation,
+	RunningGameInformationPayload,
+} from "../store/types";
 
 export type SendNotificationPayload = {
-  title?: string;
-  description?: string;
-  variant?: "default" | "destructive" | "middle";
-}
+	title?: string;
+	description?: string;
+	variant?: "default" | "destructive" | "middle";
+};
+
+export type SendRoomIDPayload = {
+	roomID: string;
+	roomOwnerID: string;
+};
+
+export type GameFinishedPayload = {
+	endedAt: Date;
+	startedAt: Date;
+} & RunningGameInformationPayload;
+
+export type ParticipantsProgressPayload = {
+	userID: string;
+	displayImage: string;
+	displayName: string;
+	progress: number;
+};
 
 export interface ServerToClientEvents {
-  GameStateUpdate: (payload: GameStateUpdatePayload) => void;
-  UserRaceEnter: (payload: UserRacePresencePayload) => void;
-  UserRaceLeave: (payload: UserRacePresencePayload) => void;
-  UserRaceResponse: (payload: UserRaceResponsePayload) => void;
-  UserEnterFullRace: () => void;
-  RoomJoined: (payload: RoomJoinedResponsePayload) => void;
-  RoomCreated: (payload: { roomId: string }) => void;
-  UpdateParticipants: (payload: UpdateParticipantsPayload) => void;
-  SendNotification: (payload: SendNotificationPayload) => void;
-  UserRoomRaceResponse: (payload: UserRoomRaceResponsePayload) => void;
+	SendError: (_payload: Error) => void;
+	SendNotification: (_payload: SendNotificationPayload) => void;
+
+	SendRoomID: (_payload: SendRoomIDPayload) => void;
+
+	PlayerJoinedOrLeftRoom: (_payload: Array<ParticipantInformation>) => void;
+
+	SendGameStatusOfRoom: (_payload: RaceStatus) => void;
+	SendRoomOwnerID: (_payload: string) => void;
+
+	SendRoomSnippet: (_snippet: CustomSnippet) => void;
+
+	SendRunningGameInformation: (_payload: RunningGameInformationPayload) => void;
+
+	GameFinished: (_payload: GameFinishedPayload) => void;
+
+	SendAllPlayersProgress: (
+		_payload: Array<ParticipantsProgressPayload>,
+	) => void;
 }

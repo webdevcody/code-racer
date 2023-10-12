@@ -24,7 +24,7 @@ export default function CountingAnimation({
 
   // Amount to increment in every update cycle
   const incrementValue = Math.ceil(
-    (targetNumber - startingNumber) / (duration / UPDATE_INTERVAL),
+    (targetNumber - startingNumber) / (duration / UPDATE_INTERVAL)
   );
 
   function update() {

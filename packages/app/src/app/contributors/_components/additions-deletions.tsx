@@ -23,7 +23,7 @@ export default function AdditionsDeletions({
         "p-0",
         "font-md",
         "text-muted-foreground",
-        className,
+        className
       )}
     >
       <span className="text-green-500 text-sm">

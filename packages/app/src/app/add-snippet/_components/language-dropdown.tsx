@@ -1,9 +1,10 @@
 "use client";
 
-import * as React from "react";
+import React from "react";
+import { z } from "zod";
+
 import { Check, ChevronsUpDown } from "lucide-react";
-import { useEffect } from "react";
-import { cn } from "@/lib/utils";
+
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -17,7 +18,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+
 import { snippetLanguages } from "@/config/languages";
+
+import { type LanguageType, languageTypes } from "@/lib/validations/room";
+import { cn } from "@/lib/utils";
+
+type LanguageTypes = z.infer<typeof languageTypes>;
 
 const LanguageDropdown = ({
   className,
@@ -25,20 +32,37 @@ const LanguageDropdown = ({
   onChange,
 }: {
   className?: string;
-  value: string;
-  // eslint-disable-next-line no-unused-vars
-  onChange: (props: React.SetStateAction<string>) => void;
+  value: LanguageTypes | undefined;
+  onChange: (_props: React.SetStateAction<LanguageTypes | undefined>) => void;
 }) => {
   const [open, setOpen] = React.useState(false);
   const [search, setSearch] = React.useState("");
 
-  useEffect(() => {
-    const savedCodeLanguage = window.localStorage.getItem("codeLanguage");
-    if (savedCodeLanguage) {
-      onChange(savedCodeLanguage);
+  const itemToShow = React.useMemo(() => {
+    if (value) {
+      for (let idx = 0; idx < snippetLanguages.length; ++idx) {
+        if (snippetLanguages[idx].value === value) {
+          return snippetLanguages[idx].label;
+        }
+      }
+    } else {
+      return "Select language...";
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [value]);
+
+  React.useEffect(() => {
+    if (localStorage) {
+      const savedCodeLanguage = localStorage.getItem("codeLanguage");
+      const isLanguageValid =
+        languageTypes.safeParse(savedCodeLanguage).success;
+      if (isLanguageValid) {
+        onChange(savedCodeLanguage as LanguageType);
+      } else {
+        onChange("c++");
+      }
+    }
+  }, [onChange]);
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -49,10 +73,7 @@ const LanguageDropdown = ({
           className={cn("justify-between w-full px-4 py-3", className)}
           data-cy="language-dropdown"
         >
-          {value
-            ? snippetLanguages.find((language) => language.value === value)
-                ?.label
-            : "Select language..."}
+          {itemToShow}
           <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
         </Button>
       </PopoverTrigger>
@@ -68,29 +89,24 @@ const LanguageDropdown = ({
           <CommandGroup className="overflow-y-auto">
             {snippetLanguages
               .filter((language) =>
-                language.label.toLowerCase().includes(search.toLowerCase()),
+                language.label.toLowerCase().includes(search.toLowerCase())
               )
               .map((language) => (
                 <CommandItem
                   key={language.label}
                   value={language.value}
                   onSelect={(currentValue) => {
-                    const newCodeLanguage =
-                      currentValue === value ? "" : currentValue;
-                    onChange(newCodeLanguage);
-                    window.localStorage.setItem(
-                      "codeLanguage",
-                      newCodeLanguage,
-                    );
+                    const parsedValue = languageTypes.parse(currentValue);
+                    onChange(parsedValue);
+                    window.localStorage.setItem("codeLanguage", parsedValue);
                     setOpen(false);
                   }}
                   data-cy={`${language.value}-value`}
                 >
                   <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      value === language.value ? "opacity-100" : "opacity-0",
-                    )}
+                    className={cn("mr-2 h-4 w-4", {
+                      "opacity-0": value !== language.value,
+                    })}
                   />
                   {language.label}
                 </CommandItem>
@@ -104,6 +120,4 @@ const LanguageDropdown = ({
 
 LanguageDropdown.displayName = "LanguageDropdown";
 
-LanguageDropdown.displayName = "LanguageDropdown";
-
-export default LanguageDropdown;
+export default React.memo(LanguageDropdown);

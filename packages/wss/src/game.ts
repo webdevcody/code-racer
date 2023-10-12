@@ -1,522 +1,707 @@
-import { Language } from "@code-racer/app/src/config/languages";
-import { siteConfig } from "@code-racer/app/src/config/site";
-import type { RaceParticipant } from "@code-racer/app/src/lib/prisma";
-import { prisma } from "@code-racer/app/src/lib/prisma";
-import { type Server } from "socket.io";
-import {
-  PositionUpdatePayload,
-  type ClientToServerEvents,
+import type { Server, Socket } from "socket.io";
+import type {
+	Game,
+	GameMemoryStoreInterface,
+	MiddlewareAuth,
+	Room,
+	RunningGameInformation,
+} from "./store/types";
+import type {
+	ChangeGameStatusOfRoomPayload,
+	ClientToServerEvents,
+	CreateRoomPayload,
+	SendUserHasFinishedPayload,
+	UpdateProgressPayload,
+	UpdateTimeStampPayload,
 } from "./events/client-to-server";
-import { UserRacePresencePayload } from "./events/common";
-import { type ServerToClientEvents } from "./events/server-to-client";
-import { createRace, raceMatchMaking } from "./match-making";
-import { RaceStatus, raceStatus } from "./types";
+import type { ServerToClientEvents } from "./events/server-to-client";
+
 import { getRandomSnippet } from "@code-racer/app/src/app/race/(play)/loaders";
 import { v4 as uuidv4 } from "uuid";
 
-export type SocketId = string;
-type RaceId = string;
-type Timestamp = number;
-
-export type Participant = {
-  id: RaceParticipant["id"];
-  raceId: RaceId;
-  position: number;
-  finishedAt: Timestamp | null;
-};
-
-type Race = {
-  participants: SocketId[];
-  status: RaceStatus;
-};
-
-export class Game {
-  private static readonly START_GAME_COUNTDOWN = 10;
-  private static readonly MAX_PARTICIPANTS_PER_RACE =
-    siteConfig.multiplayer.maxParticipantsPerRace;
-  private static readonly GAME_LOOP_INTERVAL = 500;
-  private static readonly GAME_MAX_POSITION = 100;
-
-  /**
-   * Race socket room name
-   */
-  private static Room(raceId: string) {
-    return `RACE_${raceId}`;
-  }
-
-  private activeCountdowns = new Map<RaceId, Promise<void>>();
-
-  private races = new Map<RaceId, Race>();
-
-  private participants = new Map<SocketId, Participant>();
-
-  constructor(
-    private server: Server<ClientToServerEvents, ServerToClientEvents>,
-  ) {
-    this.initialize();
-  }
-
-  private initialize() {
-    this.server.on("connection", (socket) => {
-      socket.on("UserCreateRoom", async (payload) => {
-        const snippet = await getRandomSnippet({ language: payload.language });
-
-        if (!snippet) {
-          socket.emit("SendNotification", {
-            title: "Snippet not found",
-            description: `There is no available snippet on ${payload.language} language yet. Try creating a new one`,
-            variant: "destructive",
-          });
-          return;
-        }
-
-        const roomId = uuidv4();
-
-        // race id is associated with the room id
-        const race = await createRace(snippet, roomId);
-
-        this.races.set(roomId, {
-          ...race,
-          participants: [],
-          status: "waiting",
-        });
-
-        socket.emit("RoomCreated", {
-          roomId: race.id,
-        });
-      });
-
-      socket.on("UserJoinRoom", async (payload) => {
-        const { raceId: roomId, userId } = payload;
-
-        const race = this.races.get(roomId);
-
-        if (!race) {
-          socket.emit("SendNotification", {
-            title: "Room not found",
-            description: `Room with id ${roomId} not found.`,
-          });
-
-          return;
-        }
-
-        socket.join(Game.Room(roomId));
-
-        const participant = await prisma.raceParticipant.upsert({
-          where: {
-            id: socket.id,
-          },
-          update: {
-            raceId: roomId,
-            userId,
-          },
-          create: {
-            id: socket.id,
-            raceId: roomId,
-            userId,
-          },
-          include: {
-            Race: {
-              include: {
-                participants: true,
-              },
-            },
-          },
-        });
-
-        this.handlePlayerEnterRace({
-          raceId: roomId,
-          raceParticipantId: participant.id,
-          socketId: socket.id,
-        });
-
-        const updatedRace = this.races.get(roomId) as Race;
-
-        const participants = this.getRaceParticipants(updatedRace)
-
-        socket.emit("RoomJoined", {
-          race: participant.Race,
-          participants,
-          raceStatus: race.status,
-          participantId: socket.id,
-        });
-
-        socket.to(Game.Room(roomId)).emit("UpdateParticipants", {
-          participants,
-        });
-      });
-
-      socket.on("StartRaceCountdown", async (payload) => {
-        this.startRaceCountdown(payload.raceId);
-      });
-
-      socket.on("UserGetRace", async (payload) => {
-        const { race, raceParticipantId } = await raceMatchMaking(
-          payload.language as Language,
-          payload.userId,
-        );
-
-        socket.join(Game.Room(race.id));
-
-        this.handlePlayerEnterRace(
-          {
-            raceId: race.id,
-            raceParticipantId,
-            socketId: socket.id,
-          },
-          true,
-        );
-
-        const updatedRace = this.races.get(race.id) as Race;
-
-        socket.to(Game.Room(race.id)).emit("GameStateUpdate", {
-          raceState: {
-            id: race.id,
-            participants: this.getRaceParticipants(updatedRace),
-            status: updatedRace.status,
-            countdown: 0,
-          },
-        });
-
-        socket.emit("UserRaceResponse", {
-          race,
-          participants: this.getRaceParticipants(updatedRace),
-          raceParticipantId,
-          raceStatus: this.races.get(race.id)!.status,
-        });
-      });
-
-      socket.on("disconnect", () => {
-        const participant = this.participants.get(socket.id);
-
-        // this happens if the race ended successfully
-        if (!participant) return;
-
-        this.handlePlayerLeaveRace({
-          raceId: participant.raceId,
-          raceParticipantId: participant.id,
-          socketId: socket.id,
-        });
-      });
-
-      socket.on("PositionUpdate", (payload: PositionUpdatePayload) => {
-        this.handleParticipantPositionPayload(payload);
-      });
-    });
-  }
-
-  private getRaceParticipants(
-    race: Race,
-  ): (Participant & { socketId: string })[] {
-    const participants: (Participant & { socketId: string })[] = [];
-    // Leave this as a raw for loop, .map will create more memory and will have possibly undefined values that will need to be filtered out
-    for (let i = 0; race.participants.length > i; i++) {
-      const socketId = race.participants[i];
-      const participant = this.participants.get(socketId);
-      if (participant) {
-        // TODO : make typescipt happy
-        //@ts-expect-error oks
-        participant.socketId = socketId;
-        //@ts-expect-error oks
-        participants.push(participant);
-      }
-    }
-
-    return participants;
-  }
-
-  private createRaceWithParticipant(
-    raceId: string,
-    participant: { id: string; socketId: string },
-  ) {
-    this.participants.set(participant.socketId, {
-      id: participant.id,
-      raceId,
-      position: 0,
-      finishedAt: null,
-    });
-    return this.races.set(raceId, {
-      status: raceStatus.WAITING,
-      participants: [participant.socketId],
-    });
-  }
-
-  private async deleteRaceParticipant(raceParticipantId: string) {
-    return await prisma.raceParticipant.delete({
-      where: {
-        id: raceParticipantId,
-      },
-    });
-  }
-
-  private async handlePlayerEnterRace(
-    payload: UserRacePresencePayload,
-    autoStart?: boolean,
-  ) {
-    const race = this.races.get(payload.raceId);
-
-    if (!race) {
-      this.createRaceWithParticipant(payload.raceId, {
-        id: payload.raceParticipantId,
-        socketId: payload.socketId,
-      });
-    } else if (race.participants.length + 1 > Game.MAX_PARTICIPANTS_PER_RACE) {
-      return this.handleParticipantJoinedFullRace(
-        payload.socketId,
-        payload.raceParticipantId,
-      );
-    } else {
-      this.participants.set(payload.socketId, {
-        id: payload.raceParticipantId,
-        raceId: payload.raceId,
-        position: 0,
-        finishedAt: null,
-      });
-      race.participants.push(payload.socketId);
-      autoStart && this.startRaceCountdown(payload.raceId);
-    }
-
-    // Emit to all players in the room that a new player has joined.
-    this.server.to(Game.Room(payload.raceId)).emit("UserRaceEnter", payload);
-  }
-
-  private handleParticipantJoinedFullRace(
-    socketId: string,
-    raceParticipantId: string,
-  ) {
-    this.server.sockets.sockets.get(socketId)?.emit("UserEnterFullRace");
-
-    void this.deleteRaceParticipant(raceParticipantId);
-  }
-
-  private handlePlayerLeaveRace(payload: UserRacePresencePayload) {
-    const race = this.races.get(payload.raceId);
-
-    if (!race) {
-      console.warn("Player left a race that doesn't exist.", {
-        raceId: payload.raceId,
-        participantId: payload.raceParticipantId,
-        time: new Date(),
-        level: "warn",
-      });
-      return;
-    }
-
-    const participant = this.participants.get(payload.socketId);
-
-    //Participant left before completing the race
-    if (participant && !participant.finishedAt) {
-      void this.deleteRaceParticipant(payload.raceParticipantId);
-    }
-
-    this.participants.delete(payload.socketId);
-
-    //Removes the race participant in place.
-    //Array.filter could be used but that would create more memory
-    for (let i = race.participants.length - 1; i >= 0; i--) {
-      if (race.participants[i] === payload.socketId) {
-        race.participants.splice(i, 1);
-      }
-    }
-
-    this.server.to(Game.Room(payload.raceId)).emit("GameStateUpdate", {
-      raceState: {
-        id: payload.raceId,
-        participants: this.getRaceParticipants(race),
-        status: race.status,
-      },
-    });
-
-    if (
-      race.participants.length === 0 &&
-      race.status === raceStatus.COUNTDOWN
-    ) {
-      this.activeCountdowns.delete(payload.raceId);
-      return;
-    }
-
-    const isRaceEnded = this.isRaceEnded(race);
-    if (isRaceEnded) {
-      void this.endRace(payload.raceId);
-    }
-  }
-
-  private startRace(raceId: string) {
-    const interval = setInterval(() => {
-      const race = this.races.get(raceId);
-      //This means that the race is finished
-      if (!race) {
-        clearInterval(interval);
-        return;
-      }
-
-      if (race.status !== raceStatus.RUNNING) {
-        race.status = raceStatus.RUNNING;
-        void prisma.race
-          .update({
-            where: {
-              id: raceId,
-            },
-            data: {
-              startedAt: new Date(),
-            },
-          })
-          .then(() => {});
-      }
-
-      this.server.to(Game.Room(raceId)).emit("GameStateUpdate", {
-        raceState: {
-          id: raceId,
-          status: race.status,
-          participants: this.getRaceParticipants(race),
-        },
-      });
-    }, Game.GAME_LOOP_INTERVAL);
-  }
-
-  private async endRace(raceId: string) {
-    const race = this.races.get(raceId);
-
-    if (!race) {
-      console.warn("Trying to end a race that doesn't exist.", {
-        raceId,
-        time: new Date(),
-        level: "warn",
-      });
-      return;
-    }
-
-    race.status = raceStatus.FINISHED;
-
-    this.server.to(Game.Room(raceId)).emit("GameStateUpdate", {
-      raceState: {
-        id: raceId,
-        status: race.status,
-        participants: this.getRaceParticipants(race),
-      },
-    });
-
-    for (const socketId of race.participants) {
-      this.participants.delete(socketId);
-    }
-
-    this.races.delete(raceId);
-
-    await prisma.race.update({
-      where: {
-        id: raceId,
-      },
-      data: {
-        endedAt: new Date(),
-      },
-    });
-  }
-
-  private startRaceCountdown(raceId: string) {
-    if (this.activeCountdowns.has(raceId)) {
-      return;
-    }
-
-    const countdownPromise = new Promise<void>((resolve, reject) => {
-      let countdown = Game.START_GAME_COUNTDOWN;
-      const race = this.races.get(raceId);
-
-      if (!race) {
-        console.warn(
-          "Trying to start a countdown for a race that doesn't exist.",
-          {
-            raceId,
-            time: new Date(),
-          },
-        );
-        return reject();
-      }
-
-      race.status = raceStatus.COUNTDOWN;
-
-      const interval = setInterval(() => {
-        this.server.to(Game.Room(raceId)).emit("GameStateUpdate", {
-          raceState: {
-            participants: this.getRaceParticipants(race),
-            status: race.status,
-            id: raceId,
-            countdown,
-          },
-        });
-
-        countdown--;
-
-        if (countdown === 0) {
-          this.server.to(Game.Room(raceId)).emit("GameStateUpdate", {
-            raceState: {
-              participants: this.getRaceParticipants(race),
-              status: race.status,
-              id: raceId,
-              countdown,
-            },
-          });
-
-          this.startRace(raceId);
-          clearInterval(interval);
-          resolve();
-        }
-      }, 1000);
-    }).finally(() => {
-      this.activeCountdowns.delete(raceId);
-    });
-
-    this.activeCountdowns.set(raceId, countdownPromise);
-  }
-
-  private handleParticipantPositionPayload(payload: PositionUpdatePayload) {
-    const race = this.races.get(payload.raceId);
-
-    if (!race) {
-      console.warn(
-        "Trying to update a participant position on a race that doesn't exist.",
-        {
-          raceId: payload.raceId,
-          participant: payload.raceParticipantId,
-          time: new Date(),
-        },
-      );
-      return;
-    }
-    const participant = this.participants.get(payload.socketId);
-
-    if (!participant) {
-      console.warn("Trying to update a participant that doesn't exist.", {
-        raceId: payload.raceId,
-        participant: payload.raceParticipantId,
-        time: new Date(),
-      });
-      return;
-    }
-
-    participant.position = payload.position;
-
-    if (participant.position >= Game.GAME_MAX_POSITION) {
-      if (participant.finishedAt) return;
-      participant.finishedAt = new Date().getTime();
-    }
-
-    const isRaceEnded = this.isRaceEnded(race);
-
-    if (isRaceEnded) {
-      void this.endRace(payload.raceId);
-    }
-  }
-
-  // checks if every participant has finished the race
-  private isRaceEnded(race: Race) {
-    let finishedParticipants = 0;
-    const participants = this.getRaceParticipants(race);
-    for (let i = 0; i < participants.length; i++) {
-      if (participants[i].finishedAt) {
-        finishedParticipants++;
-      }
-    }
-
-    return finishedParticipants >= race.participants.length;
-  }
+import { GameMemoryStore } from "./store/memory";
+
+import { GAME_CONFIG, IS_IN_DEVELOPMENT, RACE_STATUS } from "./consts";
+import UserSessionMemoryStore from "./store/user-session";
+import ParticipantMemoryStore from "./store/participant";
+
+declare module "socket.io" {
+	interface Socket {
+		userID: string;
+		displayName: string;
+		displayImage: string;
+	}
 }
+
+/** Logic for the game:
+ *
+ * 1. Middleware:
+ * - Detect if a user is logged in on the client. To detect this, we check if a userID is provided in the auth handshake or not.
+ *
+ * - If a logged in user connected to the server, prevent them from connecting on other clients (e.g. other tabs & browsers).
+ *     This is necessary since we are using userIDs to check for uniqueness and this will be used to save a logged in user's data.
+ *
+ * - If a user is not logged on the client, we use the generated id of the socket (socket.id).
+ *
+ * 2. Connection to Socket:
+ * - We add the userSession to the memory of UserSessionMemoryStore
+ *
+ * 3. Disconnection to Socket:
+ * - Find the user from the list of userSessions in the memory and get the roomIDs they joined in.
+ *
+ * - Loop through each room.
+ *
+ * - If the loop is at the room === to socket.id, skip to the next iteration.
+ *
+ * - Remove the userSession of the user from the room stored in memory (room.participants).
+ *
+ * - If the room still exists, then change the room owner === to the userSesssion at the head of the list of participants,
+ *  pretty much the user that joined after the owner.
+ *
+ * - Emit the room information to all sockets connected to update the roomOwner
+ *
+ * - Remove the disconnected user from the memory.
+ *
+ * 4. Room creation:
+ * - If userID (can be a sessionID, or the socketID of the client) is not provided by the client, then we return an Error.
+ *
+ * - Get a random snippet from the database based on the provided language.
+ *
+ * - If no snippet was returned by the getRandomSnippet() function, then we return an Error (we assume that no snippet exists for that language.).
+ *
+ * - We find the user in the memory based on their userID.
+ *
+ * - If no user was found, then an error occured.
+ *
+ * - Add the room to the Array<roomID> of the saved userSession and join the socket to the room
+ *
+ * - Add the room to memory.
+ *
+ * - Send the roomID to the client (a signal that confirms everything went smoothly).
+ *
+ * - Send a notification
+ */
+class TypingGame implements Game {
+	public readonly MAXIMUM_PLAYER_COUNT: number;
+	private readonly MAXIMUM_ROOMS_IN_MEMORY: number;
+
+	public memory: GameMemoryStoreInterface;
+	public server: Server<ClientToServerEvents, ServerToClientEvents>;
+
+	constructor(server: Server<ClientToServerEvents, ServerToClientEvents>) {
+		this.server = server;
+		this.memory = new GameMemoryStore();
+		this.MAXIMUM_PLAYER_COUNT = GAME_CONFIG.MAX_PARTICIPANTS_PER_RACE;
+		this.MAXIMUM_ROOMS_IN_MEMORY = GAME_CONFIG.MAX_NUMBER_OF_ROOMS;
+	}
+
+	initializeGame(): void {
+		this.middleware();
+
+		this.server.on("connection", (socket) => {
+			console.log(this.memory);
+			this.connectUser(socket);
+			if (IS_IN_DEVELOPMENT) {
+				console.log("A user has connected.");
+			}
+
+			socket.on("disconnect", (reason) =>
+				this.handleDisconnect(socket, reason),
+			);
+			socket.on("CreateRoom", ({ userID, language }) =>
+				this.handleRoomCreation(socket, { userID, language }),
+			);
+
+			socket.on("CheckIfRoomIDExists", (roomID) =>
+				this.handleCheckIfRoomIDExists(socket, roomID),
+			);
+			socket.on("CheckGameStatusOfRoom", (roomID) =>
+				this.handleCheckGameStatusOfRoom(roomID),
+			);
+
+			socket.on("ChangeGameStatusOfRoom", ({ roomID, raceStatus }) =>
+				this.handleChangeGameStatusOfRoom(socket, { roomID, raceStatus }),
+			);
+
+			socket.on("RequestRoomSnippet", (roomID) =>
+				this.handleRequestRoomSnippet(socket, roomID),
+			);
+			socket.on("RequestRunningGameInformation", (roomID) =>
+				this.handleRequestRunningGameInformation(socket, roomID),
+			);
+			socket.on("RequestAllPlayersProgress", (roomID) =>
+				this.handleRequestAllPlayersProgress(roomID),
+			);
+			socket.on("RequestFinishedGame", (roomID) =>
+				this.handleRequestFinishedGame(roomID),
+			);
+
+			/** Leave it as an arrow function since this.memory will be
+			 *  undefined if we just place the function as the 2nd parameter.
+			 */
+			socket.on("SendUserProgress", ({ userID, roomID, progress }) =>
+				this.handleSendUserProgress({ userID, roomID, progress }),
+			);
+			socket.on(
+				"SendUserTimeStamp",
+				({ userID, roomID, accuracy, cpm, totalErrors }) =>
+					this.handleSendUserTimeStamp({
+						userID,
+						roomID,
+						accuracy,
+						cpm,
+						totalErrors,
+					}),
+			);
+			socket.on("SendUserHasFinished", ({ userID, roomID, timeTaken }) =>
+				this.handleSendUserHasFinished({ userID, roomID, timeTaken }),
+			);
+		});
+	}
+
+	private handleRequestFinishedGame(roomID: string): void {
+		const foundRunningRoom = this.memory.findRunningGame(roomID);
+
+		if (!foundRunningRoom) {
+			console.warn(
+				"Could not find a running room! Trying to get a running game that just finished on a room that does not exist.",
+			);
+			return;
+		}
+
+		if (!foundRunningRoom.startedAt) {
+			console.warn(
+				"Error! A room's key of 'startedAt' does not have a value even though it has finished.",
+			);
+		}
+
+		if (!foundRunningRoom.endedAt) {
+			console.warn(
+				"Error! A room's key of 'endedAt' does not have a value even though it has finished.",
+			);
+		}
+
+		this.server.to(roomID).emit("GameFinished", {
+			endedAt: foundRunningRoom.endedAt ?? new Date(),
+			startedAt: foundRunningRoom.startedAt as Date,
+			roomID: roomID,
+			participants: foundRunningRoom.participants.getAllParticipants(),
+		});
+	}
+
+	/** ON PAGE LOAD (we load all the progress trackers) */
+	private handleRequestAllPlayersProgress(roomID: string): void {
+		const foundRunningRoom = this.memory.findRunningGame(roomID);
+
+		if (!foundRunningRoom) {
+			console.warn(
+				"Could not find a running room! Trying to get all players' progress on a room that does not exist.",
+			);
+			return;
+		}
+
+		this.server
+			.to(roomID)
+			.emit(
+				"SendAllPlayersProgress",
+				foundRunningRoom.participants.getAllParticipantsProgress(),
+			);
+	}
+
+	/** Also responsible for checking if teh game is considered finish or not */
+	private handleSendUserHasFinished({
+		timeTaken,
+		userID,
+		roomID,
+	}: SendUserHasFinishedPayload): void {
+		const foundRunningRoom = this.memory.findRunningGame(roomID);
+
+		if (!foundRunningRoom) {
+			console.warn(
+				"Could not find a running room! Trying to update a user's finish state on a room that does not exist.",
+			);
+			return;
+		}
+
+		foundRunningRoom.participants.updateTimeTaken(userID, timeTaken);
+
+		const RACE_FINISHED =
+			foundRunningRoom.participants.checkIfAllParticipantsHaveFinished();
+
+		if (RACE_FINISHED) {
+			const foundRoom = this.memory.findRoomByRoomID(roomID);
+
+			if (!foundRoom) {
+				console.warn(
+					"A running game exists but a room for that game does not exist! Memory handling error.",
+				);
+				return;
+			}
+
+			if (!foundRunningRoom.startedAt) {
+				console.warn(
+					"Error! A room's key of 'startedAt' does not have a value even though it has finished.",
+				);
+			}
+
+			foundRunningRoom.endedAt = new Date();
+			foundRoom.gameStatus = RACE_STATUS.FINISHED;
+			this.server.to(roomID).emit("SendGameStatusOfRoom", foundRoom.gameStatus);
+		}
+	}
+
+	private handleSendUserTimeStamp({
+		userID,
+		roomID,
+		cpm,
+		accuracy,
+		totalErrors,
+	}: UpdateTimeStampPayload): void {
+		const foundRunningRoom = this.memory.findRunningGame(roomID);
+
+		if (!foundRunningRoom) {
+			console.warn(
+				"Could not find a running room! Trying to update a user timestamp on a room that does not exist.",
+			);
+			return;
+		}
+
+		foundRunningRoom.participants.updateTimeStamp(userID, {
+			cpm,
+			accuracy,
+			errors: totalErrors,
+		});
+		this.server.to(roomID).emit("SendRunningGameInformation", {
+			roomID: roomID,
+			participants: foundRunningRoom.participants.getAllParticipants(),
+		});
+	}
+
+	private handleSendUserProgress({
+		userID,
+		progress,
+		roomID,
+	}: UpdateProgressPayload): void {
+		const foundRunningRoom = this.memory.findRunningGame(roomID);
+		console.log("USERID", userID);
+		if (!foundRunningRoom) {
+			console.warn(
+				"Could not find a running room! Trying to update a user progress on a room that does not exist.",
+			);
+			return;
+		}
+
+		foundRunningRoom.participants.updateProgress(userID, progress);
+		this.server
+			.to(roomID)
+			.emit(
+				"SendAllPlayersProgress",
+				foundRunningRoom.participants.getAllParticipantsProgress(),
+			);
+	}
+
+	/** Skip over to the socket that requested this
+	 *
+	 *  The client will emit this per GAME_INTERVAL (100ms right now)
+	 *  and we send updated information in here (we can separate it, but
+	 *  let's have it like this for now).
+	 */
+	private handleRequestRunningGameInformation(
+		socket: Socket<ClientToServerEvents, ServerToClientEvents>,
+		roomID: string,
+	): void {
+		const foundRunningRoom = this.memory.findRunningGame(roomID);
+
+		if (!foundRunningRoom) {
+			console.warn(
+				"Could not find room! This should exist when requesting for its infomartion in-game (during a typing race).",
+			);
+			return;
+		}
+
+		this.server.to(roomID).emit("SendRunningGameInformation", {
+			roomID: roomID,
+			participants: foundRunningRoom.participants.getAllParticipants(),
+		});
+	}
+
+	/* emit the snippet of the room to the socket that requested it */
+	private handleRequestRoomSnippet(
+		socket: Socket<ClientToServerEvents, ServerToClientEvents>,
+		roomID: string,
+	): void {
+		const foundRoom = this.memory.findRoomByRoomID(roomID);
+		if (!foundRoom) {
+			console.warn(
+				"Room not found while requesting for a room's snippet! This room should exist.",
+			);
+			return;
+		}
+		this.server.to(roomID).emit("SendRoomSnippet", foundRoom.snippet);
+	}
+
+	private handleChangeGameStatusOfRoom(
+		socket: Socket<ClientToServerEvents, ServerToClientEvents>,
+		{ roomID, raceStatus }: ChangeGameStatusOfRoomPayload,
+	): void {
+		const foundRoom = this.memory.findRoomByRoomID(roomID);
+
+		if (!foundRoom) {
+			if (IS_IN_DEVELOPMENT) {
+				console.warn(
+					"Memory handling error. Trying to change the status of a room, but it does not exist in memory. Perhaps the roomID provided was wrong?",
+				);
+			}
+			socket.emit(
+				"SendError",
+				new Error(
+					"Failed to change the state of the room. Please try again or create a new room.",
+				),
+			);
+			socket.disconnect(true);
+			return;
+		}
+
+		const STARTING_GAME =
+			foundRoom.gameStatus === RACE_STATUS.WAITING &&
+			raceStatus === RACE_STATUS.RUNNING;
+
+		if (STARTING_GAME && foundRoom.participants.length <= 1) {
+			socket.emit(
+				"SendError",
+				new Error("Cannot start a multiplayer race with only one player."),
+			);
+			socket.disconnect(true);
+			return;
+		}
+
+		const RESETTING_GAME =
+			foundRoom.gameStatus !== RACE_STATUS.WAITING &&
+			raceStatus === RACE_STATUS.WAITING;
+
+		if (RESETTING_GAME) {
+			if (foundRoom.gameStatus === RACE_STATUS.RUNNING || foundRoom.gameStatus === RACE_STATUS.FINISHED) {
+				this.memory.removeRunningGame(foundRoom.roomID,);
+			}
+
+			if (foundRoom.participants.length <= 1) {
+				this.server.to(roomID).emit("SendNotification", {
+					title: "Resetting Game",
+					description: "Resetting the game since you are the only player left.",
+				});
+			} else {
+				this.server.to(roomID).emit("SendNotification", {
+					title: "Resetting Game",
+					description: "Let the games begin once again!",
+				});
+			}
+		}
+
+		const GAME_STARTS = raceStatus === "running";
+		if (GAME_STARTS) {
+			const foundExistingRunningGame = this.memory.findRunningGame(roomID);
+
+			if (!foundExistingRunningGame) {
+				const players = foundRoom.participants.getAllUsers();
+				console.log("STARTING_GAME", players);
+
+				const runningGameParticipants = new ParticipantMemoryStore();
+
+				for (let idx = 0; idx < players.length; ++idx) {
+					runningGameParticipants.append({
+						userID: players[idx].userID,
+						displayImage: players[idx].displayImage,
+						displayName: players[idx].displayName,
+						progress: 0,
+						isFinished: false,
+						timeStamp: [],
+						timeTaken: 0,
+					});
+				}
+
+				const activeRoom = {
+					roomID: foundRoom.roomID,
+					participants: runningGameParticipants,
+					startedAt: new Date(),
+					endedAt: null,
+				} satisfies RunningGameInformation;
+
+				this.memory.addRunningGame(activeRoom);
+			}
+		}
+
+		foundRoom.gameStatus = raceStatus;
+		this.server.to(roomID).emit("SendGameStatusOfRoom", foundRoom.gameStatus);
+	}
+
+	private handleCheckGameStatusOfRoom(roomID: string): void {
+		const foundRoom = this.memory.findRoomByRoomID(roomID);
+
+		if (!foundRoom) {
+			if (IS_IN_DEVELOPMENT) {
+				console.warn(
+					"The room ID provided by CheckGameStatusOfRoom does not exist. This is a memory handling error since the room should exist.",
+				);
+			}
+			return;
+		}
+
+		this.server.to(roomID).emit("SendGameStatusOfRoom", foundRoom.gameStatus);
+	}
+
+	private handleCheckIfRoomIDExists(
+		socket: Socket<ClientToServerEvents, ServerToClientEvents>,
+		roomID: string,
+	): void {
+		const foundRoom = this.memory.findRoomByRoomID(roomID);
+		if (!foundRoom) {
+			socket.emit("SendNotification", {
+				title: "Room Not Found",
+				description:
+					"The room ID does not exist. Perhaps it is yet to be created or it got deleted? Try creating a new one.",
+				variant: "destructive",
+			});
+			socket.disconnect(true);
+			return;
+		}
+
+		if (foundRoom.participants.length >= this.MAXIMUM_PLAYER_COUNT) {
+			const USER_IS_IN_ROOM = foundRoom.participants.findUserByID(socket.userID);
+			if (!USER_IS_IN_ROOM) {
+				socket.emit("SendNotification", {
+					title: "Room Full!",
+					description: `This room is full of participants. The current maximum players is ${this.MAXIMUM_PLAYER_COUNT} Try creating a new one.`,
+					variant: "destructive",
+				});
+				socket.disconnect(true);
+				return;
+			}
+		}
+
+		if (foundRoom.gameStatus === RACE_STATUS.FINISHED) {
+			socket.emit("SendNotification", {
+				title: "Room Is Not Accepting Players!",
+				description:
+					"The race for this room has just finished. Please wait for the owner to change the room's state to waiting again.",
+			});
+			socket.disconnect(true);
+			return;
+		}
+
+		if (foundRoom.gameStatus !== RACE_STATUS.WAITING) {
+			socket.emit("SendNotification", {
+				title: "Race Has Started!",
+				description:
+					"The race for this room has already started. Please try creating a new one.",
+			});
+			socket.disconnect(true);
+			return;
+		}
+
+		const userSession = this.memory.findUserByID(socket.userID);
+		if (!userSession) {
+			if (IS_IN_DEVELOPMENT) {
+				console.warn(
+					"Memory handling error. User session is not in memory despite them connecting to the server.",
+				);
+			}
+			return;
+		}
+
+		if (!socket.rooms.has(roomID)) {
+			socket.join(roomID);
+			userSession.roomIDs.push(roomID);
+			foundRoom.participants.addUser(userSession);
+			socket.emit("SendRoomID", {
+				roomID,
+				roomOwnerID: foundRoom.roomOwnerID,
+			});
+			socket.to(roomID).emit("SendNotification", {
+				title: socket.displayName + " has joined the room.",
+			});
+		}
+		
+		this.server
+		.to(roomID)
+		.emit("PlayerJoinedOrLeftRoom", foundRoom.participants.getAllUsers());
+	}
+
+	private async handleRoomCreation(
+		socket: Socket<ClientToServerEvents, ServerToClientEvents>,
+		{ userID, language }: CreateRoomPayload,
+	): Promise<void> {
+		if (!userID) {
+			console.warn(
+				"userID is not provided! Please provide it to create a room.",
+			);
+			const error = new Error("Something went wrong.");
+			socket.emit("SendError", error);
+			socket.disconnect(true);
+			return;
+		}
+
+		const amountOfRoomsInMemory = this.memory.getLengthOfRooms();
+
+		if (amountOfRoomsInMemory >= this.MAXIMUM_ROOMS_IN_MEMORY) {
+			socket.emit("SendNotification", {
+				title: "Server Full!",
+				description:
+					"The server is full of rooms right now. Please try again later.",
+				variant: "destructive"
+			});
+			socket.disconnect(true);
+			return;
+		}
+
+		socket.emit("SendNotification", {
+			title: "Creating Room",
+			description: "Your room is being created...",
+		});
+
+		const snippet = await getRandomSnippet({ language });
+
+		if (!snippet) {
+			socket.emit("SendNotification", {
+				title: "Failed to create room",
+				description:
+					"There is no available snippet for the language you've chosen. Please try creating one.",
+				variant: "destructive",
+			});
+			return;
+		}
+
+		const userSession = this.memory.findUserByID(userID);
+		if (!userSession) {
+			if (IS_IN_DEVELOPMENT) {
+				console.error(
+					"Error in managing memory. User does not exist in memory.",
+				);
+			}
+			socket.emit(
+				"SendError",
+				new Error(
+					"Failed to create room. Please try again or submit an issue on GitHub.",
+				),
+			);
+			socket.disconnect(true);
+			return;
+		}
+
+		const roomID = uuidv4();
+
+		const UserSessioMemoryForRoom = new UserSessionMemoryStore();
+
+		const room = {
+			snippet: {
+				id: snippet.id,
+				name: snippet.name,
+				code: snippet.code,
+				language,
+			},
+			createdAt: new Date(),
+			roomOwnerID: userSession.userID,
+			roomID,
+			participants: UserSessioMemoryForRoom,
+			gameStatus: RACE_STATUS.WAITING,
+		} satisfies Room;
+
+		this.memory.addRoom(room);
+		socket.emit("SendNotification", {
+			title: "Room Created",
+			description: "Success! Your room has been created.",
+		});
+		socket.emit("SendRoomID", {
+			roomID,
+			roomOwnerID: room.roomOwnerID,
+		});
+	}
+
+	private handleDisconnect(
+		socket: Socket<ClientToServerEvents, ServerToClientEvents>,
+		_reason: string,
+	): void {
+		const roomsUserIsIn = this.memory.findUserByID(socket.userID)?.roomIDs;
+
+		if (!roomsUserIsIn || roomsUserIsIn.length === 0) {
+			this.memory.removeUserByID(socket.userID);
+			return;
+		}
+
+		roomsUserIsIn.forEach((roomID) => {
+			/** Since socket.io automatically connects our socket
+			 *  to a room === to socket.id (so, we added it when saving the userSession).
+			 */
+			if (roomID === socket.id) {
+				return;
+			}
+
+			const ROOM_EXISTS = this.memory.removeUserSessionFromRoom(
+				roomID,
+				socket.userID,
+			);
+
+			if (ROOM_EXISTS) {
+				const firstPlayer = ROOM_EXISTS.participants.getItemAt(0);
+				if (firstPlayer) {
+					ROOM_EXISTS.roomOwnerID = firstPlayer.value.userID;
+					this.server
+						.to(roomID)
+						.emit(
+							"PlayerJoinedOrLeftRoom",
+							ROOM_EXISTS.participants.getAllUsers(),
+						);
+					this.server
+						.to(roomID)
+						.emit("SendRoomOwnerID", ROOM_EXISTS.roomOwnerID);
+				}
+
+				socket.to(roomID).emit("SendNotification", {
+					title: socket.displayName + " has left the room.",
+				});
+			}
+
+			this.memory.removeRunningGame(roomID);
+		});
+
+		this.memory.removeUserByID(socket.userID);
+	}
+
+	private connectUser(
+		socket: Socket<ClientToServerEvents, ServerToClientEvents>,
+	): void {
+		this.memory.addUser({
+			userID: socket.userID,
+			displayImage: socket.displayImage,
+			displayName: socket.displayName,
+			roomIDs: new Array<string>(1).fill(socket.id),
+		});
+	}
+
+	private middleware(): void {
+		this.server.use((socket, next) => {
+			const auth = socket.handshake.auth as MiddlewareAuth;
+			if (!auth.displayName) {
+				return next(new Error("Please provide a display name."));
+			}
+			if (auth.userID) {
+				const foundUser = this.memory.findUserByID(auth.userID);
+				if (foundUser) {
+					return next(
+						new Error(
+							"Your account is already connected to the server. Please disconnect and try again.",
+						),
+					);
+				}
+				socket.userID = auth.userID;
+			} else {
+				socket.userID = socket.id;
+			}
+
+			socket.displayName = auth.displayName;
+			socket.displayImage = auth.displayImage;
+			next();
+		});
+	}
+}
+
+export default TypingGame;

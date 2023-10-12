@@ -1,6 +1,5 @@
 import { sortFilters } from "./sort-filters";
 
-
 function convertNumberToOrdinal({ n }: { n: number }) {
   // special case for 11, 12, 13
   if (n % 100 === 11 || n % 100 === 12 || n % 100 === 13) {

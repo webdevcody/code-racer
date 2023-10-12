@@ -20,13 +20,10 @@ import { addSnippetAction, addSnippetForReviewAction } from "./actions";
 import LanguageDropDown from "./language-dropdown";
 import { catchError } from "@/lib/utils";
 import { unlockAchievement } from "@/components/achievement";
+import { languageTypes } from "@/lib/validations/room";
 
 const formDataSchema = z.object({
-  codeLanguage: z
-    .string({
-      required_error: "Please select a language",
-    })
-    .nonempty(),
+  codeLanguage: languageTypes,
   codeSnippet: z
     .string({
       required_error: "Please enter a code snippet",
@@ -41,7 +38,11 @@ const formDataSchema = z.object({
 
 type FormData = z.infer<typeof formDataSchema>;
 
-export default function AddSnippetForm({ lang }: { lang: string }) {
+export default function AddSnippetForm({
+  lang,
+}: {
+  lang: z.infer<typeof languageTypes>;
+}) {
   const { toast, dismiss } = useToast();
 
   const form = useForm<FormData>({
@@ -111,7 +112,7 @@ export default function AddSnippetForm({ lang }: { lang: string }) {
         responseData?.message === "snippet-created-and-achievement-unlocked"
       ) {
         const firstSnippetAchievement = achievements.find(
-          (achievement) => achievement.type === "FIRST_SNIPPET",
+          (achievement) => achievement.type === "FIRST_SNIPPET"
         );
         if (firstSnippetAchievement)
           unlockAchievement({

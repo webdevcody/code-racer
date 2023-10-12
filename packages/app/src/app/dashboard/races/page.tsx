@@ -31,7 +31,7 @@ export default async function RacesPage({
     typeof sort === "string"
       ? (sort.split(".") as [
           keyof Result | undefined,
-          "asc" | "desc" | undefined,
+          "asc" | "desc" | undefined
         ])
       : [];
 

@@ -1,98 +1,90 @@
 "use client";
 
-import * as React from "react";
+import type { RoomProps } from "../rooms/page";
+import type { LanguageType } from "@/lib/validations/room";
+import type { SendRoomIDPayload } from "@code-racer/wss/src/events/server-to-client";
 
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useRef } from "react";
+import { useRouter } from "next/navigation";
+
+import LanguageDropdown from "@/app/add-snippet/_components/language-dropdown";
 
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { createRoomSchema } from "@/lib/validations/room";
-import LanguageDropdown from "@/app/add-snippet/_components/language-dropdown";
-import CopyButton from "@/components/ui/copy-button";
-import { Icons } from "@/components/icons";
-import type { User } from "next-auth";
-import { socket } from "@/lib/socket";
-import { useRouter } from "next/navigation";
-import { toast } from "@/components/ui/use-toast";
-import { Language } from "@/config/languages";
 
-// import CopyButton from '@/components/CopyButton'
+import { connectToSocket, socket } from "@/lib/socket";
+import { FALLBACK_IMG, RANDOM_USERNAME } from "@/config/consts";
 
-type CreateRoomForm = z.infer<typeof createRoomSchema>;
-
-export const CreateRoomForm = () => {
-  const [isLoading, setIsLoading] = React.useState(false);
-
+export const CreateRoomForm: React.FC<RoomProps> = React.memo(({ session }) => {
+  const [language, setLanguage] = React.useState<LanguageType | undefined>();
+  const [error, setError] = React.useState("");
+  const [didSubmit, setDidSubmit] = React.useState(false);
   const router = useRouter();
 
-  const form = useForm<CreateRoomForm>({
-    resolver: zodResolver(createRoomSchema),
-    defaultValues: {
-      language: localStorage.getItem("codeLanguage") ?? "",
-    },
-  });
+  const timerRef = useRef<NodeJS.Timeout | undefined>();
 
-  function onSubmit({ language }: CreateRoomForm) {
-    setIsLoading(true);
-    socket.emit("UserCreateRoom", {
-      // TODO: make typescript happy
-      language: language as Language,
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!language) {
+      setError("Please choose a language.");
+      return;
+    }
+    connectToSocket({
+      userID: session?.id ?? socket.id,
+      displayName: session?.name ?? RANDOM_USERNAME,
+      displayImage: session?.image ?? FALLBACK_IMG,
     });
-  }
+    /** workaround to socket.id being undefined when socket is not connected. */
+    setDidSubmit(true);
+
+    if (!timerRef.current) {
+      timerRef.current = setTimeout(() => {
+        setDidSubmit(false);
+      }, 1000);
+    } else {
+      clearTimeout(timerRef.current);
+      timerRef.current = undefined;
+    }
+  };
+
+  const submit = React.useCallback(() => {
+    if (language) {
+      socket.emit("CreateRoom", {
+        userID: session?.id ?? socket.id,
+        language,
+      });
+    }
+  }, [session, language]);
 
   React.useEffect(() => {
-    socket.on("RoomCreated", (payload) => {
-      router.push(`/race/${payload.roomId}`);
-    });
+    if (!didSubmit) {
+      return;
+    }
+    socket.on("connect", submit);
+    return () => {
+      socket.off("connect", submit);
+    };
+  }, [didSubmit, submit]);
 
-    socket.on("SendNotification", (payload) => {
-      toast({
-        title: payload.title,
-        description: payload.description,
-        variant: payload.variant,
-      });
+  React.useEffect(() => {
+    const handleRoomCreation = ({ roomID }: SendRoomIDPayload) => {
+      router.push(`/race/rooms/${encodeURIComponent(roomID)}`);
+    };
 
-      setIsLoading(false);
-    });
-  }, []);
+    socket.on("SendRoomID", handleRoomCreation);
+    return () => {
+      socket.off("SendRoomID", handleRoomCreation);
+    };
+  }, [router, session]);
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-4"
-      >
-        <FormField
-          control={form.control}
-          name="language"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-foreground">Language</FormLabel>
-              <FormControl>
-                <LanguageDropdown {...field} />
-              </FormControl>
-              <FormMessage className="text-xs" />
-            </FormItem>
-          )}
-        />
-
-        <Button type="submit" className="mt-2 w-full">
-          {isLoading ? (
-            <Icons.spinner className="h-4 w-4 animate-spin" />
-          ) : (
-            "Create a room"
-          )}
-        </Button>
-      </form>
-    </Form>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <LanguageDropdown value={language} onChange={setLanguage} />
+      <Button disabled={didSubmit} type="submit" className="mt-2 w-full">
+        Create a room
+      </Button>
+      {error && <p className="text-destructive">{error}</p>}
+    </form>
   );
-};
+});
+
+CreateRoomForm.displayName = "CreateRoomForm";

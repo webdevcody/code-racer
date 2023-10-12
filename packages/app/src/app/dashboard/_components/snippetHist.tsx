@@ -46,7 +46,7 @@ function getCustomisedData(data: Snippet[]) {
         language,
         count,
       };
-    },
+    }
   );
 
   return dataCustomised;

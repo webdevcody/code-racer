@@ -22,7 +22,7 @@ export function displayNumber(number: number): string {
 }
 
 async function getContributorCodeChanges(
-  contributors: GitHubUser[],
+  contributors: GitHubUser[]
 ): Promise<ContributorCodeChanges[]> {
   const url = siteConfig.api.github.githubContributorActivity;
   const commitActivity: ContributorCodeChanges[] = [];
@@ -47,13 +47,13 @@ async function getContributorCodeChanges(
           const activityAllTime = activity.weeks.reduce(
             (
               accumulator: ContributorCodeChanges,
-              currentValue: { a: number; d: number; w: number; c: number },
+              currentValue: { a: number; d: number; w: number; c: number }
             ) => ({
               ...accumulator,
               additions: currentValue.a + accumulator.additions,
               deletions: currentValue.d + accumulator.deletions,
             }),
-            { additions: 0, deletions: 0, login: username },
+            { additions: 0, deletions: 0, login: username }
           );
           commitActivity.push(activityAllTime);
         }
@@ -117,7 +117,7 @@ async function getRepoWeeklyCodeChanges(): Promise<
 
 async function getContributorCommitList(
   contributor: GitHubUser,
-  take = 5,
+  take = 5
 ): Promise<GitHubCommit[]> {
   const searchParams = new URLSearchParams({
     author: contributor.login,

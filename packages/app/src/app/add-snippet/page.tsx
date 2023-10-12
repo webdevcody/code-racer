@@ -1,12 +1,14 @@
 "use client";
 import { Heading } from "@/components/ui/heading";
 import AddSnippetForm from "./_components/add-snippet-form";
+import { z } from "zod";
+import { languageTypes } from "@/lib/validations/room";
 
 export default function AddSnippet({
   searchParams,
 }: {
   searchParams: {
-    lang: string;
+    lang: z.infer<typeof languageTypes>;
   };
 }) {
   const language = searchParams.lang;

@@ -49,14 +49,14 @@ export default function Notification({ userId }: NotificationProps) {
     })
       .then((result) => setNotifications(result))
       .catch((error) =>
-        console.error("getUserNotification next action error:", error),
+        console.error("getUserNotification next action error:", error)
       );
     getUserNotificationCount({
       userId,
     })
       .then((result) => setNotificationCount(result))
       .catch((error) =>
-        console.error("getUserNotificationCount next action error:", error),
+        console.error("getUserNotificationCount next action error:", error)
       );
   }, [userId, skip, take]);
 
@@ -156,7 +156,7 @@ export default function Notification({ userId }: NotificationProps) {
                     });
                     setNotifications((currentNotifications) => {
                       return currentNotifications.filter(
-                        (n) => n.id !== notification.id,
+                        (n) => n.id !== notification.id
                       );
                     });
                     setNotificationCount((current) => current - 1);

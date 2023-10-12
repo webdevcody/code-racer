@@ -62,7 +62,8 @@ export const siteConfig = {
   },
 
   multiplayer: {
-    maxParticipantsPerRace: 4,
+    maxParticipantsPerRace: 2,
+    startGameCountdown: 10,
   },
 
   snippet: {
@@ -80,6 +81,7 @@ export const siteConfig = {
         bracketSameLine: false,
         arrowParens: "avoid",
         insertPragma: false,
+        proseWrap: "always",
         htmlWhitespaceSensitivity: "css",
         vueIndentScriptAndStyle: false,
         endOfLine: "lf",

@@ -4,6 +4,13 @@ import { type Language } from "../../../config/languages";
 import { prisma } from "../../../lib/prisma";
 import type { Snippet } from "@prisma/client";
 
+/** TODO:
+ *  ---
+ *  If we are generating a new random snippet,
+ * for example, from a practice race page, we
+ *  need to not include the id of the currently
+ *  displayed snippet to get a new one.
+ */
 export async function getRandomSnippet(input: {
   language: Language;
   reportedSnippets?: string[];
@@ -40,7 +47,7 @@ export async function getRandomSnippet(input: {
 }
 
 export async function getSnippetById(
-  snippetId: string,
+  snippetId: string
 ): Promise<Snippet | null> {
   return await prisma.snippet.findUnique({
     where: {

@@ -1,16 +1,11 @@
+import type { NextPage } from "next";
+
 import * as React from "react";
 
-export default async function Layout({
-  children,
-  modal,
-}: {
-  children: React.ReactNode;
-  modal: React.ReactNode;
-}) {
-  return (
-    <div>
-      {children} 
-      {modal}
-    </div>
-  );
-}
+import { NotificationCatcher } from "./notification-catcher";
+
+const Layout: NextPage<{ children: React.ReactNode }> = ({ children }) => {
+  return <NotificationCatcher>{children}</NotificationCatcher>;
+};
+
+export default Layout;

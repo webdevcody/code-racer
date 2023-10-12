@@ -5,7 +5,11 @@ import { getCurrentUser } from "@/lib/session";
 import { redirect } from "next/navigation";
 import { Heading } from "@/components/ui/heading";
 import Shell from "@/components/shell";
-import { getUserRank, getUserResultsCount, getUserSnippetCount } from "./loaders";
+import {
+  getUserRank,
+  getUserResultsCount,
+  getUserSnippetCount,
+} from "./loaders";
 import AchievementProgress from "../_components/achievementProgress";
 import { prisma } from "@/lib/prisma";
 import { achievements } from "@/config/achievements";
@@ -58,7 +62,10 @@ export default async function AwardsPage({}) {
           value={totalUserSnippets}
         />
       </div>
-      <AchievementProgress userAchievements={userAchievements} allAchievements={allAchievements} />
+      <AchievementProgress
+        userAchievements={userAchievements}
+        allAchievements={allAchievements}
+      />
     </Shell>
   );
 }

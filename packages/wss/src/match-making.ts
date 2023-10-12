@@ -2,11 +2,11 @@ import { type Language } from "@code-racer/app/src/config/languages";
 import { getRandomSnippet } from "@code-racer/app/src/app/race/(play)/loaders";
 import { siteConfig } from "@code-racer/app/src/config/site";
 import {
-  type Prisma,
-  prisma,
-  type User,
-  Snippet,
-  type Race,
+	type Prisma,
+	prisma,
+	type User,
+	Snippet,
+	type Race,
 } from "@code-racer/app/src/lib/prisma";
 
 type RaceAverageStatsWeight = number;
@@ -24,176 +24,176 @@ type RaceAverageStatsWeight = number;
  *  4. race's participants has not reached maxiumum capacity
  */
 export async function getAvailableRace(
-  language: Language,
-  userId?: User["id"],
+	language: Language,
+	userId?: User["id"],
 ) {
-  let availableRace = await prisma.race.findMany({
-    where: {
-      snippet: {
-        language,
-      },
-      AND: [{ startedAt: null }, { endedAt: null }],
-      participants: {
-        every: {
-          user: userId
-            ? {
-                isNot: null,
-              }
-            : null,
-        },
-      },
-    },
-    include: {
-      participants: Boolean(userId),
-      _count: {
-        select: {
-          participants: true,
-        },
-      },
-    },
-  });
+	let availableRace = await prisma.race.findMany({
+		where: {
+			snippet: {
+				language,
+			},
+			AND: [{ startedAt: null }, { endedAt: null }],
+			participants: {
+				every: {
+					user: userId
+						? {
+								isNot: null,
+						  }
+						: null,
+				},
+			},
+		},
+		include: {
+			participants: Boolean(userId),
+			_count: {
+				select: {
+					participants: true,
+				},
+			},
+		},
+	});
 
-  // filter out full race
-  availableRace = availableRace.filter(
-    (race) =>
-      race._count.participants < siteConfig.multiplayer.maxParticipantsPerRace,
-  );
+	// filter out full race
+	availableRace = availableRace.filter(
+		(race) =>
+			race._count.participants < siteConfig.multiplayer.maxParticipantsPerRace,
+	);
 
-  if (availableRace.length < 1) {
-    const randomSnippet = await getRandomSnippet({ language });
-    const race = await createRace(randomSnippet);
-    // console.log("Selected", race);
-    return race;
-  }
+	if (availableRace.length < 1) {
+		const randomSnippet = await getRandomSnippet({ language });
+		const race = await createRace(randomSnippet);
+		// console.log("Selected", race);
+		return race;
+	}
 
-  if (userId) {
-    /*
+	if (userId) {
+		/*
       Current Implementation match user base on a value called `stats weight` by averaging both `averageCpm` and `averageAccuary`
       Then we compare user's stats weight to every race's stats weight
       We pick race which has the least deviation value (smallest delta value)
     */
-    let currentSelectedRace = availableRace[0];
+		let currentSelectedRace = availableRace[0];
 
-    const userStatsWeight = await getUserStatsWeight(userId);
+		const userStatsWeight = await getUserStatsWeight(userId);
 
-    const currentRaceStatsWeight = await getRaceStatsWeight(
-      currentSelectedRace.id,
-    );
+		const currentRaceStatsWeight = await getRaceStatsWeight(
+			currentSelectedRace.id,
+		);
 
-    let delta = Math.abs(userStatsWeight - currentRaceStatsWeight);
+		let delta = Math.abs(userStatsWeight - currentRaceStatsWeight);
 
-    availableRace.forEach(async (race, index) => {
-      const raceStatsWeight = await getRaceStatsWeight(race.id);
-      if (userStatsWeight - raceStatsWeight < delta) {
-        currentSelectedRace = availableRace[index];
-        delta = userStatsWeight - raceStatsWeight;
-      }
-    });
+		availableRace.forEach(async (race, index) => {
+			const raceStatsWeight = await getRaceStatsWeight(race.id);
+			if (userStatsWeight - raceStatsWeight < delta) {
+				currentSelectedRace = availableRace[index];
+				delta = userStatsWeight - raceStatsWeight;
+			}
+		});
 
-    // For Debugging
-    // console.log({
-    //   userStatsWeight,
-    //   currentRaceStatsWeight,
-    //   currentDelta: delta,
-    //   currentSelectedRace,
-    // });
-    return currentSelectedRace;
-  }
-  // console.log("Selected", availableRace[0]);
-  return availableRace[0];
+		// For Debugging
+		// console.log({
+		//   userStatsWeight,
+		//   currentRaceStatsWeight,
+		//   currentDelta: delta,
+		//   currentSelectedRace,
+		// });
+		return currentSelectedRace;
+	}
+	// console.log("Selected", availableRace[0]);
+	return availableRace[0];
 }
 
 export async function createRace(snippet: Snippet, id?: string) {
-  let data: { snippet: { connect: { id: string } }; id?: string } = {
-    snippet: {
-      connect: {
-        id: snippet.id,
-      },
-    },
-  };
+	let data: { snippet: { connect: { id: string } }; id?: string } = {
+		snippet: {
+			connect: {
+				id: snippet.id,
+			},
+		},
+	};
 
-  if (id) {
-    data = {
-      ...data,
-      id,
-    };
-  }
+	if (id) {
+		data = {
+			...data,
+			id,
+		};
+	}
 
-  return await prisma.race.create({
-    data,
-  });
+	return await prisma.race.create({
+		data,
+	});
 }
 
 export async function createRaceParticipant(
-  raceToJoin: Prisma.RaceGetPayload<Record<string, never>>,
-  userId?: User["id"],
+	raceToJoin: Prisma.RaceGetPayload<Record<string, never>>,
+	userId?: User["id"],
 ) {
-  return await prisma.raceParticipant.create({
-    data: {
-      user: userId
-        ? {
-            connect: {
-              id: userId,
-            },
-          }
-        : undefined,
-      Race: {
-        connect: {
-          id: raceToJoin.id,
-        },
-      },
-    },
-  });
+	return await prisma.raceParticipant.create({
+		data: {
+			user: userId
+				? {
+						connect: {
+							id: userId,
+						},
+				  }
+				: undefined,
+			Race: {
+				connect: {
+					id: raceToJoin.id,
+				},
+			},
+		},
+	});
 }
 
 export async function raceMatchMaking(language: Language, userId?: User["id"]) {
-  const race = await getAvailableRace(language, userId);
-  const raceParticipant = await createRaceParticipant(race, userId);
-  return {
-    race,
-    raceParticipantId: raceParticipant.id,
-  };
+	const race = await getAvailableRace(language, userId);
+	const raceParticipant = await createRaceParticipant(race, userId);
+	return {
+		race,
+		raceParticipantId: raceParticipant.id,
+	};
 }
 
 async function getRaceStatsWeight(
-  raceId: Race["id"],
+	raceId: Race["id"],
 ): Promise<RaceAverageStatsWeight> {
-  const participantsAverageStats = await prisma.user.aggregate({
-    _avg: {
-      averageAccuracy: true,
-      averageCpm: true,
-    },
-    where: {
-      RaceParticipant: {
-        some: {
-          raceId: raceId,
-        },
-      },
-    },
-  });
+	const participantsAverageStats = await prisma.user.aggregate({
+		_avg: {
+			averageAccuracy: true,
+			averageCpm: true,
+		},
+		where: {
+			RaceParticipant: {
+				some: {
+					raceId: raceId,
+				},
+			},
+		},
+	});
 
-  // console.log("participantsAverageStats", participantsAverageStats);
+	// console.log("participantsAverageStats", participantsAverageStats);
 
-  const weight =
-    Number(participantsAverageStats._avg.averageAccuracy) +
-    Number(participantsAverageStats._avg.averageCpm) / 2;
+	const weight =
+		Number(participantsAverageStats._avg.averageAccuracy) +
+		Number(participantsAverageStats._avg.averageCpm) / 2;
 
-  return weight;
+	return weight;
 }
 
 async function getUserStatsWeight(userId: User["id"]): Promise<number> {
-  const user = await prisma.user.findFirst({
-    select: {
-      averageAccuracy: true,
-      averageCpm: true,
-    },
-    where: {
-      id: userId,
-    },
-  });
+	const user = await prisma.user.findFirst({
+		select: {
+			averageAccuracy: true,
+			averageCpm: true,
+		},
+		where: {
+			id: userId,
+		},
+	});
 
-  const userStatsWeight =
-    Number(user?.averageAccuracy) + Number(user?.averageCpm) / 2;
+	const userStatsWeight =
+		Number(user?.averageAccuracy) + Number(user?.averageCpm) / 2;
 
-  return userStatsWeight;
+	return userStatsWeight;
 }

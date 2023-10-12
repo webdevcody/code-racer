@@ -1,46 +1,266 @@
 ## Socket.io code-race server
 
-### Lifecycle
+Welcome the the README file for the websocket server! We used socket.io for this to work. The only time that a player will be connected is when they play multiplayer. This is an updated README file after refactoring the multiplayer lifecycle and room handling. As of this moment, everything is still a prototype and is not yet available in production.
 
-1. Players can connect to the game server through Socket.io.
-2. When a player wants to enter a race, the server handles the player's request and adds them to the race. If the race is not already created, a new race is created, and the player is added as the first participant.
-3. If the race already has participants, additional players are allowed to join until the maximum number of participants (MAX_PARTICIPANTS_PER_RACE) is reached. After this limit, the race is considered full, and no more players can join.
-4. Once there are enough players in the race, a countdown starts (START_GAME_COUNTDOWN) to prepare for the race.
-5. When the countdown reaches zero, the race officially starts, and the server emits the race state to all participants.
-6. During the race, players send updates about their current typing progress (position) to the server. The server keeps track of the positions of all players.
-7. The race continues until one of the players reaches the maximum position (GAME_MAX_POSITION), indicating that they have completed the race.
-8. When the race finishes, the server emits the final race state to all participants, removes the race from the race map and marks the race as ended in the db.
+The recent refactor uses a Linked List to handle all of the state to try and achieve a consistent way of handling the websocket server's state. All logic is written with Object Oriented Programming using classes. Please note that the current implementation temporarily stores all state in memory and gets removed upon user disconnection.
 
-### Functionalities:
+Throughout the lifecycle, the server can emit successes, errors or fails in tasks because of conditions such as, for example, a room is full of users. There is a wrapper for the overall wrapper for the layout of the rooms page that will catch these notifications and forcibly disconnect the user based on the title of the notification. The snippet is as follows:
 
-- Players can enter and leave races.
-- Races have a maximum capacity, and once full, no additional players can join.
-- The server handles race countdown before the race starts.
-- Players' positions are updated in real-time during the race.
-- The server emits race state updates to all participants.
-- Races are automatically ended when a player reaches the maximum position.
 
-### Possible Vulnerabilities:
+```ts
+/** On the layout */
+const Layout: NextPage<{ children: React.ReactNode }> = ({ children }) => {
+    return <NotificationCatcher>{children}</NotificationCatcher>;
+};
 
-- RaceFullException Handling: The current implementation throws a custom "RaceFullException" when a player tries to join a full race. It is important to handle exceptions properly to prevent potential crashes or unexpected behavior.
-- Race Status Manipulation: The race status (e.g., "waiting," "countdown," "running," "finished") is not strictly controlled, and it relies on the server to update the status. A malicious client could potentially manipulate the race status by sending false race updates or exploiting server-side issues.
-- Race Deletion: The code doesn't seem to handle scenarios where a race might be unexpectedly deleted from the list, which could lead to unexpected behavior if participants are still present.
-- Race Progression: The code currently updates players' positions based solely on the data received from the clients. This approach may be susceptible to cheating or hacking. Implementing server-side validation and logic for race progression could be beneficial.
-- Data Persistence: The code does not include any data persistence, meaning that race data won't be saved between server restarts. Implementing data persistence could enhance the overall user experience and prevent data loss.
-- Authentication & Authorization: Although Users can join races as guest users, the current implementation doesn't make sure the user can't join the same race multiple times.
-- Game State Sync: In a real-world scenario, race state synchronization between the server and clients could face challenges like latency, packet loss, and network issues. Implementing a robust synchronization mechanism is vital to ensure fair gameplay for all participants.
+/** On the NotificationCatcher component */
 
-### Some implementation details:
+"use client";
 
-```typescript
-export class Game {
-    // ...
-    private activeCountdowns = new Map<Race["id"], Promise<void>>();
-    // ...
+import type { SendNotificationPayload } from "@code-racer/wss/src/events/server-to-client";
+
+import React from "react";
+
+import { toast } from "@/components/ui/use-toast";
+import { socket } from "@/lib/socket";
+import { useRouter } from "next/navigation";
+
+export const NotificationCatcher: React.FC<{ children: React.ReactNode }> = ({
+children,
+}) => {
+    const router = useRouter();
+
+    React.useEffect(() => {
+        const showToast = ({
+        title,
+        description,
+        variant,
+        }: SendNotificationPayload) => {
+        toast({
+            title,
+            description,
+            variant,
+            duration: 2000,
+        });
+
+        switch (title) {
+            case "Error":
+            case "Room Not Found":
+            case "Room Full!":
+            case "Race Has Started!":
+            case "Server Full!":
+            case "Room Is Not Accepting Players!":
+            if (socket.connected) {
+                socket.disconnect();
+            }
+            router.replace("/race/rooms");
+            break;
+        }
+            };
+
+        const handleError = (error: Error) => {
+        showToast({
+            title: error.name,
+            description: error.message,
+            variant: "destructive",
+        });
+        };
+
+        socket.on("connect_error", handleError);
+        socket.on("SendError", handleError);
+        socket.on("SendNotification", showToast);
+        /** To avoid memory leaks, we cleanup or destroy this
+            *  event listener on component unmount.
+            */
+        return () => {
+        socket.off("connect_error", handleError);
+        socket.off("SendError", handleError);
+        socket.off("SendNotification", showToast);
+        };
+    }, [children, router]);
+
+    return children;
+};
+
 ```
 
-The activeCountdowns map is an instance variable within the Game class. It is defined as a Map data structure, which associates a Race["id"] (the unique identifier for a race) with a Promise<void>.
 
-#### Purpose:
+The lifecycle is as follows:
 
-The primary purpose of the activeCountdowns map is to keep track of the ongoing countdowns for different races in the game. When a race is about to start, a countdown is initiated, and this map is used to ensure that multiple countdowns for the same race do not overlap.
+### Lifecycle
+
+1. When a player visits the page, "/race", they will see the card for creating or joining a room. There is a button with a text, "Go now!", that will redirect them to the page, "/race/rooms".
+2. They will see two cards at this page. One gives them the ability to create a room and the other to join one.
+3. Before a player connects to the server, a middleware will handle the client and the server's handshake. The snippet is as follows:
+
+
+```ts
+private middleware(): void {
+    /** We get all information about the user
+     *  from the client to avoid doing database calls
+     *  just to get their displayName and displayImage.
+     */
+    type MiddlewareAuth = {
+        // Read further to know why the userID is optional.
+        userID?: string,
+        displayName: string,
+        displayImage: string
+    };
+    /** To use this provided information,
+     *  we attach it to the socket object provided
+     *  to us by socket.io.
+     *  
+     *  However, TypeScript will give us errors since custom properties
+     *  technically won't exist. To prevent this, we will do:
+     */
+    declare module "socket.io" {
+        interface Socket {
+            userID: string,
+            displayName: string,
+            displayImage: string
+        }
+    }
+    /** The server instance is provided to us
+     *  by socket.io.
+     * 
+     *  @see https://socket.io/docs/v4/middlewares/
+     */
+    this.server.use((socket, use) => {
+        const auth = socket.handshake.auth as MiddlewareAuth;
+
+        // Just in case it's accidentally or purposefully empty.
+        if (!auth.displayName) {
+            return next(new Error("Please provide a display nae"))
+        }
+
+        /** A logic to prevent authenticated users from joining the websocket server
+         *  more than once.
+         */
+        if (auth.userID) {
+            // The memory instance of the game server which handles all state.
+            const foundUser = this.memory.findUserByID(auth.userID);
+
+            if (foundUser) {
+                return next(new Error("You are already connected."));
+            }
+
+            socket.userID = auth.userID;
+        }  else {
+           /** If the user is not connected, we use the socket's id that is automatically generated to us by socket.io. This is useful since the socket's id is also made available on the client. */
+           socket.userID = socket.id;
+        }
+
+        /** For users not logged in,
+         *  a fallback username and image is provided from the client.
+         */
+        socket.displayName = auth.displayName;
+	    socket.displayImage = auth.displayImage;
+		next();
+    });
+ };
+```
+
+
+4. After the middleware does its job and a user successfully connects, the server will receive the event, "connection", and the first thing we prompt the server to do is to save the user session in memory. The snippet is as follows:
+
+
+```ts
+    /** roomIDs is necessary
+     *  for bookkeeping when the user disconnects.
+     */
+    this.memory.addUser({
+		userID: socket.userID,
+		displayImage: socket.displayImage,
+		displayName: socket.displayName,
+		roomIDs: new Array<string>(1).fill(socket.id),
+	});
+```
+
+
+5. When a player creates a room, they will be connected to the server and the client will then emit to the websocket server the event, "CreateRoom".
+6. This event will need two parameters, "userID" & "language". The server, upon receiving this event, will run checks and will not create a room if:
+
+ - userID is not provided
+ - The amount of rooms in memory >= the maximum amount of rooms specified as a constant in the server.
+ - No snippet exists on the database for the chosen language.
+ - If we fail to add the session of the user with the given userID.
+
+
+7. If all checks pass, we will generate a random id, using "uuid", and push that generated roomID to the stored user session's list/array of roomIDs and join the socket on that roomID.
+8. Then, since the participants, which hold all information about the users in the room, is also the same type of that responsible for storing user sessions, we just create a new instance of it for the created room. Below is an example snippet:
+
+
+```ts
+    const UserSessioMemoryForRoom = new UserSessionMemoryStore();
+
+	const room = {
+		snippet: {
+			id: snippet.id,
+			name: snippet.name,
+			code: snippet.code,
+			language,
+		},
+		createdAt: new Date(),
+		roomOwnerID: userSession.userID,
+		roomID,
+		participants: UserSessioMemoryForRoom,
+		gameStatus: RACE_STATUS.WAITING,
+	} satisfies Room;
+```
+
+
+9. We then add the generated room object in the memory and emit to the server that it was a success and along with the roomID through the event, "SendRoomID".
+10. Upon receiving the event, "SendRoomID", on the client, the user will then be redirected towars the page, "/race/rooms/`${roomID}`" by pushing this link to the browser's history stack with router.push().
+11. Upon arriving on this page, we will get the roomID from the url params and the session of the user, using "getCurrentUser()", to see if they are logged in or not. All logic for the room handling, game, and such will be handled by the component name, "ClientRoom", and this shall receive two props:
+
+ - roomID
+ - session
+
+
+12. On this component, we have a useEffect that will emit to the client the event, "CheckIfRoomIDExists".
+12. Upon receiving the event, "CheckIfRoomIDExists", the server will do the following checks, and will not let the user join this room if:
+
+ - No room exists in the memory with the provided roomID from the event.
+ - The room currently has an amount of users >= the maximum amount of users a room can have.
+ - The room's status is not waiting.
+ - If the user's session was not stored in memory.
+
+
+13. After passing all checks, the server will add the roomID to the user's session list of roomIDs and join the socket to that room. Then, the server will emit a notification and send the updated list of users in a room to the client to update the visuals.
+14. There are rules as to when a user will disconnect from the room they are in. They are as follows:
+
+ - When they refresh the page.
+ - When the navigate away from the page.
+
+
+15. If a user is alone in a room, and they disconnect, the room they are in will be removed, thus, they won't be able to rejoin that room. They must create a new one.
+16. To be able to play, there must be more than one player in a room. If started with only one player, then the server will emit an error.
+17. A user can start the game if they are the owner of the room.
+18. The player that came after the owner will be the new owner if the owner disconnects from the room.
+19. Upon starting a game by changing the status of the room, the client will emit to the server that the room's state should be in "countdown". The timer will then start on the client and upon reaching 0, the client
+will emit to the server that the room should be "running" at this point.
+20. During "countdown" and "running" states, if the client emits to the server that the game should have a state of "waiting" again, then the race will restart no matter what.
+21. A client will emit this if the following conditions are met:
+
+ - A player leaves the room and only one player will be left.
+
+
+22. Upon the start of the race, the server will store the information of the race in memory again. The schema of this state is as follows:
+
+
+```ts
+    interface RunningGameInformation {
+        roomID: string,
+        participants: ParticipantMemoryStore(), // holds information such as position, cpm, etc.,
+        startedAt: Date,
+        endedAt: Date
+    }
+```
+
+
+23. While on a race, the client will emit all information to the server. Then, the server will store this information, such as, timestamp, progress, etc., in memory.
+24. When a user finishes finished the race before the others, the client will emit this to the server with the information regarding the time it took for them to finish therace. Then, they will see a realtime progress of the other competitors. Right now, the timestamp and progress can only be seen. A potential feature could be to show a replay of other players' currently types words.
+25. The server will receive this event named, "SendUserHasFinished", and will check if, upon this user's finish, all users in the room have finished as well. If so, the server will change the status of the room to "finished" and emit this to the client.
+26. Upon receiving this event, the client will be notified of this and render the component that shows the final results of the race as a table.
+27. On this client, there is a useEffect that prompts the server to send all information about the finished game.
+28. An owner can revert the state of the room back to "waiting" and play again.

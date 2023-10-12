@@ -1,43 +1,58 @@
-import {
-  Language,
-  snippetLanguages,
-} from "@code-racer/app/src/config/languages";
-import { UserRacePresencePayload } from "./common";
-import { Socket } from "socket.io";
-import { RaceParticipant } from "@code-racer/app/src/lib/prisma";
+import type { Language } from "@code-racer/app/src/config/languages";
+import { RaceStatus } from "../consts";
 
-export type PositionUpdatePayload = UserRacePresencePayload & {
-  raceId: string;
-  position: number;
+export type CreateRoomPayload = {
+	userID: string;
+	language: Language;
 };
 
-export type UserCreateRequestPayload = {
-  language: string;
-  userId?: string;
+export type ChangeGameStatusOfRoomPayload = {
+	roomID: string;
+	raceStatus: RaceStatus;
 };
 
-export type UserRaceRequestPayload = {
-  raceId: string;
-  participantId: RaceParticipant["id"];
+/** POTENTIAL FEATURE:
+ *  Add the word in the timestamp as well
+ *  so we can have a videolike experience
+ *  for the user wherein they see
+ *  where their enemies are currently at.
+ */
+type UpdatePayload = {
+	userID: string;
+	roomID: string;
 };
 
-export type UserGetRacePayload = {
-  language: string;
-  userId?: string;
-};
+export type UpdateTimeStampPayload = {
+	cpm: number;
+	totalErrors: number;
+	accuracy: number;
+} & UpdatePayload;
 
-export type UserCreateRoomPayload = {
-  language: Language;
-};
+export type UpdateProgressPayload = {
+	progress: number;
+} & UpdatePayload;
+
+export type SendUserHasFinishedPayload = {
+	timeTaken: number;
+} & UpdatePayload;
 
 export interface ClientToServerEvents {
-  PositionUpdate: (payload: PositionUpdatePayload) => void;
-  UserRaceEnter: (payload: UserRacePresencePayload) => void;
-  UserRaceLeave: (payload: UserRacePresencePayload) => void;
-  UserCreateRequest: (payload: UserCreateRequestPayload) => void;
-  UserGetRace: (payload: UserGetRacePayload) => void;
-  UserRaceRequest: (payload: UserRaceRequestPayload) => void;
-  UserCreateRoom: (payload: UserCreateRoomPayload) => void;
-  UserJoinRoom: (payload: { raceId: string; userId?: string }) => void;
-  StartRaceCountdown: (payload: { raceId: string }) => void;
+	CreateRoom: (_payload: CreateRoomPayload) => void;
+
+	CheckIfRoomIDExists: (_roomID: string) => void;
+
+	CheckGameStatusOfRoom: (_payload: string) => void;
+	ChangeGameStatusOfRoom: (_payload: ChangeGameStatusOfRoomPayload) => void;
+
+	RequestRoomSnippet: (_roomID: string) => void;
+
+	RequestRunningGameInformation: (_roomID: string) => void;
+
+	SendUserTimeStamp: (_payload: UpdateTimeStampPayload) => void;
+	SendUserProgress: (_payload: UpdateProgressPayload) => void;
+	SendUserHasFinished: (_payload: SendUserHasFinishedPayload) => void;
+
+	RequestAllPlayersProgress: (_roomID: string) => void;
+
+	RequestFinishedGame: (_payload: string) => void;
 }

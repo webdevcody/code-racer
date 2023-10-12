@@ -10,4 +10,11 @@ export default defineConfig({
     baseUrl: "http://localhost:3000",
     scrollBehavior: "center",
   },
+
+  component: {
+    devServer: {
+      framework: "next",
+      bundler: "webpack",
+    },
+  },
 });

@@ -13,11 +13,8 @@ export default function HeroBanner() {
         <p className="my-2 text-lg md:text-2xl color-primary">
           Test your typing speed and race against other coders
         </p>
-        <div
-          className="my-10  max-md:flex max-md:items-center max-md:justify-center"
-        >
+        <div className="my-10  max-md:flex max-md:items-center max-md:justify-center">
           <Link
-                       
             href={"/race"}
             title="Start Racing"
             prefetch

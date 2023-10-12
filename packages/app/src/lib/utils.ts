@@ -1,7 +1,8 @@
+import z from "zod";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+
 import { toast } from "@/components/ui/use-toast";
-import * as z from "zod";
 
 export function raise(message: string): never {
   throw new Error(message);
@@ -47,7 +48,7 @@ export function catchError(err: unknown) {
 
 export const isActiveRoute = (
   currentRouteHref: string,
-  providedRouteHref: string,
+  providedRouteHref: string
 ) => currentRouteHref.startsWith(providedRouteHref);
 
 export function camelCaseToCapitalized(str: string) {
@@ -66,3 +67,14 @@ export function isValidUUID(value: string) {
     /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   return uuidv4Regex.test(value);
 }
+
+export const searchForLineBreak = (string: string) => {
+  let amountOfLineBreaks = 0;
+  for (let idx = 0; idx < string.length; ++idx) {
+    if (string[idx] === "\n") {
+      amountOfLineBreaks += 1;
+    }
+  }
+
+  return amountOfLineBreaks;
+};

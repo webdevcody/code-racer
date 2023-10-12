@@ -7,7 +7,9 @@
     "dev": "nodemon src/index.ts",
     "start": "ts-node src/index.ts",
     "lint": "npx eslint src/**",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "format:write": "prettier --write \"**/*.{ts,tsx,mdx}\" --cache",
+    "format:check": "prettier --check \"**/*.{ts,tsx,mdx}\" --cache"
   },
   "keywords": [],
   "author": "",
@@ -23,6 +25,7 @@
     "@types/node": "^20.4.5",
     "@typescript-eslint/eslint-plugin": "^6.2.0",
     "@typescript-eslint/parser": "^6.2.0",
+    "dotenv": "^16.3.1",
     "eslint": "^8.45.0",
     "nodemon": "^3.0.1",
     "prettier": "^3.0.0"

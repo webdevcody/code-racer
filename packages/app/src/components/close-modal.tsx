@@ -7,7 +7,7 @@ import { type FC } from "react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 
-type CloseModalProps = React.ButtonHTMLAttributes<HTMLButtonElement>
+type CloseModalProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 const CloseModal: FC<CloseModalProps> = ({ className }) => {
   const router = useRouter();

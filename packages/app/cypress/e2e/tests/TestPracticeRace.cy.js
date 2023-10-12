@@ -13,9 +13,9 @@ beforeEach(() => {
   cy.visit("/");
 });
 
-const TIME_TO_WAIT = 1000;
+const TIME_TO_WAIT = 10000;
 
-it("can successfully completed a practice race", () => {
+it("Can successfully finish a race lifecycle in practice mode", () => {
   // Find Race Navigation and click on it
   navbarComponent.race().should("be.visible").click();
 
