@@ -109,6 +109,16 @@ If you want to work on a new feature, follow these steps.
 6. Push your branch to your fork
 7. Go into github UI and create a PR from your fork & branch, and merge it into upstream MAIN
 
+If you want to add or update a feature, please follow these steps.
+
+1. Fork the repo
+2. Clone your fork
+3. Checkout a new branch
+4. Do your work
+5. Commit
+6. Push your branch to your fork
+7. Go into github UI and create a PR from your fork & branch, and merge it into upstream MAIN
+
 ## Pulling in changes from upstream
 
 You should pull in the changes that we add in daily, preferably before you checkout a new branch to do new work.
