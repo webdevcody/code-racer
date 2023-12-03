@@ -97,11 +97,11 @@ If you're new to Github and working with open source repositories, I made a vide
 
 There is also a new video explaining how you can contribute to this project:
 <br/>
-[How to contribute to open source projects (our community project walkthrough)](https://www.youtube.com/watch?v=dLRA1lffWBw)
+[How to contribute to open source projects (our community project walkthrough)] (https://www.youtube.com/watch?v=dLRA1lffWBw)
 
 If you want to work on a new feature, follow these steps.
 
-1. Fork the repo
+1. Fork the repository
 2. Clone your fork
 3. Checkout a new branch
 4. Do your work
