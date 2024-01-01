@@ -48,7 +48,7 @@ To get started with Code Racer locally, follow these steps
 
 2. Fork the repo
 
-3. Clone forked repo
+3. Clone forked repo to your local machine
 
    ```sh
     git clone https://github.com/<YOUR_GITHUB_ACCOUNT_NAME>/code-racer.git
