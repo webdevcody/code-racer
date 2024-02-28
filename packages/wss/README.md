@@ -1,5 +1,8 @@
 ## Socket.io code-race server
-
+export class Game {
+    // ...
+    private activeCountdowns = new Map<Race["id"], Promise<void>>();
+    // ...
 ### Lifecycle
 
 1. Players can connect to the game server through Socket.io.
