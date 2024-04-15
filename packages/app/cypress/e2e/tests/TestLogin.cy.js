@@ -1,5 +1,6 @@
 import { siteConfig } from "../../../src/config/site";
 
+
 beforeEach(() => {
   cy.visit("/");
 });
@@ -13,4 +14,3 @@ it("can reach the login page and access github API", () => {
     expect(newUrl).to.contain("github.com/login")
   })
 });
-

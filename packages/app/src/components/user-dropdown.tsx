@@ -53,6 +53,7 @@ const AccountMenu = ({
         <Button
           variant="ghost"
           className="flex h-full gap-2 px-2 bg-white bg-opacity-0 lg:px-4 hover:bg-white hover:bg-opacity-5 w-[175px] lg:w-[300px]"
+	        data-cy="user dropdown"
         >
           <Image
             className="rounded-full"
