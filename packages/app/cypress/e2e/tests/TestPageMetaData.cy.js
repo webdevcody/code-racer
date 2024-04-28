@@ -3,12 +3,12 @@ beforeEach(() => {
   cy.visit("/");
 });
     
-it("test1", () => {
-  // cy.contains('button', 'Sign in').click()
-  cy.get('[data-cy="sign in"]').click()
-   
-  // cy.url().should('include', 'github.com/login')
-  cy.on("url:changed", (newUrl) => {
-    expect(newUrl).to.contain("github.com/login")
-  })
+it("test meta data", () => {
+  // Test title
+  cy.get('head title').should('include.text', 'CodeRacer')
+
+  // Test description
+  cy.get('head meta[name=description]')
+    .should('have.attr', 'content')
+    .should('include', 'Accelerating coding skills, competitive thrills!')
 });
