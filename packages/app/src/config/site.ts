@@ -37,11 +37,6 @@ export const siteConfig = {
       href: "/contributors",
     });
 
-    items.push({
-      title: "Login",
-      href: "/api/auth/signin",
-    });
-
     return items;
   },
 

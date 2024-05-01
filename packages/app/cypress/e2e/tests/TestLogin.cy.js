@@ -1,7 +1,5 @@
-import { siteConfig } from "../../../src/config/site";
-
-
 beforeEach(() => {
+  // Navigate to homepage
   cy.visit("/");
 });
 
