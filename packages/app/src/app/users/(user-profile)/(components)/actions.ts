@@ -7,7 +7,7 @@ import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { validatedCallback } from "@/lib/validatedCallback";
 
-import { Octokit } from "@octokit/core";
+//import { Octokit } from "@octokit/core";
 
 
 export const deleteUserAction = validatedCallback({
@@ -19,6 +19,7 @@ export const deleteUserAction = validatedCallback({
     // If user doesn't exist, throw an UnauthorizedError
     if (!user) throw new UnauthorizedError();
 
+  /*THIS IS THE CODE I ATTEMPED TO ADD TO DELETE THE USER'S GITHUB TOKEN USING GITHUB API
     // Initialize Octokit with user's token
     const octokit = new Octokit({
       auth: user.token,
@@ -32,6 +33,8 @@ export const deleteUserAction = validatedCallback({
         "X-GitHub-Api-Version": "2022-11-28"
       }
     });
+    */
+
 
     // Update user data with an empty object
     await prisma.user.update({
