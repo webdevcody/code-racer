@@ -6,7 +6,7 @@ async function getGitHubStars(): Promise<string | null> {
   try {
     const headers = {
       Accept: "application/vnd.github+json",
-      Authorization: getGitHubAuthorizationToken(),
+      Authorization: getGitHubAuthorizationToken(), 
     };
     const response = await fetch(siteConfig.api.github.githubStars, {
       headers,

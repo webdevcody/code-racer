@@ -7,13 +7,44 @@ import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { validatedCallback } from "@/lib/validatedCallback";
 
+//import { Octokit } from "@octokit/core";
+
+
 export const deleteUserAction = validatedCallback({
-  inputValidation: z.object({}),
-  callback: async (_) => {
+  inputValidation: z.object({}), // Input validation schema (empty object in this case)
+  callback: async (_) => { // Main callback function
+    // Retrieve the current user
     const user = await getCurrentUser();
 
+    // If user doesn't exist, throw an UnauthorizedError
     if (!user) throw new UnauthorizedError();
 
+  /*THIS IS THE CODE I ATTEMPED TO ADD TO DELETE THE USER'S GITHUB TOKEN USING GITHUB API
+    // Initialize Octokit with user's token
+    const octokit = new Octokit({
+      auth: user.token,
+    });
+
+    // Make a request to delete an application grant using Octokit
+    await octokit.request("DELETE /applications/${user.token}/grant", {
+      client_id: "Iv1.8a61f9b3a7aba766",
+      access_token: "e72e16c7e42f292c6912e7710c838347ae178b4a",
+      headers: {
+        "X-GitHub-Api-Version": "2022-11-28"
+      }
+    });
+    */
+
+
+    // Update user data with an empty object
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {},
+    });
+
+    // Delete the user from the database
     await prisma.user.delete({
       where: {
         id: user.id,
@@ -21,6 +52,9 @@ export const deleteUserAction = validatedCallback({
     });
   },
 });
+
+
+
 
 export const updateUserProfile = validatedCallback({
   inputValidation: z.object({

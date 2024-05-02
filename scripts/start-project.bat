@@ -1,7 +1,7 @@
 @REM Execute this script via cli or double click in file explorer or desktop.
 
-set ProjectPath="C:\Users\user1\Desktop\GitHub\code-racer\"
-set DockerDesktop="C:\Program Files\Docker\Docker\Docker Desktop.exe"
+set ProjectPath="/Users/abigailconway/cs4340/code-racer-cs4340-team3/" 
+set DockerDesktop="/Applications/Docker.app"
 @REM code / nvim / vim
 set Editor=code
 @REM firefox / chrome / msedge

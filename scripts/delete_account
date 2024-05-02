@@ -1,0 +1,87 @@
+// "deleteProfileButton" in the HTML
+const deleteProfileButton = document.getElementById('deleteProfileButton') as HTMLElement;
+
+// Add event listener to the delete profile button
+deleteProfileButton.addEventListener('click', () => {
+    // Confirm with the user before proceeding
+    const confirmDelete = confirm("Are you sure you want to delete your profile? This action cannot be undone.");
+
+    if (confirmDelete) {
+        // Make an AJAX request to the server to delete the user's profile
+        // Replace 'deleteProfileEndpoint' with the actual endpoint to delete the profile
+        fetch('deleteProfileEndpoint', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                // Optionally include authentication token or other necessary headers
+            },
+            // Optionally include request body if needed
+            // body: JSON.stringify({ userId: userId }),
+        })
+        .then(response => {
+            if (response.ok) {
+                // Profile successfully deleted, notify the user
+                alert('Your profile has been successfully deleted.');
+                // Optionally redirect the user to a different page after deletion
+                // window.location.href = 'redirectUrl';
+            } else {
+                // Handle error response from the server
+                console.error('Error deleting profile:', response.statusText);
+                alert('An error occurred while deleting your profile. Please try again later.');
+            }
+        })
+        .catch(error => {
+            // Handle network errors or other exceptions
+            console.error('Error deleting profile:', error);
+            alert('An error occurred while deleting your profile. Please try again later.');
+        });
+    }
+});
+
+
+// Function to delete user data
+function deleteUserProfile(): void {
+    // Make an AJAX request to the server to delete the user's profile
+    // Replace 'deleteProfileEndpoint' with the actual endpoint to delete the profile
+    fetch('deleteProfileEndpoint', {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            // Optionally include authentication token or other necessary headers
+        },
+        // Optionally include request body if needed
+        // body: JSON.stringify({ userId: userId }),
+    })
+    .then(response => {
+        if (response.ok) {
+            // Profile successfully deleted, notify the user
+            alert('Your profile has been successfully deleted.');
+            // Optionally redirect the user to a different page after deletion
+            // window.location.href = 'redirectUrl';
+        } else {
+            // Handle error response from the server
+            console.error('Error deleting profile:', response.statusText);
+            alert('An error occurred while deleting your profile. Please try again later.');
+        }
+    })
+    .catch(error => {
+        // Handle network errors or other exceptions
+        console.error('Error deleting profile:', error);
+        alert('An error occurred while deleting your profile. Please try again later.');
+    });
+}
+
+// Assuming you have a button with id "deleteProfileButton" in your HTML
+const deleteProfileButton = document.getElementById('deleteProfileButton') as HTMLElement;
+
+// Add event listener to the delete profile button
+deleteProfileButton.addEventListener('click', () => {
+    // Confirm with the user before proceeding
+    const confirmDelete = confirm("Are you sure you want to delete your profile? This action cannot be undone.");
+
+    if (confirmDelete) {
+        // Call the function to delete user data
+        deleteUserProfile();
+    }
+});
+
