@@ -6,6 +6,8 @@ import { prisma } from "@/lib/prisma";
 import type { UserRole } from "@prisma/client";
 import randomstring from "randomstring";
 
+
+
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
@@ -75,5 +77,6 @@ export const nextAuthOptions = {
 } as AuthOptions;
 
 const handler = NextAuth(nextAuthOptions);
+
 
 export { handler as GET, handler as POST };
