@@ -28,6 +28,13 @@
   "devDependencies": {
     "@flydotio/dockerfile": "^0.4.0",
     "cross-env": "^7.0.3",
+    "encoding": "^0.1.13",
     "husky": "^8.0.3"
+  },
+  "dependencies": {
+    "@octokit/core": "^6.1.2",
+    "dotenv": "^16.4.5",
+    "next": "^14.3.0-canary.16",
+    "unstyled-table": "^0.0.6-beta-4"
   }
 }

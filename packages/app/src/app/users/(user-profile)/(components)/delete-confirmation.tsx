@@ -1,12 +1,14 @@
-"use client";
+//This will run on client-side
+"use client"; 
+
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useEffect, useRef, useState } from "react";
-import { signOut } from "next-auth/react";
+import { signOut } from "next-auth/react"; //Built in authenticatin function from next-auth
 import { AlertTriangle } from "lucide-react";
 import { catchError } from "@/lib/utils";
-import { deleteUserAction } from "./actions";
+import { deleteUserAction } from "./actions"; //deleteUserAction function from actions.ts 
 
 export default function DeleteConfirmation({
   setWillDelete,
@@ -52,7 +54,7 @@ export default function DeleteConfirmation({
             <AlertTriangle className="stroke-red-500" />
             DELETE ACCOUNT
             <AlertTriangle className="stroke-red-500" />
-          </span>
+          </span> 
 
           <form
             className="flex flex-col gap-2 mt-4 select-none"

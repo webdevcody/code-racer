@@ -6,6 +6,8 @@ import { revalidatePath } from "next/cache";
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { validatedCallback } from "@/lib/validatedCallback";
+import { nextAuthOptions } from "@/app/api/auth/[...nextauth]/route";
+import { Octokit } from "@octokit/core";
 
 export const deleteUserAction = validatedCallback({
   inputValidation: z.object({}),
@@ -14,6 +16,29 @@ export const deleteUserAction = validatedCallback({
 
     if (!user) throw new UnauthorizedError();
 
+    // Octokit.js
+    // https://github.com/octokit/core.js#readme
+    const octokit = new Octokit({
+      auth: user.token,
+    });
+
+    await octokit.request("DELETE /applications/{client_id}/grant", {
+      client_id: "Iv1.8a61f9b3a7aba766",
+      access_token: user.token,
+      headers: {
+        "X-GitHub-Api-Version": "2022-11-28"
+      }
+    });
+
+    // Delete GitHub token
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {},
+    });
+
+    // Delete user
     await prisma.user.delete({
       where: {
         id: user.id,

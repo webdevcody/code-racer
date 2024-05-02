@@ -11,6 +11,7 @@ declare module "next-auth" {
     user: {
       id: string;
       role: UserRole;
+      token: string;
     } & DefaultSession["user"];
   }
 }
@@ -71,7 +72,7 @@ export const nextAuthOptions = {
       return session;
     },
   },
-} satisfies AuthOptions;
+} as AuthOptions;
 
 const handler = NextAuth(nextAuthOptions);
 
