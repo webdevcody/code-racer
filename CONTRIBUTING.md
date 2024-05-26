@@ -48,6 +48,8 @@ To get started with Code Racer locally, follow these steps
 
 2. Fork the repo
 
+// just a test
+
 3. Clone your fork
 
    ```sh
