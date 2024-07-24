@@ -70,7 +70,7 @@ To get started with Code Racer locally, follow these steps
    npm i
    ```
 
-8. Start the Database
+8. (Optional if using Docker for managing the database): Start the Database.
 
    ```sh
    npm run dev:db
