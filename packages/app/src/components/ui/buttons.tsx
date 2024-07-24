@@ -10,6 +10,7 @@ export const LoginButton = () => {
     <Button
       variant="outline"
       className="flex gap-2 px-4"
+	    data-cy="sign in"
       onClick={() =>
         signIn("github", {
           callbackUrl: `${location.origin}/race`,
