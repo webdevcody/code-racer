@@ -83,9 +83,9 @@ To get started with Code Racer locally, follow these steps
    ```
 10. Start the web socket server
 
-    ```sh
-    npm run dev:wss
-    ```
+   ```sh
+   npm run dev:wss
+   ```
 Open your browser and visit <http://localhost:3000> to see the application running.
 
 ## Working on New Features
