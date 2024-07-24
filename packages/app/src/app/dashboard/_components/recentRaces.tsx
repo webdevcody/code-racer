@@ -48,7 +48,7 @@ export function RecentRacesTable({
         cell: ({ cell }) => {
           const name = cell.getValue() as string;
 
-          return <span>{name ?? "-"}</span>;
+          return <span>{snippet?.name ?? "-"}</span>;
         },
       },
       {
@@ -62,7 +62,7 @@ export function RecentRacesTable({
             }
           });
 
-          return language?.label;
+          return <span>{language ?? "-"}</span>;
         },
       },
       {
