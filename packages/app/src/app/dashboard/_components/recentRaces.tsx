@@ -48,21 +48,21 @@ export function RecentRacesTable({
         cell: ({ cell }) => {
           const name = cell.getValue() as string;
 
-          return <span>{snippet?.name ?? "-"}</span>;
+          return <span>{name ?? "-"}</span>;
         },
       },
       {
         accessorKey: "snippet.language",
         header: "Language",
         cell: ({ cell }) => {
-          const snippet = cell.getValue() as string;
+          const snippetLanguage = cell.getValue() as string;
           const language = snippetLanguages.find((language) => {
-            if (language.value === snippet) {
+            if (language.value === snippetLanguage) {
               return language.label;
             }
           });
 
-          return <span>{language ?? "-"}</span>;
+          return <span>{language?.label ?? "-"}</span>;
         },
       },
       {
