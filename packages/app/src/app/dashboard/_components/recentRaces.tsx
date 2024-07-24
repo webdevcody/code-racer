@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import type { Result, Snippet } from "@prisma/client";
+import type { Result } from "@prisma/client";
 
 import { type ColumnDef } from "unstyled-table";
 import Link from "next/link";
@@ -43,21 +43,21 @@ export function RecentRacesTable({
         },
       },
       {
-        accessorKey: "name",
+        accessorKey: "snippet.name",
         header: "Name",
         cell: ({ cell }) => {
-          const snippet = cell.getValue() as Snippet;
+          const name = cell.getValue() as string;
 
-          return <span>{snippet.name ?? "-"}</span>;
+          return <span>{name ?? "-"}</span>;
         },
       },
       {
-        accessorKey: "language",
+        accessorKey: "snippet.language",
         header: "Language",
         cell: ({ cell }) => {
-          const snippet = cell.getValue() as Snippet;
+          const snippet = cell.getValue() as string;
           const language = snippetLanguages.find((language) => {
-            if (language.value === snippet.language) {
+            if (language.value === snippet) {
               return language.label;
             }
           });
