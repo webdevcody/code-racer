@@ -46,7 +46,7 @@ To get started with Code Racer locally, follow these steps
 
 1. Make sure you have installed Docker locally (See above Prerequisites)
 
-2. Fork the repo as your own repo
+2. Fork the repository as your own repo
 
 3. Clone your fork 
 
@@ -81,13 +81,11 @@ To get started with Code Racer locally, follow these steps
    ```sh
    npm run dev:app
    ```
-
 10. Start the web socket server
 
-```sh
-npm run dev:wss
-```
-
+    ```sh
+    npm run dev:wss
+    ```
 Open your browser and visit <http://localhost:3000> to see the application running.
 
 ## Working on New Features
@@ -101,7 +99,7 @@ There is also a new video explaining how you can contribute to this project:
 
 If you want to work on a new feature, follow these steps.
 
-1. Fork the repo
+1. Fork the repository
 2. Clone your fork
 3. Checkout a new branch
 4. Do your work
