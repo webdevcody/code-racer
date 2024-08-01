@@ -28,7 +28,7 @@ You will need to [install docker](https://www.docker.com/get-started/) on your l
 
 If you do not have docker, go here to download and install: <https://www.docker.com/get-started/>
 
-If you see error starting db on M1 mac, you may need to update your docker config file at `~/.docker/config.json`
+If you see an error when starting db on M1 mac, you may need to update your docker config file at `~/.docker/config.json`
 Your file should look like something like this:
 
 ```
@@ -38,7 +38,7 @@ Your file should look like something like this:
 }
 ```
 
-If you are getting WSL error when you launch your desktop docker application, go here and follow these steps for windows: <https://learn.microsoft.com/en-us/windows/wsl/install-manual#step-4---download-the-linux-kernel-update-package>.
+If you are getting a WSL error when you launch your desktop docker application, go here and follow these steps for windows: <https://learn.microsoft.com/en-us/windows/wsl/install-manual#step-4---download-the-linux-kernel-update-package>.
 
 ## Installation
 
@@ -69,10 +69,10 @@ To get started with Code Racer locally, follow these steps
    ```sh
    npm i
    ```
-   
+
 8. Start the Database
-    If you are using Docker don't forget to run `docker-compose up` to start the database.
-    (Optional if using Docker for managing the database): Start the Database.
+   If you are using Docker don't forget to run `docker-compose up` to start the database.
+   (Optional if using Docker for managing the database): Start the Database.
 
    ```sh
    npm run dev:db
@@ -83,11 +83,13 @@ To get started with Code Racer locally, follow these steps
    ```sh
    npm run dev:app
    ```
+
 10. Start the web socket server
 
-   ```sh
-   npm run dev:wss
-   ```
+```sh
+npm run dev:wss
+```
+
 Open your browser and visit <http://localhost:3000> to see the application running.
 
 ## Working on New Features
