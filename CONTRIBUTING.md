@@ -26,7 +26,8 @@ Commit: [2] feat: add docker container for postgres
 
 You will need to [install docker](https://www.docker.com/get-started/) on your local machine.
 
-If you do not have docker, go here to download and install: <https://www.docker.com/get-started/>
+If you do not have docker, go at the below link to download and install:
+         <https://www.docker.com/get-started/>
 
 If you see error starting db on M1 mac, you may need to update your docker config file at `~/.docker/config.json`
 Your file should look like something like this:
@@ -44,11 +45,11 @@ If you are getting WSL error when you launch your desktop docker application, go
 
 To get started with Code Racer locally, follow these steps
 
-1. Make sure you have installed Docker locally (See above Prerequisites)
+1. Make sure you have installed Docker locally (See above Prerequisites if not yet installed)
 
 2. Fork the repository as your own repo
 
-3. Clone forked repo to your local machine
+3. Clone forked repo to your local machine with the help of the following command:
 
    ```sh
     git clone https://github.com/<YOUR_GITHUB_ACCOUNT_NAME>/code-racer.git
@@ -64,7 +65,7 @@ To get started with Code Racer locally, follow these steps
 
 6. Copy and paste variables from `packages/app/.env.example` into `packages/app/.env`
 
-7. Install NPM packages
+7. Install NPM(Node Package Manager) packages
 
    ```sh
    npm i
@@ -99,7 +100,7 @@ There is also a new video explaining how you can contribute to this project:
 <br/>
 [How to contribute to open source projects (our community project walkthrough)](https://www.youtube.com/watch?v=dLRA1lffWBw)
 
-If you want to work on a new feature, follow these steps.
+If you want to work on a new feature, follow these steps:-
 
 1. Fork the repository
 2. Clone your fork
@@ -111,7 +112,8 @@ If you want to work on a new feature, follow these steps.
 
 ## Pulling in changes from upstream
 
-You should pull in the changes that we add in daily, preferably before you checkout a new branch to do new work.
+You should pull in the changes that we add in daily.
+Preferably before you checkout a new branch to do new work.
 
 ```sh
 git checkout main
