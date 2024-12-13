@@ -14,6 +14,7 @@ Branch: [ISSUE ID]-title-of-the-pr (shorter)
 Commit: [[ISSUE ID]] [ACTION]: what was done
 ```
 
+
 Examples:
 
 ```text

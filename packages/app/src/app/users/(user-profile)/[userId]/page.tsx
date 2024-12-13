@@ -9,6 +9,7 @@ import { getCurrentUser } from "@/lib/session";
 import NotCurrentUserButtons from "../(components)/not-current-user-buttons";
 import { findUser, findUserAchievements } from "./actions";
 
+
 export const metadata = {
   title: "Profile Page",
 };
