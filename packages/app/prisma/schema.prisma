@@ -17,6 +17,7 @@ model User {
   image           String?
   averageAccuracy Decimal           @default(0) @db.Decimal(5, 2)
   averageCpm      Decimal           @default(0) @db.Decimal(6, 2)
+  averageWpm      Decimal           @default(0) @db.Decimal(6, 2) @map("average_wpm")
   role            UserRole          @default(USER)
   bio             String?
   languagesMap    Json?
@@ -80,6 +81,7 @@ model Result {
   takenTime       String            @map("taken_time")
   errorCount      Int?              @map("error_count")
   snippetId       String
+  wpm             Int              @default(0) @map("words_per_minute")
   RaceParticipant RaceParticipant[]
   snippet         Snippet           @relation(fields: [snippetId], references: [id], onDelete: Cascade)
   user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -106,7 +108,7 @@ model Snippet {
   rating   Int           @default(0)
   name     String?
   Race     Race[]
-  Result   Result[]     
+  Result   Result[]
   votes    SnippetVote[]
   User     User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
 

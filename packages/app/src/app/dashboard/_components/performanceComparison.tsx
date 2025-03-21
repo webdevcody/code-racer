@@ -124,11 +124,15 @@ export default function PerformanceComparison({
   return (
     <Tabs defaultValue="cpm" className="w-full">
       <TabsList>
-        <TabsTrigger value="cpm">Cpm</TabsTrigger>
+        <TabsTrigger value="cpm">CPM</TabsTrigger>
+        <TabsTrigger value="wpm">WPM</TabsTrigger>
         <TabsTrigger value="accuracy">Accuracy</TabsTrigger>
       </TabsList>
       <TabsContent value="cpm">
         <BubbleChart obj="cpm" usersData={recentGames} />
+      </TabsContent>
+      <TabsContent value="wpm">
+        <BubbleChart obj="wpm" usersData={recentGames} />
       </TabsContent>
       <TabsContent value="accuracy">
         <BubbleChart obj="accuracy" usersData={recentGames} />

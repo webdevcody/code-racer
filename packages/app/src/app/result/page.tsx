@@ -85,6 +85,10 @@ async function AuthenticatedPage({ resultId, user }: AuthenticatedPageProps) {
   raceResults = await getUserResultsForSnippet(currentRaceResult.snippetId);
   cardObjects = [
     {
+      title: "WPM",
+      value: currentRaceResult?.wpm?.toString(),
+    },
+    {
       title: "CPM",
       value: currentRaceResult?.cpm.toString(),
     },

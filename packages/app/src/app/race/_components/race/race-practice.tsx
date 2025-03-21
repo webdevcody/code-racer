@@ -80,6 +80,7 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
             char: input.slice(-1),
             accuracy: calculateAccuracy(input.length, totalErrors),
             cpm: calculateCPM(input.length, timeTaken),
+            wpm: Math.round(calculateCPM(input.length, timeTaken) / 5),
             time: Date.now(),
           },
         ])
@@ -243,12 +244,14 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
     if (value === code[input.length - 1] && value !== " ") {
       const currTime = Date.now();
       const timeTaken = startTime ? (currTime - startTime.getTime()) / 1000 : 0;
+      const currentCpm = calculateCPM(input.length, timeTaken);
       setChartTimeStamp((prev) => [
         ...prev,
         {
           char: value,
           accuracy: calculateAccuracy(input.length, totalErrors),
-          cpm: calculateCPM(input.length, timeTaken),
+          cpm: currentCpm,
+          wpm: Math.round(currentCpm / 5),
           time: currTime,
         },
       ]);
@@ -347,12 +350,14 @@ export default function RacePractice({ user, snippet }: RacePracticeProps) {
     if (e.key !== " ") {
       const currTime = Date.now();
       const timeTaken = startTime ? (currTime - startTime.getTime()) / 1000 : 0;
+      const currentCpm = calculateCPM(input.length, timeTaken);
       setChartTimeStamp((prevArray) => [
         ...prevArray,
         {
           char: e.key,
           accuracy: calculateAccuracy(input.length, totalErrors),
-          cpm: calculateCPM(input.length, timeTaken),
+          cpm: currentCpm,
+          wpm: Math.round(currentCpm / 5),
           time: currTime,
         },
       ]);

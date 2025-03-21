@@ -11,6 +11,7 @@ import { z } from "zod";
 
 export type ParsedRacesResult = Omit<Result, "createdAt"> & {
   createdAt: string;
+  wpm: number;
 };
 
 export async function getFirstRaceBadge() {
@@ -122,6 +123,7 @@ const loadCurrentResults = validatedCallback({
     snippetId: z.string(),
     accuracy: z.number(),
     cpm: z.number(),
+    wpm: z.number(),
     errorCount: z.number(),
     takenTime: z.string(),
   }),
@@ -159,11 +161,13 @@ export const getTopTen = validatedCallback({
       id: z.string(),
       accuracy: z.number(),
       cpm: z.number(),
+      wpm: z.number(),
       user: z.object({
         id: z.string(),
         name: z.string(),
         averageAccuracy: z.number(),
         averageCpm: z.number(),
+        averageWpm: z.number(),
         image: z.string(),
       }),
     })
@@ -186,6 +190,7 @@ export const getTopTen = validatedCallback({
             name: true,
             averageAccuracy: true,
             averageCpm: true,
+            averageWpm: true,
             image: true,
           },
         },
