@@ -13,6 +13,8 @@ export const LoginButton = () => {
       onClick={() =>
         signIn("github", {
           callbackUrl: `${location.origin}/race`,
+          // Attempt to force a fresh login at the provider
+          prompt: "login",
         })
       }
     >
