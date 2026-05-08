@@ -46,7 +46,7 @@ To get started with Code Racer locally, follow these steps
 
 1. Make sure you have installed Docker locally (See above Prerequisites)
 
-2. Fork the repository as your own repo
+2. Fork the repo
 
 3. Clone forked repo to your local machine
 
@@ -70,7 +70,7 @@ To get started with Code Racer locally, follow these steps
    npm i
    ```
    
-8. Start the Database
+8. Start the Database (make sure u do this step)
     If you are using Docker don't forget to run `docker-compose up` to start the database.
     (Optional if using Docker for managing the database): Start the Database.
 
