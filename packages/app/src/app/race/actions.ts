@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
+import { Decimal } from "@prisma/client/runtime/library";
 import { UnauthorizedError } from "@/lib/exceptions/custom-hooks";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
@@ -20,6 +21,7 @@ export const saveUserResultAction = validatedCallback({
     const user = await getCurrentUser();
 
     if (!user) throw new UnauthorizedError();
+    if (!user.id) throw new Error("User ID not found");
 
     const userData = await prisma.user.findUnique({
       where: { id: user.id },
@@ -64,6 +66,8 @@ export const saveUserResultAction = validatedCallback({
       .sort((a, b) => languagesMap[b] - languagesMap[a])
       .splice(0, 3);
 
+    const wpm = Math.round(input.cpm / 5); // Standard calculation: CPM/5 = WPM
+
     return await prisma.$transaction(async (tx) => {
       const result = await tx.result.create({
         data: {
@@ -71,7 +75,8 @@ export const saveUserResultAction = validatedCallback({
           takenTime: input.timeTaken.toString(),
           errorCount: input.errors,
           cpm: input.cpm,
-          accuracy: new Prisma.Decimal(input.accuracy),
+          wpm: wpm,
+          accuracy: new Decimal(input.accuracy),
           snippetId: input.snippetId,
           RaceParticipant: input.raceParticipantId
             ? {
@@ -90,6 +95,7 @@ export const saveUserResultAction = validatedCallback({
         _avg: {
           accuracy: true,
           cpm: true,
+          wpm: true,
         },
       });
 
@@ -98,8 +104,9 @@ export const saveUserResultAction = validatedCallback({
           id: user.id,
         },
         data: {
-          averageAccuracy: avgValues._avg.accuracy ?? 0,
-          averageCpm: avgValues._avg.cpm ?? 0,
+          averageAccuracy: new Decimal(avgValues?._avg?.accuracy ?? 0),
+          averageCpm: new Decimal(avgValues?._avg?.cpm ?? 0),
+          average_wpm: new Decimal(avgValues?._avg?.wpm ?? 0),
           languagesMap: JSON.stringify(languagesMap),
           topLanguages: topLanguages,
         },

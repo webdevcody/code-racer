@@ -22,6 +22,7 @@ interface ChartTimeStamp {
   accuracy: number;
   cpm: number;
   time: number;
+  wpm: number;
 }
 
 type TResultChart = {
@@ -60,6 +61,13 @@ export function ResultChart({ code }: TResultChart) {
             dataKey="cpm"
             yAxisId="right"
             stroke="#0ee2c6"
+            activeDot={{ r: 8 }}
+          />
+          <Line
+            type="monotone"
+            dataKey="wpm"
+            yAxisId="right"
+            stroke="#ff7f0e"
             activeDot={{ r: 8 }}
           />
           <Tooltip
@@ -131,11 +139,12 @@ function RenderTooltip(
     return (
       <section className="p-5 m-0 border-2 rounded-lg bg-accent border-primary text-primary">
         <div className="flex flex-col">
-          <span className="text-[#0ee2c6]">Cpm : {data.cpm}</span>
+          <span className="text-[#0ee2c6]">CPM: {data.cpm}</span>
+          <span className="text-[#ff7f0e]">WPM: {data.wpm}</span>
           <span className="text-[#0261b9]">
-            Accuracy : {Math.ceil(data.accuracy)}
+            Accuracy: {Math.ceil(data.accuracy)}%
           </span>
-          <span>Character : {data.char}</span>
+          <span>Character: {data.char}</span>
         </div>
       </section>
     );

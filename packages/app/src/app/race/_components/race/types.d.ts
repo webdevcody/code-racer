@@ -8,5 +8,6 @@ export interface ChartTimeStamp {
   char: string;
   accuracy: number;
   cpm: number;
+  wpm: number;
   time: number;
 }

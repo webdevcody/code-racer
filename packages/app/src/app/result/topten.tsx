@@ -31,6 +31,7 @@ export async function TopTable({ snippetId }: { snippetId?: string }) {
             <TableHead></TableHead>
             <TableHead>User</TableHead>
             <TableHead className="text-center">Average CPM</TableHead>
+            <TableHead className="text-center">Average WPM</TableHead>
             <TableHead className="text-center">Average Accuracy</TableHead>
           </TableRow>
         </TableHeader>
@@ -53,6 +54,7 @@ export async function TopTable({ snippetId }: { snippetId?: string }) {
                 </Link>
               </TableCell>
               <TableCell className="text-center">{topten.cpm}</TableCell>
+              <TableCell className="text-center">{topten.wpm}</TableCell>
               <TableCell
                 className={
                   topten.accuracy > 75

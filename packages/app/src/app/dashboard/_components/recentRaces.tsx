@@ -89,7 +89,7 @@ export function RecentRacesTable({
         header: () => {
           return (
             <div className="flex items-center gap-2">
-              <span>Cpm</span>
+              <span>CPM</span>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger>
@@ -97,6 +97,26 @@ export function RecentRacesTable({
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>Characters per minute</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+          );
+        },
+      },
+      {
+        accessorKey: "wpm",
+        header: () => {
+          return (
+            <div className="flex items-center gap-2">
+              <span>WPM</span>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Icons.info className="w-4 h-4" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Words per minute</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>

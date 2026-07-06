@@ -18,7 +18,7 @@ declare module "next-auth" {
 export const nextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   session: {
-    strategy: "jwt",
+    strategy: "database",
   },
   secret: env.NEXTAUTH_SECRET,
   providers: [
@@ -28,46 +28,39 @@ export const nextAuthOptions = {
     }),
   ],
   callbacks: {
-    async signIn(options) {
+    async signIn({ user }) {
       const racerCode = randomstring.generate({
         length: 4,
         charset: "numeric",
       });
-      options.user.email = `${options.user.id}@example.com`;
-      options.user.name = `Racer ${racerCode}`;
-      return true;
-    },
-    async jwt({ token, user }) {
-      const dbUser = await prisma.user.findFirst({
-        where: {
-          email: token.email,
-        },
+
+      // Check if user exists
+      const existingUser = await prisma.user.findUnique({
+        where: { email: user.email || `${user.id}@example.com` },
       });
 
-      if (!dbUser) {
-        if (user) {
-          token.id = user.id;
-        }
-        return token;
+      if (!existingUser) {
+        // Create new user if doesn't exist
+        await prisma.user.create({
+          data: {
+            email: user.email || `${user.id}@example.com`,
+            name: `Racer ${racerCode}`,
+            averageAccuracy: 0,
+            averageCpm: 0,
+            averageWpm: 0,
+            role: "USER",
+            image: user.image,
+          },
+        });
       }
 
-      return {
-        id: dbUser.id,
-        name: dbUser.name,
-        email: dbUser.email,
-        role: dbUser.role,
-        picture: dbUser.image,
-      };
+      return true;
     },
-    async session({ token, session }) {
-      if (token) {
-        session.user.id = token.id;
-        session.user.name = token.name;
-        session.user.email = token.email;
-        session.user.role = token.role;
-        session.user.image = token.picture;
+    async session({ session, user }) {
+      if (session.user) {
+        session.user.id = user.id;
+        session.user.role = user.role;
       }
-
       return session;
     },
   },
