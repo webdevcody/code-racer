@@ -3,7 +3,7 @@
   <br/>
   <h1>Code Racer</h1>
 </div>
-
+--
 <div align="center">
   Welcome to Code Racer, a community project built with <a href="https://nextjs.org/">Next.js</a>, <a href="https://tailwindcss.com">Tailwind CSS</a>, and <a href="https://www.typescriptlang.org">TypeScript</a>.
   Code Racer is a multiplayer coding game where developers can compete against each other to solve programming challenges in real-time. Sharpen your coding skills, challenge your peers, and have fun while racing against the clock!
