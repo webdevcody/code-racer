@@ -25,6 +25,14 @@ export const nextAuthOptions = {
     GithubProvider({
       clientId: env.GITHUB_CLIENT_ID,
       clientSecret: env.GITHUB_CLIENT_SECRET,
+      authorization: {
+        params: {
+          // Request standard scopes explicitly and attempt to force a fresh login
+          scope: "read:user user:email",
+          // Some providers respect prompt=login; GitHub may ignore it, but harmless
+          prompt: "login",
+        },
+      },
     }),
   ],
   callbacks: {
