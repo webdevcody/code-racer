@@ -65,3 +65,18 @@ it("can click on contributor card and click on any commit message and redirected
       });
   });
 });
+it.only("can ensure that the contributors page loads with contributor data", () => {
+  // Verify the contributors page loads and displays contributor cards
+  contributorsPage.contributorCard().should("have.length.greaterThan", 0);
+  
+  // Verify each contributor card has required elements
+  contributorsPage.contributorCard().first().within(() => {
+    contributorsPage.contributorName().should("be.visible"); // Contributor name text
+  });
+  
+  // Verify the page renders contributor statistics
+  cy.contains("Contributors and counting!").should("be.visible");
+  cy.get("[data-cy='contributor-card']").each(($card) => {
+    cy.wrap($card).find("[data-cy='contributor-name']").should("exist");
+  });
+});
