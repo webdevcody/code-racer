@@ -10,7 +10,7 @@ import {
   getBestCPM,
   getCurrentRaceResult,
   getSnippetVote,
-  getUserResultsForSnippet
+  getUserResultsForSnippet,
 } from "./loaders";
 
 // Components
@@ -27,6 +27,7 @@ import { ReplayCode } from "./replay-timestamps";
 import { ResultChart } from "./result-chart";
 import { TopTable } from "./topten";
 import { Voting } from "./voting";
+import SignInLink from "./sign-in-link";
 
 type ResultPageProps = {
   searchParams: {
@@ -259,6 +260,7 @@ async function UnauthenticatedPage({ snippetId }: UnauthenticatedPageProps) {
           title="Your Race Results"
           description="You did great! View your race results below"
         />
+        <SignInLink />
       </div>
 
       <div className="flex flex-col px-8 rounded-xl">
