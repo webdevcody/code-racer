@@ -47,6 +47,20 @@ const AccountMenu = ({
     role: UserRole;
   };
 }) => {
+  const handleLogout = async () => {
+    try {
+      // Sign out user and redirect to home page
+      await signOut({
+        callbackUrl: `${window.location.origin}`, // Redirect to the homepage
+        redirect: true, // Ensure redirection is handled properly
+      });
+      // Reload the page to clear any cached session data
+      window.location.reload();
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -100,7 +114,7 @@ const AccountMenu = ({
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="text-red-500 hover:text-white focus:bg-destructive hover:cursor-pointer"
-          onClick={() => signOut({ callbackUrl: `${window.location.origin}` })}
+          onClick={handleLogout}
         >
           <Icons.logout className="w-4 h-4 mr-2" />
           <span>Logout</span>
