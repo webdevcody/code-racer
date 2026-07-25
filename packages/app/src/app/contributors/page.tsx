@@ -1,5 +1,4 @@
 import { Heading } from "@/components/ui/heading";
-import Contributor from "./_components/contributor";
 import AdditionsDeletions from "./_components/additions-deletions";
 import ProportionBarChart from "./_components/proportion-bar-chart";
 import Time from "@/components/ui/time";
@@ -13,6 +12,7 @@ import {
   getRepoWeeklyCodeChanges,
 } from "./_helpers/utils";
 import { redirect } from "next/navigation";
+import ContributorsList from "./_components/ContributorsList";
 
 const PER_PAGE_MAX = 12; // Limit to only 12 per page to avoid hitting rate limit
 
@@ -107,22 +107,12 @@ export default async function ContributorsPage({
           />
         </div>
       </div>
-      <ul className="grid gap-4 mt-8 list-none md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {contributors
-          .slice(sliceStartIndex, sliceEndIndex)
-          .map((contributor) => (
-            <Contributor
-              key={contributor.id}
-              contributor={contributor}
-              contributorsCodeChanges={
-                contributorCommitActivities.find(
-                  (e) => e.login === contributor.login,
-                ) ?? { additions: 0, deletions: 0, login: contributor.login }
-              }
-            />
-          ))}
-      </ul>
-
+      <ContributorsList
+        contributors={contributors}
+        sliceStartIndex={sliceStartIndex}
+        sliceEndIndex={sliceEndIndex}
+        contributorCommitActivities={contributorCommitActivities}
+      ></ContributorsList>
       <PaginationBar
         className="flex justify-center w-full mt-6"
         nextURL={`/contributors?page=${Math.min(
