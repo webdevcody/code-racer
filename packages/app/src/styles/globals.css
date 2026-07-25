@@ -106,3 +106,17 @@
     margin: 0;
   }
 }
+
+@layer utilities {
+  .blinking-cursor:after {
+    content: "|";
+    @apply text-primary;
+    animation: blink 1s step-start infinite;
+  }
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
