@@ -1,12 +1,17 @@
+
 # CONTRIBUTING
 
-When contributing to this repository, please first discuss the change you wish to make via [issues](https://github.com/webdevcody/code-racer/issues), [discord](https://discord.gg/4kGbBaa).
+We welcome contributions to this project! To get started, please follow the instructions below.
 
-Please note if you are working on a certain issue then make sure to stay active with development.
+## Discussing Changes
+
+Before making changes, please discuss your proposed changes via [GitHub Issues](https://github.com/webdevcody/code-racer/issues) or on the [Discord server](https://discord.gg/4kGbBaa).  
+
+If you're working on an issue, please stay active with development and keep the communication open.
 
 ## Git Commit, Branch, and PR Naming Conventions
 
-When you are working with git, please be sure to follow the conventions below on your pull requests, branches, and commits:
+Please follow these naming conventions when working with git for pull requests, branches, and commits:
 
 ```text
 PR: [#ISSUE ID] Title of the PR
@@ -14,128 +19,173 @@ Branch: [ISSUE ID]-title-of-the-pr (shorter)
 Commit: [[ISSUE ID]] [ACTION]: what was done
 ```
 
-Examples:
-
+### Example:
 ```text
 PR: #2 Add Docker container for Postgres
 Branch: 2-add-container-postgres
 Commit: [2] feat: add docker container for postgres
 ```
 
+---
+
 ## Prerequisites
 
-You will need to [install docker](https://www.docker.com/get-started/) on your local machine.
+You will need to [install Docker](https://www.docker.com/get-started/) on your local machine.
 
-If you do not have docker, go here to download and install: <https://www.docker.com/get-started/>
+### For Mac M1 Users:
+If you encounter issues starting the database on a Mac M1, you may need to update your Docker configuration file at `~/.docker/config.json`. Your file should look something like this:
 
-If you see error starting db on M1 mac, you may need to update your docker config file at `~/.docker/config.json`
-Your file should look like something like this:
-
-```
+```json
 {
-        "auths": {},
-        "currentContext": "desktop-linux"
+  "auths": {},
+  "currentContext": "desktop-linux"
 }
 ```
 
-If you are getting WSL error when you launch your desktop docker application, go here and follow these steps for windows: <https://learn.microsoft.com/en-us/windows/wsl/install-manual#step-4---download-the-linux-kernel-update-package>.
+### For Windows Users:
+If you're encountering WSL errors when launching Docker, follow the [Windows WSL installation steps](https://learn.microsoft.com/en-us/windows/wsl/install-manual#step-4---download-the-linux-kernel-update-package).
 
-## Installation
+---
 
-To get started with Code Racer locally, follow these steps
+## Installation Instructions
 
-1. Make sure you have installed Docker locally (See above Prerequisites)
+### 1. Fork the Repository
 
-2. Fork the repository as your own repo
+Start by forking the repository to your own GitHub account.
 
-3. Clone forked repo to your local machine
+### 2. Clone the Repository
 
-   ```sh
-    git clone https://github.com/<YOUR_GITHUB_ACCOUNT_NAME>/code-racer.git
-   ```
+Clone the forked repository to your local machine:
 
-4. Navigate to the project directory
+```sh
+git clone https://github.com/<YOUR_GITHUB_ACCOUNT_NAME>/code-racer.git
+```
 
-   ```sh
-   cd code-racer
-   ```
+### 3. Navigate to Project Directory
 
-5. Create a .env file inside the project's packages/app directory.
+```sh
+cd code-racer
+```
 
-6. Copy and paste variables from `packages/app/.env.example` into `packages/app/.env`
+### 4. Set up Environment Variables
 
-7. Install NPM packages
+Create a `.env` file in the `packages/app` directory.
 
-   ```sh
-   npm i
-   ```
-   
-8. Start the Database
-    If you are using Docker don't forget to run `docker-compose up` to start the database.
-    (Optional if using Docker for managing the database): Start the Database.
+Then, copy the variables from `packages/app/.env.example` into the newly created `.env` file.
 
-   ```sh
-   npm run dev:db
-   ```
+### 5. Install NPM Packages
 
-9. Start the app dev server
+```sh
+npm i
+```
 
-   ```sh
-   npm run dev:app
-   ```
-10. Start the web socket server
+### 6. Start the Database
 
-   ```sh
-   npm run dev:wss
-   ```
-Open your browser and visit <http://localhost:3000> to see the application running.
+If you're using Docker, start the database with the following command:
+
+```sh
+docker-compose up
+```
+
+Alternatively, you can start the database separately:
+
+```sh
+npm run dev:db
+```
+
+### 7. Start the App Development Server
+
+Start the development server for the app:
+
+```sh
+npm run dev:app
+```
+
+### 8. Start the WebSocket Server
+
+Start the WebSocket server:
+
+```sh
+npm run dev:wss
+```
+
+Now, open your browser and visit [http://localhost:3000](http://localhost:3000) to see the application running.
+
+---
 
 ## Working on New Features
 
-If you're new to Github and working with open source repositories, I made a video a while back which walks you through the process:
-[![How to make a pull request on an open source project](https://img.youtube.com/vi/8A4TsoXJOs8/0.jpg)](https://youtu.be/8A4TsoXJOs8)
+### Beginner Guide to Git and GitHub
 
-There is also a new video explaining how you can contribute to this project:
-<br/>
-[How to contribute to open source projects (our community project walkthrough)](https://www.youtube.com/watch?v=dLRA1lffWBw)
+If you're new to GitHub or open-source contributions, check out the following video for a beginner-friendly guide:
 
-If you want to work on a new feature, follow these steps.
+[How to make a pull request on an open source project](https://youtu.be/8A4TsoXJOs8)
 
-1. Fork the repository
-2. Clone your fork
-3. Checkout a new branch
-4. Do your work
-5. Commit
-6. Push your branch to your fork
-7. Go into github UI and create a PR from your fork & branch, and merge it into upstream MAIN
+Additionally, there's a more specific guide for contributing to this project:
 
-## Pulling in changes from upstream
+[How to contribute to open-source projects](https://www.youtube.com/watch?v=dLRA1lffWBw)
 
-You should pull in the changes that we add in daily, preferably before you checkout a new branch to do new work.
+### Steps to Add a New Feature:
+
+1. **Fork** the repository.
+2. **Clone** your forked repository.
+3. **Checkout** a new branch for the feature you're working on.
+4. **Do your work** and make changes.
+5. **Commit** your changes.
+6. **Push** your branch to your fork.
+7. On GitHub, go to your fork and create a Pull Request (PR) from your branch to the upstream `main`.
+
+---
+
+## Pulling in Changes from Upstream
+
+Before you start working on a new branch, make sure to pull in the latest changes from the main repository:
 
 ```sh
 git checkout main
-```
-
-```sh
 git pull upstream main
 ```
 
+---
+
 ## Before Submitting a Pull Request
 
-Before submitting a **Pull Request**, you should
+Before submitting your PR, make sure to:
 
-1. Check your code safety with Linter and TypeScript, and make sure your code can build successfully.
+1. **Check your code** with the linter and TypeScript to ensure it builds correctly:
 
 ```sh
 npm run pr:precheck
 ```
 
-2. (Optional) Do an E2E test to ensure application functions properly
+2. **Optional:** Run End-to-End (E2E) tests to ensure the application works as expected:
 
-```
+```sh
 npm run e2e -w @code-racer/app
 ```
+
+## Windows Setup Guide
+
+If you're working on **Windows** and need to set up the development environment, follow these steps:
+
+1. **Install Docker Desktop**:
+   - Download and install [Docker Desktop for Windows](https://www.docker.com/get-started/).
+   - Make sure Docker is running correctly.
+
+2. **Install WSL (Windows Subsystem for Linux)**:
+   - Follow the instructions to install [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) and ensure Ubuntu or any other Linux distribution is set up.
+
+3. **Configure Docker to Use WSL**:
+   - Open Docker Desktop, go to **Settings** → **Resources** → **WSL Integration**, and ensure your desired WSL distribution is selected.
+
+4. **Install Node.js and NPM**:
+   - Download and install the latest version of [Node.js](https://nodejs.org/).
+
+5. **Proceed with Installation Steps**:
+   - Follow the instructions mentioned in the **Installation** section to set up your project.
+
+If you encounter any issues, feel free to reach out in the [Discord server](https://discord.gg/4kGbBaa).
+
 
 ## Code of Conduct
 
