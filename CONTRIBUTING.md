@@ -69,25 +69,32 @@ To get started with Code Racer locally, follow these steps
    ```sh
    npm i
    ```
-   
+
 8. Start the Database
-    If you are using Docker don't forget to run `docker-compose up` to start the database.
-    (Optional if using Docker for managing the database): Start the Database.
+   If you are using Docker don't forget to run `docker-compose up` to start the database.
+   (Optional if using Docker for managing the database): Start the Database.
+
+   For the newer docker version run `docker compose up` to start the database
+   If docker is not installed follow the documentation : https://docs.docker.com/engine/install/
+
+   Now to start the database use:-
 
    ```sh
    npm run dev:db
    ```
 
-9. Start the app dev server
+9. Now in the new terminal , Start the app dev server
 
    ```sh
    npm run dev:app
    ```
-10. Start the web socket server
 
-   ```sh
-   npm run dev:wss
-   ```
+10. Now in the new terminal , Start the web socket server
+
+```sh
+npm run dev:wss
+```
+
 Open your browser and visit <http://localhost:3000> to see the application running.
 
 ## Working on New Features
